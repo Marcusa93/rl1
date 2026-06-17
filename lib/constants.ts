@@ -41,6 +41,12 @@ export const AGENDA: AgendaStep[] = [
     desc: "El participante escribe un prompt natural y la IA lo analiza variable por variable (Contexto, Objeto, Tarea, Input, Output).",
   },
   {
+    key: "chat",
+    label: "Asistente IA (práctica libre)",
+    short: "Asistente",
+    desc: "Chat de IA dentro de la app para que experimenten: probar prompts, redactar, resumir. Con recordatorio de confidencialidad.",
+  },
+  {
     key: "caso",
     label: "Ejercicio: el caso Fernández",
     short: "Caso Fernández",

@@ -5,6 +5,7 @@ export type ActivityKey =
   | "diagnostico"
   | "verdadero_falso"
   | "cotio"
+  | "chat"
   | "caso"
   | "tarea";
 

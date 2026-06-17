@@ -5,6 +5,7 @@ import type { ActivityProps } from "./student-activity";
 import { COTIO_VARS } from "@/lib/constants";
 import type { CotioAnalysis, CotioStatus } from "@/lib/types";
 import { Button, Spinner } from "@/components/ui";
+import { streamGenerate } from "@/components/use-stream";
 import { cn } from "@/lib/utils";
 
 const STATUS_STYLE: Record<CotioStatus, string> = {
@@ -18,6 +19,20 @@ export function Cotio({ slug }: ActivityProps) {
   const [analysis, setAnalysis] = useState<CotioAnalysis | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [testOut, setTestOut] = useState("");
+  const [testing, setTesting] = useState(false);
+
+  async function probar(prompt: string) {
+    setTesting(true);
+    setTestOut("");
+    try {
+      await streamGenerate(slug, [{ role: "user", content: prompt }], (c) => setTestOut((o) => o + c));
+    } catch (e) {
+      setTestOut(`Error: ${(e as Error).message}`);
+    } finally {
+      setTesting(false);
+    }
+  }
 
   async function analyze() {
     setBusy(true);
@@ -127,6 +142,22 @@ export function Cotio({ slug }: ActivityProps) {
                   <p className="mt-2 whitespace-pre-wrap font-mono text-xs leading-relaxed text-foreground">
                     {analysis.improved_prompt}
                   </p>
+                  <Button
+                    onClick={() => probar(analysis.improved_prompt)}
+                    disabled={testing}
+                    className="mt-3 w-full"
+                  >
+                    {testing ? <Spinner /> : "✨ Probar este prompt"}
+                  </Button>
+                  {(testOut || testing) && (
+                    <div className="mt-3 rounded-lg border border-line bg-ink-2/70 p-3">
+                      <p className="mb-1 text-xs font-semibold text-teal">Resultado</p>
+                      <p className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-foreground">
+                        {testOut}
+                        {testing && <span className="ml-0.5 animate-pulse">▌</span>}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </>

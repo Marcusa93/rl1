@@ -45,6 +45,11 @@ export function LiveResults({
           <VF r={r} config={config} />
         ) : activity === "cotio" ? (
           <Cotio r={r} />
+        ) : activity === "chat" ? (
+          <div className="flex items-center gap-3">
+            <p className="text-gradient text-4xl font-bold">{Number((r.summary?.usando as number) ?? 0)}</p>
+            <p className="text-sm font-medium">están usando el asistente IA</p>
+          </div>
         ) : activity === "caso" ? (
           <Caso r={r} />
         ) : activity === "tarea" ? (

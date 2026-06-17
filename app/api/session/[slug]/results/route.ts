@@ -75,6 +75,8 @@ export async function GET(
   } else if (activity === "caso") {
     const done = list.filter((r) => r.payload?.done).length;
     summary = { total: list.length, done };
+  } else if (activity === "chat") {
+    summary = { total: list.length, usando: list.length };
   } else if (activity === "tarea") {
     const casos = list
       .filter((r) => r.payload?.compromiso)
