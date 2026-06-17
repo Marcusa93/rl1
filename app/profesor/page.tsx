@@ -99,6 +99,32 @@ function Panel() {
       body: JSON.stringify({ activity }),
     });
   }
+  async function exportCsv() {
+    const res = await fetch(`/api/session/${SLUG}/all-responses`);
+    const d = await res.json();
+    const rows = (d.rows ?? []) as Array<{
+      name: string;
+      activity: string;
+      item_key: string;
+      payload: unknown;
+      created_at: string;
+    }>;
+    const esc = (v: string) => `"${String(v).replace(/"/g, '""')}"`;
+    const header = ["nombre", "actividad", "item", "respuesta", "fecha"].join(",");
+    const lines = rows.map((r) =>
+      [esc(r.name), esc(r.activity), esc(r.item_key), esc(JSON.stringify(r.payload)), esc(r.created_at)].join(","),
+    );
+    const csv = "﻿" + [header, ...lines].join("\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `RL1-respuestas-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
   async function resetAll() {
     if (!confirm("Vaciar la clase: saca a todos los participantes y borra todas las respuestas. ¿Seguir?"))
       return;
@@ -147,8 +173,10 @@ function Panel() {
                 Copiar
               </button>
             </div>
-            <div className="mt-3 flex items-center justify-between gap-3">
-              <p className="text-xs text-faint">Entran, ponen su nombre y listo.</p>
+            <div className="mt-3 flex items-center justify-between gap-2">
+              <Button variant="outline" onClick={exportCsv} className="px-3 py-1.5 text-xs">
+                ⬇ Descargar respuestas (CSV)
+              </Button>
               <Button variant="danger" onClick={resetAll} className="px-3 py-1.5 text-xs">
                 Reiniciar clase
               </Button>

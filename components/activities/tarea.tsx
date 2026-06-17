@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ActivityProps } from "./student-activity";
 import { Button, Spinner } from "@/components/ui";
+import { DownloadResumen } from "@/components/download-resumen";
 
 export function Tarea({ slug }: ActivityProps) {
   const [caso, setCaso] = useState("");
@@ -34,6 +35,9 @@ export function Tarea({ slug }: ActivityProps) {
           Durante la semana usá la herramienta en tu caso real y guardá el <b>prompt</b> y el{" "}
           <b>output</b> — salga bien o mal. Ese material arranca la Clase 2.
         </p>
+        <div className="mx-auto mt-5 max-w-xs">
+          <DownloadResumen slug={slug} />
+        </div>
       </div>
     );
 
@@ -85,6 +89,10 @@ export function Tarea({ slug }: ActivityProps) {
       >
         {busy ? <Spinner /> : "Confirmar compromiso"}
       </Button>
+
+      <div className="mt-3">
+        <DownloadResumen slug={slug} variant="outline" />
+      </div>
     </div>
   );
 }
