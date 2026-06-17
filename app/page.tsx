@@ -83,6 +83,14 @@ export default function Home() {
               {busy ? <Spinner /> : "Entrar al taller"}
             </Button>
           </form>
+
+          <a
+            href="/manual-cotio-rl1.pdf"
+            download
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-line bg-panel/40 px-4 py-3 text-sm font-medium text-foreground transition hover:border-teal/60 hover:text-teal"
+          >
+            📘 Descargar la guía (PDF)
+          </a>
         </div>
       </main>
     );
