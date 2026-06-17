@@ -60,9 +60,12 @@ export function LiveResults({
             <span
               key={n}
               title={n}
-              className="rise inline-flex size-7 items-center justify-center rounded-full bg-gradient-to-br from-teal/30 to-violet/30 text-[10px] font-bold text-teal ring-1 ring-teal/30"
+              className="rise inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-teal/15 to-violet/15 py-1 pl-1 pr-2.5 text-xs text-foreground ring-1 ring-teal/30"
             >
-              {initials(n)}
+              <span className="inline-flex size-5 items-center justify-center rounded-full bg-teal/30 text-[9px] font-bold text-teal">
+                {initials(n)}
+              </span>
+              {n.split(/\s+/)[0]}
             </span>
           ))}
         </div>

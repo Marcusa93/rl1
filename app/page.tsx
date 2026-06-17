@@ -21,10 +21,20 @@ export default function Home() {
   const { data } = useLive<SessionResp>(`/api/session/${SLUG}`, 1500);
 
   useEffect(() => {
-    fetch(`/api/session/${SLUG}/me`)
-      .then((r) => r.json())
-      .then((d) => setMe(d.participant))
-      .catch(() => setMe(null));
+    let active = true;
+    const load = () =>
+      fetch(`/api/session/${SLUG}/me`)
+        .then((r) => r.json())
+        .then((d) => {
+          if (active) setMe(d.participant);
+        })
+        .catch(() => {});
+    load();
+    const id = setInterval(load, 3000); // si la clase se reinició, vuelve solo al ingreso
+    return () => {
+      active = false;
+      clearInterval(id);
+    };
   }, []);
 
   async function join(e: React.FormEvent) {

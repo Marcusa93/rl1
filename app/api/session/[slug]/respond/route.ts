@@ -20,6 +20,15 @@ export async function POST(
   const payload = body.payload ?? {};
 
   const db = getAdmin();
+
+  // la cookie puede apuntar a un participante borrado (ej. tras reiniciar la clase)
+  const { data: p } = await db
+    .from("participants")
+    .select("id")
+    .eq("id", pid)
+    .eq("session_id", session.id)
+    .maybeSingle();
+  if (!p) return fail("Volvé a unirte a la clase", 401);
   const { data, error } = await db
     .from("responses")
     .upsert(

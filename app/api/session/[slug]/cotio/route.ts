@@ -44,6 +44,15 @@ export async function POST(
   const pid = await getParticipantId();
   if (!pid) return fail("Unite a la clase primero", 401);
 
+  const db0 = getAdmin();
+  const { data: p } = await db0
+    .from("participants")
+    .select("id")
+    .eq("id", pid)
+    .eq("session_id", session.id)
+    .maybeSingle();
+  if (!p) return fail("Volvé a unirte a la clase", 401);
+
   const { prompt } = await req.json().catch(() => ({ prompt: "" }));
   const clean = (prompt as string)?.trim();
   if (!clean || clean.length < 5) return fail("Escribí un prompt para analizar");

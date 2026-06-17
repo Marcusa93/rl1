@@ -10,6 +10,7 @@ export function Diagnostico({ slug }: ActivityProps) {
   const [sel, setSel] = useState<string[]>([]);
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
 
   function toggle(id: string) {
     setSel((prev) => {
@@ -21,13 +22,23 @@ export function Diagnostico({ slug }: ActivityProps) {
 
   async function send() {
     setBusy(true);
-    const res = await fetch(`/api/session/${slug}/respond`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ activity: "diagnostico", payload: { selected: sel } }),
-    });
-    setBusy(false);
-    if (res.ok) setSent(true);
+    setErr("");
+    try {
+      const res = await fetch(`/api/session/${slug}/respond`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ activity: "diagnostico", payload: { selected: sel } }),
+      });
+      if (res.ok) setSent(true);
+      else {
+        const d = await res.json().catch(() => ({}));
+        setErr(d.error || "No se pudo enviar. Probá de nuevo.");
+      }
+    } catch {
+      setErr("Sin conexión. Probá de nuevo.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -60,8 +71,9 @@ export function Diagnostico({ slug }: ActivityProps) {
         })}
       </div>
 
+      {err && <p className="mt-3 text-center text-sm text-magenta">{err}</p>}
       {!sent ? (
-        <Button onClick={send} disabled={busy || sel.length === 0} className="mt-6 w-full">
+        <Button onClick={send} disabled={busy || sel.length === 0} className="mt-3 w-full">
           {busy ? <Spinner /> : "Enviar"}
         </Button>
       ) : (
