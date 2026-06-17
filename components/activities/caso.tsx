@@ -33,20 +33,26 @@ export function Caso({ slug }: ActivityProps) {
     const built = COTIO_VARS.map((v) => `[${v.name.toUpperCase()}] ${fields[v.key].trim()}`).join("\n");
     const prompt = `${built}\n\n--- EXPEDIENTE (input) ---\n${CASO_FERNANDEZ_MD}`;
 
-    // marca participación para el conteo en vivo
-    fetch(`/api/session/${slug}/respond`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ activity: "caso", payload: { done: true } }),
-    }).catch(() => {});
-
+    let acc = "";
     try {
       await streamGenerate(
         slug,
         [{ role: "user", content: prompt }],
-        (chunk) => setOutput((o) => o + chunk),
+        (chunk) => {
+          acc += chunk;
+          setOutput((o) => o + chunk);
+        },
         { maxTokens: 1800 },
       );
+      // guarda el borrador para que todo el grupo lo vea en el feed
+      fetch(`/api/session/${slug}/respond`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          activity: "caso",
+          payload: { done: true, output: acc.slice(0, 8000), objeto: fields.objeto },
+        }),
+      }).catch(() => {});
     } catch (e) {
       setErr((e as Error).message);
     } finally {

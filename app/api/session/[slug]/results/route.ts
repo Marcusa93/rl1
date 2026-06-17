@@ -73,8 +73,14 @@ export async function GET(
       confidential,
     };
   } else if (activity === "caso") {
-    const done = list.filter((r) => r.payload?.done).length;
-    summary = { total: list.length, done };
+    const drafts = list
+      .filter((r) => r.payload?.output)
+      .map((r) => ({
+        name: r.participants?.name ?? "—",
+        objeto: r.payload?.objeto ?? "",
+        output: r.payload?.output ?? "",
+      }));
+    summary = { total: list.length, done: list.filter((r) => r.payload?.done).length, drafts };
   } else if (activity === "chat") {
     summary = { total: list.length, usando: list.length };
   } else if (activity === "tarea") {

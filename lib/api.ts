@@ -22,12 +22,17 @@ export async function getSession(slug: string): Promise<SessionRow | null> {
 
   // La clase por defecto se auto-crea para que nunca falle el acceso.
   if (slug === DEFAULT_SLUG) {
-    const { data: created } = await db
+    const { data: created, error } = await db
       .from("sessions")
       .insert({ slug, title: WORKSHOP_TITLE, current_activity: "lobby", status: "lobby" })
       .select("*")
       .single();
-    return (created as SessionRow) ?? null;
+    if (created) return created as SessionRow;
+    // carrera: otro request la creó primero → re-leer
+    if (error) {
+      const { data: again } = await db.from("sessions").select("*").eq("slug", slug).maybeSingle();
+      return (again as SessionRow) ?? null;
+    }
   }
   return null;
 }

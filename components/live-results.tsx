@@ -25,17 +25,29 @@ export function LiveResults({
   const { data: r } = useLive<ResultsResp>(`/api/session/${slug}/results?activity=${activity}`, 2000);
   if (activity === "lobby") return null;
 
+  const responded = r?.responded ?? 0;
+  const participants = Math.max(r?.participants ?? 0, responded);
+  const ratio = participants ? Math.round((responded / participants) * 100) : 0;
+
   return (
     <section className="mt-6">
-      <div className="mb-3 flex items-center gap-2">
+      <div className="mb-2 flex items-center gap-2">
         <span className="size-2 animate-pulse rounded-full bg-teal" />
         <h3 className="text-sm font-semibold text-muted">Resultados en vivo</h3>
         {r && (
           <span className="ml-auto text-xs text-faint">
-            {r.responded}/{r.participants} respondieron
+            <b className="text-teal">{responded}</b>/{participants} participando
           </span>
         )}
       </div>
+      {r && (
+        <div className="mb-3 h-1.5 overflow-hidden rounded-full bg-ink-2/70">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-teal via-cyan to-violet transition-all duration-500"
+            style={{ width: `${ratio}%` }}
+          />
+        </div>
+      )}
       <div className="glass rounded-2xl p-4">
         {!r ? (
           <p className="text-sm text-faint">Cargando…</p>
@@ -164,13 +176,30 @@ function Cotio({ r }: { r: ResultsResp }) {
 
 function Caso({ r }: { r: ResultsResp }) {
   const s = r.summary ?? {};
+  const drafts = (s.drafts as Array<{ name: string; objeto: string; output: string }>) ?? [];
   return (
-    <div className="flex items-center gap-3">
-      <p className="text-gradient text-4xl font-bold">{Number(s.done ?? 0)}</p>
-      <div>
-        <p className="text-sm font-medium">trabajando en Claude</p>
-        <p className="text-xs text-faint">{CASO_FERNANDEZ_CONSIGNA.slice(0, 70)}…</p>
+    <div>
+      <div className="mb-3 flex items-center gap-3">
+        <p className="text-gradient text-3xl font-bold">{drafts.length}</p>
+        <p className="text-sm font-medium">borradores generados por el grupo</p>
       </div>
+      {drafts.length === 0 ? (
+        <p className="text-xs text-faint">{CASO_FERNANDEZ_CONSIGNA.slice(0, 80)}…</p>
+      ) : (
+        <div className="space-y-2">
+          {drafts.map((d, i) => (
+            <details key={i} className="rounded-xl border border-line bg-ink-2/50 p-3">
+              <summary className="cursor-pointer text-sm">
+                <span className="font-semibold text-teal">{d.name}</span>
+                {d.objeto && <span className="text-faint"> · {d.objeto.slice(0, 60)}</span>}
+              </summary>
+              <p className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap font-mono text-xs leading-relaxed text-foreground">
+                {d.output}
+              </p>
+            </details>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

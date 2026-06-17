@@ -10,10 +10,13 @@ export async function GET(
   if (!session) return fail("Sesión no encontrada", 404);
 
   const db = getAdmin();
-  const { count } = await db
+  const { data: rows, count } = await db
     .from("participants")
-    .select("id", { count: "exact", head: true })
-    .eq("session_id", session.id);
+    .select("name", { count: "exact" })
+    .eq("session_id", session.id)
+    .order("created_at", { ascending: true })
+    .limit(60);
 
-  return ok({ session, participants: count ?? 0 });
+  const names = (rows ?? []).map((r) => r.name as string);
+  return ok({ session, participants: count ?? names.length, names });
 }

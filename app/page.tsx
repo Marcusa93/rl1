@@ -85,9 +85,15 @@ export default function Home() {
       <header className="sticky top-0 z-10 border-b border-line/60 bg-ink/80 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
           <LogoRL1 size={24} />
-          <div className="text-right">
-            <p className="text-xs text-faint">{me.name}</p>
-            <p className="text-xs font-medium text-teal">{step.short}</p>
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1.5 rounded-full bg-teal/10 px-2.5 py-1 text-xs text-teal">
+              <span className="size-1.5 animate-pulse rounded-full bg-teal" />
+              {data.participants} en sala
+            </span>
+            <div className="text-right">
+              <p className="text-xs text-faint">{me.name}</p>
+              <p className="text-xs font-medium text-teal">{step.short}</p>
+            </div>
           </div>
         </div>
       </header>

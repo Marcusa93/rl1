@@ -99,6 +99,15 @@ function Panel() {
       body: JSON.stringify({ activity }),
     });
   }
+  async function resetAll() {
+    if (!confirm("Vaciar la clase: saca a todos los participantes y borra todas las respuestas. ¿Seguir?"))
+      return;
+    await fetch(`/api/session/${SLUG}/reset`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ all: true }),
+    });
+  }
 
   if (!data)
     return (
@@ -138,7 +147,12 @@ function Panel() {
                 Copiar
               </button>
             </div>
-            <p className="mt-2 text-xs text-faint">Entran, ponen su nombre y listo.</p>
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <p className="text-xs text-faint">Entran, ponen su nombre y listo.</p>
+              <Button variant="danger" onClick={resetAll} className="px-3 py-1.5 text-xs">
+                Reiniciar clase
+              </Button>
+            </div>
           </div>
 
           <h2 className="mb-2 text-sm font-semibold text-muted">Actividades</h2>
