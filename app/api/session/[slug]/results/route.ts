@@ -45,36 +45,36 @@ export async function GET(
     }
     summary = { perIndex, total: list.length };
   } else if (activity === "cotio") {
-    const vars: CotioVar[] = ["contexto", "objetivo", "tarea", "input", "output"];
-    const sums: Record<string, number> = {};
-    let overall = 0;
-    let confidential = 0;
+    const vars: CotioVar[] = ["contexto", "objeto", "tarea", "input", "output"];
+    const points: Record<string, number> = {};
     let analyzed = 0;
+    let confidential = 0;
     for (const r of list) {
       const a = r.payload?.analysis;
       if (!a) continue;
       analyzed++;
-      overall += a.overall ?? 0;
       if (a.confidential?.found) confidential++;
-      for (const s of a.scores ?? []) sums[s.var] = (sums[s.var] ?? 0) + (s.score ?? 0);
+      for (const s of a.scores ?? []) {
+        const p = s.status === "presente" ? 100 : s.status === "incompleto" ? 50 : 0;
+        points[s.var] = (points[s.var] ?? 0) + p;
+      }
     }
     const avgByVar: Record<string, number> = {};
-    for (const v of vars) avgByVar[v] = analyzed ? Math.round(sums[v] / analyzed) : 0;
+    let overall = 0;
+    for (const v of vars) {
+      avgByVar[v] = analyzed ? Math.round(points[v] / analyzed) : 0;
+      overall += avgByVar[v];
+    }
     summary = {
       total: list.length,
       analyzed,
-      avgOverall: analyzed ? Math.round(overall / analyzed) : 0,
+      avgOverall: Math.round(overall / vars.length),
       avgByVar,
       confidential,
     };
-  } else if (activity === "demanda") {
-    let naive = 0;
-    let cotio = 0;
-    for (const r of list) {
-      if (r.payload?.naive_output) naive++;
-      if (r.payload?.cotio_output) cotio++;
-    }
-    summary = { total: list.length, naive, cotio };
+  } else if (activity === "caso") {
+    const done = list.filter((r) => r.payload?.done).length;
+    summary = { total: list.length, done };
   } else if (activity === "tarea") {
     const casos = list
       .filter((r) => r.payload?.compromiso)

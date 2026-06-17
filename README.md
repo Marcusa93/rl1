@@ -16,15 +16,15 @@ la identidad de RL1.
 5. **Confidencialidad** — integrada al flujo: el optimizador alerta si detecta datos reales/sensibles en el prompt.
 6. **Tarea bisagra** — cada uno se compromete a usar la herramienta en un caso real y traer prompt + output a la Clase 2 (queda registrado como material de arranque).
 
-## Rutas
+## Rutas (sin códigos — una sola clase fija)
 
 | Ruta | Para |
 |------|------|
-| `/` | Participante: ingresa el código de la clase |
-| `/docente` | Docente: login, crear / abrir clase |
-| `/clase/[slug]` | Vista del participante (actividad activa) |
-| `/clase/[slug]/panel` | Panel de control del docente |
-| `/clase/[slug]/proyector` | Pantalla para proyectar |
+| `/` | Participante: entra, pone su nombre y ve la actividad activa |
+| `/profesor` | Docente: clave + panel de control en vivo |
+| `/pantalla` | Pantalla para proyectar |
+
+La sesión por defecto se auto-crea la primera vez que alguien entra; no hay que crear ni compartir códigos.
 
 ## Puesta en marcha
 
@@ -47,7 +47,7 @@ pnpm dev
 
 ## Cómo dar la clase
 
-1. Entrá a `/docente`, ingresá la clave y **Crear clase nueva**.
-2. Compartí el código (o el link) que aparece en el panel; abrí el **proyector** en la pantalla.
-3. Los participantes entran por `/` con el código y su nombre.
+1. Entrá a `/profesor`, ingresá la clave.
+2. Abrí `/pantalla` en el proyector. Compartí a los alumnos el link de la app (la raíz `/`).
+3. Los participantes entran por `/`, ponen su nombre y listo (sin códigos).
 4. Desde el panel, **activá cada actividad** en orden. Todo se actualiza solo en los celulares y en el proyector.

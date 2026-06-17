@@ -1,7 +1,10 @@
 import type { ActivityKey, CotioVar } from "./types";
 
 export const APP_NAME = "RL1";
-export const WORKSHOP_TITLE = "Taller IA Abogacía";
+export const WORKSHOP_TITLE = "IA en la abogacía: del uso intuitivo al método";
+
+// Una sola clase fija (sin códigos): todos comparten esta sesión, que se auto-crea.
+export const DEFAULT_SLUG = "taller";
 
 // --- Agenda / flujo de la clase (orden en que el docente activa) ---
 
@@ -21,33 +24,33 @@ export const AGENDA: AgendaStep[] = [
   },
   {
     key: "diagnostico",
-    label: "Diagnóstico inicial",
+    label: "Tarjetas de actividades",
     short: "Leer al grupo",
     desc: "Cada uno marca qué tareas jurídicas ya hizo con IA. Gráfico en vivo para leer al grupo antes de arrancar.",
   },
   {
     key: "verdadero_falso",
-    label: "Cómo funciona la IA generativa",
-    short: "Tokens + alucinación",
-    desc: "Dos conceptos (tokens y alucinación) y un verdadero/falso para consolidar y debatir.",
+    label: "Verdadero o falso",
+    short: "V/F",
+    desc: "Ocho afirmaciones sobre IA generativa para consolidar conceptos y debatir (tokens y alucinación). El docente avanza y revela.",
   },
   {
     key: "cotio",
-    label: "Método COTIO + optimizador",
+    label: "Optimizador COTIO",
     short: "COTIO",
-    desc: "Construcción de prompts con COTIO. El optimizador analiza el prompt variable por variable.",
+    desc: "El participante escribe un prompt natural y la IA lo analiza variable por variable (Contexto, Objeto, Tarea, Input, Output).",
   },
   {
-    key: "demanda",
-    label: "Demanda laboral: sin método vs COTIO",
-    short: "Comparador",
-    desc: "Redactar una demanda laboral primero sin método y después con COTIO. Comparan los dos outputs en vivo.",
+    key: "caso",
+    label: "Ejercicio: el caso Fernández",
+    short: "Caso Fernández",
+    desc: "Cada grupo recibe el resumen del expediente y la consigna. Construyen el prompt con COTIO y trabajan en Claude.",
   },
   {
     key: "tarea",
     label: "Tarea bisagra",
     short: "Cierre",
-    desc: "Usar la herramienta en un caso real durante la semana y traer prompt + output a la Clase 2.",
+    desc: "Usar la herramienta en un caso real propio durante la semana y traer prompt + output a la Clase 2.",
   },
 ];
 
@@ -55,7 +58,7 @@ export function agendaStep(key: ActivityKey): AgendaStep {
   return AGENDA.find((a) => a.key === key) ?? AGENDA[0];
 }
 
-// --- Diagnóstico: tarjetas (tareas jurídicas con IA) ---
+// --- Módulo 1 · Tarjetas (tareas jurídicas con IA) ---
 
 export interface DiagCard {
   id: string;
@@ -64,65 +67,79 @@ export interface DiagCard {
 }
 
 export const DIAGNOSTICO_CARDS: DiagCard[] = [
-  { id: "redactar", emoji: "✍️", label: "Redactar un escrito o demanda" },
-  { id: "resumir", emoji: "📄", label: "Resumir un fallo o expediente" },
-  { id: "jurisprudencia", emoji: "⚖️", label: "Buscar jurisprudencia o doctrina" },
-  { id: "contrato", emoji: "📑", label: "Redactar o revisar un contrato" },
-  { id: "traducir", emoji: "🌐", label: "Traducir o corregir un texto legal" },
-  { id: "consultas", emoji: "💬", label: "Responder consultas de clientes" },
-  { id: "plazos", emoji: "📅", label: "Calcular plazos o liquidaciones" },
-  { id: "estudiar", emoji: "📚", label: "Estudiar o capacitarme" },
-  { id: "nunca", emoji: "🚫", label: "Nunca usé IA para trabajo jurídico" },
+  { id: "escrito", emoji: "✍️", label: "Redacté o mejoré un escrito judicial" },
+  { id: "resumen", emoji: "📄", label: "Resumí un expediente o documento largo" },
+  { id: "jurisprudencia", emoji: "⚖️", label: "Busqué o analicé jurisprudencia" },
+  { id: "audiencia", emoji: "🎙️", label: "Preparé argumentos para una audiencia" },
+  { id: "consulta", emoji: "💬", label: "Respondí una consulta de cliente" },
+  { id: "contrato", emoji: "📑", label: "Revisé o redacté un contrato" },
+  { id: "doctrina", emoji: "📚", label: "Investigué doctrina o legislación" },
+  { id: "estrategia", emoji: "🧠", label: "Generé ideas para una estrategia procesal" },
+  { id: "traduje", emoji: "🌐", label: "Traduje o adapté un documento" },
+  { id: "organice", emoji: "🗂️", label: "Organicé o planifiqué tareas del estudio" },
+  { id: "nunca", emoji: "🚫", label: "No la usé nunca" },
 ];
 
-// --- Verdadero / Falso (tokens + alucinación) ---
+// --- Módulo 2 · Verdadero / Falso (8 afirmaciones) ---
 
 export interface VFItem {
   statement: string;
   answer: boolean; // true = verdadero
   explain: string;
-  tag: "tokens" | "alucinacion" | "responsabilidad";
 }
 
 export const VF_ITEMS: VFItem[] = [
   {
-    statement: "La IA lee el texto palabra por palabra, igual que una persona.",
+    statement: "La IA busca información en internet en tiempo real.",
     answer: false,
     explain:
-      "Falso. El modelo parte el texto en tokens (fragmentos de palabras) y predice el siguiente. Por eso CÓMO escribís el prompt cambia el resultado a nivel técnico.",
-    tag: "tokens",
+      "Falso. Los modelos trabajan con el conocimiento incorporado durante su entrenamiento. No navegan internet salvo que tengan una herramienta de búsqueda activada.",
   },
   {
-    statement: "La forma en que redactás el prompt impacta técnicamente en la respuesta.",
+    statement: "El resultado que da la IA depende mucho de cómo le preguntás.",
     answer: true,
     explain:
-      "Verdadero. Cada token condiciona la predicción del siguiente. Un prompt preciso reduce ambigüedad y mejora el output.",
-    tag: "tokens",
+      "Verdadero. La calidad y precisión del prompt determina directamente la calidad del output. Es la premisa central del método COTIO.",
   },
   {
-    statement: "Si la IA responde con seguridad, la información es confiable.",
+    statement: "La IA siempre cita jurisprudencia correctamente.",
     answer: false,
     explain:
-      "Falso. El modelo puede 'alucinar': genera texto plausible aunque sea incorrecto. La seguridad del tono no garantiza veracidad.",
-    tag: "alucinacion",
+      "Falso. Los modelos pueden generar citas de jurisprudencia inexistente con datos verosímiles. Se llama alucinación y es una limitación estructural, no un error ocasional.",
   },
   {
-    statement: "Una cita de jurisprudencia inexistente generada por la IA es una alucinación.",
+    statement: "Puedo usar la IA para redactar pero siempre tengo que verificar el contenido.",
     answer: true,
     explain:
-      "Verdadero. Es el caso más peligroso para el abogado: fallos, artículos o autos que suenan reales pero no existen.",
-    tag: "alucinacion",
+      "Verdadero. La IA produce borradores inteligentes. La verificación jurídica del contenido es siempre responsabilidad del profesional.",
   },
   {
-    statement: "El abogado es responsable de verificar todo lo que devuelve la IA.",
+    statement: "La IA entiende el derecho igual que un abogado.",
+    answer: false,
+    explain:
+      "Falso. Procesa patrones del lenguaje jurídico, pero no tiene criterio profesional, no conoce el expediente real, no tiene responsabilidad ética ni puede valorar prueba.",
+  },
+  {
+    statement: "Darle más contexto a la IA generalmente mejora la respuesta.",
     answer: true,
     explain:
-      "Verdadero. La IA es asistente, no fuente. La responsabilidad profesional sobre el contenido siempre es del abogado.",
-    tag: "responsabilidad",
+      "Verdadero. Cuanta más información relevante tenga el prompt, más ajustado al caso real será el output. El contexto es la primera variable de COTIO por algo.",
+  },
+  {
+    statement: "Si la IA dice algo con mucha seguridad, es porque es correcto.",
+    answer: false,
+    explain:
+      "Falso. El modelo genera texto con el mismo tono de confianza sea correcto o incorrecto. La seguridad del tono no es indicador de precisión factual.",
+  },
+  {
+    statement: "Puedo pedirle a la IA que adopte un rol específico para obtener mejores resultados.",
+    answer: true,
+    explain:
+      "Verdadero. Definir un rol (ej. 'actuá como asistente de un estudio jurídico laboral') mejora la coherencia y el tono del output.",
   },
 ];
 
-// --- COTIO ---
+// --- Módulo 3 · COTIO (Contexto, Objeto, Tarea, Input, Output) ---
 
 export interface CotioVarDef {
   key: CotioVar;
@@ -137,43 +154,77 @@ export const COTIO_VARS: CotioVarDef[] = [
     key: "contexto",
     letter: "C",
     name: "Contexto",
-    question: "¿Quién sos y en qué marco trabajás?",
-    placeholder: "Soy abogado/a laboralista en Tucumán, Argentina. Asesoro a un trabajador despedido sin causa…",
+    question: "¿Quién sos y en qué situación trabajás?",
+    placeholder:
+      "Soy abogado/a laboralista en CABA, represento a la parte actora en una causa por despido sin causa.",
   },
   {
-    key: "objetivo",
+    key: "objeto",
     letter: "O",
-    name: "Objetivo",
-    question: "¿Qué querés lograr?",
-    placeholder: "Iniciar una demanda por despido injustificado reclamando indemnización…",
+    name: "Objeto",
+    question: "¿Qué querés lograr con el output?",
+    placeholder: "Quiero redactar la sección de hechos de una demanda laboral.",
   },
   {
     key: "tarea",
     letter: "T",
     name: "Tarea",
-    question: "¿Qué acción concreta tiene que hacer la IA?",
-    placeholder: "Redactá el escrito de demanda con sus partes: hechos, derecho, prueba y petitorio…",
+    question: "¿Qué tiene que hacer exactamente la IA?",
+    placeholder:
+      "Redactá los hechos en orden cronológico, en primera persona del plural, tono formal, solo narración factual sin valoraciones.",
   },
   {
     key: "input",
     letter: "I",
     name: "Input",
-    question: "¿Qué datos o material le das?",
-    placeholder: "Fecha de ingreso, fecha de despido, remuneración, categoría, antigüedad… (sin datos reales sensibles)",
+    question: "¿Qué material le das para trabajar?",
+    placeholder:
+      "Te paso el resumen estructurado de la causa: hechos denunciados, prueba producida y alegatos de ambas partes. (Sin datos sensibles reales.)",
   },
   {
     key: "output",
     letter: "O",
     name: "Output",
-    question: "¿Cómo querés la respuesta?",
-    placeholder: "En formato de escrito judicial, lenguaje formal, con apartados numerados y citando normativa aplicable.",
+    question: "¿Cómo querés que entregue el resultado?",
+    placeholder:
+      "Texto listo para insertar en un escrito judicial, sin encabezados ni fórmulas procesales, en no más de 400 palabras.",
   },
 ];
 
-export const DEMANDA_BRIEF =
-  "Ejercicio: redactá una demanda laboral por despido injustificado. Primero escribí un prompt rápido, sin método (como lo harías de apuro). Después armalo con COTIO. Vas a comparar los dos resultados en vivo.";
+// --- Módulo 4 · Caso Fernández (trabajo externo en Claude) ---
+// NOTA: caso ficticio de ejemplo. Reemplazá libremente por el expediente real del taller.
 
-export const DEMANDA_NAIVE_PLACEHOLDER = "Haceme una demanda laboral por despido.";
+export const CASO_FERNANDEZ_MD = `## Expediente: "Fernández, María c/ Distribuidora del Norte S.A. s/ despido"
+
+**Fuero:** Laboral · **Jurisdicción:** CABA · **Posición:** parte actora
+
+### Hechos
+- **Ingreso:** 3/4/2017. Categoría: vendedora (CCT 130/75, empleados de comercio).
+- **Remuneración:** $480.000 mensuales (último período), más comisiones variables.
+- **Jornada:** lunes a viernes 9 a 18 h; se alega trabajo habitual los sábados sin registración.
+- **Despido:** 12/2/2024, sin expresión de causa, comunicado por telegrama.
+- La actora intimó previamente (CD del 5/2/2024) por registración defectuosa de la jornada y pago de comisiones adeudadas. No hubo respuesta.
+
+### Prueba ofrecida
+- Telegramas y cartas documento (intercambio epistolar completo).
+- Recibos de sueldo 2022–2024.
+- Testigos: dos excompañeras de trabajo.
+- Pericia contable sobre libros del art. 52 LCT.
+
+### Posición de la demandada (contestación)
+- Reconoce la relación laboral y el despido sin causa.
+- Niega trabajo los sábados y la existencia de comisiones impagas.
+- Ofrece liquidación final ya abonada.
+
+### Rubros reclamados
+Indemnización por antigüedad, preaviso, integración mes de despido, SAC y vacaciones proporcionales, multas (arts. 2 ley 25.323 y 80 LCT), diferencias por comisiones.`;
+
+export const CASO_FERNANDEZ_CONSIGNA =
+  "Usando el método COTIO y este resumen como Input, construí en Claude un prompt para redactar la sección de HECHOS de la demanda. Cubrí las cinco variables. Después comparen, dentro del grupo, qué prompt dio mejor resultado y por qué.";
+
+export const CLAUDE_URL = "https://claude.ai/new";
+
+// --- Conceptos del bloque de IA generativa (intro al V/F) ---
 
 export const COURSE_BLOCKS = {
   tokens:

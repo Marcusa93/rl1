@@ -5,7 +5,7 @@ import { WaitingRoom } from "./waiting-room";
 import { Diagnostico } from "./diagnostico";
 import { VerdaderoFalso } from "./verdadero-falso";
 import { Cotio } from "./cotio";
-import { Demanda } from "./demanda";
+import { Caso } from "./caso";
 import { Tarea } from "./tarea";
 
 export function StudentActivity({
@@ -25,8 +25,8 @@ export function StudentActivity({
       return <VerdaderoFalso {...props} />;
     case "cotio":
       return <Cotio {...props} />;
-    case "demanda":
-      return <Demanda {...props} />;
+    case "caso":
+      return <Caso {...props} />;
     case "tarea":
       return <Tarea {...props} />;
     default:

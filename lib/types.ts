@@ -5,7 +5,7 @@ export type ActivityKey =
   | "diagnostico"
   | "verdadero_falso"
   | "cotio"
-  | "demanda"
+  | "caso"
   | "tarea";
 
 export type SessionStatus = "lobby" | "live" | "ended";
@@ -60,12 +60,8 @@ export interface CotioPayload {
   analysis?: CotioAnalysis;
 }
 
-export interface DemandaPayload {
-  naive_prompt: string;
-  naive_output?: string;
-  cotio: Record<CotioVar, string>;
-  cotio_output?: string;
-  verification?: string[];
+export interface CasoPayload {
+  done: boolean; // marcó que completó el ejercicio en Claude
 }
 
 export interface TareaPayload {
@@ -74,23 +70,25 @@ export interface TareaPayload {
   compromiso: boolean;
 }
 
-// --- COTIO ---
+// --- COTIO ---  (Contexto, Objeto, Tarea, Input, Output)
 
-export type CotioVar = "contexto" | "objetivo" | "tarea" | "input" | "output";
+export type CotioVar = "contexto" | "objeto" | "tarea" | "input" | "output";
+
+export type CotioStatus = "presente" | "incompleto" | "ausente";
 
 export interface CotioVarScore {
   var: CotioVar;
-  present: boolean;
-  score: number; // 0..100
-  feedback: string;
+  status: CotioStatus;
+  feedback: string; // una línea: qué tiene o qué falta
 }
 
 export interface CotioAnalysis {
   scores: CotioVarScore[];
-  overall: number; // 0..100
-  confidential: {
+  suggestions: string[]; // 2-3 recomendaciones accionables
+  improved_prompt: string;
+  off_topic?: boolean; // true si el prompt no es jurídico/profesional
+  confidential?: {
     found: boolean;
     note: string;
   };
-  improved_prompt: string;
 }

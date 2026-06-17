@@ -8,7 +8,7 @@ const VALID: ActivityKey[] = [
   "diagnostico",
   "verdadero_falso",
   "cotio",
-  "demanda",
+  "caso",
   "tarea",
 ];
 

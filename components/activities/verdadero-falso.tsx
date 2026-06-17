@@ -31,13 +31,6 @@ export function VerdaderoFalso({ slug, session }: ActivityProps) {
     });
   }
 
-  const tagColor =
-    item.tag === "tokens"
-      ? "text-cyan"
-      : item.tag === "alucinacion"
-        ? "text-magenta"
-        : "text-violet";
-
   return (
     <div className="rise">
       <div className="mb-4 grid gap-2 sm:grid-cols-2">
@@ -47,7 +40,7 @@ export function VerdaderoFalso({ slug, session }: ActivityProps) {
 
       <div className="glass rounded-2xl p-6">
         <div className="flex items-center justify-between text-xs">
-          <span className={cn("font-mono uppercase tracking-wider", tagColor)}>{item.tag}</span>
+          <span className="font-mono uppercase tracking-wider text-faint">Afirmación</span>
           <span className="text-faint">
             {idx + 1} / {VF_ITEMS.length}
           </span>

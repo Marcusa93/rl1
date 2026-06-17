@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdmin } from "./supabase/server";
+import { DEFAULT_SLUG, WORKSHOP_TITLE } from "./constants";
 import type { SessionRow } from "./types";
 
 export function ok<T>(data: T, init?: number) {
@@ -17,5 +18,16 @@ export async function getSession(slug: string): Promise<SessionRow | null> {
     .select("*")
     .eq("slug", slug)
     .maybeSingle();
-  return (data as SessionRow) ?? null;
+  if (data) return data as SessionRow;
+
+  // La clase por defecto se auto-crea para que nunca falle el acceso.
+  if (slug === DEFAULT_SLUG) {
+    const { data: created } = await db
+      .from("sessions")
+      .insert({ slug, title: WORKSHOP_TITLE, current_activity: "lobby", status: "lobby" })
+      .select("*")
+      .single();
+    return (created as SessionRow) ?? null;
+  }
+  return null;
 }

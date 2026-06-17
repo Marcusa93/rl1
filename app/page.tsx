@@ -1,64 +1,98 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import { LogoRL1 } from "@/components/brand/logo-rl1";
-import { Button } from "@/components/ui";
-import { WORKSHOP_TITLE } from "@/lib/constants";
-import { normalizeSlug } from "@/lib/code";
+import { Button, Spinner } from "@/components/ui";
+import { useLive } from "@/components/use-live";
+import type { ParticipantRow, SessionRow } from "@/lib/types";
+import { agendaStep, DEFAULT_SLUG, WORKSHOP_TITLE } from "@/lib/constants";
+import { StudentActivity } from "@/components/activities/student-activity";
+
+type SessionResp = { session: SessionRow; participants: number };
+const SLUG = DEFAULT_SLUG;
 
 export default function Home() {
-  const router = useRouter();
-  const [code, setCode] = useState("");
+  const [me, setMe] = useState<ParticipantRow | null | undefined>(undefined);
+  const [name, setName] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
 
-  function enter(e: React.FormEvent) {
+  const { data } = useLive<SessionResp>(`/api/session/${SLUG}`, 2500);
+
+  useEffect(() => {
+    fetch(`/api/session/${SLUG}/me`)
+      .then((r) => r.json())
+      .then((d) => setMe(d.participant))
+      .catch(() => setMe(null));
+  }, []);
+
+  async function join(e: React.FormEvent) {
     e.preventDefault();
-    const slug = normalizeSlug(code);
-    if (slug.length >= 3) router.push(`/clase/${slug}`);
+    setBusy(true);
+    setErr("");
+    const res = await fetch(`/api/session/${SLUG}/join`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    const d = await res.json().catch(() => ({ error: "Error de red" }));
+    setBusy(false);
+    if (res.ok) setMe(d.participant);
+    else setErr(d.error || "Error");
   }
 
-  return (
-    <main className="bg-grid relative flex min-h-dvh flex-col items-center justify-center px-5 py-12">
-      <div className="w-full max-w-md rise">
-        <div className="mb-8 flex flex-col items-center text-center">
-          <LogoRL1 size={56} wordmark={false} className="mb-4" />
-          <h1 className="text-gradient font-mono text-4xl font-bold tracking-tight">RL1</h1>
-          <p className="mt-2 text-sm text-muted">{WORKSHOP_TITLE} · Aula en vivo</p>
-        </div>
+  if (me === undefined || !data)
+    return (
+      <main className="bg-grid flex min-h-dvh items-center justify-center px-5">
+        <Spinner />
+      </main>
+    );
 
-        <div className="glass glow-teal rounded-2xl p-6">
-          <h2 className="text-lg font-semibold">Unirme a la clase</h2>
-          <p className="mt-1 text-sm text-muted">
-            Ingresá el código que te comparte el docente.
-          </p>
-          <form onSubmit={enter} className="mt-4 flex flex-col gap-3">
+  // Pantalla de ingreso (solo nombre)
+  if (!me)
+    return (
+      <main className="bg-grid flex min-h-dvh items-center justify-center px-5">
+        <div className="w-full max-w-sm rise">
+          <div className="mb-7 flex flex-col items-center text-center">
+            <LogoRL1 size={52} wordmark={false} className="mb-3" />
+            <h1 className="text-gradient font-mono text-3xl font-bold tracking-tight">RL1</h1>
+            <p className="mt-2 text-sm text-muted">{WORKSHOP_TITLE}</p>
+          </div>
+          <form onSubmit={join} className="glass glow-teal rounded-2xl p-6">
+            <label className="text-sm text-muted">Tu nombre</label>
             <input
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="código (ej. k7m2x)"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Nombre y apellido"
               autoFocus
-              className="w-full rounded-xl border border-line bg-ink-2/70 px-4 py-3 text-center font-mono text-lg uppercase tracking-[0.3em] outline-none placeholder:text-faint focus:border-teal/60"
+              className="mt-2 w-full rounded-xl border border-line bg-ink-2/70 px-4 py-3 outline-none placeholder:text-faint focus:border-teal/60"
             />
-            <Button type="submit" disabled={normalizeSlug(code).length < 3}>
-              Entrar →
+            {err && <p className="mt-2 text-sm text-magenta">{err}</p>}
+            <Button type="submit" disabled={busy || name.trim().length < 2} className="mt-4 w-full">
+              {busy ? <Spinner /> : "Entrar al taller"}
             </Button>
           </form>
         </div>
+      </main>
+    );
 
-        <div className="mt-6 text-center">
-          <Link
-            href="/docente"
-            className="text-sm text-faint underline-offset-4 transition hover:text-teal hover:underline"
-          >
-            Soy el docente →
-          </Link>
+  const step = agendaStep(data.session.current_activity);
+
+  // Vista de actividad
+  return (
+    <div className="bg-grid min-h-dvh">
+      <header className="sticky top-0 z-10 border-b border-line/60 bg-ink/80 backdrop-blur">
+        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
+          <LogoRL1 size={24} />
+          <div className="text-right">
+            <p className="text-xs text-faint">{me.name}</p>
+            <p className="text-xs font-medium text-teal">{step.short}</p>
+          </div>
         </div>
-      </div>
-
-      <footer className="absolute bottom-5 text-xs text-faint">
-        <LogoRL1 size={18} className="opacity-70" />
-      </footer>
-    </main>
+      </header>
+      <main className="mx-auto max-w-3xl px-4 py-6">
+        <StudentActivity slug={SLUG} session={data.session} me={me} />
+      </main>
+    </div>
   );
 }
