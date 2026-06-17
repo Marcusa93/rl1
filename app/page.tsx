@@ -18,7 +18,7 @@ export default function Home() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
 
-  const { data } = useLive<SessionResp>(`/api/session/${SLUG}`, 2500);
+  const { data } = useLive<SessionResp>(`/api/session/${SLUG}`, 1500);
 
   useEffect(() => {
     fetch(`/api/session/${SLUG}/me`)

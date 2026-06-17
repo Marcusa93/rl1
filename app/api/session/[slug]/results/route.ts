@@ -26,6 +26,12 @@ export async function GET(
     .eq("activity", activity);
 
   const list = rows ?? [];
+  // quiénes participaron en esta actividad (distinct, en orden de llegada)
+  const responders: string[] = [];
+  for (const r of list) {
+    const n = r.participants?.name as string | undefined;
+    if (n && !responders.includes(n)) responders.push(n);
+  }
   let summary: Record<string, unknown> = { total: list.length };
 
   if (activity === "diagnostico") {
@@ -97,7 +103,8 @@ export async function GET(
   return ok({
     activity,
     participants: participants ?? 0,
-    responded: list.length,
+    responded: responders.length,
+    responders,
     summary,
     config: session.activity_config ?? {},
   });

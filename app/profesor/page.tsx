@@ -75,7 +75,7 @@ export default function ProfesorPage() {
 }
 
 function Panel() {
-  const { data } = useLive<SessionResp>(`/api/session/${SLUG}`, 2500);
+  const { data } = useLive<SessionResp>(`/api/session/${SLUG}`, 1500);
 
   async function setActivity(key: ActivityKey) {
     await fetch(`/api/session/${SLUG}/activity`, {

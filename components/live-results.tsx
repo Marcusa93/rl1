@@ -9,8 +9,14 @@ type ResultsResp = {
   activity: string;
   participants: number;
   responded: number;
+  responders: string[];
   summary: Record<string, unknown>;
 };
+
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase() || "·";
+}
 
 /** Resultados agregados en vivo, visibles en la pantalla del alumno y del docente. */
 export function LiveResults({
@@ -22,7 +28,7 @@ export function LiveResults({
   activity: ActivityKey;
   config?: ActivityConfig | null;
 }) {
-  const { data: r } = useLive<ResultsResp>(`/api/session/${slug}/results?activity=${activity}`, 2000);
+  const { data: r } = useLive<ResultsResp>(`/api/session/${slug}/results?activity=${activity}`, 1200);
   if (activity === "lobby") return null;
 
   const responded = r?.responded ?? 0;
@@ -46,6 +52,19 @@ export function LiveResults({
             className="h-full rounded-full bg-gradient-to-r from-teal via-cyan to-violet transition-all duration-500"
             style={{ width: `${ratio}%` }}
           />
+        </div>
+      )}
+      {r && r.responders.length > 0 && (
+        <div className="mb-3 flex flex-wrap gap-1.5">
+          {r.responders.map((n) => (
+            <span
+              key={n}
+              title={n}
+              className="rise inline-flex size-7 items-center justify-center rounded-full bg-gradient-to-br from-teal/30 to-violet/30 text-[10px] font-bold text-teal ring-1 ring-teal/30"
+            >
+              {initials(n)}
+            </span>
+          ))}
         </div>
       )}
       <div className="glass rounded-2xl p-4">
