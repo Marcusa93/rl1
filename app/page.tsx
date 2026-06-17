@@ -7,6 +7,7 @@ import { useLive } from "@/components/use-live";
 import type { ParticipantRow, SessionRow } from "@/lib/types";
 import { agendaStep, DEFAULT_SLUG, WORKSHOP_TITLE } from "@/lib/constants";
 import { StudentActivity } from "@/components/activities/student-activity";
+import { LiveResults } from "@/components/live-results";
 
 type SessionResp = { session: SessionRow; participants: number };
 const SLUG = DEFAULT_SLUG;
@@ -92,6 +93,11 @@ export default function Home() {
       </header>
       <main className="mx-auto max-w-3xl px-4 py-6">
         <StudentActivity slug={SLUG} session={data.session} me={me} />
+        <LiveResults
+          slug={SLUG}
+          activity={data.session.current_activity}
+          config={data.session.activity_config}
+        />
       </main>
     </div>
   );

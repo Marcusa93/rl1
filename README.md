@@ -20,11 +20,10 @@ la identidad de RL1.
 
 | Ruta | Para |
 |------|------|
-| `/` | Participante: entra, pone su nombre y ve la actividad activa |
-| `/profesor` | Docente: clave + panel de control en vivo |
-| `/pantalla` | Pantalla para proyectar |
+| `/` | Participante: entra, pone su nombre, responde y ve los resultados en vivo en su pantalla |
+| `/profesor` | Docente: clave + panel de control (con los resultados en vivo) |
 
-La sesión por defecto se auto-crea la primera vez que alguien entra; no hay que crear ni compartir códigos.
+La sesión por defecto se auto-crea la primera vez que alguien entra; no hay que crear ni compartir códigos. Los resultados agregados en tiempo real se muestran en la pantalla de cada participante (debajo de la actividad) y en el panel del docente — no hay proyector aparte.
 
 ## Puesta en marcha
 
@@ -48,6 +47,6 @@ pnpm dev
 ## Cómo dar la clase
 
 1. Entrá a `/profesor`, ingresá la clave.
-2. Abrí `/pantalla` en el proyector. Compartí a los alumnos el link de la app (la raíz `/`).
+2. Compartí a los alumnos el link de la app (la raíz `/`).
 3. Los participantes entran por `/`, ponen su nombre y listo (sin códigos).
-4. Desde el panel, **activá cada actividad** en orden. Todo se actualiza solo en los celulares y en el proyector.
+4. Desde el panel, **activá cada actividad** en orden. Cada alumno ve la actividad y, debajo, los resultados del grupo en vivo. Vos los ves en el panel.

@@ -1,16 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { LogoRL1 } from "@/components/brand/logo-rl1";
 import { Button, Spinner } from "@/components/ui";
 import { useLive } from "@/components/use-live";
 import { AGENDA, DEFAULT_SLUG, VF_ITEMS } from "@/lib/constants";
 import type { ActivityKey, SessionRow } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { LiveResults } from "@/components/live-results";
 
 type SessionResp = { session: SessionRow; participants: number };
-type ResultsResp = { activity: string; participants: number; responded: number; summary: Record<string, unknown> };
 const SLUG = DEFAULT_SLUG;
 
 export default function ProfesorPage() {
@@ -77,7 +76,6 @@ export default function ProfesorPage() {
 
 function Panel() {
   const { data } = useLive<SessionResp>(`/api/session/${SLUG}`, 2500);
-  const { data: results } = useLive<ResultsResp>(`/api/session/${SLUG}/results`, 2500);
 
   async function setActivity(key: ActivityKey) {
     await fetch(`/api/session/${SLUG}/activity`, {
@@ -121,18 +119,9 @@ function Panel() {
       <header className="border-b border-line/60 bg-ink/80 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
           <LogoRL1 size={26} />
-          <div className="flex items-center gap-3">
-            <Link
-              href="/pantalla"
-              target="_blank"
-              className="rounded-lg border border-line px-3 py-1.5 text-xs text-muted hover:text-teal"
-            >
-              Abrir proyector ↗
-            </Link>
-            <span className="rounded-lg bg-teal/15 px-3 py-1.5 text-xs font-medium text-teal">
-              {data.participants} en sala
-            </span>
-          </div>
+          <span className="rounded-lg bg-teal/15 px-3 py-1.5 text-xs font-medium text-teal">
+            {data.participants} en sala
+          </span>
         </div>
       </header>
 
@@ -232,27 +221,7 @@ function Panel() {
         </section>
 
         <aside className="lg:sticky lg:top-20 lg:self-start">
-          <div className="glass rounded-2xl p-4">
-            <h2 className="text-sm font-semibold">Pulso en vivo</h2>
-            <p className="mt-1 text-xs text-faint">Actividad: {current}</p>
-            {results ? (
-              <div className="mt-3">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-teal">{results.responded}</span>
-                  <span className="text-xs text-faint">/ {results.participants} respondieron</span>
-                </div>
-                <p className="mt-3 text-xs text-faint">
-                  Vista completa en el{" "}
-                  <Link href="/pantalla" target="_blank" className="text-teal underline">
-                    proyector
-                  </Link>
-                  .
-                </p>
-              </div>
-            ) : (
-              <Spinner />
-            )}
-          </div>
+          <LiveResults slug={SLUG} activity={current} config={cfg} />
         </aside>
       </main>
     </div>
