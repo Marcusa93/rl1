@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+/* ============================================================
+   RL1 — paleta del logo (indigo profundo + teal/cyan + violeta/magenta)
+   ============================================================ */
+@theme {
+  --color-ink: #0d0826;
+  --color-ink-2: #140d39;
+  --color-panel: #1a1148;
+  --color-panel-2: #221660;
+  --color-line: #2f2270;
+
+  --color-teal: #5eead4;
+  --color-aqua: #2dd4bf;
+  --color-cyan: #22d3ee;
+  --color-violet: #8b5cf6;
+  --color-magenta: #d946ef;
+
+  --color-muted: #b9aee8;
+  --color-faint: #7c6fc0;
+
+  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-sans);
+}
+
+:root {
+  --background: #0d0826;
+  --foreground: #f1ecff;
+}
+
+html {
+  background: var(--background);
+  color: var(--foreground);
+  color-scheme: dark;
+}
+
+body {
+  background:
+    radial-gradient(1100px 600px at 12% -10%, rgba(34, 211, 238, 0.12), transparent 60%),
+    radial-gradient(1000px 700px at 100% 0%, rgba(217, 70, 239, 0.12), transparent 55%),
+    var(--background);
+  color: var(--foreground);
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Patrón de grilla tech (eco del cubo wireframe del logo) */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(124, 111, 192, 0.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 111, 192, 0.10) 1px, transparent 1px);
+  background-size: 44px 44px;
+  background-position: center;
+}
+
+/* Texto con degradé del logo */
+.text-gradient {
+  background: linear-gradient(100deg, #5eead4 0%, #22d3ee 35%, #8b5cf6 70%, #d946ef 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.border-gradient {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--color-panel), var(--color-panel)) padding-box,
+    linear-gradient(120deg, #5eead4, #22d3ee, #8b5cf6, #d946ef) border-box;
+}
+
+/* Glass card */
+.glass {
+  background: linear-gradient(180deg, rgba(34, 22, 96, 0.55), rgba(20, 13, 57, 0.55));
+  border: 1px solid rgba(94, 234, 212, 0.14);
+  backdrop-filter: blur(10px);
+}
+
+.glow-teal {
+  box-shadow: 0 0 0 1px rgba(94, 234, 212, 0.25), 0 12px 40px -12px rgba(34, 211, 238, 0.45);
+}
+.glow-magenta {
+  box-shadow: 0 0 0 1px rgba(217, 70, 239, 0.25), 0 12px 40px -12px rgba(217, 70, 239, 0.45);
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(94, 234, 212, 0.5); }
+  70% { box-shadow: 0 0 0 12px rgba(94, 234, 212, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(94, 234, 212, 0); }
+}
+.pulse-ring { animation: pulse-ring 2s infinite; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise { animation: rise 0.4s ease both; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--color-line); border-radius: 999px; }
+::selection { background: rgba(94, 234, 212, 0.3); }
