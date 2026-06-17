@@ -351,6 +351,39 @@ export const MEMORIA_CARDS: InfoCard[] = [
   },
 ];
 
+export interface MemoriaLink {
+  tool: string;
+  hint: string;
+  links: { label: string; url: string }[];
+}
+
+export const MEMORIA_LINKS: MemoriaLink[] = [
+  {
+    tool: "Claude",
+    hint: "Ajustes → Memoria · y la sección Proyectos",
+    links: [
+      { label: "Ajustes", url: "https://claude.ai/settings/profile" },
+      { label: "Proyectos", url: "https://claude.ai/projects" },
+    ],
+  },
+  {
+    tool: "ChatGPT",
+    hint: "Ajustes → Personalización → Memoria · y GPTs/Proyectos",
+    links: [
+      { label: "Personalización", url: "https://chatgpt.com/#settings/Personalization" },
+      { label: "GPTs", url: "https://chatgpt.com/gpts" },
+    ],
+  },
+  {
+    tool: "Gemini",
+    hint: "Ajustes → Información guardada · y Gems",
+    links: [
+      { label: "Información guardada", url: "https://gemini.google.com/saved-info" },
+      { label: "Gems", url: "https://gemini.google.com/gems/view" },
+    ],
+  },
+];
+
 // --- Conceptos del bloque de IA generativa (intro al V/F) ---
 
 export const COURSE_BLOCKS = {
