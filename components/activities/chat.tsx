@@ -62,9 +62,6 @@ export function Chat({ slug }: ActivityProps) {
       <p className="mt-1 text-sm text-muted">
         Probá lo que quieras: redactar, resumir, explicar. Aplicá COTIO y vas a ver la diferencia.
       </p>
-      <p className="mt-2 rounded-lg border border-magenta/30 bg-magenta/5 px-3 py-2 text-xs text-muted">
-        🔒 No cargues datos reales de clientes ni expedientes. Verificá siempre el contenido jurídico.
-      </p>
 
       <div className="mt-4 flex-1 space-y-3 overflow-y-auto rounded-2xl border border-line bg-ink-2/40 p-4">
         {messages.length === 0 && (

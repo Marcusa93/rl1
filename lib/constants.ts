@@ -23,6 +23,12 @@ export const AGENDA: AgendaStep[] = [
     desc: "Los participantes entran con su nombre y esperan el inicio.",
   },
   {
+    key: "encuesta",
+    label: "Encuesta relámpago",
+    short: "Encuesta",
+    desc: "Tres preguntas rápidas para conocer al grupo: si ya usaron IA, dónde ejercen y qué herramienta usan.",
+  },
+  {
     key: "diagnostico",
     label: "Tarjetas de actividades",
     short: "Leer al grupo",
@@ -63,6 +69,57 @@ export const AGENDA: AgendaStep[] = [
 export function agendaStep(key: ActivityKey): AgendaStep {
   return AGENDA.find((a) => a.key === key) ?? AGENDA[0];
 }
+
+// --- Juego · Encuesta relámpago ---
+
+export interface EncuestaOption {
+  id: string;
+  label: string;
+  emoji: string;
+}
+export interface EncuestaQuestion {
+  id: string;
+  q: string;
+  options: EncuestaOption[];
+}
+
+export const ENCUESTA_QUESTIONS: EncuestaQuestion[] = [
+  {
+    id: "uso",
+    q: "¿Ya usaste IA para trabajar?",
+    options: [
+      { id: "si", label: "Sí", emoji: "✅" },
+      { id: "no", label: "No", emoji: "❌" },
+    ],
+  },
+  {
+    id: "sector",
+    q: "¿Dónde ejercés?",
+    options: [
+      { id: "publico", label: "Oficina pública", emoji: "🏛️" },
+      { id: "privado", label: "Sector privado", emoji: "💼" },
+    ],
+  },
+  {
+    id: "cual",
+    q: "¿Qué IA usás más?",
+    options: [
+      { id: "claude", label: "Claude", emoji: "🟣" },
+      { id: "gpt", label: "ChatGPT", emoji: "🟢" },
+      { id: "gemini", label: "Gemini", emoji: "🔵" },
+      { id: "notebooklm", label: "NotebookLM", emoji: "📓" },
+      { id: "otra", label: "Otra", emoji: "✨" },
+    ],
+  },
+];
+
+// --- Links para abrir el prompt en otra IA ---
+
+export const AI_LINKS = [
+  { id: "gpt", label: "ChatGPT", base: "https://chatgpt.com/", q: "https://chatgpt.com/?q=" },
+  { id: "claude", label: "Claude", base: "https://claude.ai/new", q: "https://claude.ai/new?q=" },
+  { id: "gemini", label: "Gemini", base: "https://gemini.google.com/app", q: "" },
+] as const;
 
 // --- Módulo 1 · Tarjetas (tareas jurídicas con IA) ---
 

@@ -2,6 +2,7 @@
 
 import type { ParticipantRow, SessionRow } from "@/lib/types";
 import { WaitingRoom } from "./waiting-room";
+import { Encuesta } from "./encuesta";
 import { Diagnostico } from "./diagnostico";
 import { VerdaderoFalso } from "./verdadero-falso";
 import { Cotio } from "./cotio";
@@ -20,6 +21,8 @@ export function StudentActivity({
 }) {
   const props = { slug, session, me };
   switch (session.current_activity) {
+    case "encuesta":
+      return <Encuesta {...props} />;
     case "diagnostico":
       return <Diagnostico {...props} />;
     case "verdadero_falso":

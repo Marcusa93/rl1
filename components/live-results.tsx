@@ -1,7 +1,7 @@
 "use client";
 
 import { useLive } from "@/components/use-live";
-import { CASO_FERNANDEZ_CONSIGNA, DIAGNOSTICO_CARDS, VF_ITEMS } from "@/lib/constants";
+import { CASO_FERNANDEZ_CONSIGNA, DIAGNOSTICO_CARDS, ENCUESTA_QUESTIONS, VF_ITEMS } from "@/lib/constants";
 import type { ActivityConfig, ActivityKey } from "@/lib/types";
 import { cn, pct } from "@/lib/utils";
 
@@ -70,6 +70,8 @@ export function LiveResults({
       <div className="glass rounded-2xl p-4">
         {!r ? (
           <p className="text-sm text-faint">Cargando…</p>
+        ) : activity === "encuesta" ? (
+          <EncuestaR r={r} />
         ) : activity === "diagnostico" ? (
           <Diag r={r} />
         ) : activity === "verdadero_falso" ? (
@@ -88,6 +90,44 @@ export function LiveResults({
         ) : null}
       </div>
     </section>
+  );
+}
+
+function EncuestaR({ r }: { r: ResultsResp }) {
+  const byQ = (r.summary?.byQuestion as Record<string, Record<string, number>>) ?? {};
+  return (
+    <div className="space-y-4">
+      {ENCUESTA_QUESTIONS.map((q) => {
+        const counts = byQ[q.id] ?? {};
+        const max = Math.max(1, ...Object.values(counts));
+        return (
+          <div key={q.id}>
+            <p className="mb-1.5 text-xs font-semibold text-muted">{q.q}</p>
+            <div className="space-y-1.5">
+              {q.options.map((o) => {
+                const n = counts[o.id] ?? 0;
+                return (
+                  <div key={o.id} className="flex items-center gap-2 text-sm">
+                    <div className="w-32 shrink-0 text-xs">
+                      <span className="mr-1">{o.emoji}</span>
+                      {o.label}
+                    </div>
+                    <div className="h-5 flex-1 overflow-hidden rounded bg-ink-2/70">
+                      <div
+                        className="flex h-full items-center justify-end rounded bg-gradient-to-r from-teal via-cyan to-violet px-2 text-[11px] font-bold text-ink transition-all duration-500"
+                        style={{ width: `${(n / max) * 100}%` }}
+                      >
+                        {n > 0 && n}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -166,11 +206,6 @@ function Cotio({ r }: { r: ResultsResp }) {
           <p className="text-2xl font-bold">{Number(s.analyzed ?? 0)}</p>
           <p className="text-[11px] text-faint">prompts</p>
         </div>
-        {Number(s.confidential ?? 0) > 0 && (
-          <span className="ml-auto rounded-lg bg-magenta/15 px-2 py-1 text-[11px] text-magenta">
-            ⚠️ {Number(s.confidential)} c/ datos sensibles
-          </span>
-        )}
       </div>
       <div className="space-y-1.5">
         {Object.keys(labels).map((k) => {

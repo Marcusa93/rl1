@@ -1,67 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { ActivityProps } from "./student-activity";
-import {
-  CASO_FERNANDEZ_CONSIGNA,
-  CASO_FERNANDEZ_MD,
-  CLAUDE_URL,
-  COTIO_VARS,
-} from "@/lib/constants";
+import { CASO_FERNANDEZ_CONSIGNA, CASO_FERNANDEZ_MD, COTIO_VARS } from "@/lib/constants";
 import type { CotioVar } from "@/lib/types";
-import { Button, Spinner } from "@/components/ui";
 import { Markdown } from "@/components/markdown";
-import { streamGenerate } from "@/components/use-stream";
+import { OpenInAi } from "@/components/open-in-ai";
 
 export function Caso({ slug }: ActivityProps) {
   const [fields, setFields] = useState<Record<CotioVar, string>>({
     contexto: "",
     objeto: "",
     tarea: "",
-    input: "Uso el resumen del expediente Fernández que figura más abajo.",
+    input: "Uso el resumen del expediente Fernández (incluido).",
     output: "",
   });
-  const [output, setOutput] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState("");
 
-  async function generar() {
-    setBusy(true);
-    setErr("");
-    setOutput("");
-
+  const prompt = useMemo(() => {
     const built = COTIO_VARS.map((v) => `[${v.name.toUpperCase()}] ${fields[v.key].trim()}`).join("\n");
-    const prompt = `${built}\n\n--- EXPEDIENTE (input) ---\n${CASO_FERNANDEZ_MD}`;
+    return `${built}\n\n--- EXPEDIENTE (input) ---\n${CASO_FERNANDEZ_MD}`;
+  }, [fields]);
 
-    let acc = "";
-    try {
-      await streamGenerate(
-        slug,
-        [{ role: "user", content: prompt }],
-        (chunk) => {
-          acc += chunk;
-          setOutput((o) => o + chunk);
-        },
-        { maxTokens: 1800 },
-      );
-      // guarda el borrador para que todo el grupo lo vea en el feed
-      fetch(`/api/session/${slug}/respond`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          activity: "caso",
-          payload: { done: true, output: acc.slice(0, 8000), objeto: fields.objeto },
-        }),
-      }).catch(() => {});
-    } catch (e) {
-      setErr((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
+  const enough = fields.contexto.trim() && fields.objeto.trim() && fields.tarea.trim();
+
+  function marcar() {
+    fetch(`/api/session/${slug}/respond`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ activity: "caso", payload: { done: true, objeto: fields.objeto } }),
+    }).catch(() => {});
   }
-
-  const enoughFields =
-    fields.contexto.trim() && fields.objeto.trim() && fields.tarea.trim();
 
   return (
     <div className="rise">
@@ -90,22 +58,19 @@ export function Caso({ slug }: ActivityProps) {
         ))}
       </div>
 
-      <Button onClick={generar} disabled={busy || !enoughFields} className="mt-3 w-full">
-        {busy ? <Spinner /> : "✨ Generar borrador con IA"}
-      </Button>
-
-      {(output || busy) && (
-        <div className="mt-4 rounded-2xl border border-teal/30 bg-ink-2/60 p-4">
-          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-teal">Borrador generado</p>
-          <p className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-foreground">
-            {output}
-            {busy && <span className="ml-0.5 animate-pulse">▌</span>}
-          </p>
+      <div className="mt-4 rounded-2xl border border-teal/40 bg-teal/5 p-4">
+        <p className="text-sm font-semibold text-teal">Llevá tu prompt a la IA</p>
+        <p className="mt-1 text-xs text-muted">
+          Copia tu prompt (con el expediente) y lo abre en la herramienta que elijas.
+        </p>
+        <div className="mt-3">
+          <OpenInAi prompt={enough ? prompt : ""} onOpen={marcar} disabled={!enough} />
         </div>
-      )}
-      {err && <p className="mt-2 text-sm text-magenta">{err}</p>}
+        {!enough && (
+          <p className="mt-2 text-xs text-faint">Completá al menos Contexto, Objeto y Tarea.</p>
+        )}
+      </div>
 
-      {/* Expediente */}
       <details className="mt-4 rounded-2xl border border-line bg-panel/40 p-4">
         <summary className="cursor-pointer text-sm font-semibold text-muted">
           Ver expediente del caso
@@ -114,17 +79,6 @@ export function Caso({ slug }: ActivityProps) {
           <Markdown text={CASO_FERNANDEZ_MD} />
         </div>
       </details>
-
-      <div className="mt-4 flex items-center justify-between gap-3">
-        <p className="text-xs text-faint">
-          🔒 Datos ficticios. Verificá toda cita antes de usar el escrito.
-        </p>
-        <a href={CLAUDE_URL} target="_blank" rel="noreferrer" className="shrink-0">
-          <Button variant="outline" className="px-3 py-2 text-xs">
-            También en Claude ↗
-          </Button>
-        </a>
-      </div>
     </div>
   );
 }

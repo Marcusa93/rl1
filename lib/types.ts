@@ -2,6 +2,7 @@
 
 export type ActivityKey =
   | "lobby"
+  | "encuesta"
   | "diagnostico"
   | "verdadero_falso"
   | "cotio"
@@ -46,6 +47,10 @@ export interface ResponseRow {
 }
 
 // --- payloads por actividad ---
+
+export interface EncuestaPayload {
+  answers: Record<string, string>; // { questionId: optionId }
+}
 
 export interface DiagnosticoPayload {
   selected: string[]; // ids de las tarjetas elegidas

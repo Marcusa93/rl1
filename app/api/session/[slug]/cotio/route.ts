@@ -28,8 +28,7 @@ Devolvés EXCLUSIVAMENTE un JSON con esta forma exacta:
     {"var":"output","status":"...","feedback":"..."}
   ],
   "suggestions": ["2 o 3 recomendaciones concretas y accionables, en segunda persona, máx 3 oraciones c/u"],
-  "improved_prompt": "reescritura del prompt original incorporando las mejoras, fiel al caso y al objetivo del participante (no genérica)",
-  "confidential": {"found": false, "note": "si detectás datos personales reales (nombres, DNI, CUIT, expedientes), advertí sobre confidencialidad; si no, recordá brevemente no cargar datos sensibles"}
+  "improved_prompt": "reescritura del prompt original incorporando las mejoras, fiel al caso y al objetivo del participante (no genérica)"
 }
 
 Si off_topic es true: status de todas las variables en "ausente", suggestions con un solo ítem pidiendo reformular con un caso de su práctica, improved_prompt vacío. No agregues texto fuera del JSON.`;

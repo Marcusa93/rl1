@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ActivityProps } from "./student-activity";
 import { COTIO_VARS } from "@/lib/constants";
 import type { CotioAnalysis, CotioStatus } from "@/lib/types";
 import { Button, Spinner } from "@/components/ui";
-import { streamGenerate } from "@/components/use-stream";
+import { OpenInAi } from "@/components/open-in-ai";
 import { cn } from "@/lib/utils";
 
 const STATUS_STYLE: Record<CotioStatus, string> = {
@@ -17,22 +17,13 @@ const STATUS_STYLE: Record<CotioStatus, string> = {
 export function Cotio({ slug }: ActivityProps) {
   const [prompt, setPrompt] = useState("");
   const [analysis, setAnalysis] = useState<CotioAnalysis | null>(null);
+  const [improved, setImproved] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
-  const [testOut, setTestOut] = useState("");
-  const [testing, setTesting] = useState(false);
 
-  async function probar(prompt: string) {
-    setTesting(true);
-    setTestOut("");
-    try {
-      await streamGenerate(slug, [{ role: "user", content: prompt }], (c) => setTestOut((o) => o + c));
-    } catch (e) {
-      setTestOut(`Error: ${(e as Error).message}`);
-    } finally {
-      setTesting(false);
-    }
-  }
+  useEffect(() => {
+    if (analysis?.improved_prompt) setImproved(analysis.improved_prompt);
+  }, [analysis]);
 
   async function analyze() {
     setBusy(true);
@@ -121,45 +112,19 @@ export function Cotio({ slug }: ActivityProps) {
                 </div>
               )}
 
-              {analysis.confidential?.found && (
-                <div className="rounded-xl border border-magenta/50 bg-magenta/10 p-4">
-                  <p className="text-sm font-semibold text-magenta">⚠️ Confidencialidad</p>
-                  <p className="mt-1 text-xs text-muted">{analysis.confidential.note}</p>
+              <div className="rounded-xl border border-teal/40 bg-teal/5 p-4">
+                <p className="text-sm font-semibold text-teal">Prompt mejorado (editalo si querés)</p>
+                <textarea
+                  value={improved}
+                  onChange={(e) => setImproved(e.target.value)}
+                  rows={7}
+                  className="mt-2 w-full resize-y rounded-lg border border-line bg-ink-2/70 p-3 font-mono text-xs leading-relaxed outline-none focus:border-teal/60"
+                />
+                <p className="mt-3 text-xs text-muted">Llevalo a la IA que uses:</p>
+                <div className="mt-2">
+                  <OpenInAi prompt={improved} />
                 </div>
-              )}
-
-              {analysis.improved_prompt && (
-                <div className="rounded-xl border border-teal/40 bg-teal/5 p-4">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold text-teal">Prompt mejorado</p>
-                    <button
-                      onClick={() => navigator.clipboard?.writeText(analysis.improved_prompt)}
-                      className="text-xs text-faint hover:text-teal"
-                    >
-                      Copiar
-                    </button>
-                  </div>
-                  <p className="mt-2 whitespace-pre-wrap font-mono text-xs leading-relaxed text-foreground">
-                    {analysis.improved_prompt}
-                  </p>
-                  <Button
-                    onClick={() => probar(analysis.improved_prompt)}
-                    disabled={testing}
-                    className="mt-3 w-full"
-                  >
-                    {testing ? <Spinner /> : "✨ Probar este prompt"}
-                  </Button>
-                  {(testOut || testing) && (
-                    <div className="mt-3 rounded-lg border border-line bg-ink-2/70 p-3">
-                      <p className="mb-1 text-xs font-semibold text-teal">Resultado</p>
-                      <p className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-foreground">
-                        {testOut}
-                        {testing && <span className="ml-0.5 animate-pulse">▌</span>}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
+              </div>
             </>
           )}
         </div>

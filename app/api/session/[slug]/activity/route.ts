@@ -5,6 +5,7 @@ import type { ActivityKey } from "@/lib/types";
 
 const VALID: ActivityKey[] = [
   "lobby",
+  "encuesta",
   "diagnostico",
   "verdadero_falso",
   "cotio",

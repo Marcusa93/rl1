@@ -34,7 +34,17 @@ export async function GET(
   }
   let summary: Record<string, unknown> = { total: list.length };
 
-  if (activity === "diagnostico") {
+  if (activity === "encuesta") {
+    const byQuestion: Record<string, Record<string, number>> = {};
+    for (const r of list) {
+      const ans = (r.payload?.answers as Record<string, string>) ?? {};
+      for (const [q, opt] of Object.entries(ans)) {
+        byQuestion[q] ??= {};
+        byQuestion[q][opt] = (byQuestion[q][opt] ?? 0) + 1;
+      }
+    }
+    summary = { total: list.length, byQuestion };
+  } else if (activity === "diagnostico") {
     const counts: Record<string, number> = {};
     for (const r of list) {
       const sel = (r.payload?.selected as string[]) ?? [];
@@ -54,12 +64,10 @@ export async function GET(
     const vars: CotioVar[] = ["contexto", "objeto", "tarea", "input", "output"];
     const points: Record<string, number> = {};
     let analyzed = 0;
-    let confidential = 0;
     for (const r of list) {
       const a = r.payload?.analysis;
       if (!a) continue;
       analyzed++;
-      if (a.confidential?.found) confidential++;
       for (const s of a.scores ?? []) {
         const p = s.status === "presente" ? 100 : s.status === "incompleto" ? 50 : 0;
         points[s.var] = (points[s.var] ?? 0) + p;
@@ -76,7 +84,6 @@ export async function GET(
       analyzed,
       avgOverall: Math.round(overall / vars.length),
       avgByVar,
-      confidential,
     };
   } else if (activity === "caso") {
     const drafts = list
