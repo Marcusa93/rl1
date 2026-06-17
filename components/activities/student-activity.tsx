@@ -5,6 +5,7 @@ import { WaitingRoom } from "./waiting-room";
 import { Encuesta } from "./encuesta";
 import { Diagnostico } from "./diagnostico";
 import { VerdaderoFalso } from "./verdadero-falso";
+import { Memoria } from "./memoria";
 import { Cotio } from "./cotio";
 import { Chat } from "./chat";
 import { Caso } from "./caso";
@@ -27,6 +28,8 @@ export function StudentActivity({
       return <Diagnostico {...props} />;
     case "verdadero_falso":
       return <VerdaderoFalso {...props} />;
+    case "memoria":
+      return <Memoria />;
     case "cotio":
       return <Cotio {...props} />;
     case "chat":

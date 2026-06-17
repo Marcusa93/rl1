@@ -5,6 +5,7 @@ export type ActivityKey =
   | "encuesta"
   | "diagnostico"
   | "verdadero_falso"
+  | "memoria"
   | "cotio"
   | "chat"
   | "caso"
@@ -49,7 +50,8 @@ export interface ResponseRow {
 // --- payloads por actividad ---
 
 export interface EncuestaPayload {
-  answers: Record<string, string>; // { questionId: optionId }
+  // { questionId: optionId } o { questionId: optionId[] } si la pregunta es multi-selección
+  answers: Record<string, string | string[]>;
 }
 
 export interface DiagnosticoPayload {

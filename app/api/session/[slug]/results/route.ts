@@ -37,10 +37,11 @@ export async function GET(
   if (activity === "encuesta") {
     const byQuestion: Record<string, Record<string, number>> = {};
     for (const r of list) {
-      const ans = (r.payload?.answers as Record<string, string>) ?? {};
+      const ans = (r.payload?.answers as Record<string, string | string[]>) ?? {};
       for (const [q, opt] of Object.entries(ans)) {
         byQuestion[q] ??= {};
-        byQuestion[q][opt] = (byQuestion[q][opt] ?? 0) + 1;
+        const opts = Array.isArray(opt) ? opt : [opt];
+        for (const o of opts) byQuestion[q][o] = (byQuestion[q][o] ?? 0) + 1;
       }
     }
     summary = { total: list.length, byQuestion };

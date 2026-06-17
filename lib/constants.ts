@@ -41,6 +41,12 @@ export const AGENDA: AgendaStep[] = [
     desc: "Ocho afirmaciones sobre IA generativa para consolidar conceptos y debatir (tokens y alucinación). El docente avanza y revela.",
   },
   {
+    key: "memoria",
+    label: "Memorias y Proyectos en la IA",
+    short: "Memoria",
+    desc: "Qué es la memoria persistente (en Claude, ChatGPT y Gemini), cómo gestionarla y qué son los proyectos.",
+  },
+  {
     key: "cotio",
     label: "Optimizador COTIO",
     short: "COTIO",
@@ -81,6 +87,7 @@ export interface EncuestaQuestion {
   id: string;
   q: string;
   options: EncuestaOption[];
+  multi?: boolean; // permite marcar más de una opción
 }
 
 export const ENCUESTA_QUESTIONS: EncuestaQuestion[] = [
@@ -101,8 +108,19 @@ export const ENCUESTA_QUESTIONS: EncuestaQuestion[] = [
     ],
   },
   {
+    id: "dato",
+    q: "Para un buen resultado de IA, ¿qué pesa más?",
+    options: [
+      { id: "datos", label: "Los datos que le doy", emoji: "📊" },
+      { id: "prompt", label: "Cómo lo pido", emoji: "✍️" },
+      { id: "herramienta", label: "La herramienta", emoji: "🛠️" },
+      { id: "todas", label: "Las tres", emoji: "🎯" },
+    ],
+  },
+  {
     id: "cual",
-    q: "¿Qué IA usás más?",
+    q: "¿Qué IA usás? (podés marcar varias)",
+    multi: true,
     options: [
       { id: "claude", label: "Claude", emoji: "🟣" },
       { id: "gpt", label: "ChatGPT", emoji: "🟢" },
@@ -286,6 +304,52 @@ export const CASO_FERNANDEZ_CONSIGNA =
   "Usando el método COTIO y este resumen como Input, construí en Claude un prompt para redactar la sección de HECHOS de la demanda. Cubrí las cinco variables. Después comparen, dentro del grupo, qué prompt dio mejor resultado y por qué.";
 
 export const CLAUDE_URL = "https://claude.ai/new";
+
+// --- Módulo · Memorias y Proyectos en Claude ---
+
+export interface InfoCard {
+  icon: string;
+  title: string;
+  body: string;
+}
+
+export const MEMORIA_CARDS: InfoCard[] = [
+  {
+    icon: "🧠",
+    title: "¿Qué es la Memoria?",
+    body: "Las IA (Claude, ChatGPT, Gemini) pueden recordar datos y preferencias entre conversaciones. No arrancás de cero cada vez: retienen lo que les pedís que recuerden.",
+  },
+  {
+    icon: "⚖️",
+    title: "Para qué te sirve",
+    body: "Guardá tu rol, jurisdicción, estilo de redacción y formatos de escrito. Dejás de repetir el mismo contexto en cada chat, en cualquier herramienta.",
+  },
+  {
+    icon: "🎛️",
+    title: "Cómo gestionarla",
+    body: "Activala o desactivala cuando quieras, revisá y editá lo que recordó, y borrá memorias puntuales o todas. El control siempre es tuyo.",
+  },
+  {
+    icon: "🗣️",
+    title: "Decíselo explícito",
+    body: '"Recordá que soy abogado laboralista en Tucumán y escribo en estilo formal" o "olvidá lo de…". Lo guarda o lo borra al toque.',
+  },
+  {
+    icon: "🧭",
+    title: "Dónde está en cada una",
+    body: "Claude: Memoria + Proyectos. ChatGPT: Memoria + Proyectos/GPTs. Gemini: Información guardada + Gems. Cambia el nombre, no la idea.",
+  },
+  {
+    icon: "📁",
+    title: "Proyectos / espacios",
+    body: "Espacios con instrucciones y archivos propios. Lo que cargás vive ahí: ideal para un caso o una materia, con contexto persistente y separado del resto.",
+  },
+  {
+    icon: "💡",
+    title: "Cuándo conviene",
+    body: "Para lo estable (tu rol, tus formatos). Para datos de un caso puntual que cambian, mejor pasarlos en el momento y no dejarlos fijos.",
+  },
+];
 
 // --- Conceptos del bloque de IA generativa (intro al V/F) ---
 

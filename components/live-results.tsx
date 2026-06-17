@@ -29,7 +29,7 @@ export function LiveResults({
   config?: ActivityConfig | null;
 }) {
   const { data: r } = useLive<ResultsResp>(`/api/session/${slug}/results?activity=${activity}`, 1200);
-  if (activity === "lobby") return null;
+  if (activity === "lobby" || activity === "memoria") return null;
 
   const responded = r?.responded ?? 0;
   const participants = Math.max(r?.participants ?? 0, responded);
