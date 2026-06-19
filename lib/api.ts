@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
 import { getAdmin } from "./supabase/server";
 import { DEFAULT_SLUG, WORKSHOP_TITLE } from "./constants";
+import { EXP_SLUG, EXP_TITLE } from "./expediente";
 import type { SessionRow } from "./types";
+
+// Clases que la app puede auto-crear la primera vez que alguien entra.
+const AUTO_SESSIONS: Record<string, string> = {
+  [DEFAULT_SLUG]: WORKSHOP_TITLE,
+  [EXP_SLUG]: EXP_TITLE,
+};
 
 export function ok<T>(data: T, init?: number) {
   return NextResponse.json(data, { status: init ?? 200 });
@@ -20,11 +27,12 @@ export async function getSession(slug: string): Promise<SessionRow | null> {
     .maybeSingle();
   if (data) return data as SessionRow;
 
-  // La clase por defecto se auto-crea para que nunca falle el acceso.
-  if (slug === DEFAULT_SLUG) {
+  // Las clases conocidas se auto-crean para que nunca falle el acceso.
+  const title = AUTO_SESSIONS[slug];
+  if (title) {
     const { data: created, error } = await db
       .from("sessions")
-      .insert({ slug, title: WORKSHOP_TITLE, current_activity: "lobby", status: "lobby" })
+      .insert({ slug, title, current_activity: "lobby", status: "lobby" })
       .select("*")
       .single();
     if (created) return created as SessionRow;
