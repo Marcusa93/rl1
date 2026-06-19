@@ -432,81 +432,85 @@ export function getCaso(id: CasoId | null | undefined): Caso | null {
   return CASOS.find((c) => c.id === id) ?? null;
 }
 
-// --- Las diez etapas ---
-export interface EtapaDef {
+// --- Los cuatro momentos (versión simplificada para grupos grandes) ---
+export interface MomentoDef {
   n: number;
   titulo: string;
   short: string;
+  bajada: string;
 }
-export const ETAPAS: EtapaDef[] = [
-  { n: 1, titulo: "Selección de caso", short: "Caso" },
-  { n: 2, titulo: "Relato inicial", short: "Relato" },
-  { n: 3, titulo: "Diagnóstico con IA", short: "Diagnóstico" },
-  { n: 4, titulo: "Ampliación por entrevista", short: "Entrevista" },
-  { n: 5, titulo: "Análisis de documentos", short: "Documentos" },
-  { n: 6, titulo: "Elección de estrategia", short: "Estrategia" },
-  { n: 7, titulo: "Dato sorpresa", short: "Sorpresa" },
-  { n: 8, titulo: "Deliberación por roles", short: "Roles" },
-  { n: 9, titulo: "Decisión final y ficha", short: "Ficha" },
-  { n: 10, titulo: "Uso responsable", short: "Cierre" },
+export const MOMENTOS: MomentoDef[] = [
+  { n: 1, titulo: "El caso", short: "Caso", bajada: "Elegí tu caso y leé qué te trae el cliente." },
+  { n: 2, titulo: "Diagnosticá con IA", short: "Diagnóstico", bajada: "Usá la IA para ordenar el caso." },
+  { n: 3, titulo: "La trampa", short: "La trampa", bajada: "Encontrá el error que la IA no ve." },
+  { n: 4, titulo: "Tu decisión", short: "Decisión", bajada: "Decidí como abogado/a y descargá tu ficha." },
 ];
 
-// --- Ficha de decisión jurídica asistida (entregable, etapa 9) ---
+// --- Prompts listos para usar en el chat propio (un click) ---
+// Híbrido: el alumno los abre directo, y puede verlos/editarlos para practicar COTIO.
+
+const MINI_SYSTEM =
+  "Actuás como consultor jurídico en derecho argentino dentro de una simulación pedagógica. " +
+  "No resolvés el caso por mí ni redactás escritos completos: me ayudás a pensar y me hacés preguntas. " +
+  "No inventás jurisprudencia; si no sabés si un fallo existe, lo decís.";
+
+/** Momento 2 — diagnóstico. Reusa el prompt COTIO del caso con el relato ya inyectado. */
+export function buildDiagnosticoPrompt(caso: Caso): string {
+  return `${MINI_SYSTEM}\n\n${caso.cotioPrompt.replace(
+    "(pegá acá el relato inicial del cliente)",
+    caso.relato,
+  )}`;
+}
+
+/** Momento 3 — auditoría de la prueba (la trampa). */
+export function buildAuditoriaPrompt(caso: Caso): string {
+  const docs = caso.documentos
+    .map((d, i) => `${i + 1}. ${d.titulo}: ${d.contenido}`)
+    .join("\n");
+  return `${MINI_SYSTEM}
+
+[CASO]: ${caso.titulo} — ${caso.caratula}.
+
+[PRUEBA QUE APORTA EL CLIENTE]:
+${docs}
+
+[DATO NUEVO QUE APARECIÓ]:
+${caso.datoSorpresa}
+
+[TAREA]: Auditá esta prueba como lo haría un abogado prudente.
+1. Para cada elemento, decime si tiene problemas de admisibilidad, integridad o validez.
+2. Marcá qué NO debería afirmar en un escrito sin antes verificarlo.
+3. Señalá si vos mismo (la IA) estás por cometer algún error típico (citar normas derogadas, dar por buena prueba digital sin respaldo, etc.).
+
+No redactes la demanda. Solo el análisis crítico.`;
+}
+
+// --- Ficha de decisión jurídica asistida (entregable, momento 4 — corta) ---
 export interface FichaCampo {
   key: keyof FichaData;
   label: string;
   hint: string;
 }
 export interface FichaData {
-  hipotesis: string;
   argFavor: string;
-  argContra: string;
-  pruebaFortalece: string;
-  pruebaDebilita: string;
-  riesgoAlucinacion: string;
   sugerenciaDescartada: string;
   decisionHumana: string;
 }
 export const FICHA_CAMPOS: FichaCampo[] = [
   {
-    key: "hipotesis",
-    label: "Hipótesis jurídica principal adoptada",
-    hint: "¿Qué encuadre elegiste y por qué es el más fuerte?",
-  },
-  {
     key: "argFavor",
-    label: "Mejor argumento a favor de tu posición",
-    hint: "El argumento más sólido que sostiene tu hipótesis.",
-  },
-  {
-    key: "argContra",
-    label: "Principal argumento en contra (desde la contraparte)",
-    hint: "¿Qué te respondería el mejor abogado del otro lado?",
-  },
-  {
-    key: "pruebaFortalece",
-    label: "Prueba que fortalece tu posición",
-    hint: "¿Qué documento o hecho juega a tu favor y por qué?",
-  },
-  {
-    key: "pruebaDebilita",
-    label: "Prueba que la debilita o tiene problemas de admisibilidad",
-    hint: "¿Qué prueba es frágil, impugnable o nula?",
-  },
-  {
-    key: "riesgoAlucinacion",
-    label: "Riesgo de alucinación detectado al trabajar con IA",
-    hint: "¿En qué punto la IA inventó, exageró o se equivocó?",
+    label: "Tu mejor argumento a favor",
+    hint: "El argumento más fuerte que sostiene tu posición.",
   },
   {
     key: "sugerenciaDescartada",
-    label: "Sugerencia de la IA que decidiste NO seguir y por qué",
-    hint: "Una recomendación concreta que descartaste con criterio propio.",
+    label: "Una sugerencia de la IA que NO seguís (y por qué)",
+    hint: "Algo que la IA te recomendó y vos descartás con criterio propio.",
   },
   {
     key: "decisionHumana",
-    label: "Decisión humana final: ¿qué harías como abogado/a?",
-    hint: "Tu decisión profesional, fundada, en tus palabras.",
+    label: "Tu decisión final como abogado/a",
+    hint: "¿Qué hacés con este caso? En una o dos frases.",
   },
 ];
 
@@ -516,39 +520,24 @@ export const EXP_ITEM = "state";
 
 export interface ExpedienteState {
   caso: CasoId | null;
-  etapa: number; // etapa máxima desbloqueada (1..10)
-  diagnostico: { hechos: string; faltantes: string; riesgos: string };
-  documentos: { observaciones: string; revisados: string[] };
-  estrategia: string; // id de la hipótesis elegida
-  revisionSorpresa: string;
-  rol: string; // id del rol
-  rolArgumento: string;
-  ficha: FichaData;
-  reglas: string[]; // 5 reglas de uso responsable
+  momento: number; // momento máximo alcanzado (1..4)
+  diagnosticoNota: string; // M2: una línea de lo que la IA ayudó a ver
+  alucinaciones: string[]; // M3: índices de riesgosIA detectados
+  alucinacionPorque: string; // M3: por qué no le haría caso
+  estrategia: string; // M4: id de la hipótesis elegida
+  ficha: FichaData; // M4
   completado: boolean;
 }
 
 export function emptyState(): ExpedienteState {
   return {
     caso: null,
-    etapa: 1,
-    diagnostico: { hechos: "", faltantes: "", riesgos: "" },
-    documentos: { observaciones: "", revisados: [] },
+    momento: 1,
+    diagnosticoNota: "",
+    alucinaciones: [],
+    alucinacionPorque: "",
     estrategia: "",
-    revisionSorpresa: "",
-    rol: "",
-    rolArgumento: "",
-    ficha: {
-      hipotesis: "",
-      argFavor: "",
-      argContra: "",
-      pruebaFortalece: "",
-      pruebaDebilita: "",
-      riesgoAlucinacion: "",
-      sugerenciaDescartada: "",
-      decisionHumana: "",
-    },
-    reglas: ["", "", "", "", ""],
+    ficha: { argFavor: "", sugerenciaDescartada: "", decisionHumana: "" },
     completado: false,
   };
 }

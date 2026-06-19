@@ -14,7 +14,6 @@ import {
 import {
   CASOS,
   FICHA_CAMPOS,
-  ROLES,
   getCaso,
   type ExpedienteState,
 } from "@/lib/expediente";
@@ -103,7 +102,9 @@ export function FichaDoc({ data }: { data: FichaPdfData }) {
   const { state } = data;
   const caso = getCaso(state.caso) ?? CASOS[0];
   const hip = caso.hipotesis.find((h) => h.id === state.estrategia);
-  const rol = ROLES.find((r) => r.id === state.rol);
+  const alucinaciones = state.alucinaciones
+    .map((idx) => caso.riesgosIA[Number(idx)])
+    .filter(Boolean);
 
   return (
     <Document>
@@ -131,30 +132,29 @@ export function FichaDoc({ data }: { data: FichaPdfData }) {
             {hip && <Text style={[s.caseSub, { marginTop: 4 }]}>Vía elegida: {hip.titulo}</Text>}
           </View>
 
+          {alucinaciones.length > 0 && (
+            <View style={s.section} wrap={false}>
+              <Text style={s.h2}>Alucinaciones / riesgos de IA que detecté</Text>
+              {alucinaciones.map((r, i) => (
+                <View key={i} style={s.bullet}>
+                  <Text style={s.dot}>•</Text>
+                  <Text style={s.p}>{r}</Text>
+                </View>
+              ))}
+              {state.alucinacionPorque ? (
+                <Text style={[s.p, { marginTop: 4 }]}>
+                  Por qué no le haría caso: {state.alucinacionPorque}
+                </Text>
+              ) : null}
+            </View>
+          )}
+
           <View style={s.section}>
-            <Text style={s.h2}>La ficha</Text>
+            <Text style={s.h2}>Mi decisión</Text>
             {FICHA_CAMPOS.map((c) => (
               <View key={c.key} style={s.item} wrap={false}>
                 <Text style={s.label}>{c.label}</Text>
                 <Text style={s.p}>{state.ficha[c.key] || "—"}</Text>
-              </View>
-            ))}
-          </View>
-
-          {rol && (
-            <View style={s.section} wrap={false}>
-              <Text style={s.h2}>Deliberación por roles</Text>
-              <Text style={s.label}>{rol.nombre}</Text>
-              <Text style={s.p}>{state.rolArgumento || "—"}</Text>
-            </View>
-          )}
-
-          <View style={s.section} wrap={false}>
-            <Text style={s.h2}>Cinco reglas de uso responsable</Text>
-            {state.reglas.filter((r) => r.trim()).map((r, i) => (
-              <View key={i} style={s.bullet}>
-                <Text style={s.dot}>{i + 1}.</Text>
-                <Text style={s.p}>{r}</Text>
               </View>
             ))}
           </View>

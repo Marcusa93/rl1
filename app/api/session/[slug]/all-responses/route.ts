@@ -14,7 +14,7 @@ export async function GET(
   const db = getAdmin();
   const { data } = await db
     .from("responses")
-    .select("activity, item_key, payload, created_at, participants(name)")
+    .select("activity, item_key, payload, created_at, updated_at, participants(name)")
     .eq("session_id", session.id)
     .order("created_at", { ascending: true });
 
@@ -23,6 +23,7 @@ export async function GET(
     item_key: string;
     payload: unknown;
     created_at: string;
+    updated_at: string;
     participants?: { name?: string } | { name?: string }[] | null;
   }>).map((r) => {
     const part = Array.isArray(r.participants) ? r.participants[0] : r.participants;
@@ -32,6 +33,7 @@ export async function GET(
       item_key: r.item_key,
       payload: r.payload,
       created_at: r.created_at,
+      updated_at: r.updated_at,
     };
   });
 
