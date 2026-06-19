@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 const COOKIE = "rl1_teacher";
 
 export function teacherPassword(): string {
-  return process.env.TEACHER_PASSWORD || "rl1-docente";
+  return process.env.TEACHER_PASSWORD || "lve";
 }
 
 export async function isTeacher(): Promise<boolean> {
