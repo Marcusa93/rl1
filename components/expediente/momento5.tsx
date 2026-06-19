@@ -53,6 +53,13 @@ export function Momento5({
     <div className="rise">
       <Head />
 
+      <button
+        onClick={() => setI2({ instrumento: null })}
+        className="mb-3 inline-flex items-center gap-1.5 rounded-xl border border-line bg-panel/40 px-3 py-2 text-sm font-medium text-muted transition hover:border-teal/60 hover:text-teal"
+      >
+        ← Elegir otro instrumento
+      </button>
+
       <div className="rounded-2xl border border-line bg-panel/40 p-4">
         <div className="flex items-center gap-2">
           <span className="text-xl">{instrumento.emoji}</span>
@@ -62,12 +69,6 @@ export function Momento5({
         </div>
         <h3 className="mt-2 font-semibold">{instrumento.titulo}</h3>
         <p className="mt-1 text-sm text-muted">{instrumento.resumen}</p>
-        <button
-          onClick={() => setI2({ instrumento: null })}
-          className="mt-2 text-xs text-faint underline-offset-2 hover:text-magenta hover:underline"
-        >
-          Cambiar de instrumento
-        </button>
       </div>
 
       {/* Consigna */}

@@ -17,16 +17,20 @@ export default function ExpedientePage() {
 
   useEffect(() => {
     let active = true;
-    fetch(`/api/session/${SLUG}/me`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (active) setMe(d.participant);
-      })
-      .catch(() => {
-        if (active) setMe(null);
-      });
+    const load = () =>
+      fetch(`/api/session/${SLUG}/me`)
+        .then((r) => r.json())
+        .then((d) => {
+          if (active) setMe(d.participant ?? null);
+        })
+        .catch(() => {});
+    load();
+    // Si el docente reinicia el laboratorio, el participante deja de existir:
+    // volvemos solos al ingreso (re-chequeo cada 4s).
+    const id = setInterval(load, 4000);
     return () => {
       active = false;
+      clearInterval(id);
     };
   }, []);
 
