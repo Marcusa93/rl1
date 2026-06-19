@@ -1,0 +1,45 @@
+TÉRMINOS DE SERVICIO DE LA PLATAFORMA — EXTRACTO RELEVANTE
+[DOCUMENTO FICTICIO · Expediente Vivo · uso pedagógico]
+
+Nota: el documento original tiene 47 páginas y está redactado en inglés.
+Se transcribe la cláusula invocada para la baja y se acompaña traducción no
+oficial. Se omiten las restantes 46 páginas por no resultar pertinentes.
+
+================================================================
+SECTION 12.4 — CONTENT AND COMMUNITY (texto original)
+================================================================
+"We may, at our sole discretion and without prior notice, suspend or
+terminate any account that hosts, promotes or is otherwise associated with
+content that, in our judgment, is divisive or harmful to the community.
+Decisions regarding content moderation are final."
+
+================================================================
+TRADUCCIÓN NO OFICIAL
+================================================================
+"Podremos, a nuestra entera discreción y sin aviso previo, suspender o dar
+de baja cualquier cuenta que aloje, promueva o se asocie a contenido que,
+a nuestro criterio, resulte 'divisivo' o dañino para la comunidad. Las
+decisiones de moderación de contenido son definitivas."
+
+================================================================
+CARACTERÍSTICAS RELEVANTES DE LA CLÁUSULA
+================================================================
+1. VAGUEDAD: el término "divisivo" no está definido en ninguna parte de los
+   Términos. No hay catálogo de conductas, ejemplos ni umbrales.
+2. DISCRECIONALIDAD ABSOLUTA: "a nuestra entera discreción" y "a nuestro
+   criterio".
+3. SIN AVISO PREVIO: habilita la baja sin notificación anticipada.
+4. SIN DEBIDO PROCESO: no prevé descargo, plazo, ni instancia de apelación
+   interna. Declara las decisiones "definitivas".
+5. ADHESIÓN: el usuario solo puede aceptar el bloque completo ("Acepto") para
+   usar el servicio; no hay negociación de cláusulas.
+
+================================================================
+CONTRASTE CON OTRAS SECCIONES
+================================================================
+La Section 9 (pagos por monetización) sí detalla con precisión las
+obligaciones del usuario (calendario, retenciones, mínimos de cobro), lo que
+evidencia que la plataforma sabe redactar cláusulas precisas cuando le
+conviene.
+
+[Documento ficticio. No reproduce los términos de ninguna plataforma real.]

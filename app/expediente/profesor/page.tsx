@@ -15,6 +15,7 @@ import {
   getCaso,
   type ExpedienteState,
 } from "@/lib/expediente";
+import { INSTRUMENTOS, getInstrumento } from "@/lib/instancia2";
 import { cn } from "@/lib/utils";
 
 const SLUG = EXP_SLUG;
@@ -148,6 +149,17 @@ function Panel() {
     (p) => !p.state.completado && p.updatedAt > 0 && now - p.updatedAt > STUCK_MIN * 60000,
   ).length;
 
+  // Instancia 2 — instrumento elegido y entregas
+  const porInstrumento = INSTRUMENTOS.map((ins) => ({
+    ins,
+    elegidos: parsed.filter((p) => p.state.instancia2?.instrumento === ins.id).length,
+    entregados: parsed.filter(
+      (p) => p.state.instancia2?.instrumento === ins.id && p.state.instancia2?.entregado,
+    ).length,
+  }));
+  const totalI2 = parsed.filter((p) => p.state.instancia2?.instrumento).length;
+  const entregadosI2 = parsed.filter((p) => p.state.instancia2?.entregado).length;
+
   function exportCsv() {
     const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const header = [
@@ -158,6 +170,9 @@ function Panel() {
       "via_elegida",
       "alucinaciones_detectadas",
       ...FICHA_CAMPOS.map((c) => c.key),
+      "instancia2_instrumento",
+      "instancia2_entregado",
+      "instancia2_nota",
     ];
     const lines = parsed.map((p) => {
       const caso = getCaso(p.state.caso);
@@ -165,6 +180,7 @@ function Panel() {
       const aluc = caso
         ? p.state.alucinaciones.map((i) => caso.riesgosIA[Number(i)]).filter(Boolean).join(" | ")
         : "";
+      const ins = getInstrumento(p.state.instancia2?.instrumento);
       return [
         esc(p.name),
         esc(caso ? `${caso.area} — ${caso.caratula}` : ""),
@@ -173,6 +189,9 @@ function Panel() {
         esc(hip?.titulo ?? ""),
         esc(aluc),
         ...FICHA_CAMPOS.map((c) => esc(p.state.ficha[c.key])),
+        esc(ins ? `${ins.tipo} — ${ins.titulo}` : ""),
+        esc(p.state.instancia2?.entregado ? "sí" : "no"),
+        esc(p.state.instancia2?.nota ?? ""),
       ].join(",");
     });
     const csv = "﻿" + [header.join(","), ...lines].join("\n");
@@ -331,6 +350,32 @@ function Panel() {
               </section>
             )}
 
+            {/* Instancia 2 — instrumento elegido */}
+            {totalI2 > 0 && (
+              <section className="mt-4 rounded-2xl border border-line bg-panel/40 p-4">
+                <h2 className="mb-1 text-sm font-semibold text-muted">
+                  Instancia 2 · instrumento que están produciendo
+                </h2>
+                <p className="mb-3 text-xs text-faint">
+                  {totalI2} eligieron instrumento · {entregadosI2} marcaron entregado.
+                </p>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {porInstrumento.map(({ ins, elegidos, entregados }) => (
+                    <div key={ins.id} className="rounded-xl border border-line bg-ink-2/40 p-3">
+                      <p className="text-sm font-semibold text-foreground">
+                        {ins.emoji} {ins.tipo}
+                      </p>
+                      <p className="text-xs text-muted">{ins.titulo}</p>
+                      <p className="mt-2 text-xs">
+                        <span className="font-bold text-teal">{elegidos}</span> eligieron ·{" "}
+                        <span className="font-bold text-teal">{entregados}</span> entregaron
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
             {/* Alumnos */}
             <section className="mt-4">
               <h2 className="mb-2 text-sm font-semibold text-muted">
@@ -441,7 +486,25 @@ function StudentDetail({ p }: { p: ParsedRow }) {
           )}
         </Block>
       )}
-      {!s.diagnosticoNota && aluc.length === 0 && !s.estrategia && (
+      {s.instancia2?.instrumento && (
+        <Block titulo="Instancia 2 · instrumento">
+          {(() => {
+            const ins = getInstrumento(s.instancia2.instrumento);
+            return (
+              <>
+                <Line
+                  k="Eligió"
+                  v={`${ins?.emoji ?? ""} ${ins?.tipo ?? ""} — ${ins?.titulo ?? ""}${
+                    s.instancia2.entregado ? " · ✓ entregado" : " · en curso"
+                  }`}
+                />
+                {s.instancia2.nota && <Line k="Nota/link" v={s.instancia2.nota} />}
+              </>
+            );
+          })()}
+        </Block>
+      )}
+      {!s.diagnosticoNota && aluc.length === 0 && !s.estrategia && !s.instancia2?.instrumento && (
         <p className="text-xs text-faint">
           {caso ? "Eligió caso pero todavía no cargó nada." : "Todavía no eligió caso."}
         </p>

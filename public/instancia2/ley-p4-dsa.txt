@@ -1,0 +1,44 @@
+DERECHO COMPARADO (ADAPTADO) — DSA (UE) · MODERACIÓN Y TRAZABILIDAD
+[DOCUMENTO ADAPTADO Y SIMPLIFICADO · Expediente Vivo · uso pedagógico]
+
+ADVERTENCIA: el Reglamento de Servicios Digitales (Digital Services Act,
+Reglamento (UE) 2022/2065) es una norma REAL. Este documento es un RESUMEN
+ADAPTADO Y SIMPLIFICADO para el laboratorio; la numeración de artículos y la
+redacción NO son textuales. Verificar siempre contra el texto oficial antes
+de citar.
+
+================================================================
+IDEAS CENTRALES (versión pedagógica)
+================================================================
+1. SEUDONIMATO PÚBLICO + IDENTIDAD VERIFICABLE. Las plataformas de gran
+   tamaño pueden permitir el uso de SEUDÓNIMOS de cara al público, pero deben
+   poder vincular la cuenta a información de identidad cuando lo requiera una
+   autoridad competente. Es decir: anonimato frente a terceros, NO frente a
+   la justicia.
+
+2. MECANISMOS DE DENUNCIA ("notice and action"). Deben existir vías claras y
+   accesibles para denunciar contenido ilícito, con ACUSE de recibo y
+   respuesta en PLAZOS DEFINIDOS, y con posibilidad de impugnar la decisión.
+
+3. TRAZABILIDAD DE CIERTOS USUARIOS. Para determinados servicios (p. ej.
+   "marketplaces"), se exige conocer y conservar datos de identificación de
+   los oferentes ("know your business customer").
+
+4. COOPERACIÓN CON ÓRDENES JUDICIALES. Las plataformas deben responder a
+   órdenes de autoridades de los Estados miembros para actuar contra
+   contenido ilícito y para aportar información, dentro del marco legal.
+
+5. TRANSPARENCIA Y EVALUACIÓN DE RIESGOS. Las plataformas muy grandes deben
+   informar sus criterios de moderación y evaluar riesgos sistémicos.
+
+================================================================
+RELEVANCIA PARA EL PROYECTO DE LEY
+================================================================
+- Modelo comparado más avanzado: combina seudonimato público con
+  identidad recuperable bajo orden judicial, y fija plazos de respuesta.
+- Brecha de cooperación: sin ley propia equivalente, Argentina queda fuera
+  de varios mecanismos de cooperación que el DSA habilita, lo que dificulta
+  proteger a víctimas argentinas frente a plataformas con sede en la UE.
+
+[Documento adaptado. La fuente original (DSA) es real; este resumen no es
+textual: verificar antes de citar.]

@@ -18,6 +18,7 @@ import {
 import { Button, Spinner } from "@/components/ui";
 import { AiPrompt } from "./ai-prompt";
 import { DownloadFicha } from "./download-ficha";
+import { Momento5 } from "./momento5";
 import { cn } from "@/lib/utils";
 
 export function ExpedienteFlow({ slug, me }: { slug: string; me: ParticipantRow }) {
@@ -91,8 +92,9 @@ export function ExpedienteFlow({ slug, me }: { slug: string; me: ParticipantRow 
         {view === 2 && caso && <Momento2 caso={caso} state={state} update={update} goTo={goTo} />}
         {view === 3 && caso && <Momento3 caso={caso} state={state} update={update} goTo={goTo} />}
         {view === 4 && caso && (
-          <Momento4 caso={caso} state={state} update={update} slug={slug} me={me} />
+          <Momento4 caso={caso} state={state} update={update} slug={slug} me={me} goTo={goTo} />
         )}
+        {view === 5 && caso && <Momento5 state={state} update={update} />}
       </div>
     </div>
   );
@@ -394,12 +396,14 @@ function Momento4({
   update,
   slug,
   me,
+  goTo,
 }: {
   caso: NonNullable<ReturnType<typeof getCaso>>;
   state: ExpedienteState;
   update: (p: Partial<ExpedienteState> | ((s: ExpedienteState) => ExpedienteState)) => void;
   slug: string;
   me: ParticipantRow;
+  goTo: (n: number) => void;
 }) {
   const setFicha = (k: keyof FichaData, v: string) =>
     update((s) => ({ ...s, ficha: { ...s.ficha, [k]: v } }));
@@ -468,8 +472,11 @@ function Momento4({
           <p className="text-2xl">✅</p>
           <p className="mt-1 font-semibold text-teal">¡Laboratorio completado!</p>
           <p className="mt-1 text-sm text-muted">Tu decisión quedó registrada para la puesta en común.</p>
-          <div className="mx-auto mt-4 max-w-xs">
+          <div className="mx-auto mt-4 max-w-xs space-y-2">
             <DownloadFicha slug={slug} me={me} />
+            <Button variant="outline" onClick={() => goTo(5)} className="w-full">
+              Ir a la Instancia 2 →
+            </Button>
           </div>
         </div>
       ) : (

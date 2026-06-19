@@ -1,0 +1,37 @@
+REPORTE DE MÉTRICAS — ANTES Y DESPUÉS DEL ESCRACHE
+[DOCUMENTO FICTICIO · Expediente Vivo · uso pedagógico]
+
+Reporte extraído del panel de estadísticas de la cuenta de la actora.
+Comparación: mes ANTERIOR al escrache vs. mes POSTERIOR.
+
+================================================================
+INDICADORES
+================================================================
+                                   MES ANTERIOR     MES POSTERIOR    VARIACIÓN
+Seguidores (cierre de mes)            612.400          548.900        -10,4%
+Alcance orgánico promedio/posteo      210.000           74.000        -64,8%
+Reproducciones de video (total)     8.900.000        2.300.000        -74,2%
+Interacciones positivas (likes)       540.000          120.000        -77,8%
+Comentarios totales                    38.000          156.000       +310,5%
+  - de ellos, agresivos/insultos        ~4%              ~71%
+Tasa de interacción ("engagement")      6,8%             1,9%         -72,0%
+Consultas comerciales de marcas           9                1          -88,9%
+Campañas activas                          3                0           -100%
+
+================================================================
+NOTA METODOLÓGICA
+================================================================
+- El "alcance orgánico" y la "tasa de engagement" son los indicadores que
+  las marcas usan para fijar el valor comercial (cachet) de una cuenta.
+- La cuenta pasó de 3 campañas activas a 0 en el mes posterior.
+- El pico de comentarios agresivos coincide día a día con la difusión del
+  hilo (ver registro de publicaciones).
+
+================================================================
+PROYECCIÓN ECONÓMICA (estimación del reporte)
+================================================================
+A valores de mercado del cachet por campaña previo al escrache, la caída de
+métricas implica una pérdida proyectada de ingresos publicitarios de entre
+6 y 9 campañas anuales, además de las 3 ya canceladas.
+
+[Documento ficticio. Las cifras son inventadas con fines pedagógicos.]

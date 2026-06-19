@@ -8,6 +8,8 @@
 // entrega los prompts para copiar y recolecta la ficha de decisión.
 // ============================================================
 
+import type { InstrumentoId } from "./instancia2";
+
 export const EXP_SLUG = "expediente";
 export const EXP_TITLE = "Expediente Vivo — Litigación asistida por IA";
 
@@ -444,6 +446,7 @@ export const MOMENTOS: MomentoDef[] = [
   { n: 2, titulo: "Diagnosticá con IA", short: "Diagnóstico", bajada: "Usá la IA para ordenar el caso." },
   { n: 3, titulo: "La trampa", short: "La trampa", bajada: "Encontrá el error que la IA no ve." },
   { n: 4, titulo: "Tu decisión", short: "Decisión", bajada: "Decidí como abogado/a y descargá tu ficha." },
+  { n: 5, titulo: "Tu instrumento", short: "Instrumento", bajada: "Producí un instrumento jurídico real con IA." },
 ];
 
 // --- Prompts listos para usar en el chat propio (un click) ---
@@ -518,15 +521,22 @@ export const FICHA_CAMPOS: FichaCampo[] = [
 export const EXP_ACTIVITY = "expediente";
 export const EXP_ITEM = "state";
 
+export interface Instancia2State {
+  instrumento: InstrumentoId | null; // demanda | sentencia | ley
+  entregado: boolean;
+  nota: string; // opcional: link al resultado o un resumen
+}
+
 export interface ExpedienteState {
   caso: CasoId | null;
-  momento: number; // momento máximo alcanzado (1..4)
+  momento: number; // momento máximo alcanzado (1..5)
   diagnosticoNota: string; // M2: una línea de lo que la IA ayudó a ver
   alucinaciones: string[]; // M3: índices de riesgosIA detectados
   alucinacionPorque: string; // M3: por qué no le haría caso
   estrategia: string; // M4: id de la hipótesis elegida
   ficha: FichaData; // M4
-  completado: boolean;
+  completado: boolean; // M4: cerró la instancia 1
+  instancia2: Instancia2State; // M5
 }
 
 export function emptyState(): ExpedienteState {
@@ -539,5 +549,6 @@ export function emptyState(): ExpedienteState {
     estrategia: "",
     ficha: { argFavor: "", sugerenciaDescartada: "", decisionHumana: "" },
     completado: false,
+    instancia2: { instrumento: null, entregado: false, nota: "" },
   };
 }

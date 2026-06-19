@@ -1,0 +1,45 @@
+REGISTRO DE PUBLICACIONES — HILO COORDINADO (constatación con timestamps)
+[DOCUMENTO FICTICIO · Expediente Vivo · uso pedagógico]
+
+Registro cronológico de publicaciones de tres cuentas durante la difusión
+del material apócrifo. Horarios en formato 24h del mismo día.
+
+----------------------------------------------------------------
+14:02 — @denuncia_real_ok
+"Miren lo que dijo [actora]. Asco. Hay capturas. #LaRealCara"
+[Adjunta Captura A] · 1.2k reposteos
+----------------------------------------------------------------
+14:09 — @ojos.abiertos.community
+"Reposteo lo de @denuncia_real_ok porque ESTO no puede pasar.
+Cancelémosla. #LaRealCara"
+[Adjunta la MISMA Captura A] · cita a @denuncia_real_ok
+----------------------------------------------------------------
+14:21 — @tendencia_data
+"Tres capturas más confirman el patrón. @denuncia_real_ok @ojos.abiertos.community
+gracias por difundir. #LaRealCara"
+[Adjunta Capturas A, B y C] · cita a las dos cuentas anteriores
+----------------------------------------------------------------
+14:33 — @denuncia_real_ok
+"Gracias @tendencia_data. Sigamos compartiendo. #LaRealCara"
+----------------------------------------------------------------
+15:48 — el hashtag #LaRealCara alcanza tendencia regional.
+
+================================================================
+OBSERVACIONES TÉCNICAS DEL REGISTRO
+================================================================
+1. Las tres cuentas se mencionan ENTRE SÍ dentro de un lapso de 31 minutos.
+2. Republican el MISMO material (Captura A) y usan el MISMO hashtag desde el
+   primer minuto, sin variación de redacción del eje acusatorio.
+3. Ninguna aporta fuente original ni verificación; todas remiten a la otra.
+4. La cuenta @tendencia_data figura administrada (dato de registro público
+   de la cuenta) por una agencia que presta servicios a una CREADORA
+   COMPETIDORA directa de la actora en la misma categoría de contenido.
+
+================================================================
+RELEVANCIA
+================================================================
+El patrón —mención cruzada, mismo material, mismo hashtag, ventana temporal
+mínima y vínculo con una competidora— permite sostener ACTUACIÓN CONCERTADA,
+distinta de la crítica individual espontánea.
+
+[Documento ficticio. Cuentas, nombres y horarios son inventados.]

@@ -1,0 +1,50 @@
+COMUNICACIÓN DE BAJA Y RESPUESTA — INTERCAMBIO COMPLETO
+[DOCUMENTO FICTICIO · Expediente Vivo · uso pedagógico]
+
+================================================================
+1) EMAIL AUTOMÁTICO DE BAJA (recibido por el streamer)
+================================================================
+De: no-reply@[plataforma]
+Asunto: Account suspension / Suspensión de cuenta
+
+"Hola,
+Tu cuenta ha sido suspendida de forma permanente por infringir nuestros
+Términos de Servicio (Sección 12.4 — contenido divisivo). Esta decisión es
+definitiva.
+— Equipo de Confianza y Seguridad"
+
+[Tres líneas. No indica qué contenido concreto se imputa, ni fecha del
+hecho, ni plazo de descargo, ni vía de apelación.]
+
+================================================================
+2) RESPUESTA DEL STREAMER (mismo día)
+================================================================
+"Buenas. No entiendo qué contenido habría infringido la norma. Trabajo de
+esto hace dos años y es mi fuente principal de ingresos. ¿Pueden indicarme
+el video o el momento puntual y darme la posibilidad de explicar o apelar?
+Quedo a disposición."
+
+================================================================
+3) SEGUNDO EMAIL AUTOMÁTICO (respuesta recibida)
+================================================================
+De: no-reply@[plataforma]
+Asunto: Re: Account suspension
+
+"Gracias por tu mensaje. Las decisiones de moderación de contenido son
+INAPELABLES y no se brindan detalles adicionales. Este buzón no recibe
+respuestas.
+— Equipo de Confianza y Seguridad"
+
+================================================================
+OBSERVACIONES PARA EL ANÁLISIS
+================================================================
+El intercambio evidencia la AUSENCIA DE DEBIDO PROCESO:
+1. No hay notificación del hecho concreto imputado.
+2. No hay plazo ni posibilidad real de descargo.
+3. No hay instancia de revisión o apelación (se declara "inapelable").
+4. La comunicación es automática y no individualizada.
+
+Elemento a ponderar por el juez frente al principio de BUENA FE contractual
+y al régimen de DEFENSA DEL CONSUMIDOR (contrato de adhesión).
+
+[Documento ficticio. No reproduce comunicaciones reales.]

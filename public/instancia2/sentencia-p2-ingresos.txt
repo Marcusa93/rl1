@@ -1,0 +1,43 @@
+HISTORIAL DE INGRESOS DEL STREAMER — ÚLTIMOS 18 MESES
+[DOCUMENTO FICTICIO · Expediente Vivo · uso pedagógico]
+
+Detalle mensual (en pesos, valores redondeados). Tres fuentes:
+(A) Monetización pagada por la plataforma, (B) Suscripciones pagas,
+(C) Publicidad contratada dentro del stream (sponsors).
+
+MES        MONETIZACIÓN(A)   SUSCRIPCIONES(B)   PUBLICIDAD(C)    TOTAL
+M-18          310.000           240.000             0            550.000
+M-17          330.000           255.000          120.000         705.000
+M-16          345.000           260.000          120.000         725.000
+M-15          360.000           275.000             0            635.000
+M-14          372.000           281.000          150.000         803.000
+M-13          385.000           290.000          150.000         825.000
+M-12          410.000           305.000          150.000         865.000
+M-11          430.000           318.000          200.000         948.000
+M-10          445.000           330.000          200.000         975.000
+M-09          470.000           351.000          200.000       1.021.000
+M-08          485.000           360.000          250.000       1.095.000
+M-07          500.000           372.000          250.000       1.122.000
+M-06          515.000           388.000          250.000       1.153.000
+M-05          540.000           401.000          300.000       1.241.000
+M-04          560.000           415.000          300.000       1.275.000
+M-03          585.000           430.000          300.000       1.315.000
+M-02          610.000           448.000          350.000       1.408.000
+M-01          640.000           465.000          350.000       1.455.000
+----------------------------------------------------------------------
+[BAJA DE LA CUENTA al inicio del mes siguiente a M-01]
+
+================================================================
+OBSERVACIONES
+================================================================
+1. Ingreso promedio últimos 6 meses: ~$1.308.000/mes. Tendencia CRECIENTE y
+   SOSTENIDA durante los 18 meses (sin meses en cero en monetización ni
+   suscripciones).
+2. CONTRATOS DE PUBLICIDAD CANCELADOS tras la baja: tres acuerdos vigentes
+   de $350.000 c/u quedaron sin efecto al desaparecer la cuenta (los
+   anunciantes rescindieron por imposibilidad de cumplimiento).
+3. La actividad representaba la FUENTE PRINCIPAL de ingresos del streamer
+   (no un uso recreativo): periodicidad mensual, crecimiento y contratos
+   formales con terceros.
+
+[Documento ficticio. Las cifras son inventadas con fines pedagógicos.]

@@ -1,0 +1,45 @@
+FALLO (FICTICIO) — CORTE SUPREMA · LIBERTAD DE EXPRESIÓN ANÓNIMA EN INTERNET
+[DOCUMENTO FICTICIO Y ADAPTADO · Expediente Vivo · uso pedagógico]
+
+ADVERTENCIA: este fallo es INVENTADO con fines del laboratorio. NO existe
+con esta carátula. NO debe citarse como precedente real. (Su redacción se
+inspira, de modo general, en estándares de libertad de expresión, pero los
+hechos, la carátula y los considerandos son ficticios.)
+
+Carátula (ficticia): "R., M. c/ Plataforma S.A. s/ amparo — identificación
+de usuario anónimo".
+
+================================================================
+SÍNTESIS DEL CASO
+================================================================
+Se solicitó a una plataforma que revelara la identidad de un usuario anónimo
+que habría difundido expresiones críticas. La plataforma se negó sin orden
+judicial. La causa llega a la Corte.
+
+================================================================
+DOCTRINA QUE FIJA EL TRIBUNAL (considerandos relevantes)
+================================================================
+1. El anonimato en internet integra el ámbito de protección de la LIBERTAD
+   DE EXPRESIÓN, en tanto resguarda a quien se expresa de represalias, y
+   goza de tutela constitucional mientras NO se acredite un daño concreto.
+
+2. La identificación forzada del usuario anónimo es una medida de ÚLTIMO
+   RECURSO: solo procede cuando (i) se acredita un daño concreto y actual o
+   inminente, (ii) no existe medio menos lesivo para repararlo o prevenirlo,
+   y (iii) media orden judicial fundada.
+
+3. Las plataformas NO pueden ser obligadas a revelar datos de sus usuarios
+   sin orden judicial fundada; un deber genérico de identificación previa
+   tendría efecto disuasorio (chilling effect) sobre la expresión legítima.
+
+4. El estándar exige PONDERACIÓN caso por caso entre el derecho al anonimato
+   y los derechos al honor, la imagen y la no discriminación.
+
+================================================================
+RELEVANCIA PARA EL PROYECTO DE LEY
+================================================================
+Constituye el "piso constitucional": todo artículo que ordene a las
+plataformas revelar identidades debe exigir daño concreto, subsidiariedad y
+orden judicial fundada, bajo riesgo de inconstitucionalidad.
+
+[Documento ficticio y adaptado. No es un fallo real ni debe citarse como tal.]

@@ -1,0 +1,59 @@
+PERITAJE INFORMÁTICO FORENSE — INFORME TÉCNICO N.º 0447/IF
+[DOCUMENTO FICTICIO · Expediente Vivo · Diplomatura en IA y Derecho · UNT · uso pedagógico]
+
+================================================================
+OBJETO DE LA PERICIA
+================================================================
+Determinar la autenticidad de cuatro (4) capturas de pantalla atribuidas a
+la cuenta de la actora en la red social, que la mostrarían realizando
+comentarios de contenido racista, y que fueron difundidas públicamente
+entre el 3 y el 5 de marzo.
+
+Perito interviniente: Ing. en Sistemas (Mat. Prof. ficticia 1123-CPCIA).
+Material analizado: cuatro archivos de imagen (.png y .jpg) aportados por
+la parte actora, descargados de las publicaciones denunciadas, con su
+correspondiente cadena de custodia digital (hash SHA-256 registrado).
+
+================================================================
+METODOLOGÍA
+================================================================
+1. Análisis de metadatos EXIF y de contenedor de cada archivo.
+2. Cotejo de la interfaz visible contra el historial de versiones de la
+   aplicación (changelog público) a la fecha atribuida.
+3. Análisis de capas, compresión y niveles de error (ELA) para detectar
+   superposición de texto.
+4. Verificación tipográfica (fuente, interlineado y antialiasing) del texto
+   respecto del renderizado nativo de la aplicación.
+
+================================================================
+HALLAZGOS
+================================================================
+A) METADATOS INCONSISTENTES. La fecha de creación de los archivos (campo
+   "DateTimeOriginal") es posterior en 11 y 14 días a la fecha que las
+   publicaciones atribuyen a las supuestas conversaciones. El software de
+   creación registrado es un editor de imágenes de escritorio, no la
+   aplicación móvil.
+
+B) INTERFAZ NO COINCIDENTE. El encabezado y la ubicación del botón de
+   opciones corresponden a una versión de la app retirada catorce (14)
+   meses antes de la fecha atribuida. En la versión vigente a esa fecha,
+   ese elemento se encontraba en posición distinta.
+
+C) TEXTO SUPERPUESTO. El análisis ELA revela bloques de texto con un nivel
+   de compresión distinto al del resto de la imagen, compatible con
+   superposición digital. La tipografía no coincide con la fuente nativa de
+   la aplicación (diferente kerning y ausencia del suavizado propio del
+   sistema operativo móvil).
+
+================================================================
+CONCLUSIÓN
+================================================================
+Con ALTO GRADO DE CERTEZA TÉCNICA, las cuatro capturas analizadas son
+APÓCRIFAS: fueron generadas mediante edición digital y no constituyen un
+registro genuino de comunicaciones emitidas por la cuenta de la actora.
+
+No es posible atribuir su creación a un equipo o persona determinada con el
+material disponible; ello requeriría medidas sobre los dispositivos de
+origen.
+
+[Documento ficticio. No constituye prueba real ni dictamen profesional.]
