@@ -522,6 +522,7 @@ export const EXP_ACTIVITY = "expediente";
 export const EXP_ITEM = "state";
 
 export interface Instancia2State {
+  desbloqueado: boolean; // requiere la clave secreta (la del docente)
   instrumento: InstrumentoId | null; // demanda | sentencia | ley
   entregado: boolean;
   nota: string; // opcional: link al resultado o un resumen
@@ -549,6 +550,6 @@ export function emptyState(): ExpedienteState {
     estrategia: "",
     ficha: { argFavor: "", sugerenciaDescartada: "", decisionHumana: "" },
     completado: false,
-    instancia2: { instrumento: null, entregado: false, nota: "" },
+    instancia2: { desbloqueado: false, instrumento: null, entregado: false, nota: "" },
   };
 }

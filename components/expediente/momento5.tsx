@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { INSTRUMENTOS, getInstrumento, type InstrumentoId } from "@/lib/instancia2";
 import type { ExpedienteState } from "@/lib/expediente";
-import { Button } from "@/components/ui";
+import { Button, Spinner } from "@/components/ui";
 import { AI_LINKS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +21,11 @@ export function Momento5({
 
   const setI2 = (patch: Partial<typeof i2>) =>
     update((s) => ({ ...s, instancia2: { ...s.instancia2, ...patch } }));
+
+  // Candado: la Instancia 2 requiere la clave secreta (la del docente).
+  if (!i2.desbloqueado) {
+    return <Gate onUnlock={() => setI2({ desbloqueado: true })} />;
+  }
 
   // Elección de instrumento
   if (!instrumento) {
@@ -185,6 +191,59 @@ function Head() {
       <p className="mt-1 text-sm text-muted">
         Ahora te toca crear. Elegí un instrumento, descargá las piezas del caso y resolvelo con IA.
       </p>
+    </div>
+  );
+}
+
+function Gate({ onUnlock }: { onUnlock: () => void }) {
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setErr("");
+    try {
+      const res = await fetch("/api/unlock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (res.ok) onUnlock();
+      else setErr("Clave incorrecta");
+    } catch {
+      setErr("Error de red");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="rise">
+      <Head />
+      <form onSubmit={submit} className="glass glow-teal rounded-2xl p-6">
+        <div className="mb-3 flex items-center gap-2 text-teal">
+          <span className="text-xl">🔒</span>
+          <p className="text-sm font-semibold">Esta instancia está bloqueada</p>
+        </div>
+        <p className="text-sm text-muted">
+          La parte de instrumentos se habilita con una clave que da el docente en clase. Ingresala
+          para continuar.
+        </p>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Clave de la clase"
+          autoFocus
+          className="mt-4 w-full rounded-xl border border-line bg-ink-2/70 px-4 py-3 outline-none placeholder:text-faint focus:border-teal/60"
+        />
+        {err && <p className="mt-2 text-sm text-magenta">{err}</p>}
+        <Button type="submit" disabled={busy || password.trim().length < 1} className="mt-4 w-full">
+          {busy ? <Spinner /> : "Desbloquear instrumentos"}
+        </Button>
+      </form>
     </div>
   );
 }
