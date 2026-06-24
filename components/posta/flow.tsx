@@ -501,32 +501,44 @@ function Estacion1({ state, update, goTo }: { state: PostaState; update: UpdateF
         {elegido && (
           <div className="mt-3 rounded-xl border border-line bg-ink-2/40 p-3">
             <p className="text-xs font-semibold text-foreground">Descargá las {elegido.piezas.length} piezas y subilas como fuentes:</p>
-            {elegido.piezas.some((p) => p.img) && (
+            {(elegido.piezas.some((p) => p.img) || elegido.piezas.some((p) => p.audio)) && (
               <p className="mt-1 text-xs text-faint">
-                🖼️ Las imágenes (telegrama, recibo…) las lee NotebookLM con OCR, como un escaneo real.
+                🖼️ Las imágenes se leen con OCR y 🔊 los audios se transcriben — NotebookLM ingiere ambos, como un escaneo o una grabación real.
               </p>
             )}
             <ul className="mt-2 space-y-2">
               {elegido.piezas.map((p) => (
-                <li key={p.n} className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-sm text-foreground">
-                      <span className="font-mono text-xs text-faint">P{p.n}</span> {p.titulo}
-                      {p.img && (
-                        <span className="ml-2 rounded-full bg-violet/15 px-1.5 py-0.5 text-[10px] font-bold uppercase text-violet">
-                          imagen · OCR
-                        </span>
-                      )}
-                    </p>
-                    <p className="mt-0.5 text-xs text-muted">{p.blurb}</p>
+                <li key={p.n} className="rounded-lg border border-transparent">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm text-foreground">
+                        <span className="font-mono text-xs text-faint">P{p.n}</span> {p.titulo}
+                        {p.img && (
+                          <span className="ml-2 rounded-full bg-violet/15 px-1.5 py-0.5 text-[10px] font-bold uppercase text-violet">
+                            imagen · OCR
+                          </span>
+                        )}
+                        {p.audio && (
+                          <span className="ml-2 rounded-full bg-cyan/15 px-1.5 py-0.5 text-[10px] font-bold uppercase text-cyan">
+                            audio · transcripción
+                          </span>
+                        )}
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted">{p.blurb}</p>
+                    </div>
+                    <a
+                      href={p.file}
+                      download
+                      className="shrink-0 rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-muted transition hover:border-teal/60 hover:text-teal"
+                    >
+                      ⬇ Bajar
+                    </a>
                   </div>
-                  <a
-                    href={p.file}
-                    download
-                    className="shrink-0 rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-muted transition hover:border-teal/60 hover:text-teal"
-                  >
-                    ⬇ Bajar
-                  </a>
+                  {p.audio && (
+                    <audio controls preload="none" src={p.file} className="mt-2 h-9 w-full">
+                      Tu navegador no puede reproducir el audio.
+                    </audio>
+                  )}
                 </li>
               ))}
             </ul>

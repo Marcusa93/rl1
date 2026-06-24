@@ -161,6 +161,7 @@ export interface Pieza {
   blurb: string; // por qué importa
   file: string; // ruta en /public
   img?: boolean; // true = imagen (NotebookLM la lee con OCR)
+  audio?: boolean; // true = audio (NotebookLM lo transcribe)
 }
 
 export interface CasoEjemplo {
@@ -206,6 +207,13 @@ export const CASOS_EJEMPLO: CasoEjemplo[] = [
       },
       {
         n: 4,
+        titulo: "Testimonio de la trabajadora (audio)",
+        blurb: "La clienta cuenta su caso. Audio: NotebookLM lo transcribe.",
+        file: "/posta/audio/laboral-testimonio.mp3",
+        audio: true,
+      },
+      {
+        n: 5,
         titulo: "Relato y cronología del caso",
         blurb: "El contexto narrado (ingreso, jornada, reclamos). Texto, por si querés el resumen.",
         file: "/posta/ejemplo-laboral.txt",
@@ -244,6 +252,13 @@ export const CASOS_EJEMPLO: CasoEjemplo[] = [
       },
       {
         n: 4,
+        titulo: "Testimonio de la madre (audio)",
+        blurb: "La progenitora cuenta su situación. Audio: NotebookLM lo transcribe.",
+        file: "/posta/audio/familia-testimonio.mp3",
+        audio: true,
+      },
+      {
+        n: 5,
         titulo: "Relato y cronología",
         blurb: "El contexto narrado (separación, ingresos, necesidades). Texto, por si querés el resumen.",
         file: "/posta/ejemplo-familia.txt",
@@ -275,6 +290,13 @@ export const CASOS_EJEMPLO: CasoEjemplo[] = [
       },
       {
         n: 3,
+        titulo: "Testimonio del gerente (audio)",
+        blurb: "La concesionaria (demandada) explica su defensa. Audio: NotebookLM lo transcribe.",
+        file: "/posta/audio/consumo-testimonio.mp3",
+        audio: true,
+      },
+      {
+        n: 4,
         titulo: "Relato de la empresa y puntos de defensa",
         blurb: "La versión de la demandada y los ejes para contestar. Texto, por si querés el resumen.",
         file: "/posta/ejemplo-consumo.txt",
@@ -302,6 +324,13 @@ export const CASOS_EJEMPLO: CasoEjemplo[] = [
         titulo: "Resumen del expediente (lo que pidió cada parte)",
         blurb: "Para comparar lo pedido con lo resuelto: la base del análisis de congruencia. Texto.",
         file: "/posta/ejemplo-sentencia-expediente.txt",
+      },
+      {
+        n: 3,
+        titulo: "Testimonio de una testigo (audio)",
+        blurb: "Una excompañera declara sobre los sábados y las comisiones. Audio: NotebookLM lo transcribe.",
+        file: "/posta/audio/tribunales-testimonio.mp3",
+        audio: true,
       },
     ],
   },
