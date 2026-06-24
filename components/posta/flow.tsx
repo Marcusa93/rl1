@@ -17,8 +17,10 @@ import {
   emptyPostaState,
   getEjemplo,
   getTarea,
+  recomendarPara,
   type HerramientaProyecto,
   type PostaState,
+  type Reco,
   type TareaDef,
 } from "@/lib/posta";
 import { AI_LINKS } from "@/lib/constants";
@@ -98,6 +100,7 @@ export function PostaFlow({ slug, me }: { slug: string; me: ParticipantRow }) {
 
   if (!state) return <Spinner />;
   const enPosta = state.modo === "propio" || state.modo === "ejemplo";
+  const reco = recomendarPara(me.name);
 
   function goTo(n: number) {
     if (!enPosta && n > 0) return; // hasta elegir caso/tarea, solo la estación 0
@@ -128,7 +131,7 @@ export function PostaFlow({ slug, me }: { slug: string; me: ParticipantRow }) {
     <div>
       <Stepper view={view} onPick={goTo} enPosta={enPosta} />
       <div className="mt-5">
-        {view === 0 && <Estacion0 state={state} update={update} goTo={goTo} />}
+        {view === 0 && <Estacion0 state={state} update={update} goTo={goTo} reco={reco} nombre={me.name} />}
         {view === 1 && <Estacion1 state={state} update={update} goTo={goTo} />}
         {view === 2 && <Estacion2 state={state} update={update} goTo={goTo} />}
         {view === 3 && <Estacion3 state={state} update={update} goTo={goTo} />}
@@ -280,9 +283,22 @@ function TareaPicker({
 }
 
 // ---------- Estación 0 · Tu caso ----------
-function Estacion0({ state, update, goTo }: { state: PostaState; update: UpdateFn; goTo: (n: number) => void }) {
+function Estacion0({
+  state,
+  update,
+  goTo,
+  reco,
+  nombre,
+}: {
+  state: PostaState;
+  update: UpdateFn;
+  goTo: (n: number) => void;
+  reco: Reco | null;
+  nombre: string;
+}) {
   // Aún no eligió modo
   if (!state.modo) {
+    const primerNombre = nombre.trim().split(/\s+/)[0];
     return (
       <div className="rise">
         <Head
@@ -290,6 +306,30 @@ function Estacion0({ state, update, goTo }: { state: PostaState; update: UpdateF
           titulo="Elegí con qué vas a trabajar"
           bajada="Hoy hacemos la posta con un caso real. Si trajiste uno, usalo. Si no, te damos uno listo."
         />
+
+        {reco && (
+          <div className="mb-4 rounded-2xl border-gradient p-4">
+            <p className="text-sm font-semibold text-foreground">
+              Hola {primerNombre} 👋 una sugerencia para vos
+            </p>
+            <p className="mt-1 text-sm text-muted">{reco.nota}</p>
+            <p className="mt-2 text-sm">
+              <span className="text-faint">Te sugerimos: </span>
+              <span className="font-semibold text-teal">{reco.etiqueta}</span>
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <Button
+                onClick={() =>
+                  update({ modo: reco.modo, ejemploId: reco.ejemploId ?? null, tareaId: reco.tareaId })
+                }
+                className="px-3 py-1.5 text-sm"
+              >
+                Usar esta sugerencia →
+              </Button>
+              <span className="text-xs text-faint">o elegí abajo lo que quieras.</span>
+            </div>
+          </div>
+        )}
         <div className="grid gap-3 sm:grid-cols-3">
           <button
             onClick={() => update({ modo: "propio", ejemploId: null })}

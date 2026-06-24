@@ -311,6 +311,63 @@ export function getEjemplo(id: string | null | undefined): CasoEjemplo | null {
   return CASOS_EJEMPLO.find((c) => c.id === id) ?? null;
 }
 
+// --- Recomendación por nombre (a partir de lo que pidió en la Clase 1) ---
+// Mapa curado con lo que cada participante trabajó/pidió en la Clase 1
+// (sesión `taller`). Al ingresar a La Posta, si el nombre matchea, le
+// sugerimos por dónde seguir. Si no matchea, flujo normal sin sugerencia.
+
+export interface Reco {
+  etiqueta: string; // qué le sugerimos (corto)
+  modo: ModoCaso; // "propio" | "ejemplo"
+  ejemploId?: string;
+  tareaId: string;
+  nota: string; // por qué (referencia a la Clase 1)
+}
+
+const norm = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+// Tokens clave de un nombre: primero + último (ignora segundos nombres).
+function claves(nombre: string): string[] {
+  const t = norm(nombre).split(" ").filter(Boolean);
+  return t.length >= 2 ? [t[0], t[t.length - 1]] : t;
+}
+
+const RECOS: { nombre: string; reco: Reco }[] = [
+  { nombre: "Eugenia Balvidares", reco: { etiqueta: "Laboral → redactar hechos", modo: "ejemplo", ejemploId: "laboral", tareaId: "hechos", nota: "En la Clase 1 trabajaste un caso laboral (despido sin causa)." } },
+  { nombre: "Analía Páez", reco: { etiqueta: "Laboral → redactar hechos", modo: "ejemplo", ejemploId: "laboral", tareaId: "hechos", nota: "Veníamos de lo laboral (prueba testimonial y art. 23 LCT)." } },
+  { nombre: "Sigrid Porcel", reco: { etiqueta: "Familia → redactar hechos", modo: "ejemplo", ejemploId: "familia", tareaId: "hechos", nota: "Trabajaste un caso de familia (alimentos)." } },
+  { nombre: "Maria Gabriela Pintos", reco: { etiqueta: "Familia → redactar hechos", modo: "ejemplo", ejemploId: "familia", tareaId: "hechos", nota: "Veníamos de familia (régimen de comunicación)." } },
+  { nombre: "Diego Ton", reco: { etiqueta: "Familia → preparar una audiencia", modo: "ejemplo", ejemploId: "familia", tareaId: "audiencia", nota: "Querías prepararte para una audiencia de alimentos." } },
+  { nombre: "Magali Campos", reco: { etiqueta: "Consumo → redactar hechos", modo: "ejemplo", ejemploId: "consumo", tareaId: "hechos", nota: "Trabajaste una contestación de demanda de consumo." } },
+  { nombre: "Soledad Richard", reco: { etiqueta: "Consumo → redactar hechos", modo: "ejemplo", ejemploId: "consumo", tareaId: "hechos", nota: "Veníamos de consumo (contestación contra una concesionaria)." } },
+  { nombre: "Analia Cajal", reco: { etiqueta: "Consumo → redactar hechos", modo: "ejemplo", ejemploId: "consumo", tareaId: "hechos", nota: "Trabajaste un caso de consumo." } },
+  { nombre: "Rosana Guzman", reco: { etiqueta: "Consumo → redactar hechos", modo: "ejemplo", ejemploId: "consumo", tareaId: "hechos", nota: "Tu mirada venía del consumo / la conciliación." } },
+  { nombre: "Sofia Spalletti", reco: { etiqueta: "Sentencia → de la sentencia a los agravios", modo: "ejemplo", ejemploId: "sentencia", tareaId: "agravios", nota: "Querías ver qué puntos apelar de una sentencia." } },
+  { nombre: "Marcelo Velasco", reco: { etiqueta: "Sentencia → analizar la sentencia", modo: "ejemplo", ejemploId: "sentencia", tareaId: "analizar-sentencia", nota: "Trabajaste el análisis de un fallo." } },
+  { nombre: "Marco Rossi", reco: { etiqueta: "Sentencia → analizar la sentencia", modo: "ejemplo", ejemploId: "sentencia", tareaId: "analizar-sentencia", nota: "Veníamos de la congruencia entre hechos, prueba y resolución." } },
+  { nombre: "Maria Marta Garriga", reco: { etiqueta: "Tu caso propio → analizar una sentencia", modo: "propio", tareaId: "analizar-sentencia", nota: "Trabajaste lo penal (estrategia, jurados); traé tu caso." } },
+  { nombre: "Frida Salazar", reco: { etiqueta: "Tu caso propio → analizar una sentencia", modo: "propio", tareaId: "analizar-sentencia", nota: "Veníamos de lo penal (jurisprudencia para dictámenes)." } },
+  { nombre: "Federico Licciardi", reco: { etiqueta: "Sentencia → analizar la sentencia", modo: "ejemplo", ejemploId: "sentencia", tareaId: "analizar-sentencia", nota: "Trabajaste el resumen/análisis de un fallo." } },
+  { nombre: "Gustavo Salloum", reco: { etiqueta: "Tu caso propio → redactar hechos", modo: "propio", tareaId: "hechos", nota: "Trabajaste una carta documento; traé tu propio caso." } },
+];
+
+export function recomendarPara(name: string | null | undefined): Reco | null {
+  if (!name) return null;
+  const inTok = new Set(norm(name).split(" ").filter(Boolean));
+  for (const e of RECOS) {
+    const kt = claves(e.nombre);
+    if (kt.length >= 2 && kt.every((t) => inTok.has(t))) return e.reco;
+  }
+  return null;
+}
+
 // --- Ejercicio aparte: verificar una cita -------------------------------
 // Flujo DISTINTO al de la posta: no se sube material a NotebookLM, se usa
 // una IA con BÚSQUEDA web para chequear si una cita (fallo/artículo) existe
