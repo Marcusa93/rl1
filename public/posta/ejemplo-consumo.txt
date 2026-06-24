@@ -1,0 +1,44 @@
+CASO DE EJEMPLO (FICTICIO) — DERECHO DEL CONSUMIDOR
+Material para subir como fuente a NotebookLM.
+
+CARÁTULA: "Sánchez, Julián c/ Automotores del Centro S.A. s/ daños (consumo)"
+Fuero: Civil y Comercial · Jurisdicción: Provincia de Tucumán
+Parte: DEMANDADA (la concesionaria) — se redacta la CONTESTACIÓN
+
+RELATO DE LA EMPRESA (nuestra clienta, la concesionaria)
+Somos Automotores del Centro S.A., una concesionaria. Nos demandó un cliente, el Sr. Sánchez,
+por una acción de consumo. Dice que compró un vehículo 0 km que presentó desperfectos y que no
+le dimos respuesta. Lo que omite es que firmó un contrato de adhesión donde figuran claramente
+las condiciones y los canales de reclamo, que las fallas que invoca son por falta de mantenimiento
+de su parte, y que en realidad el responsable por garantía de fábrica es la terminal automotriz,
+no la concesionaria. Además, el cliente dejó pasar varios meses sin hacer el service obligatorio.
+
+PUNTOS DE DEFENSA A DESARROLLAR
+1. FALTA DE LEGITIMACIÓN PASIVA: por garantía de fábrica responde la terminal (fabricante),
+   no la concesionaria que solo intermedia en la venta.
+2. CONTRATO DE ADHESIÓN: las condiciones de venta y los canales de reclamo estaban informados
+   y fueron aceptados por el actor.
+3. CONDUCTA DEL ACTOR: incumplió el plan de mantenimiento (services) que condiciona la garantía.
+4. INEXISTENCIA / FALTA DE PRUEBA del daño que reclama.
+
+LÍNEA DE TIEMPO
+- Fecha de compra del 0 km y firma del contrato de adhesión.
+- Entrega del vehículo y del manual con plan de mantenimiento.
+- Período en que el actor no realizó los services previstos.
+- Aparición de los desperfectos invocados.
+- Reclamo del actor y, luego, inicio de la demanda de consumo.
+
+PRUEBA DISPONIBLE
+- Contrato de compraventa (adhesión) firmado por el actor.
+- Manual y plan de mantenimiento con services obligatorios.
+- Registro de turnos de service (para mostrar los que no realizó).
+- Comunicaciones con el cliente.
+
+MARCO NORMATIVO MENCIONADO
+- Ley de Defensa del Consumidor (relación de consumo, contrato de adhesión).
+- Régimen de garantía sobre bienes muebles no consumibles.
+
+LO QUE QUIERO LOGRAR
+Redactar la sección de HECHOS de la contestación de demanda, negando y reproches al actor.
+
+NOTA: Caso ficticio con fines pedagógicos. Cualquier coincidencia es casual.

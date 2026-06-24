@@ -2,12 +2,14 @@ import { NextResponse } from "next/server";
 import { getAdmin } from "./supabase/server";
 import { DEFAULT_SLUG, WORKSHOP_TITLE } from "./constants";
 import { EXP_SLUG, EXP_TITLE } from "./expediente";
+import { POSTA_SLUG, POSTA_TITLE } from "./posta";
 import type { SessionRow } from "./types";
 
 // Clases que la app puede auto-crear la primera vez que alguien entra.
 const AUTO_SESSIONS: Record<string, string> = {
   [DEFAULT_SLUG]: WORKSHOP_TITLE,
   [EXP_SLUG]: EXP_TITLE,
+  [POSTA_SLUG]: POSTA_TITLE,
 };
 
 export function ok<T>(data: T, init?: number) {

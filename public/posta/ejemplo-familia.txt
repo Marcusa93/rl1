@@ -1,0 +1,41 @@
+CASO DE EJEMPLO (FICTICIO) — DERECHO DE FAMILIA
+Material para subir como fuente a NotebookLM.
+
+CARÁTULA: "P., L. c/ G., D. s/ alimentos"
+Fuero: Familia · Jurisdicción: Provincia de Tucumán · Parte: actora (progenitora, en representación de su hija)
+
+RELATO DE LA CLIENTA
+Tengo una hija de 3 años con D. G. Estamos separados desde hace casi dos años. Al principio él
+pasaba algo de plata pero de manera irregular, y en los últimos seis meses prácticamente dejó de
+aportar. Él trabaja como programador y factura bastante, pero gran parte la cobra de manera
+informal o por transferencias de clientes del exterior, así que en los papeles figura que gana
+poco. La nena va a un jardín privado, tiene obra social a mi cargo y gastos de crianza que cada
+vez son más altos. Necesito iniciar un reclamo de alimentos que cubra la cuota mensual y la
+canasta de crianza.
+
+LÍNEA DE TIEMPO
+- Hace ~2 años: separación de la pareja.
+- Primeros meses: aportes irregulares del progenitor.
+- Últimos 6 meses: cese casi total de aportes.
+- Actualidad: la progenitora afronta sola jardín privado, obra social y gastos corrientes.
+
+DATOS DE INGRESOS DEL PROGENITOR (según la actora)
+- Profesión: programador / desarrollador de software.
+- Factura como monotributista por montos bajos.
+- Percibe pagos informales y transferencias de clientes del exterior no declarados.
+
+NECESIDADES DE LA NIÑA (a acreditar)
+- Cuota de jardín privado.
+- Cobertura de obra social.
+- Alimentación, vestimenta, salud y esparcimiento.
+
+PRUEBA DISPONIBLE
+- Capturas de transferencias recibidas en su momento.
+- Comprobantes de gastos del jardín y la obra social.
+- Testigos del entorno familiar.
+- Pedido de oficios a plataformas de pago para acreditar ingresos reales.
+
+LO QUE QUIERO LOGRAR
+Redactar la sección de HECHOS de la demanda de alimentos, ordenando hechos, ingresos y necesidades.
+
+NOTA: Caso ficticio con fines pedagógicos. Cualquier coincidencia es casual.
