@@ -1,0 +1,41 @@
+SENTENCIA DE EJEMPLO (FICTICIA) — PARA ANALIZAR
+Material para subir como fuente a NotebookLM. Caso pedagógico; cualquier coincidencia es casual.
+
+"Ríos, Marcela c/ Distribuidora del Sur S.A. s/ despido"
+Expte. N° 1234/24 — Juzgado del Trabajo N° 3 — Provincia de Tucumán
+Sentencia de PRIMERA INSTANCIA
+
+VISTOS:
+Para resolver estos autos en los que Marcela Ríos demanda a Distribuidora del Sur S.A. el pago de
+indemnización por despido sin causa, diferencias salariales por comisiones y un rubro por trabajo en
+día sábado no registrado.
+
+RESULTANDO:
+1. La actora ingresó el 03/04/2017 como vendedora (CCT 130/75). Fue despedida sin causa el
+   12/02/2024 por telegrama. Estos hechos están reconocidos por la demandada.
+2. La actora reclamó: (a) indemnización por antigüedad y preaviso; (b) diferencias por comisiones
+   adeudadas; (c) un adicional por trabajo habitual los sábados, nunca registrado.
+3. La demandada reconoció la relación y el despido, negó las comisiones impagas y negó el trabajo
+   los sábados. Sostuvo que la liquidación final fue abonada.
+
+CONSIDERANDO:
+I. El despido sin causa está reconocido, por lo que proceden la indemnización por antigüedad y el
+   preaviso conforme el art. 245 LCT, calculados sobre la mejor remuneración acreditada en recibos.
+II. Respecto de las comisiones: las dos testigos (excompañeras de la actora) declararon de manera
+    coincidente que existía un esquema de comisiones por ventas que en los últimos meses no se
+    liquidaba completo. Sus dichos resultan verosímiles y se les otorga pleno valor probatorio.
+III. La pericia contable sobre los libros del art. 52 LCT no fue considerada necesaria para resolver.
+
+(No hay considerando específico sobre el reclamo por el trabajo en día sábado.)
+
+RESUELVO:
+1. Hacer lugar parcialmente a la demanda.
+2. Condenar a Distribuidora del Sur S.A. a pagar a la actora la indemnización por antigüedad, el
+   preaviso y las diferencias por comisiones adeudadas, con más intereses y costas.
+3. Rechazar el reclamo por trabajo en día sábado.
+
+NOTAS PARA EL ANÁLISIS (no forman parte de la sentencia):
+- El reclamo por los sábados se RECHAZA en la parte resolutiva, pero NO hay ningún considerando que
+  explique por qué (posible falta de fundamentación / incongruencia).
+- Las comisiones se admiten SOLO con prueba testimonial, sin que se haya producido la pericia
+  contable sobre los libros (¿alcanza la prueba para la condena?).

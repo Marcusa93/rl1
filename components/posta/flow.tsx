@@ -5,22 +5,24 @@ import type { ParticipantRow } from "@/lib/types";
 import {
   CASOS_EJEMPLO,
   CHECKLIST_PROPIO,
-  DESTILADO_PROMPT,
   ESTACIONES,
   NOTEBOOKLM_URL,
   POSTA_ACTIVITY,
   POSTA_ITEM,
-  PRIMERA_CONSULTA_PROMPT,
   SYSTEM_PROMPT_PARTES,
   SYSTEM_PROMPT_POSTA,
+  TAREAS,
+  VERIFICAR_CITA_PASOS,
+  VERIFICAR_CITA_PROMPT,
   emptyPostaState,
   getEjemplo,
+  getTarea,
   type HerramientaProyecto,
   type PostaState,
+  type TareaDef,
 } from "@/lib/posta";
 import { AI_LINKS } from "@/lib/constants";
 import { Button, Spinner } from "@/components/ui";
-import { AiPrompt } from "@/components/expediente/ai-prompt";
 import { CopyBox } from "@/components/expediente/copy-box";
 import { Marquito } from "./marquito";
 import { cn } from "@/lib/utils";
@@ -38,6 +40,8 @@ const PROYECTO_LINKS: Record<HerramientaProyecto, { label: string; url: string; 
     donde: "Tocá «Proyectos» → «Nuevo proyecto». Las instrucciones van en «Instrucciones».",
   },
 };
+
+type UpdateFn = (p: Partial<PostaState> | ((s: PostaState) => PostaState)) => void;
 
 export function PostaFlow({ slug, me }: { slug: string; me: ParticipantRow }) {
   const [state, setState] = useState<PostaState | null>(null);
@@ -80,8 +84,8 @@ export function PostaFlow({ slug, me }: { slug: string; me: ParticipantRow }) {
     [slug],
   );
 
-  const update = useCallback(
-    (patch: Partial<PostaState> | ((s: PostaState) => PostaState)) => {
+  const update = useCallback<UpdateFn>(
+    (patch) => {
       setState((prev) => {
         if (!prev) return prev;
         const next = typeof patch === "function" ? patch(prev) : { ...prev, ...patch };
@@ -93,29 +97,43 @@ export function PostaFlow({ slug, me }: { slug: string; me: ParticipantRow }) {
   );
 
   if (!state) return <Spinner />;
-  const tieneCaso = !!state.modo;
+  const enPosta = state.modo === "propio" || state.modo === "ejemplo";
 
   function goTo(n: number) {
-    if (!state!.modo && n > 0) return; // hasta elegir caso, solo la estación 0
+    if (!enPosta && n > 0) return; // hasta elegir caso/tarea, solo la estación 0
     setView(n);
     update((s) => ({ ...s, estacion: Math.max(s.estacion, n) }));
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  const marquito = (
+    <Marquito
+      slug={slug}
+      ctx={{ estacion: view, modo: state.modo, ejemplo: state.ejemploId, tarea: state.tareaId }}
+      onUse={() => update((s) => ({ ...s, marquitoUsos: (s.marquitoUsos ?? 0) + 1 }))}
+    />
+  );
+
+  // Ejercicio aparte: verificar una cita (flujo distinto, sin estaciones).
+  if (state.modo === "cita") {
+    return (
+      <div>
+        <VerificarCita state={state} update={update} />
+        {marquito}
+      </div>
+    );
+  }
+
   return (
     <div>
-      <Stepper view={view} onPick={goTo} tieneCaso={tieneCaso} />
+      <Stepper view={view} onPick={goTo} enPosta={enPosta} />
       <div className="mt-5">
         {view === 0 && <Estacion0 state={state} update={update} goTo={goTo} />}
         {view === 1 && <Estacion1 state={state} update={update} goTo={goTo} />}
         {view === 2 && <Estacion2 state={state} update={update} goTo={goTo} />}
         {view === 3 && <Estacion3 state={state} update={update} goTo={goTo} />}
       </div>
-      <Marquito
-        slug={slug}
-        ctx={{ estacion: view, modo: state.modo, ejemplo: state.ejemploId }}
-        onUse={() => update((s) => ({ ...s, marquitoUsos: (s.marquitoUsos ?? 0) + 1 }))}
-      />
+      {marquito}
     </div>
   );
 }
@@ -124,17 +142,17 @@ export function PostaFlow({ slug, me }: { slug: string; me: ParticipantRow }) {
 function Stepper({
   view,
   onPick,
-  tieneCaso,
+  enPosta,
 }: {
   view: number;
   onPick: (n: number) => void;
-  tieneCaso: boolean;
+  enPosta: boolean;
 }) {
   return (
     <div className="-mx-4 overflow-x-auto px-4 pb-1">
       <div className="flex min-w-max gap-2">
         {ESTACIONES.map((m) => {
-          const unlocked = tieneCaso || m.n === 0;
+          const unlocked = enPosta || m.n === 0;
           const active = m.n === view;
           return (
             <button
@@ -227,16 +245,42 @@ function CierreEstacion({
   );
 }
 
-// ---------- Estación 0 · Tu caso ----------
-function Estacion0({
-  state,
-  update,
-  goTo,
+/** Selector de qué va a producir el alumno (la TAREA). */
+function TareaPicker({
+  opciones,
+  value,
+  onPick,
 }: {
-  state: PostaState;
-  update: (p: Partial<PostaState> | ((s: PostaState) => PostaState)) => void;
-  goTo: (n: number) => void;
+  opciones: TareaDef[];
+  value: string | null;
+  onPick: (id: string) => void;
 }) {
+  return (
+    <div className="grid gap-2 sm:grid-cols-2">
+      {opciones.map((t) => {
+        const sel = value === t.id;
+        return (
+          <button
+            key={t.id}
+            onClick={() => onPick(t.id)}
+            className={cn(
+              "rounded-xl border p-3 text-left transition",
+              sel ? "border-teal/70 bg-teal/10" : "border-line bg-ink-2/40 hover:border-teal/50",
+            )}
+          >
+            <p className="text-sm font-semibold text-foreground">
+              {t.emoji} {t.label}
+            </p>
+            <p className="mt-0.5 text-xs text-muted">{t.hint}</p>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ---------- Estación 0 · Tu caso ----------
+function Estacion0({ state, update, goTo }: { state: PostaState; update: UpdateFn; goTo: (n: number) => void }) {
   // Aún no eligió modo
   if (!state.modo) {
     return (
@@ -246,16 +290,14 @@ function Estacion0({
           titulo="Elegí con qué vas a trabajar"
           bajada="Hoy hacemos la posta con un caso real. Si trajiste uno, usalo. Si no, te damos uno listo."
         />
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-3">
           <button
             onClick={() => update({ modo: "propio", ejemploId: null })}
             className="rounded-2xl border border-teal/50 bg-teal/5 p-4 text-left transition hover:border-teal"
           >
             <p className="text-xl">🗂️</p>
             <h3 className="mt-2 font-semibold">Traigo mi propio caso</h3>
-            <p className="mt-1 text-sm text-muted">
-              Trabajás con tu material real. La app te dice exactamente qué subir.
-            </p>
+            <p className="mt-1 text-sm text-muted">Trabajás con tu material real. La app te dice qué subir.</p>
           </button>
           <button
             onClick={() => update({ modo: "ejemplo" })}
@@ -263,8 +305,16 @@ function Estacion0({
           >
             <p className="text-xl">📁</p>
             <h3 className="mt-2 font-semibold">Usar un caso de ejemplo</h3>
+            <p className="mt-1 text-sm text-muted">¿No trajiste caso? Elegí uno ficticio listo para descargar.</p>
+          </button>
+          <button
+            onClick={() => update({ modo: "cita" })}
+            className="rounded-2xl border border-line bg-panel/40 p-4 text-left transition hover:border-amber-400/60"
+          >
+            <p className="text-xl">🔍</p>
+            <h3 className="mt-2 font-semibold">Verificar una cita</h3>
             <p className="mt-1 text-sm text-muted">
-              ¿No trajiste caso? Elegí uno ficticio listo para descargar y subir.
+              Ejercicio corto: chequear si un fallo o artículo que dio una IA es real.
             </p>
           </button>
         </div>
@@ -272,13 +322,17 @@ function Estacion0({
     );
   }
 
-  // Caso propio: checklist de qué traer
+  // Caso propio: checklist + elegir tarea
   if (state.modo === "propio") {
     return (
       <div className="rise">
-        <Head n={0} titulo="Tu caso propio" bajada="Tené esto a mano: lo vas a subir a NotebookLM en la próxima estación." />
-        <div className="rounded-2xl border border-line bg-panel/40 p-4">
-          <p className="text-sm font-semibold text-foreground">Lo que conviene tener listo</p>
+        <Head n={0} titulo="Tu caso propio" bajada="Decí qué vas a producir y tené el material a mano para la próxima estación." />
+
+        <p className="mb-2 text-sm font-semibold text-muted">1 · ¿Qué vas a producir?</p>
+        <TareaPicker opciones={TAREAS} value={state.tareaId} onPick={(id) => update({ tareaId: id })} />
+
+        <div className="mt-4 rounded-2xl border border-line bg-panel/40 p-4">
+          <p className="text-sm font-semibold text-foreground">2 · Lo que conviene tener listo</p>
           <ul className="mt-2 space-y-2">
             {CHECKLIST_PROPIO.map((c, i) => (
               <li key={i} className="flex gap-2 text-sm text-muted">
@@ -293,9 +347,10 @@ function Estacion0({
         </div>
         <CambiarCaso update={update} />
         <div className="mt-6 border-t border-line/60 pt-4">
-          <Button onClick={() => goTo(1)} className="w-full sm:w-auto">
+          <Button onClick={() => goTo(1)} disabled={!state.tareaId} className="w-full sm:w-auto">
             Tengo mi material listo →
           </Button>
+          {!state.tareaId && <p className="mt-2 text-xs text-faint">Elegí qué vas a producir para seguir.</p>}
         </div>
       </div>
     );
@@ -311,7 +366,7 @@ function Estacion0({
           {CASOS_EJEMPLO.map((c) => (
             <button
               key={c.id}
-              onClick={() => update({ ejemploId: c.id })}
+              onClick={() => update({ ejemploId: c.id, tareaId: c.tareas[0] })}
               className="rounded-2xl border border-line bg-panel/40 p-4 text-left transition hover:border-teal/60"
             >
               <div className="flex items-center gap-2">
@@ -330,9 +385,11 @@ function Estacion0({
     );
   }
 
+  const opcionesTarea = elegido.tareas.map((id) => getTarea(id)).filter(Boolean) as TareaDef[];
+
   return (
     <div className="rise">
-      <Head n={0} titulo="Tu caso de ejemplo" bajada="Descargá el material: lo subís a NotebookLM en la próxima estación." />
+      <Head n={0} titulo="Tu caso de ejemplo" bajada="Elegí qué vas a producir. El material lo descargás en la próxima estación." />
       <div className="rounded-2xl border border-line bg-panel/40 p-4">
         <div className="flex items-center gap-2">
           <span className="text-xl">{elegido.emoji}</span>
@@ -342,40 +399,38 @@ function Estacion0({
         </div>
         <h3 className="mt-2 font-semibold">{elegido.titulo}</h3>
         <p className="mt-1 text-sm text-muted">{elegido.resumen}</p>
-        <a
-          href={elegido.file}
-          download
-          className="mt-4 inline-flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm font-medium text-muted transition hover:border-teal/60 hover:text-teal"
-        >
-          ⬇ Descargar el material del caso
-        </a>
+        <p className="mt-2 text-xs text-faint">📎 {elegido.piezas.length} piezas para subir a NotebookLM (las bajás en la Estación 1).</p>
       </div>
+
+      {opcionesTarea.length > 1 ? (
+        <>
+          <p className="mb-2 mt-4 text-sm font-semibold text-muted">¿Qué vas a producir con este caso?</p>
+          <TareaPicker opciones={opcionesTarea} value={state.tareaId} onPick={(id) => update({ tareaId: id })} />
+        </>
+      ) : (
+        <p className="mt-3 text-xs text-teal">📝 Vas a producir: {opcionesTarea[0]?.label}</p>
+      )}
+
       <button
         onClick={() => update({ ejemploId: null })}
-        className="mt-3 text-xs text-faint underline-offset-2 hover:text-teal hover:underline"
+        className="mt-3 block text-xs text-faint underline-offset-2 hover:text-teal hover:underline"
       >
         Elegir otro caso de ejemplo
       </button>
       <CambiarCaso update={update} />
       <div className="mt-6 border-t border-line/60 pt-4">
-        <Button onClick={() => goTo(1)} className="w-full sm:w-auto">
-          Ya descargué el material →
+        <Button onClick={() => goTo(1)} disabled={!state.tareaId} className="w-full sm:w-auto">
+          Empezar la posta →
         </Button>
       </div>
     </div>
   );
 }
 
-function CambiarCaso({
-  update,
-  label = "← Cambiar tipo de caso",
-}: {
-  update: (p: Partial<PostaState> | ((s: PostaState) => PostaState)) => void;
-  label?: string;
-}) {
+function CambiarCaso({ update, label = "← Cambiar tipo de caso" }: { update: UpdateFn; label?: string }) {
   return (
     <button
-      onClick={() => update({ modo: null, ejemploId: null })}
+      onClick={() => update({ modo: null, ejemploId: null, tareaId: null })}
       className="mt-3 block text-xs text-faint underline-offset-2 hover:text-magenta hover:underline"
     >
       {label}
@@ -384,16 +439,9 @@ function CambiarCaso({
 }
 
 // ---------- Estación 1 · Anclar las fuentes (NotebookLM) ----------
-function Estacion1({
-  state,
-  update,
-  goTo,
-}: {
-  state: PostaState;
-  update: (p: Partial<PostaState> | ((s: PostaState) => PostaState)) => void;
-  goTo: (n: number) => void;
-}) {
+function Estacion1({ state, update, goTo }: { state: PostaState; update: UpdateFn; goTo: (n: number) => void }) {
   const elegido = getEjemplo(state.ejemploId);
+  const tarea = getTarea(state.tareaId) ?? TAREAS[0];
   return (
     <div className="rise">
       <Head
@@ -407,10 +455,34 @@ function Estacion1({
         <p className="text-sm font-semibold text-foreground">1 · Abrí NotebookLM y subí tu material</p>
         <p className="mt-1 text-xs text-muted">
           Se abre en otra pestaña. Cuando termines, <strong className="text-foreground">volvé a esta pestaña</strong>.
-          {elegido
-            ? " Subí el .txt del caso que descargaste como fuente."
-            : " Creá un cuaderno nuevo y subí tu material (PDF, texto o lo que tengas) como fuentes."}
+          {!elegido && " Creá un cuaderno nuevo y subí tu material (PDF, texto o lo que tengas) como fuentes."}
         </p>
+
+        {elegido && (
+          <div className="mt-3 rounded-xl border border-line bg-ink-2/40 p-3">
+            <p className="text-xs font-semibold text-foreground">Descargá las {elegido.piezas.length} piezas y subilas como fuentes:</p>
+            <ul className="mt-2 space-y-2">
+              {elegido.piezas.map((p) => (
+                <li key={p.n} className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm text-foreground">
+                      <span className="font-mono text-xs text-faint">P{p.n}</span> {p.titulo}
+                    </p>
+                    <p className="mt-0.5 text-xs text-muted">{p.blurb}</p>
+                  </div>
+                  <a
+                    href={p.file}
+                    download
+                    className="shrink-0 rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-muted transition hover:border-teal/60 hover:text-teal"
+                  >
+                    ⬇ Bajar
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <a
           href={NOTEBOOKLM_URL}
           target="_blank"
@@ -421,13 +493,16 @@ function Estacion1({
         </a>
       </div>
 
-      {/* Paso 2: destilar */}
-      <div className="mt-4">
-        <AiPrompt
-          base={DESTILADO_PROMPT}
-          titulo="2 · Pedile que destile tu caso"
-          bajada="Copiá este prompt y pegalo en NotebookLM. Te devuelve un resumen ordenado, anclado a tus fuentes."
-        />
+      {/* Paso 2: destilar (dentro de NotebookLM, no en otra IA) */}
+      <div className="mt-4 rounded-2xl border border-teal/40 bg-teal/5 p-4">
+        <p className="text-sm font-semibold text-teal">2 · Pedile que destile tu caso</p>
+        <p className="mt-1 text-xs text-muted">
+          Copiá este prompt y pegalo <strong className="text-foreground">dentro de NotebookLM</strong> (el que
+          ya abriste arriba). Te devuelve un resumen ordenado, anclado a tus fuentes.
+        </p>
+        <div className="mt-3">
+          <CopyBox text={tarea.destilado} label="Copiar prompt" />
+        </div>
       </div>
 
       {/* Paso 3: el PASE */}
@@ -460,15 +535,7 @@ function Estacion1({
 }
 
 // ---------- Estación 2 · Armar tu asistente (Proyecto) ----------
-function Estacion2({
-  state,
-  update,
-  goTo,
-}: {
-  state: PostaState;
-  update: (p: Partial<PostaState> | ((s: PostaState) => PostaState)) => void;
-  goTo: (n: number) => void;
-}) {
+function Estacion2({ state, update, goTo }: { state: PostaState; update: UpdateFn; goTo: (n: number) => void }) {
   const tool = state.herramienta;
   return (
     <div className="rise">
@@ -555,16 +622,10 @@ function Estacion2({
   );
 }
 
-// ---------- Estación 3 · Redactar / probar ----------
-function Estacion3({
-  state,
-  update,
-  goTo,
-}: {
-  state: PostaState;
-  update: (p: Partial<PostaState> | ((s: PostaState) => PostaState)) => void;
-  goTo: (n: number) => void;
-}) {
+// ---------- Estación 3 · Producir ----------
+function Estacion3({ state, update, goTo }: { state: PostaState; update: UpdateFn; goTo: (n: number) => void }) {
+  const tarea = getTarea(state.tareaId) ?? TAREAS[0];
+
   function finalizar() {
     update({ completado: true });
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
@@ -574,22 +635,27 @@ function Estacion3({
     <div className="rise">
       <Head
         n={3}
-        titulo="Redactar tu caso"
+        titulo="Probá tu asistente"
         bajada="Hacele la primera consulta a tu asistente y mirá cómo responde con todo el contexto cargado."
       />
 
       <Testigo titulo="Tu asistente ya tiene esto cargado" texto={state.destilado} />
 
-      <AiPrompt
-        base={PRIMERA_CONSULTA_PROMPT}
-        titulo="1 · Hacele la primera consulta"
-        bajada="Copiá esta consulta y pegala en tu Proyecto. Te devuelve la sección de hechos de tu caso."
-      />
+      <div className="rounded-2xl border border-teal/40 bg-teal/5 p-4">
+        <p className="text-sm font-semibold text-teal">1 · Hacele la primera consulta ({tarea.label})</p>
+        <p className="mt-1 text-xs text-muted">
+          Copiá esta consulta y pegala <strong className="text-foreground">en tu Proyecto</strong> (el que
+          armaste recién). Te responde usando tu caso cargado.
+        </p>
+        <div className="mt-3">
+          <CopyBox text={tarea.consulta} label="Copiar consulta" />
+        </div>
+      </div>
 
       <div className="mt-4 rounded-2xl border-gradient p-4">
         <p className="text-xs font-bold uppercase tracking-wider text-teal">🪢 El pase final</p>
         <label className="mt-1 block text-sm font-medium text-foreground">
-          2 · Pegá acá el borrador que te dio (o un link a tu documento)
+          2 · Pegá acá lo que te devolvió (o un link a tu documento)
         </label>
         <p className="text-xs text-faint">
           Para la puesta en común vemos algunos recorridos. Esto queda guardado en tu ficha.
@@ -598,7 +664,7 @@ function Estacion3({
           value={state.borrador}
           onChange={(e) => update({ borrador: e.target.value })}
           rows={6}
-          placeholder="Pegá el borrador de los hechos, o el link a tu Google Doc / Drive…"
+          placeholder="Pegá el resultado, o el link a tu Google Doc / Drive…"
           className="mt-2 w-full resize-y rounded-lg border border-line bg-ink-2/70 p-2.5 text-sm outline-none placeholder:text-faint focus:border-teal/60"
         />
       </div>
@@ -608,7 +674,7 @@ function Estacion3({
           <p className="text-2xl">🏁</p>
           <p className="mt-1 font-semibold text-teal">¡Completaste la posta!</p>
           <p className="mt-1 text-sm text-muted">
-            Hiciste el recorrido NotebookLM → Proyecto → redacción. El mismo flujo lo repetís el lunes con
+            Hiciste el recorrido NotebookLM → Proyecto → producción. El mismo flujo lo repetís el lunes con
             cualquier caso real.
           </p>
           <button
@@ -624,8 +690,121 @@ function Estacion3({
             Finalizar y guardar
           </Button>
           <p className="mt-2 text-xs text-faint">
-            Con que hayas hecho el recorrido alcanza. Pegar el borrador es opcional.
+            Con que hayas hecho el recorrido alcanza. Pegar el resultado es opcional.
           </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------- Ejercicio aparte · Verificar una cita ----------
+function VerificarCita({ state, update }: { state: PostaState; update: UpdateFn }) {
+  return (
+    <div className="rise">
+      <div className="mb-4">
+        <p className="font-mono text-xs font-bold uppercase tracking-wider text-amber-300">Ejercicio · anti-alucinación</p>
+        <h2 className="mt-0.5 text-2xl font-semibold">Verificar una cita</h2>
+        <p className="mt-1 text-sm text-muted">
+          La IA puede inventar fallos y artículos con tono seguro. Acá practicás el reflejo: nunca llevar una
+          cita al expediente sin confirmarla en una fuente oficial.
+        </p>
+      </div>
+
+      <button
+        onClick={() => update({ modo: null })}
+        className="mb-4 inline-flex items-center gap-1.5 rounded-xl border border-line bg-panel/40 px-3 py-2 text-sm font-medium text-muted transition hover:border-teal/60 hover:text-teal"
+      >
+        ← Volver a elegir
+      </button>
+
+      {/* Pasos */}
+      <div className="rounded-2xl border border-line bg-panel/40 p-4">
+        <p className="text-sm font-semibold text-foreground">Cómo se hace</p>
+        <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-muted">
+          {VERIFICAR_CITA_PASOS.map((p, i) => (
+            <li key={i}>{p}</li>
+          ))}
+        </ol>
+        <p className="mt-3 rounded-lg border border-amber-400/40 bg-amber-400/5 p-3 text-xs text-amber-200">
+          Ojo: NotebookLM NO sirve para esto, porque no busca en internet. Usá una IA con búsqueda web.
+        </p>
+      </div>
+
+      {/* La cita a verificar */}
+      <div className="mt-4 rounded-2xl border border-line bg-panel/40 p-4">
+        <label className="text-sm font-medium text-foreground">La cita que vas a chequear</label>
+        <p className="text-xs text-faint">Pegá el fallo o artículo tal como te lo dieron (o que viste en un escrito).</p>
+        <textarea
+          value={state.citaTexto}
+          onChange={(e) => update({ citaTexto: e.target.value })}
+          rows={3}
+          placeholder="Ej: «CSJN, ‘Pérez c/ Estado Nacional’, Fallos 345:678, sobre…»"
+          className="mt-2 w-full resize-y rounded-lg border border-line bg-ink-2/70 p-2.5 text-sm outline-none placeholder:text-faint focus:border-teal/60"
+        />
+      </div>
+
+      {/* Prompt + abrir IA con búsqueda */}
+      <div className="mt-4 rounded-2xl border border-teal/40 bg-teal/5 p-4">
+        <p className="text-sm font-semibold text-teal">Prompt de verificación</p>
+        <p className="mt-1 text-xs text-muted">
+          Copialo, pegá tu cita donde dice [pegá acá…], y abrí una IA con la búsqueda web activada.
+        </p>
+        <div className="mt-3">
+          <CopyBox text={VERIFICAR_CITA_PROMPT} label="Copiar prompt" />
+        </div>
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          {AI_LINKS.map((l) => (
+            <a
+              key={l.id}
+              href={l.base}
+              target="_blank"
+              rel="noopener"
+              className="rounded-xl border border-line px-3 py-2 text-center text-sm font-medium text-foreground transition hover:border-teal/60 hover:text-teal"
+            >
+              {l.label} ↗
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {/* Veredicto */}
+      <div className="mt-4 rounded-2xl border-gradient p-4">
+        <label className="block text-sm font-medium text-foreground">Tu veredicto</label>
+        <p className="text-xs text-faint">¿La cita existe y dice lo que se afirmaba? ¿Mal citada? ¿No verificada?</p>
+        <textarea
+          value={state.citaResultado}
+          onChange={(e) => update({ citaResultado: e.target.value })}
+          rows={3}
+          placeholder="Ej: el fallo existe pero no dice lo que se le atribuye / no encontré fuente: no verificada…"
+          className="mt-2 w-full resize-y rounded-lg border border-line bg-ink-2/70 p-2.5 text-sm outline-none placeholder:text-faint focus:border-teal/60"
+        />
+      </div>
+
+      {state.completado ? (
+        <div className="mt-6 rounded-2xl border border-teal/50 bg-teal/10 p-4 text-center">
+          <p className="text-2xl">✅</p>
+          <p className="mt-1 font-semibold text-teal">¡Listo!</p>
+          <p className="mt-1 text-sm text-muted">Ese es el reflejo: ninguna cita entra al expediente sin verificar.</p>
+          <button
+            onClick={() => update({ completado: false })}
+            className="mt-3 text-xs text-faint underline-offset-2 hover:underline"
+          >
+            seguir editando
+          </button>
+        </div>
+      ) : (
+        <div className="mt-6 border-t border-line/60 pt-4">
+          <Button
+            onClick={() => {
+              update({ completado: true });
+              if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            disabled={state.citaResultado.trim().length < 3}
+            className="w-full sm:w-auto"
+          >
+            Guardar veredicto
+          </Button>
         </div>
       )}
     </div>

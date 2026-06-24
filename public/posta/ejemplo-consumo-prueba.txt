@@ -1,0 +1,27 @@
+PRUEBA DOCUMENTAL (FICTICIA) — CASO CONSUMO "Sánchez c/ Automotores del Centro S.A."
+Segunda fuente para subir a NotebookLM. Material pedagógico; coincidencias casuales.
+
+=== CONTRATO DE COMPRAVENTA (ADHESIÓN) — cláusulas relevantes ===
+- Cláusula 3: "El comprador declara conocer y aceptar que la garantía del vehículo 0 km es
+  otorgada y gestionada por la TERMINAL AUTOMOTRIZ (fabricante), conforme su red oficial."
+- Cláusula 7: "La validez de la garantía está condicionada a la realización de los services
+  oficiales en los kilometrajes/plazos del Plan de Mantenimiento entregado con la unidad."
+- Cláusula 9: "Canal de reclamos: mesa de atención de la concesionaria y/o de la terminal,
+  por escrito." (firmada por el comprador)
+
+=== PLAN DE MANTENIMIENTO (entregado con la unidad) ===
+- Service 1: a los 10.000 km o 12 meses (lo que ocurra primero).
+- Service 2: a los 20.000 km o 24 meses.
+- Advertencia destacada: "La omisión de los services en los plazos previstos puede hacer caer
+  la cobertura de garantía."
+
+=== REGISTRO DE TURNOS DE SERVICE (de la concesionaria) ===
+- Service 1: NO realizado (sin registro de turno ni de ingreso del vehículo).
+- El desperfecto invocado por el actor aparece reclamado DESPUÉS del plazo del Service 1 vencido.
+
+=== COMUNICACIONES CON EL CLIENTE ===
+- Correo de la concesionaria al actor ofreciéndole turno de diagnóstico; sin respuesta registrada.
+
+OBSERVACIÓN: la defensa se apoya en tres pilares documentados: (1) la garantía es de la terminal
+(falta de legitimación pasiva de la concesionaria), (2) el contrato de adhesión fue aceptado, y
+(3) el actor no cumplió el plan de mantenimiento que condiciona la garantía.

@@ -12,6 +12,7 @@ import {
   POSTA_SLUG,
   emptyPostaState,
   getEjemplo,
+  getTarea,
   type PostaState,
 } from "@/lib/posta";
 import { cn } from "@/lib/utils";
@@ -122,6 +123,7 @@ function Panel() {
   // Modo de caso
   const propios = parsed.filter((p) => p.state.modo === "propio").length;
   const ejemplos = parsed.filter((p) => p.state.modo === "ejemplo").length;
+  const citas = parsed.filter((p) => p.state.modo === "cita").length;
   const porEjemplo = CASOS_EJEMPLO.map((c) => ({
     caso: c,
     n: parsed.filter((p) => p.state.ejemploId === c.id).length,
@@ -136,6 +138,7 @@ function Panel() {
     const header = [
       "nombre",
       "modo",
+      "tarea",
       "caso_ejemplo",
       "estacion",
       "completado",
@@ -144,12 +147,16 @@ function Panel() {
       "borrador",
       "conf1",
       "conf2",
+      "cita_texto",
+      "cita_veredicto",
     ];
     const lines = parsed.map((p) => {
       const ej = getEjemplo(p.state.ejemploId);
+      const tarea = getTarea(p.state.tareaId);
       return [
         esc(p.name),
         esc(p.state.modo ?? ""),
+        esc(tarea?.label ?? ""),
         esc(ej ? `${ej.area} — ${ej.titulo}` : ""),
         esc(p.state.estacion),
         esc(p.state.completado ? "sí" : "no"),
@@ -158,6 +165,8 @@ function Panel() {
         esc(p.state.borrador),
         esc(p.state.conf1),
         esc(p.state.conf2),
+        esc(p.state.citaTexto),
+        esc(p.state.citaResultado),
       ].join(",");
     });
     const csv = "﻿" + [header.join(","), ...lines].join("\n");
@@ -262,12 +271,15 @@ function Panel() {
               {/* Caso elegido */}
               <section className="rounded-2xl border border-line bg-panel/40 p-4">
                 <h2 className="mb-3 text-sm font-semibold text-muted">Con qué caso trabajan</h2>
-                <div className="mb-3 flex gap-2 text-xs">
+                <div className="mb-3 flex flex-wrap gap-2 text-xs">
                   <span className="rounded-full bg-teal/15 px-2.5 py-1 font-semibold text-teal">
                     {propios} propio
                   </span>
                   <span className="rounded-full bg-violet/15 px-2.5 py-1 font-semibold text-violet">
                     {ejemplos} de ejemplo
+                  </span>
+                  <span className="rounded-full bg-amber-400/15 px-2.5 py-1 font-semibold text-amber-300">
+                    {citas} verificar cita
                   </span>
                 </div>
                 <div className="space-y-1">
@@ -296,7 +308,15 @@ function Panel() {
                   .sort((a, b) => b.state.estacion - a.state.estacion)
                   .map((p) => {
                     const ej = getEjemplo(p.state.ejemploId);
-                    const casoLabel = p.state.modo === "propio" ? "Caso propio" : ej ? `${ej.emoji} ${ej.area} — ${ej.titulo}` : "Sin caso elegido";
+                    const tarea = getTarea(p.state.tareaId);
+                    const casoLabel =
+                      p.state.modo === "cita"
+                        ? "🔍 Verificar una cita"
+                        : p.state.modo === "propio"
+                          ? `Caso propio${tarea ? ` · ${tarea.label}` : ""}`
+                          : ej
+                            ? `${ej.emoji} ${ej.area}${tarea ? ` · ${tarea.label}` : ""}`
+                            : "Sin caso elegido";
                     const mins = p.updatedAt ? Math.floor((now - p.updatedAt) / 60000) : null;
                     const stuck = !p.state.completado && mins !== null && mins >= STUCK_MIN;
                     const isOpen = open === p.name;
@@ -367,10 +387,35 @@ function Panel() {
 function StudentDetail({ p }: { p: ParsedRow }) {
   const s = p.state;
   const ej = getEjemplo(s.ejemploId);
+  const tarea = getTarea(s.tareaId);
+
+  // Ejercicio aparte: verificar una cita
+  if (s.modo === "cita") {
+    return (
+      <div className="mt-3 space-y-3 border-t border-line/60 pt-3 text-sm">
+        <Line k="Ejercicio" v="Verificar una cita" />
+        {s.citaTexto && (
+          <Block titulo="Cita que chequeó">
+            <p className="whitespace-pre-wrap text-xs text-muted">{s.citaTexto}</p>
+          </Block>
+        )}
+        {s.citaResultado && (
+          <Block titulo="Veredicto">
+            <p className="whitespace-pre-wrap text-xs text-muted">{s.citaResultado}</p>
+          </Block>
+        )}
+        {!s.citaTexto && !s.citaResultado && (
+          <p className="text-xs text-faint">Entró al ejercicio pero todavía no cargó nada.</p>
+        )}
+      </div>
+    );
+  }
+
   const algo = s.destilado || s.borrador || s.conf1 || s.conf2;
   return (
     <div className="mt-3 space-y-3 border-t border-line/60 pt-3 text-sm">
       <Line k="Caso" v={s.modo === "propio" ? "Propio" : ej ? `${ej.area} — ${ej.titulo}` : "—"} />
+      {tarea && <Line k="Produce" v={tarea.label} />}
       {s.herramienta && <Line k="Proyecto en" v={s.herramienta === "claude" ? "Claude" : "ChatGPT"} />}
       {s.conf1 && (
         <Block titulo="Pase 1 · qué ordenó NotebookLM">

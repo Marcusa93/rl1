@@ -1,0 +1,34 @@
+RESUMEN DEL EXPEDIENTE (FICTICIO) — "Ríos c/ Distribuidora del Sur S.A. s/ despido"
+Segunda fuente para subir a NotebookLM, junto con la sentencia.
+Sirve para comparar LO QUE SE PIDIÓ con LO QUE SE RESOLVIÓ (análisis de congruencia).
+Material pedagógico; coincidencias casuales.
+
+=== LO QUE PIDIÓ LA ACTORA (demanda) ===
+1. Indemnización por antigüedad y preaviso (despido sin causa, art. 245 LCT).
+2. Diferencias por comisiones por ventas adeudadas (últimos 6 meses).
+3. Adicional por trabajo habitual los días SÁBADO (9 a 13 hs), no registrado ni pagado.
+4. Intereses y costas.
+
+PRUEBA OFRECIDA POR LA ACTORA:
+- Recibos de sueldo 2023-2024 (muestran comisiones en oct/nov 2023 y $0 en enero 2024).
+- Telegramas y cartas documento.
+- Dos testigos (excompañeras): sábados trabajados y esquema de comisiones.
+- Pericia contable sobre libros del art. 52 LCT (ofrecida).
+
+=== LO QUE CONTESTÓ LA DEMANDADA ===
+- Reconoce relación laboral y despido sin causa.
+- Niega el trabajo los sábados.
+- Niega comisiones impagas; dice que la liquidación final fue abonada.
+
+=== LO QUE SE PRODUJO EN EL JUICIO ===
+- Declararon las dos testigos (coincidentes sobre sábados y comisiones).
+- La pericia contable del art. 52 LCT NO se produjo (no se considera en la sentencia).
+
+=== PUNTOS PARA EL ANÁLISIS DE CONGRUENCIA ===
+- La actora pidió TRES rubros (antigüedad/preaviso, comisiones, sábados).
+- La sentencia hace lugar a antigüedad/preaviso y comisiones, y RECHAZA los sábados…
+  pero el rechazo de los sábados NO tiene un considerando que lo explique.
+- Las comisiones se admiten solo con testimonial (la pericia no se produjo): ¿alcanza?
+
+Comparar esta lista de pretensiones con la parte resolutiva de la sentencia es el ejercicio:
+¿se resolvió todo lo pedido? ¿se fundó cada decisión? ¿la prueba sostiene lo que se concedió?
