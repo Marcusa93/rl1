@@ -5,6 +5,7 @@ import type { ParticipantRow } from "@/lib/types";
 import {
   CASOS_EJEMPLO,
   CHECKLIST_PROPIO,
+  DEEP_RESEARCH_PROMPT,
   ESTACIONES,
   NOTEBOOKLM_URL,
   POSTA_ACTIVITY,
@@ -584,6 +585,46 @@ function Estacion1({ state, update, goTo }: { state: PostaState; update: UpdateF
           className="mt-2 w-full resize-y rounded-lg border border-line bg-ink-2/70 p-2.5 text-sm outline-none placeholder:text-faint focus:border-teal/60"
         />
       </div>
+
+      {/* Paso extra (opcional): investigación profunda / Deep Research */}
+      <details className="mt-4 rounded-2xl border border-violet/40 bg-violet/5 p-4">
+        <summary className="cursor-pointer list-none text-sm font-semibold text-violet">
+          🔬 Opcional · Sumá investigación jurídica con Deep Research
+          <span className="ml-1 font-normal text-faint">(tocá para abrir)</span>
+        </summary>
+        <p className="mt-2 text-xs text-muted">
+          Es una <strong className="text-foreground">función agéntica</strong>: la IA investiga sola por
+          varios minutos —planifica, busca y lee muchas fuentes— y te trae la{" "}
+          <strong className="text-foreground">normativa, jurisprudencia y doctrina</strong> aplicable, con
+          su fuente. Después sumás ese informe como <strong className="text-foreground">otra fuente</strong>{" "}
+          a NotebookLM o a tu Proyecto.
+        </p>
+        <p className="mt-2 text-xs text-faint">
+          Abrí tu IA y activá <strong className="text-foreground">«Deep Research»</strong> /{" "}
+          <strong className="text-foreground">«Investigación profunda»</strong> antes de pegar el prompt:
+        </p>
+        <div className="mt-2 grid grid-cols-3 gap-2">
+          {AI_LINKS.map((l) => (
+            <a
+              key={l.id}
+              href={l.base}
+              target="_blank"
+              rel="noopener"
+              className="rounded-xl border border-line px-3 py-2 text-center text-sm font-medium text-foreground transition hover:border-violet/60 hover:text-violet"
+            >
+              {l.label} ↗
+            </a>
+          ))}
+        </div>
+        <div className="mt-3">
+          <CopyBox text={DEEP_RESEARCH_PROMPT} label="Copiar prompt" />
+        </div>
+        <p className="mt-2 rounded-lg border border-amber-400/40 bg-amber-400/5 p-3 text-xs text-amber-200">
+          Tarda varios minutos (es normal). Cuando termine, traé el informe <strong>con sus fuentes</strong>{" "}
+          y subilo como fuente nueva. Y ojo: <strong>verificá las citas</strong> antes de usarlas — la IA
+          puede equivocarse aunque parezca segura.
+        </p>
+      </details>
 
       <CierreEstacion
         valor={state.conf1}

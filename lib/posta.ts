@@ -422,6 +422,29 @@ export const VERIFICAR_CITA_PASOS: string[] = [
   "Contrastá: ¿la fuente oficial existe y dice lo mismo? Registrá el veredicto abajo.",
 ];
 
+// --- Investigación profunda (Deep Research) — función agéntica ----------
+// Paso opcional en la Estación 1: la IA investiga sola por varios minutos
+// (planifica, busca, lee muchas fuentes) y trae normativa/jurisprudencia/
+// doctrina TRAZABLE y VERIFICABLE, que se suma como otra fuente.
+
+export const DEEP_RESEARCH_PROMPT = `Activá la función de INVESTIGACIÓN PROFUNDA (Deep Research / Investigación profunda) y hacé una investigación jurídica sobre el derecho argentino aplicable a mi caso.
+
+MI CASO (pegá acá el destilado que te dio NotebookLM, o un resumen):
+[pegá acá tu caso]
+
+Reuní y organizá:
+1. NORMATIVA aplicable: artículos concretos de leyes y códigos VIGENTES (número de norma y artículo).
+2. JURISPRUDENCIA relevante: fallos con carátula, tribunal, fecha y una cita o enlace que permita ubicarlos.
+3. DOCTRINA pertinente: autor, obra y referencia.
+
+Reglas estrictas (esto puede ir a un expediente real):
+- Todo debe ser TRAZABLE y VERIFICABLE: cada norma, fallo y cita con su fuente y, cuando exista, el link a la fuente oficial (Boletín Oficial, sitio del tribunal, bases reconocidas).
+- NO inventes fallos ni artículos. Si no podés confirmar algo en una fuente, marcalo como "[no verificado]" y no lo des por cierto.
+- Distinguí lo vigente de lo derogado o modificado.
+- Cerrá con una lista de "Fuentes citadas" con sus enlaces.
+
+Formato: secciones claras (Normativa / Jurisprudencia / Doctrina / Fuentes), listo para usar como material de trabajo.`;
+
 // --- Estaciones (mapa mental para la clase) -----------------------------
 
 export interface EstacionDef {
@@ -491,7 +514,7 @@ export const SYSTEM_PROMPT_PARTES: { titulo: string; texto: string }[] = [
 
 const AYUDA_ESTACION: Record<number, string> = {
   0: "Está eligiendo con qué trabajar (caso propio o de ejemplo) y qué va a producir (hechos, analizar sentencia, agravios, audiencia). Si dudan, sugerí el caso de ejemplo de su área.",
-  1: "Estación 1 (NotebookLM): abre NotebookLM en otra pestaña, sube su material como fuente, copia el prompt de destilado, y pega en la app lo que NotebookLM le devolvió (el pase). Dudas típicas: no encuentra dónde subir el archivo, no sabe si volver a la app.",
+  1: "Estación 1 (NotebookLM): abre NotebookLM en otra pestaña, sube su material como fuente, copia el prompt de destilado, y pega en la app lo que NotebookLM le devolvió (el pase). Dudas típicas: no encuentra dónde subir el archivo, no sabe si volver a la app. Hay además un paso OPCIONAL de Investigación Profunda (Deep Research): una función agéntica que investiga sola varios minutos y trae normativa/jurisprudencia/doctrina con su fuente, para sumar como otra fuente y verificar después.",
   2: "Estación 2 (Proyecto): crea un Proyecto en Claude o ChatGPT, pega las instrucciones (system prompt) que le da la app, y carga sus fuentes al Proyecto. Dudas típicas: dónde crear el Proyecto, dónde pegar las instrucciones, qué subir.",
   3: "Estación 3 (Producir): le hace la primera consulta a su asistente ya armado y pega el resultado en la app. Dudas típicas: la respuesta salió genérica (suele ser porque no cargó bien las fuentes en el Proyecto).",
 };
