@@ -33,72 +33,73 @@ export const CHECKLIST_PROPIO: string[] = [
 // --- Destilados (Estación 1, se ejecutan DENTRO de NotebookLM) ------------
 // Insisten en NO inventar: NotebookLM responde anclado a las fuentes.
 
-const DESTILADO_CASO = `A partir EXCLUSIVAMENTE de las fuentes que cargué en este cuaderno (no agregues nada que no esté en ellas), armá un RESUMEN ESTRUCTURADO de mi caso para usarlo después como base de trabajo.
+const DESTILADO_CASO = `[CONTEXTO] Trabajás SOLO con las fuentes que cargué en este cuaderno. No sabés nada fuera de ellas.
+[OBJETO] Quiero un resumen estructurado y fiel de mi caso, para usarlo después como base de trabajo.
+[TAREA] Extraé y ordená, citando entre paréntesis de qué fuente sale cada punto:
+1. Carátula y partes: actor, demandado, rol procesal y fuero/jurisdicción si surge.
+2. Hechos en orden cronológico, con fecha cuando exista; lenguaje neutro y factual.
+3. Prueba disponible y qué hecho respalda cada elemento.
+4. Normativa o derecho mencionado (solo lo citado en las fuentes).
+5. Contradicciones o inconsistencias entre las fuentes, si las hay.
+6. Datos faltantes: información necesaria que NO surge de las fuentes.
+[INPUT] Las fuentes cargadas en el cuaderno; nada más.
+[OUTPUT] Las seis secciones, en viñetas. Si algo no surge de las fuentes, escribí "No surge de las fuentes". No inventes fallos, artículos ni datos. No opines: ordená.`;
 
-Devolvélo con estas secciones:
-1. CARÁTULA Y PARTES: quién es quién (actor, demandado, rol procesal) y fuero/jurisdicción si surge.
-2. HECHOS EN ORDEN CRONOLÓGICO: lista de hechos con fecha cuando exista, en lenguaje neutro y factual.
-3. PRUEBA DISPONIBLE: qué documento o prueba respalda cada hecho.
-4. NORMATIVA O DERECHO MENCIONADO: solo lo que aparezca citado en las fuentes.
-5. DATOS FALTANTES: qué información necesaria NO surge de las fuentes.
-
-Reglas:
-- Si algo no surge de las fuentes, escribí "No surge de las fuentes". No lo completes de memoria.
-- No inventes fallos, artículos ni datos.
-- Citá entre paréntesis de qué fuente sale cada punto importante.`;
-
-const DESTILADO_SENTENCIA = `A partir EXCLUSIVAMENTE de las fuentes que cargué (no agregues nada que no esté en ellas), armá un MAPA del fallo para analizarlo después.
-
-Devolvélo con estas secciones:
-1. CARÁTULA Y PARTES: tribunal, fuero y quién es quién.
-2. QUÉ SE PIDIÓ: pretensiones y planteos de cada parte (si surgen del expediente cargado).
-3. HECHOS QUE EL TRIBUNAL TUVO POR ACREDITADOS.
-4. PRUEBA QUE VALORÓ (y la que descartó, si lo dice).
-5. NORMATIVA Y FUNDAMENTOS que invoca para decidir.
-6. PARTE RESOLUTIVA: qué resolvió en concreto.
-7. LO QUE NO SURGE DEL TEXTO: puntos que el fallo no explicita.
-
-Reglas:
-- Si algo no surge de las fuentes, escribí "No surge de las fuentes". No lo completes de memoria.
-- No inventes fallos, artículos ni datos.
-- Citá entre paréntesis el considerando o apartado de donde sale cada punto.`;
+const DESTILADO_SENTENCIA = `[CONTEXTO] Trabajás SOLO con la sentencia (y el expediente) que cargué. No agregues nada externo.
+[OBJETO] Quiero un "mapa" fiel del fallo, para analizarlo después.
+[TAREA] Extraé, citando entre paréntesis el considerando o apartado de origen:
+1. Carátula y partes; tribunal y fuero.
+2. Qué pidió cada parte (pretensiones y planteos), si surge.
+3. Hechos que el tribunal tuvo por acreditados.
+4. Prueba que valoró y la que descartó (si lo dice).
+5. Normativa y fundamentos que invoca para decidir.
+6. Parte resolutiva: qué resolvió, punto por punto.
+7. Lo que el fallo NO explicita (silencios, saltos).
+[INPUT] Solo las fuentes cargadas.
+[OUTPUT] Las siete secciones, en viñetas. "No surge de las fuentes" para lo ausente. No inventes ni opines: esto es un mapa, no el análisis.`;
 
 // --- Consultas (Estación 3, se pegan en el Proyecto ya armado) -----------
 
-const CONSULTA_HECHOS = `Con las fuentes cargadas en este Proyecto, redactá la SECCIÓN DE HECHOS de mi escrito.
+const CONSULTA_HECHOS = `[CONTEXTO] Sos mi asistente de redacción jurídica en derecho argentino; trabajás con las fuentes cargadas en este Proyecto (mi caso).
+[OBJETO] Necesito la SECCIÓN DE HECHOS lista para revisar e insertar en mi escrito.
+[TAREA]
+1. Ordená los hechos cronológicamente y numeralos.
+2. Redactá en primera persona del plural (esta parte), en pretérito y tono formal.
+3. Narrá solo hechos: sin derecho, sin valoraciones, sin petitorio.
+4. Para cada hecho relevante, indicá entre paréntesis con qué prueba se acredita.
+5. Si un dato no surge de las fuentes, dejá "[falta: …]"; no lo inventes.
+[INPUT] Usá exclusivamente las fuentes del Proyecto; si algo es ambiguo, explicitá el supuesto.
+[OUTPUT] La sección numerada (~500 palabras salvo que el caso exija más) y, debajo, un apartado "A verificar / completar" con datos faltantes y dudas. Sin encabezados ni fórmulas procesales de estilo.`;
 
-- Orden cronológico, en primera persona del plural.
-- Solo hechos: sin derecho, sin valoraciones y sin petitorio.
-- Donde falte un dato, dejá un [corchete] con lo que tengo que completar.
+const CONSULTA_ANALIZAR = `[CONTEXTO] Sos mi asistente jurídico; trabajás con la sentencia y el expediente cargados en este Proyecto. Es un análisis interno.
+[OBJETO] Un análisis crítico del fallo: si es congruente, si está bien fundado y dónde flaquea.
+[TAREA]
+1. Resumí en pocas líneas qué resolvió y sus fundamentos centrales (con cita del considerando).
+2. Congruencia: ¿lo resuelto se corresponde con lo pedido y la prueba valorada? Señalá extra/ultra/citra petita si los hay.
+3. Fundamentación: marcá afirmaciones sin sustento, prueba no valorada o saltos lógicos.
+4. En cada observación, distinguí la CITA TEXTUAL del fallo de TU comentario.
+[INPUT] Solo las fuentes del Proyecto.
+[OUTPUT] Las secciones 1 a 4. Indicá qué habría que verificar en el expediente o la norma antes de afirmarlo. No inventes jurisprudencia ni artículos: si hace falta una cita, escribí "[verificar]". No redactes un fallo nuevo.`;
 
-Al final, listá los 3 datos que debería verificar o completar antes de presentar el escrito.`;
+const CONSULTA_AGRAVIOS = `[CONTEXTO] Sos mi asistente; trabajás con la sentencia cargada en este Proyecto. Represento a la parte que va a apelar.
+[OBJETO] Un punteo estratégico de los agravios (todavía no el memorial).
+[TAREA]
+1. Identificá los puntos del fallo que me perjudican.
+2. Por cada uno, esbozá el AGRAVIO: por qué el fallo se equivoca (hechos, prueba, derecho o falta de fundamentación), citando el pasaje del fallo.
+3. Indicá qué parte de la prueba o del expediente respalda cada agravio.
+4. Ordená los agravios de más fuerte a más débil, con una línea de por qué.
+[INPUT] Solo las fuentes del Proyecto.
+[OUTPUT] La lista de agravios con su fundamento y respaldo. No inventes citas: "[verificar]" si hace falta. Es un punteo, no el escrito.`;
 
-const CONSULTA_ANALIZAR = `Con la sentencia cargada en este Proyecto, hacé un ANÁLISIS CRÍTICO para uso interno del tribunal.
-
-1. Resumí en pocas líneas qué resolvió y con qué fundamentos centrales.
-2. Evaluá la CONGRUENCIA: ¿lo resuelto se corresponde con los hechos planteados y la prueba valorada? Señalá desajustes (extra/ultra/citra petita) si los hubiera.
-3. Marcá posibles vicios o puntos débiles: falta de fundamentación, prueba no valorada, saltos lógicos.
-4. Indicá qué deberías verificar en el expediente o en la norma antes de afirmar cada observación.
-
-No inventes jurisprudencia ni artículos: si hace falta una cita, escribí "[verificar]". No redactes un fallo nuevo; es un análisis.`;
-
-const CONSULTA_AGRAVIOS = `Con la sentencia cargada en este Proyecto, ayudame a preparar la APELACIÓN (sin redactar el escrito todavía).
-
-1. Identificá los puntos de la sentencia que me perjudican (lo que voy a apelar).
-2. Para cada uno, esbozá el AGRAVIO: por qué el fallo está equivocado (error en los hechos, en la prueba, en el derecho o falta de fundamentación).
-3. Señalá qué parte de la prueba o del expediente respalda cada agravio.
-4. Marcá los agravios más fuertes y los más débiles, con una línea de por qué.
-
-No inventes jurisprudencia ni artículos: si hace falta una cita, escribí "[verificar]". Es un punteo estratégico, no el memorial.`;
-
-const CONSULTA_AUDIENCIA = `Con las fuentes cargadas en este Proyecto, ayudame a PREPARAR LA AUDIENCIA.
-
-1. Resumí el caso en 5 puntos que tengo que tener fijos en la cabeza.
-2. Hacé un punteo de los hechos y la prueba que voy a invocar, en el orden en que conviene plantearlos.
-3. Sugerí preguntas para los testigos / la otra parte, agrupadas por tema.
-4. Anticipá los 3 planteos más probables de la contraparte y cómo respondería a cada uno.
-
-No inventes jurisprudencia ni artículos: si hace falta una cita, escribí "[verificar]". Es material de preparación, no un escrito.`;
+const CONSULTA_AUDIENCIA = `[CONTEXTO] Sos mi asistente; trabajás con el caso cargado en este Proyecto. Voy a una audiencia.
+[OBJETO] Material de preparación para la audiencia (no un escrito).
+[TAREA]
+1. Resumí el caso en 5 puntos que tengo que tener fijos.
+2. Punteo de hechos y prueba a invocar, en el orden conveniente.
+3. Preguntas para testigos/contraparte, agrupadas por tema.
+4. Los 3 planteos más probables de la otra parte y cómo respondería a cada uno.
+[INPUT] Solo las fuentes del Proyecto.
+[OUTPUT] Las cuatro secciones, en viñetas accionables. "[verificar]" para cualquier cita; no inventes.`;
 
 // --- Tareas: qué produce el alumno --------------------------------------
 
@@ -402,18 +403,15 @@ export function recomendarPara(name: string | null | undefined): Reco | null {
 // una IA con BÚSQUEDA web para chequear si una cita (fallo/artículo) existe
 // y dice lo que la IA afirmó. Refuerza el reflejo anti-alucinación.
 
-export const VERIFICAR_CITA_PROMPT = `Necesito verificar si esta cita jurídica es REAL y dice lo que se afirma. Activá la búsqueda web y trabajá solo con fuentes oficiales o confiables (boletín oficial, sitios de los tribunales, bases reconocidas).
-
-CITA A VERIFICAR:
-[pegá acá el fallo, artículo o cita tal como te lo dieron]
-
-Hacé esto:
-1. Buscá la fuente oficial. Decime si la cita EXISTE, si está mal citada, o si no encontrás respaldo.
-2. Si existe, transcribí textual el pasaje pertinente y el link/fuente.
-3. Decime si efectivamente dice lo que se afirma, o si se le atribuye algo que no dice.
-4. Si no podés confirmarla con una fuente, decílo claramente: "No verificada". No la des por buena.
-
-No completes de memoria: si no hay fuente, no hay cita.`;
+export const VERIFICAR_CITA_PROMPT = `[CONTEXTO] Sos un verificador de fuentes jurídicas. Activá la BÚSQUEDA WEB y usá solo fuentes oficiales o reconocidas (Boletín Oficial, sitios de los tribunales, bases serias).
+[OBJETO] Confirmar si esta cita es REAL y si dice lo que se afirma.
+[INPUT] Cita a verificar: [pegá acá el fallo, artículo o cita tal como te lo dieron]
+[TAREA]
+1. Buscá la fuente oficial. Decí si la cita EXISTE, si está mal citada o si no hay respaldo.
+2. Si existe, transcribí textual el pasaje pertinente con su link/fuente.
+3. Decí si efectivamente dice lo que se afirma, o si se le atribuye algo que no dice.
+4. Si no podés confirmarla con una fuente, declarála "NO VERIFICADA".
+[OUTPUT] Un veredicto claro (verificada / mal citada / no verificada) + fuente o link + una nota breve. No completes de memoria: si no hay fuente, no hay cita.`;
 
 export const VERIFICAR_CITA_PASOS: string[] = [
   "Tomá la cita que querés chequear (un fallo o artículo que te dio una IA, o que viste en un escrito).",
@@ -427,23 +425,19 @@ export const VERIFICAR_CITA_PASOS: string[] = [
 // (planifica, busca, lee muchas fuentes) y trae normativa/jurisprudencia/
 // doctrina TRAZABLE y VERIFICABLE, que se suma como otra fuente.
 
-export const DEEP_RESEARCH_PROMPT = `Activá la función de INVESTIGACIÓN PROFUNDA (Deep Research / Investigación profunda) y hacé una investigación jurídica sobre el derecho argentino aplicable a mi caso.
-
-MI CASO (pegá acá el destilado que te dio NotebookLM, o un resumen):
-[pegá acá tu caso]
-
-Reuní y organizá:
-1. NORMATIVA aplicable: artículos concretos de leyes y códigos VIGENTES (número de norma y artículo).
-2. JURISPRUDENCIA relevante: fallos con carátula, tribunal, fecha y una cita o enlace que permita ubicarlos.
+export const DEEP_RESEARCH_PROMPT = `[CONTEXTO] Sos un investigador jurídico en derecho argentino. Activá la INVESTIGACIÓN PROFUNDA (Deep Research / Investigación profunda). Jurisdicción y fuero: [completar, ej.: laboral — Tucumán].
+[OBJETO] Reunir el marco jurídico aplicable a mi caso, TRAZABLE y VERIFICABLE, para incorporarlo a un expediente real.
+[INPUT] Mi caso (pegá el destilado de NotebookLM o un resumen): [pegá acá tu caso]
+[TAREA]
+1. NORMATIVA vigente: leyes y códigos con número de norma y artículo.
+2. JURISPRUDENCIA relevante: fallos con carátula, tribunal, fecha y cita o enlace para ubicarlos.
 3. DOCTRINA pertinente: autor, obra y referencia.
-
-Reglas estrictas (esto puede ir a un expediente real):
-- Todo debe ser TRAZABLE y VERIFICABLE: cada norma, fallo y cita con su fuente y, cuando exista, el link a la fuente oficial (Boletín Oficial, sitio del tribunal, bases reconocidas).
-- NO inventes fallos ni artículos. Si no podés confirmar algo en una fuente, marcalo como "[no verificado]" y no lo des por cierto.
-- Distinguí lo vigente de lo derogado o modificado.
-- Cerrá con una lista de "Fuentes citadas" con sus enlaces.
-
-Formato: secciones claras (Normativa / Jurisprudencia / Doctrina / Fuentes), listo para usar como material de trabajo.`;
+[OUTPUT / REGLAS]
+- Todo con su FUENTE y, cuando exista, link a la fuente oficial (Boletín Oficial, sitio del tribunal, bases reconocidas).
+- NO inventes fallos ni artículos: lo que no puedas confirmar, marcalo "[no verificado]".
+- Distinguí lo VIGENTE de lo derogado o modificado, con la fecha del cambio.
+- Secciones: Normativa / Jurisprudencia / Doctrina / Fuentes citadas (con links).
+- Cerrá con un CHECKLIST de verificación: 3 cosas que yo debería chequear antes de citar esto en un escrito.`;
 
 // --- Estaciones (mapa mental para la clase) -----------------------------
 
@@ -485,12 +479,14 @@ export const ESTACIONES: EstacionDef[] = [
 
 export const SYSTEM_PROMPT_POSTA = `Sos un asistente jurídico especializado en derecho argentino. Trabajás sobre EL CASO cuyas fuentes están cargadas en este Proyecto.
 
-REGLAS:
-1. Basate solo en las fuentes cargadas y en lo que yo te indique. Si falta un dato, preguntámelo: nunca lo inventes.
-2. No inventás jurisprudencia ni artículos. Si no estás seguro de que un fallo o una norma existe, lo decís expresamente.
-3. Escribís en español jurídico argentino, con tono formal y claro.
-4. Seguís la estructura que te pida cada consulta. Si redactás hechos de una demanda o contestación: orden cronológico, primera persona del plural y narración solo factual (sin valoraciones, sin derecho, sin petitorio). Si analizás una sentencia o preparás una audiencia: ordenás por puntos y distinguís hechos, prueba, fundamentos y conclusiones.
-5. Marcás entre [corchetes] cualquier dato que yo deba completar o verificar antes de usar el resultado.`;
+CÓMO TRABAJÁS:
+1. Te basás solo en las fuentes cargadas y en lo que yo indique. Si falta un dato clave, primero PREGUNTÁ; no lo inventes ni lo completes de memoria.
+2. No inventás jurisprudencia ni artículos. Si no estás seguro de que un fallo o una norma existe, lo decís; si hace falta una cita, escribís "[verificar]".
+3. Antes de un texto largo, ofrecé un ESQUEMA breve y esperá mi visto bueno (no dispares un borrador a ciegas).
+4. Cuando afirmes un hecho, indicá de qué fuente sale.
+5. Marcás entre [corchetes] cualquier dato a completar o verificar antes de usar el resultado.
+
+ESTILO: español jurídico argentino, formal y claro. Seguís la estructura que te pida cada consulta (hechos cronológicos y solo factuales para una demanda o contestación; análisis por puntos para una sentencia o una audiencia). Si el fuero o la jurisdicción importan y no los aclaré, preguntámelos.`;
 
 export const SYSTEM_PROMPT_PARTES: { titulo: string; texto: string }[] = [
   {
@@ -499,11 +495,11 @@ export const SYSTEM_PROMPT_PARTES: { titulo: string; texto: string }[] = [
   },
   {
     titulo: "Qué NO hace (anti-alucinación)",
-    texto: "Reglas 1 a 3: no inventa datos, fallos ni normas, y avisa cuando algo no surge de las fuentes.",
+    texto: "Reglas 1 y 2: no inventa datos, fallos ni normas; si falta algo pregunta, y si hace falta una cita escribe [verificar].",
   },
   {
-    titulo: "Cómo escribe (formato)",
-    texto: "Reglas 4 y 5: estilo formal y la estructura que pidas, con [corchetes] para lo que falta verificar.",
+    titulo: "Cómo trabaja (método)",
+    texto: "Reglas 3 a 5: primero un esquema y después el texto, cita de qué fuente sale cada hecho, estilo formal y la estructura que pidas.",
   },
 ];
 

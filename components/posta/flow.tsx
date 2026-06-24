@@ -211,6 +211,15 @@ function Testigo({ titulo, texto }: { titulo: string; texto: string }) {
   );
 }
 
+/** Cartelito: el prompt sigue el método COTIO (refuerza lo de la Clase 1). */
+function CotioHint() {
+  return (
+    <p className="mt-2 text-[11px] text-faint">
+      📐 Este prompt sigue el método <span className="font-semibold text-muted">COTIO</span> — Contexto · Objeto · Tarea · Input · Output.
+    </p>
+  );
+}
+
 /** Cierre de estación: microconfirmación de una línea que habilita continuar. */
 function CierreEstacion({
   valor,
@@ -563,6 +572,7 @@ function Estacion1({ state, update, goTo }: { state: PostaState; update: UpdateF
           Copiá este prompt y pegalo <strong className="text-foreground">dentro de NotebookLM</strong> (el que
           ya abriste arriba). Te devuelve un resumen ordenado, anclado a tus fuentes.
         </p>
+        <CotioHint />
         <div className="mt-3">
           <CopyBox text={tarea.destilado} label="Copiar prompt" />
         </div>
@@ -616,6 +626,7 @@ function Estacion1({ state, update, goTo }: { state: PostaState; update: UpdateF
             </a>
           ))}
         </div>
+        <CotioHint />
         <div className="mt-3">
           <CopyBox text={DEEP_RESEARCH_PROMPT} label="Copiar prompt" />
         </div>
@@ -750,6 +761,7 @@ function Estacion3({ state, update, goTo }: { state: PostaState; update: UpdateF
           Copiá esta consulta y pegala <strong className="text-foreground">en tu Proyecto</strong> (el que
           armaste recién). Te responde usando tu caso cargado.
         </p>
+        <CotioHint />
         <div className="mt-3">
           <CopyBox text={tarea.consulta} label="Copiar consulta" />
         </div>
@@ -853,6 +865,7 @@ function VerificarCita({ state, update }: { state: PostaState; update: UpdateFn 
         <p className="mt-1 text-xs text-muted">
           Copialo, pegá tu cita donde dice [pegá acá…], y abrí una IA con la búsqueda web activada.
         </p>
+        <CotioHint />
         <div className="mt-3">
           <CopyBox text={VERIFICAR_CITA_PROMPT} label="Copiar prompt" />
         </div>
