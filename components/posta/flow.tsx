@@ -461,12 +461,22 @@ function Estacion1({ state, update, goTo }: { state: PostaState; update: UpdateF
         {elegido && (
           <div className="mt-3 rounded-xl border border-line bg-ink-2/40 p-3">
             <p className="text-xs font-semibold text-foreground">Descargá las {elegido.piezas.length} piezas y subilas como fuentes:</p>
+            {elegido.piezas.some((p) => p.img) && (
+              <p className="mt-1 text-xs text-faint">
+                🖼️ Las imágenes (telegrama, recibo…) las lee NotebookLM con OCR, como un escaneo real.
+              </p>
+            )}
             <ul className="mt-2 space-y-2">
               {elegido.piezas.map((p) => (
                 <li key={p.n} className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-sm text-foreground">
                       <span className="font-mono text-xs text-faint">P{p.n}</span> {p.titulo}
+                      {p.img && (
+                        <span className="ml-2 rounded-full bg-violet/15 px-1.5 py-0.5 text-[10px] font-bold uppercase text-violet">
+                          imagen · OCR
+                        </span>
+                      )}
                     </p>
                     <p className="mt-0.5 text-xs text-muted">{p.blurb}</p>
                   </div>

@@ -159,7 +159,8 @@ export interface Pieza {
   n: number;
   titulo: string;
   blurb: string; // por qué importa
-  file: string; // ruta en /public/posta
+  file: string; // ruta en /public
+  img?: boolean; // true = imagen (NotebookLM la lee con OCR)
 }
 
 export interface CasoEjemplo {
@@ -184,15 +185,30 @@ export const CASOS_EJEMPLO: CasoEjemplo[] = [
     piezas: [
       {
         n: 1,
-        titulo: "Relato y cronología del caso",
-        blurb: "El hilo de los hechos: ingreso, jornada, despido y reclamos.",
-        file: "/posta/ejemplo-laboral.txt",
+        titulo: "Telegrama de despido",
+        blurb: "El despido sin causa, tal como llegó. Imagen: NotebookLM la lee con OCR.",
+        file: "/posta/img/laboral-telegrama.png",
+        img: true,
       },
       {
         n: 2,
-        titulo: "Intercambio epistolar y recibos",
-        blurb: "La prueba documental: telegramas, cartas documento y datos de los recibos.",
-        file: "/posta/ejemplo-laboral-prueba.txt",
+        titulo: "Carta documento de intimación",
+        blurb: "La intimación previa de la trabajadora (sábados y comisiones). Imagen con OCR.",
+        file: "/posta/img/laboral-carta-documento.png",
+        img: true,
+      },
+      {
+        n: 3,
+        titulo: "Recibo de haberes",
+        blurb: "Comisiones en $0 y jornada solo de lunes a viernes. Imagen con OCR.",
+        file: "/posta/img/laboral-recibo.png",
+        img: true,
+      },
+      {
+        n: 4,
+        titulo: "Relato y cronología del caso",
+        blurb: "El contexto narrado (ingreso, jornada, reclamos). Texto, por si querés el resumen.",
+        file: "/posta/ejemplo-laboral.txt",
       },
     ],
   },
