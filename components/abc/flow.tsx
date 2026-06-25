@@ -19,6 +19,7 @@ import {
   resumenMemoria,
   type AbcState,
 } from "@/lib/abc";
+import { AI_LINKS } from "@/lib/constants";
 import { streamGenerate } from "@/components/use-stream";
 import { Button, Spinner } from "@/components/ui";
 import { CopyBox } from "@/components/expediente/copy-box";
@@ -210,6 +211,15 @@ function Paso0({
             </Chip>
           ))}
         </div>
+        {state.situaciones.includes("otro") && (
+          <input
+            value={state.situacionOtro}
+            onChange={(e) => update({ situacionOtro: e.target.value })}
+            placeholder="¿Qué cosa? Contámelo en una frase. Ej: me cuesta cobrarles a los clientes."
+            autoFocus
+            className="mt-2 w-full rounded-xl border border-teal/50 bg-ink-2/70 px-4 py-3 text-sm outline-none placeholder:text-faint focus:border-teal/70"
+          />
+        )}
       </div>
 
       <div className="mt-6 border-t border-line/60 pt-4">
@@ -311,6 +321,30 @@ function Paso2({
           <div className="mt-3">
             <CopyBox text={promptMemoria(state, nombre)} label="Copiar mi memoria" />
           </div>
+
+          <p className="mt-4 text-sm font-semibold text-foreground">Ahora probalo: abrí una IA</p>
+          <div className="mt-2 grid grid-cols-3 gap-2">
+            {AI_LINKS.map((l) => (
+              <a
+                key={l.id}
+                href={l.base}
+                target="_blank"
+                rel="noopener"
+                className="rounded-xl border border-line px-3 py-2 text-center text-sm font-medium text-foreground transition hover:border-teal/60 hover:text-teal"
+              >
+                {l.label} ↗
+              </a>
+            ))}
+          </div>
+          <ol className="mt-3 list-decimal space-y-1 pl-5 text-xs text-muted">
+            <li>Tocá una de las tres de arriba (se abre en otra pestaña).</li>
+            <li>Pegá el texto que copiaste (Ctrl o Cmd + V) y mandalo.</li>
+            <li>Listo: ahora la IA te conoce. Probá pidiéndole algo y mirá la diferencia.</li>
+          </ol>
+          <p className="mt-2 text-[11px] text-faint">
+            Tip: muchas IA tienen una sección de «Memoria» donde podés pegar esto una sola vez para que te
+            recuerde siempre. El copiloto te dice cómo si querés.
+          </p>
         </div>
       )}
 

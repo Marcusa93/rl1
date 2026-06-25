@@ -30,6 +30,7 @@ export const SITUACIONES: Situacion[] = [
   { id: "buscar", emoji: "🔎", label: "Pierdo tiempo buscando información", voz: "que perdés tiempo buscando información" },
   { id: "ordenar", emoji: "🧠", label: "No sé cómo organizar mis ideas antes de escribir", voz: "que te cuesta organizar tus ideas antes de escribir" },
   { id: "resumir", emoji: "📄", label: "Tengo que resumir cosas largas y me lleva horas", voz: "que resumir cosas largas te lleva mucho tiempo" },
+  { id: "otro", emoji: "✨", label: "Otra cosa (la escribo yo)", voz: "" },
 ];
 
 // --- Tema 3 · Analogías (pantalla estática que refuerza al docente) ------
@@ -130,6 +131,7 @@ export const TARJETAS: Tarjeta[] = [
       { id: "describir", label: "Describir un producto o servicio", pedido: "Ayudame a escribir una descripción atractiva de un producto o servicio." },
       { id: "cliente", label: "Responder a un cliente", pedido: "Ayudame a redactar una respuesta para un cliente." },
       { id: "promo", label: "Escribir una promoción o anuncio", pedido: "Ayudame a escribir una promoción o un anuncio breve." },
+      { id: "otro", label: "Otra cosa (la escribo abajo)", pedido: "Ayudame con esto que necesito para mi negocio o trabajo:" },
     ],
   },
   {
@@ -142,6 +144,7 @@ export const TARJETAS: Tarjeta[] = [
       { id: "ordenar", label: "Ordenar mis ingresos y gastos", pedido: "Ayudame a ordenar y entender mis ingresos y gastos del mes." },
       { id: "donde", label: "Ver dónde se me va la plata", pedido: "Mirá estos números y decime dónde se me va más la plata y qué podría recortar." },
       { id: "presupuesto", label: "Armar un presupuesto simple", pedido: "Ayudame a armar un presupuesto mensual simple con estos datos." },
+      { id: "otro", label: "Otra cosa (la escribo abajo)", pedido: "Ayudame con esto que necesito sobre mis cuentas:" },
     ],
   },
   {
@@ -154,6 +157,7 @@ export const TARJETAS: Tarjeta[] = [
       { id: "mensaje", label: "Escribir un mensaje difícil", pedido: "Ayudame a escribir un mensaje difícil. Dame tres versiones: una directa, una conciliadora y una formal." },
       { id: "resumir", label: "Resumir algo largo", pedido: "Resumime esto en pocos puntos claros y fáciles de leer." },
       { id: "ideas", label: "Ordenar mis ideas para escribir algo", pedido: "Ayudame a ordenar mis ideas para escribir esto, con una estructura simple." },
+      { id: "otro", label: "Otra cosa (la escribo abajo)", pedido: "Ayudame con esto que necesito:" },
     ],
   },
 ];
@@ -185,6 +189,7 @@ export interface AbcState {
   paso: number; // máximo alcanzado (0..4)
   ocupacion: string; // qué hace en el día a día
   situaciones: string[]; // ids (1-2)
+  situacionOtro: string; // texto libre si eligió "otro"
   negocio: string | null;
   equipo: string | null;
   escribe: string[];
@@ -203,6 +208,7 @@ export function emptyAbcState(): AbcState {
     paso: 0,
     ocupacion: "",
     situaciones: [],
+    situacionOtro: "",
     negocio: null,
     equipo: null,
     escribe: [],
@@ -257,8 +263,13 @@ function ocupacionEnVos(txt: string): string {
 export function resumenMemoria(s: AbcState, nombre: string): string {
   const partes: string[] = [`que te llamás ${nombre || "…"}`];
   if (s.ocupacion.trim()) partes.push(`que ${ocupacionEnVos(s.ocupacion)}`);
-  const sit = s.situaciones.map((id) => SITUACIONES.find((x) => x.id === id)?.voz).filter(Boolean);
+  const sit = s.situaciones
+    .filter((id) => id !== "otro")
+    .map((id) => SITUACIONES.find((x) => x.id === id)?.voz)
+    .filter(Boolean);
   if (sit.length) partes.push(sit.join(" y "));
+  if (s.situaciones.includes("otro") && s.situacionOtro.trim())
+    partes.push(`y esto que me contaste: «${s.situacionOtro.trim()}»`);
   return `Sé ${partes.join(", ")}.`;
 }
 
@@ -270,8 +281,10 @@ export function promptMemoria(s: AbcState, nombre: string): string {
   if (s.negocio) L.push(`- ${s.negocio === "propio" ? "Tengo un negocio propio." : "Trabajo en relación de dependencia."}`);
   if (s.equipo) L.push(`- ${s.equipo === "solo" ? "Trabajo solo/a." : "Trabajo con un equipo."}`);
   if (s.escribe.length) L.push(`- Suelo escribir: ${s.escribe.map((id) => ESCRIBE_LABEL[id] ?? id).join(", ")}.`);
-  const sit = s.situaciones.map((id) => SITUACIONES.find((x) => x.id === id)?.label.toLowerCase()).filter(Boolean);
-  if (sit.length) L.push(`- Lo que más me cuesta: ${sit.join("; ")}.`);
+  const sit = s.situaciones
+    .map((id) => (id === "otro" ? s.situacionOtro.trim() || null : SITUACIONES.find((x) => x.id === id)?.label.toLowerCase()))
+    .filter(Boolean);
+  if (sit.length) L.push(`- Lo que más me cuesta o necesito: ${sit.join("; ")}.`);
   L.push(
     s.estilo === "largas"
       ? "Cuando me respondas, desarrollá un poco más, con ejemplos."
