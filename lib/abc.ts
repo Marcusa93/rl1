@@ -1,0 +1,303 @@
+// ============================================================
+// Taller /abc · "La IA no es Google" — para personas que NUNCA usaron IA.
+// Diplomatura/curso introductorio. Self-paced, dirigido por el docente.
+//
+// La app acompaña 4 momentos interactivos (los demos en vivo los hace el
+// docente): onboarding → analogías → memoria persistente → primer caso real
+// → cierre. En el caso real la IA corre DENTRO de la app (principiantes:
+// no los mandamos a herramientas externas).
+// ============================================================
+
+export const ABC_SLUG = "abc";
+export const ABC_TITLE = "La IA no es Google — taller para empezar";
+export const ABC_ACTIVITY = "abc";
+export const ABC_ITEM = "state";
+
+export const FRASE_ANCLA =
+  "La IA no es Google: no te da una lista de links, te da una mano para hacer.";
+
+// --- Tema 2 · Onboarding: situaciones cotidianas ------------------------
+
+export interface Situacion {
+  id: string;
+  emoji: string;
+  label: string; // como lo elige el participante (1ª persona)
+  voz: string; // como lo dice la IA sobre el participante ("que te cuesta…")
+}
+
+export const SITUACIONES: Situacion[] = [
+  { id: "mensajes", emoji: "✍️", label: "Me cuesta redactar mensajes difíciles", voz: "que te cuesta redactar mensajes difíciles" },
+  { id: "buscar", emoji: "🔎", label: "Pierdo tiempo buscando información", voz: "que perdés tiempo buscando información" },
+  { id: "ordenar", emoji: "🧠", label: "No sé cómo organizar mis ideas antes de escribir", voz: "que te cuesta organizar tus ideas antes de escribir" },
+  { id: "resumir", emoji: "📄", label: "Tengo que resumir cosas largas y me lleva horas", voz: "que resumir cosas largas te lleva mucho tiempo" },
+];
+
+// --- Tema 3 · Analogías (pantalla estática que refuerza al docente) ------
+
+export interface Analogia {
+  emoji: string;
+  titulo: string;
+  texto: string;
+}
+
+export const ANALOGIAS: Analogia[] = [
+  {
+    emoji: "🧑‍💼",
+    titulo: "El asistente nuevo en la oficina",
+    texto:
+      "Es muy capaz, pero recién llega: no sabe nada de vos ni de tu trabajo. Si le explicás bien qué necesitás, lo hace bárbaro. Si le pedís cualquier cosa a medias, te trae cualquier cosa.",
+  },
+  {
+    emoji: "👨‍🍳",
+    titulo: "El chef",
+    texto:
+      "Cocina muy bien, pero el plato sale según cómo se lo pidas. Si decís solo «algo de comer», improvisa. Si le contás qué te gusta y para qué es, te clava el plato justo.",
+  },
+];
+
+// --- Tema 4 · Preguntas para profundizar el perfil ----------------------
+
+export interface PerfilPregunta {
+  id: string;
+  q: string;
+  multi?: boolean;
+  opciones: { id: string; label: string }[];
+}
+
+export const PERFIL_PREGUNTAS: PerfilPregunta[] = [
+  {
+    id: "negocio",
+    q: "¿Tenés un negocio propio o trabajás para alguien?",
+    opciones: [
+      { id: "propio", label: "Negocio propio" },
+      { id: "empleado", label: "Trabajo para alguien" },
+    ],
+  },
+  {
+    id: "equipo",
+    q: "¿Trabajás solo/a o con equipo?",
+    opciones: [
+      { id: "solo", label: "Solo/a" },
+      { id: "equipo", label: "Con equipo" },
+    ],
+  },
+  {
+    id: "escribe",
+    q: "¿Qué tipo de cosas escribís seguido?",
+    multi: true,
+    opciones: [
+      { id: "clientes", label: "Mensajes a clientes" },
+      { id: "mails", label: "Mails de trabajo" },
+      { id: "redes", label: "Publicaciones para redes" },
+      { id: "notas", label: "Notas o apuntes" },
+      { id: "formales", label: "Documentos formales" },
+    ],
+  },
+  {
+    id: "estilo",
+    q: "¿Cómo preferís las respuestas?",
+    opciones: [
+      { id: "cortas", label: "Cortas y directas" },
+      { id: "largas", label: "Más desarrolladas" },
+    ],
+  },
+];
+
+// --- Tema 6 · Tarjetas del primer caso real -----------------------------
+
+export interface SubtareaDef {
+  id: string;
+  label: string;
+  pedido: string; // cómo se le pide a la IA
+}
+export interface Tarjeta {
+  id: string;
+  emoji: string;
+  titulo: string;
+  desc: string;
+  detalleHint: string;
+  subtareas: SubtareaDef[];
+}
+
+export const TARJETAS: Tarjeta[] = [
+  {
+    id: "negocio",
+    emoji: "🏪",
+    titulo: "Mi negocio o trabajo",
+    desc: "Vender, comunicar, atender clientes.",
+    detalleHint: "Ej: «vendo tortas por encargo, quiero promocionar una nueva de chocolate».",
+    subtareas: [
+      { id: "describir", label: "Describir un producto o servicio", pedido: "Ayudame a escribir una descripción atractiva de un producto o servicio." },
+      { id: "cliente", label: "Responder a un cliente", pedido: "Ayudame a redactar una respuesta para un cliente." },
+      { id: "promo", label: "Escribir una promoción o anuncio", pedido: "Ayudame a escribir una promoción o un anuncio breve." },
+    ],
+  },
+  {
+    id: "finanzas",
+    emoji: "💰",
+    titulo: "Mis cuentas",
+    desc: "Ordenar la plata, entender en qué se va.",
+    detalleHint: "Ej: pegá tus ingresos y gastos del mes, aunque sea aproximado.",
+    subtareas: [
+      { id: "ordenar", label: "Ordenar mis ingresos y gastos", pedido: "Ayudame a ordenar y entender mis ingresos y gastos del mes." },
+      { id: "donde", label: "Ver dónde se me va la plata", pedido: "Mirá estos números y decime dónde se me va más la plata y qué podría recortar." },
+      { id: "presupuesto", label: "Armar un presupuesto simple", pedido: "Ayudame a armar un presupuesto mensual simple con estos datos." },
+    ],
+  },
+  {
+    id: "cotidiano",
+    emoji: "💬",
+    titulo: "Lo de todos los días",
+    desc: "Ese mensaje, ese texto que tenés pendiente.",
+    detalleHint: "Ej: «tengo que avisarle a un amigo que no le puedo devolver la plata todavía».",
+    subtareas: [
+      { id: "mensaje", label: "Escribir un mensaje difícil", pedido: "Ayudame a escribir un mensaje difícil. Dame tres versiones: una directa, una conciliadora y una formal." },
+      { id: "resumir", label: "Resumir algo largo", pedido: "Resumime esto en pocos puntos claros y fáciles de leer." },
+      { id: "ideas", label: "Ordenar mis ideas para escribir algo", pedido: "Ayudame a ordenar mis ideas para escribir esto, con una estructura simple." },
+    ],
+  },
+];
+
+export function getTarjeta(id: string | null | undefined): Tarjeta | null {
+  return TARJETAS.find((t) => t.id === id) ?? null;
+}
+
+// --- Pasos (mapa mental del taller) -------------------------------------
+
+export interface PasoDef {
+  n: number;
+  titulo: string;
+  short: string;
+  bajada: string;
+}
+
+export const PASOS: PasoDef[] = [
+  { n: 0, titulo: "Vos", short: "Vos", bajada: "Contanos quién sos. Sin teoría todavía." },
+  { n: 1, titulo: "Qué es la IA", short: "Qué es", bajada: "Dos analogías para entenderla en un minuto." },
+  { n: 2, titulo: "Tu memoria", short: "Memoria", bajada: "Armá lo que la IA tiene que saber de vos." },
+  { n: 3, titulo: "Tu primer caso", short: "Tu caso", bajada: "Usala para algo tuyo, de verdad." },
+  { n: 4, titulo: "Cierre", short: "Cierre", bajada: "Una idea para llevarte." },
+];
+
+// --- Estado del participante --------------------------------------------
+
+export interface AbcState {
+  paso: number; // máximo alcanzado (0..4)
+  ocupacion: string; // qué hace en el día a día
+  situaciones: string[]; // ids (1-2)
+  negocio: string | null;
+  equipo: string | null;
+  escribe: string[];
+  estilo: string | null;
+  tarjeta: string | null;
+  subtarea: string | null;
+  detalle: string;
+  resultado: string; // lo último que generó la IA en el caso real
+  aprendi: string; // una cosa que aprendió hoy
+  completado: boolean;
+  copilotoUsos: number;
+}
+
+export function emptyAbcState(): AbcState {
+  return {
+    paso: 0,
+    ocupacion: "",
+    situaciones: [],
+    negocio: null,
+    equipo: null,
+    escribe: [],
+    estilo: null,
+    tarjeta: null,
+    subtarea: null,
+    detalle: "",
+    resultado: "",
+    aprendi: "",
+    completado: false,
+    copilotoUsos: 0,
+  };
+}
+
+// --- Texto generado a partir del perfil ---------------------------------
+
+const ESCRIBE_LABEL: Record<string, string> = Object.fromEntries(
+  (PERFIL_PREGUNTAS.find((p) => p.id === "escribe")?.opciones ?? []).map((o) => [o.id, o.label.toLowerCase()]),
+);
+
+/** Tema 4 — "esto es lo que tu asistente sabe de vos", en voz de la IA. */
+export function resumenMemoria(s: AbcState, nombre: string): string {
+  const partes: string[] = [`que te llamás ${nombre || "…"}`];
+  if (s.ocupacion.trim()) partes.push(`que ${s.ocupacion.trim()}`);
+  const sit = s.situaciones.map((id) => SITUACIONES.find((x) => x.id === id)?.voz).filter(Boolean);
+  if (sit.length) partes.push(sit.join(" y "));
+  return `Sé ${partes.join(", ")}.`;
+}
+
+/** Tema 4 — prompt de memoria para copiar y pegar en cualquier IA. */
+export function promptMemoria(s: AbcState, nombre: string): string {
+  const L: string[] = ["Quiero que recuerdes esto sobre mí cada vez que hablemos:"];
+  L.push(`- Me llamo ${nombre || "[tu nombre]"}.`);
+  if (s.ocupacion.trim()) L.push(`- En mi día a día: ${s.ocupacion.trim()}.`);
+  if (s.negocio) L.push(`- ${s.negocio === "propio" ? "Tengo un negocio propio." : "Trabajo en relación de dependencia."}`);
+  if (s.equipo) L.push(`- ${s.equipo === "solo" ? "Trabajo solo/a." : "Trabajo con un equipo."}`);
+  if (s.escribe.length) L.push(`- Suelo escribir: ${s.escribe.map((id) => ESCRIBE_LABEL[id] ?? id).join(", ")}.`);
+  const sit = s.situaciones.map((id) => SITUACIONES.find((x) => x.id === id)?.label.toLowerCase()).filter(Boolean);
+  if (sit.length) L.push(`- Lo que más me cuesta: ${sit.join("; ")}.`);
+  L.push(
+    s.estilo === "largas"
+      ? "Cuando me respondas, desarrollá un poco más, con ejemplos."
+      : "Cuando me respondas, andá al grano: respuestas cortas y directas.",
+  );
+  return L.join("\n");
+}
+
+// --- IA dentro de la app (Tema 6) ---------------------------------------
+
+/** System del asistente personal para el caso real. */
+export function casoSystem(s: AbcState, nombre: string): string {
+  return `Sos el asistente personal de ${nombre || "esta persona"}. Hablás en español rioplatense, claro y simple, sin tecnicismos ni vueltas (es alguien que recién empieza a usar IA).
+
+${promptMemoria(s, nombre)}
+
+Trabajás sobre lo que te pida ahora. Si te falta algún dato, no te traben: hacé una versión razonable y marcá entre [corchetes] lo que la persona debería completar. No inventes datos personales ni cifras que no te haya dado.`;
+}
+
+/** Mensaje del usuario para el caso real. */
+export function casoUserMsg(s: AbcState): string {
+  const t = getTarjeta(s.tarjeta);
+  const sub = t?.subtareas.find((x) => x.id === s.subtarea);
+  const pedido = sub?.pedido ?? "Ayudame con esto.";
+  const detalle = s.detalle.trim() || "(No agregué detalles; hacé una versión de ejemplo simple que yo pueda ajustar.)";
+  return `${pedido}\n\nEsto es lo que tengo:\n${detalle}`;
+}
+
+// --- Copiloto (igual que Marquito, tono principiante) -------------------
+
+const AYUDA_PASO: Record<number, string> = {
+  0: "Está en el onboarding: escribe qué hace en el día a día y elige una o dos situaciones que le suenan. Si no sabe qué poner, dale ejemplos simples.",
+  1: "Está leyendo las analogías (el asistente nuevo, el chef). Es solo para entender la idea; no hay que hacer nada más que leer y seguir.",
+  2: "Está armando su memoria: responde 4 preguntas con opciones y la app le arma un texto para pegar en cualquier IA. Explicale que ese texto hace que la IA lo conozca y le responda mejor.",
+  3: "Está en su primer caso real: eligió una tarjeta (negocio, finanzas o lo cotidiano), elige qué quiere hacer y escribe un detalle; la IA le genera el resultado dentro de la app. Ayudalo a pedir mejor o a ajustar el resultado.",
+  4: "Está en el cierre: anota una cosa que aprendió hoy.",
+};
+
+export interface AbcCtx {
+  paso: number;
+  tarjeta: string | null;
+}
+
+export function buildAbcCopilotoSystem(ctx: AbcCtx): string {
+  const t = getTarjeta(ctx.tarjeta);
+  return `Sos el copiloto de un taller llamado "La IA no es Google", para personas que NUNCA usaron inteligencia artificial. Hablás en español rioplatense, muy cálido, paciente y simple. Nada de tecnicismos. Respuestas cortas (2-4 oraciones), de a un paso. Tranquilizás: acá nadie se queda atrás.
+
+DÓNDE ESTÁ LA PERSONA AHORA: ${AYUDA_PASO[ctx.paso] ?? AYUDA_PASO[0]}${t ? ` Eligió la tarjeta "${t.titulo}".` : ""}
+
+LO QUE SÍ HACÉS:
+- Explicás con palabras de todos los días qué hacer en cada paso y para qué sirve.
+- Das ejemplos concretos cuando no saben qué escribir.
+- Ayudás a pedirle mejor a la IA (más contexto, qué quieren lograr).
+
+LO QUE NO HACÉS:
+- No hacés la tarea por la persona: la guiás para que la haga ella.
+- No te ponés técnico ni largo. Si algo es complejo, lo bajás a una analogía simple.
+- Si preguntan algo muy fuera del taller, los traés de vuelta con amabilidad.`;
+}
