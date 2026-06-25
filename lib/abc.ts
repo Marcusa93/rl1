@@ -223,10 +223,40 @@ const ESCRIBE_LABEL: Record<string, string> = Object.fromEntries(
   (PERFIL_PREGUNTAS.find((p) => p.id === "escribe")?.opciones ?? []).map((o) => [o.id, o.label.toLowerCase()]),
 );
 
+// El alumno escribe la ocupación en 1ª persona ("tengo un bar"); el resumen
+// lo dice la IA en 2ª persona, así que pasamos el verbo inicial a voseo.
+const VOS_VERBOS: Record<string, string> = {
+  tengo: "tenés",
+  soy: "sos",
+  estoy: "estás",
+  trabajo: "trabajás",
+  atiendo: "atendés",
+  manejo: "manejás",
+  administro: "administrás",
+  coordino: "coordinás",
+  dirijo: "dirigís",
+  llevo: "llevás",
+  hago: "hacés",
+  vendo: "vendés",
+  doy: "das",
+  enseño: "enseñás",
+  estudio: "estudiás",
+  cuido: "cuidás",
+  cocino: "cocinás",
+  arreglo: "arreglás",
+};
+function ocupacionEnVos(txt: string): string {
+  const t = txt.trim();
+  if (!t) return t;
+  const [first, ...rest] = t.split(" ");
+  const v = VOS_VERBOS[first.toLowerCase()];
+  return v ? [v, ...rest].join(" ") : t;
+}
+
 /** Tema 4 — "esto es lo que tu asistente sabe de vos", en voz de la IA. */
 export function resumenMemoria(s: AbcState, nombre: string): string {
   const partes: string[] = [`que te llamás ${nombre || "…"}`];
-  if (s.ocupacion.trim()) partes.push(`que ${s.ocupacion.trim()}`);
+  if (s.ocupacion.trim()) partes.push(`que ${ocupacionEnVos(s.ocupacion)}`);
   const sit = s.situaciones.map((id) => SITUACIONES.find((x) => x.id === id)?.voz).filter(Boolean);
   if (sit.length) partes.push(sit.join(" y "));
   return `Sé ${partes.join(", ")}.`;
