@@ -275,19 +275,55 @@ const VOS_VERBOS: Record<string, string> = {
   llevo: "llevás",
   hago: "hacés",
   vendo: "vendés",
+  compro: "comprás",
   doy: "das",
   enseño: "enseñás",
+  dicto: "dictás",
   estudio: "estudiás",
   cuido: "cuidás",
   cocino: "cocinás",
   arreglo: "arreglás",
+  reparo: "reparás",
+  reparto: "repartís",
+  cobro: "cobrás",
+  limpio: "limpiás",
+  corto: "cortás",
+  peino: "peinás",
+  conduzco: "conducís",
+  escribo: "escribís",
+  diseño: "diseñás",
+  programo: "programás",
+  produzco: "producís",
+  fabrico: "fabricás",
+  instalo: "instalás",
+  pinto: "pintás",
+  construyo: "construís",
+  gestiono: "gestionás",
+  organizo: "organizás",
+  planifico: "planificás",
+  asesoro: "asesorás",
+  represento: "representás",
+  ayudo: "ayudás",
+  entreno: "entrenás",
+  alquilo: "alquilás",
+  saco: "sacás",
 };
+
+// Verbos reflexivos comunes ("me dedico a…" → "te dedicás a…").
+const VOS_REFLEX: Record<string, string> = {
+  "me dedico": "te dedicás",
+  "me ocupo": "te ocupás",
+  "me encargo": "te encargás",
+};
+
 function ocupacionEnVos(txt: string): string {
   const t = txt.trim();
   if (!t) return t;
-  const [first, ...rest] = t.split(" ");
-  const v = VOS_VERBOS[first.toLowerCase()];
-  return v ? [v, ...rest].join(" ") : t;
+  const words = t.split(/\s+/);
+  const dos = `${words[0]} ${words[1] ?? ""}`.toLowerCase().trim();
+  if (VOS_REFLEX[dos]) return [VOS_REFLEX[dos], ...words.slice(2)].join(" ");
+  const v = VOS_VERBOS[words[0].toLowerCase()];
+  return v ? [v, ...words.slice(1)].join(" ") : t;
 }
 
 /** Tema 4 — "esto es lo que tu asistente sabe de vos", en voz de la IA. */
