@@ -94,18 +94,27 @@ export function AbcFlow({ slug, me }: { slug: string; me: ParticipantRow }) {
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  // Navegación robusta: el ORDEN está solo acá. Cada paso recibe su índice (n)
+  // y "el siguiente" (goNext) ya calculados, así insertar/mover pasos no
+  // desordena los números (el Head y los botones se derivan solos).
+  const next = (n: number) => () => goTo(n + 1);
+  const steps = [
+    (n: number) => <Paso0 state={state} update={update} n={n} goNext={next(n)} nombre={me.name} />,
+    (n: number) => <PasoGoogle n={n} goNext={next(n)} />,
+    (n: number) => <Paso1 n={n} goNext={next(n)} />,
+    (n: number) => <PasoPrueba state={state} update={update} n={n} goNext={next(n)} slug={slug} />,
+    (n: number) => <Paso2 state={state} update={update} n={n} goNext={next(n)} nombre={me.name} />,
+    (n: number) => <PasoIdaYVuelta state={state} update={update} n={n} goNext={next(n)} slug={slug} nombre={me.name} />,
+    (n: number) => <Paso3 state={state} update={update} n={n} goNext={next(n)} slug={slug} nombre={me.name} />,
+    (n: number) => <Paso4 state={state} update={update} n={n} />,
+  ];
+
   return (
     <div>
       <Stepper view={view} onPick={goTo} />
       <div className="mt-5">
-        {view === 0 && <Paso0 state={state} update={update} goTo={goTo} nombre={me.name} />}
-        {view === 1 && <Paso1 goTo={goTo} />}
-        {view === 2 && <PasoPrueba state={state} update={update} goTo={goTo} slug={slug} />}
-        {view === 3 && <Paso2 state={state} update={update} goTo={goTo} nombre={me.name} />}
-        {view === 4 && <PasoIdaYVuelta state={state} update={update} goTo={goTo} slug={slug} nombre={me.name} />}
-        {view === 5 && <Paso3 state={state} update={update} goTo={goTo} slug={slug} nombre={me.name} />}
-        {view === 6 && <Paso4 state={state} update={update} />}
-        {view === 7 && <PasoRecursos />}
+        {view < steps.length ? steps[view](view) : null}
+        {view === TAB_RECURSOS && <PasoRecursos />}
       </div>
       <Copiloto
         slug={slug}
@@ -117,7 +126,7 @@ export function AbcFlow({ slug, me }: { slug: string; me: ParticipantRow }) {
 }
 
 // ---------- Stepper ----------
-const TAB_RECURSOS = 7;
+const TAB_RECURSOS = PASOS.length; // pestaña suelta, después de los pasos numerados
 function Stepper({ view, onPick }: { view: number; onPick: (n: number) => void }) {
   return (
     <div className="-mx-4 overflow-x-auto px-4 pb-1">
@@ -191,12 +200,14 @@ function Chip({ sel, onClick, children }: { sel: boolean; onClick: () => void; c
 function Paso0({
   state,
   update,
-  goTo,
+  goNext,
+  n,
   nombre,
 }: {
   state: AbcState;
   update: UpdateFn;
-  goTo: (n: number) => void;
+  goNext: () => void;
+  n: number;
   nombre: string;
 }) {
   const toggleSit = (id: string) =>
@@ -211,7 +222,7 @@ function Paso0({
 
   return (
     <div className="rise">
-      <Head n={0} titulo={`Hola ${nombre.split(/\s+/)[0]} 👋`} bajada="Contanos un poco de vos. No hace falta saber nada de IA todavía." />
+      <Head n={n} titulo={`Hola ${nombre.split(/\s+/)[0]} 👋`} bajada="Contanos un poco de vos. No hace falta saber nada de IA todavía." />
 
       <div className="rounded-2xl border border-line bg-panel/40 p-4">
         <label className="text-sm font-medium text-foreground">¿Qué hacés en el día a día?</label>
@@ -245,7 +256,7 @@ function Paso0({
       </div>
 
       <div className="mt-6 border-t border-line/60 pt-4">
-        <Button onClick={() => goTo(1)} disabled={!listo} className="w-full sm:w-auto">
+        <Button onClick={goNext} disabled={!listo} className="w-full sm:w-auto">
           Continuar →
         </Button>
         {!listo && <p className="mt-2 text-xs text-faint">Escribí qué hacés y elegí al menos una situación.</p>}
@@ -255,7 +266,7 @@ function Paso0({
 }
 
 // ---------- Paso 1 · Qué es la IA (analogías + mini test) ----------
-function Paso1({ goTo }: { goTo: (n: number) => void }) {
+function Paso1({ n, goNext }: { n: number; goNext: () => void }) {
   const [elegido, setElegido] = useState<"a" | "b" | null>(null);
   const opciones: { id: "a" | "b"; texto: string }[] = [
     { id: "a", texto: "«Hacé una torta.»" },
@@ -263,7 +274,7 @@ function Paso1({ goTo }: { goTo: (n: number) => void }) {
   ];
   return (
     <div className="rise">
-      <Head n={1} titulo="Qué es, en criollo" bajada="No es un buscador. Es como tener a alguien que te ayuda a hacer las cosas." />
+      <Head n={n} titulo="Qué es, en criollo" bajada="No es un buscador. Es como tener a alguien que te ayuda a hacer las cosas." />
       <div className="grid gap-3 sm:grid-cols-2">
         {ANALOGIAS.map((a) => (
           <div key={a.titulo} className="rounded-2xl border border-line bg-panel/40 p-4">
@@ -313,7 +324,73 @@ function Paso1({ goTo }: { goTo: (n: number) => void }) {
         necesitás saber para empezar.
       </div>
       <div className="mt-6 border-t border-line/60 pt-4">
-        <Button onClick={() => goTo(2)} className="w-full sm:w-auto">Continuar →</Button>
+        <Button onClick={goNext} className="w-full sm:w-auto">Continuar →</Button>
+      </div>
+    </div>
+  );
+}
+
+// ---------- Paso "La IA no es Google" · comparación en vivo ----------
+function PasoGoogle({ n, goNext }: { n: number; goNext: () => void }) {
+  const consulta = "cómo pedirle un aumento a mi jefe";
+  const promptIA = "Escribime un mensaje breve y respetuoso para pedirle un aumento a mi jefe.";
+  return (
+    <div className="rise">
+      <Head n={n} titulo="La misma pregunta, dos herramientas" bajada="Buscá lo mismo en Google y en una IA. La diferencia se ve sola." />
+
+      <div className="rounded-2xl border border-line bg-panel/40 p-4 text-sm text-foreground">
+        🎯 Hoy probamos con: <strong>«cómo pedirle un aumento a mi jefe»</strong>
+      </div>
+
+      <div className="mt-4 grid gap-3 lg:grid-cols-2">
+        {/* Google */}
+        <div className="rounded-2xl border border-line bg-panel/40 p-4">
+          <p className="text-sm font-semibold text-foreground">🔎 Google</p>
+          <a
+            href={`https://www.google.com/search?q=${encodeURIComponent(consulta)}`}
+            target="_blank"
+            rel="noopener"
+            className="mt-2 inline-flex items-center gap-2 rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-foreground transition hover:border-teal/60 hover:text-teal"
+          >
+            Buscar en Google ↗
+          </a>
+          <p className="mt-2 text-xs text-muted">
+            Te devuelve links, artículos y foros. Todavía tenés que leer, filtrar y escribir el mensaje vos.
+          </p>
+        </div>
+
+        {/* IA */}
+        <div className="rounded-2xl border border-teal/50 bg-teal/5 p-4">
+          <p className="text-sm font-semibold text-teal">🤖 Una IA</p>
+          <p className="mt-1 text-xs text-muted">Copiá esto y pegalo en una IA:</p>
+          <div className="mt-2">
+            <CopyBox text={promptIA} label="Copiar" />
+          </div>
+          <div className="mt-2 grid grid-cols-3 gap-2">
+            {AI_LINKS.map((l) => (
+              <a
+                key={l.id}
+                href={l.base}
+                target="_blank"
+                rel="noopener"
+                className="rounded-xl border border-line px-2 py-2 text-center text-xs font-medium text-foreground transition hover:border-teal/60 hover:text-teal"
+              >
+                {l.label} ↗
+              </a>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-muted">
+            Te devuelve el mensaje directamente, con contexto y tono, listo para usar o ajustar.
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-4 rounded-2xl border-gradient p-4 text-sm text-foreground">
+        No es que una sea mejor que la otra: <strong>Google busca lo que ya existe; la IA genera algo nuevo a partir de lo que le contás.</strong> Son herramientas distintas para cosas distintas.
+      </div>
+
+      <div className="mt-6 border-t border-line/60 pt-4">
+        <Button onClick={goNext} className="w-full sm:w-auto">Continuar →</Button>
       </div>
     </div>
   );
@@ -323,12 +400,14 @@ function Paso1({ goTo }: { goTo: (n: number) => void }) {
 function PasoPrueba({
   state,
   update,
-  goTo,
+  goNext,
+  n,
   slug,
 }: {
   state: AbcState;
   update: UpdateFn;
-  goTo: (n: number) => void;
+  goNext: () => void;
+  n: number;
   slug: string;
 }) {
   const [busy, setBusy] = useState<"" | "flojo" | "bueno">("");
@@ -357,7 +436,7 @@ function PasoPrueba({
 
   return (
     <div className="rise">
-      <Head n={2} titulo="Pedir mal vs. pedir bien" bajada="Le vamos a pedir LO MISMO de dos formas. Mirá cómo cambia la respuesta." />
+      <Head n={n} titulo="Pedir mal vs. pedir bien" bajada="Le vamos a pedir LO MISMO de dos formas. Mirá cómo cambia la respuesta." />
 
       <div className="rounded-2xl border border-line bg-panel/40 p-4 text-sm text-foreground">
         🎯 {PRUEBA_ESCENARIO}
@@ -411,7 +490,7 @@ function PasoPrueba({
       </div>
 
       <div className="mt-6 border-t border-line/60 pt-4">
-        <Button onClick={() => goTo(3)} className="w-full sm:w-auto">Continuar →</Button>
+        <Button onClick={goNext} className="w-full sm:w-auto">Continuar →</Button>
       </div>
     </div>
   );
@@ -421,12 +500,14 @@ function PasoPrueba({
 function Paso2({
   state,
   update,
-  goTo,
+  goNext,
+  n,
   nombre,
 }: {
   state: AbcState;
   update: UpdateFn;
-  goTo: (n: number) => void;
+  goNext: () => void;
+  n: number;
   nombre: string;
 }) {
   const setUni = (key: "negocio" | "equipo" | "estilo", v: string) => update({ [key]: v } as Partial<AbcState>);
@@ -440,7 +521,7 @@ function Paso2({
 
   return (
     <div className="rise">
-      <Head n={3} titulo="Tu memoria" bajada="Esto hace que la IA te conozca y te responda como a vos te sirve." />
+      <Head n={n} titulo="Tu memoria" bajada="Esto hace que la IA te conozca y te responda como a vos te sirve." />
 
       <div className="rounded-2xl border border-violet/40 bg-violet/5 p-4">
         <p className="text-xs font-bold uppercase tracking-wide text-violet">Lo que tu asistente sabe de vos</p>
@@ -509,7 +590,7 @@ function Paso2({
       )}
 
       <div className="mt-6 border-t border-line/60 pt-4">
-        <Button onClick={() => goTo(4)} disabled={!listo} className="w-full sm:w-auto">
+        <Button onClick={goNext} disabled={!listo} className="w-full sm:w-auto">
           Probá tu memoria →
         </Button>
         {!listo && <p className="mt-2 text-xs text-faint">Respondé las preguntas de arriba para armar tu memoria.</p>}
@@ -522,18 +603,20 @@ function Paso2({
 function PasoIdaYVuelta({
   state,
   update,
-  goTo,
+  goNext,
+  n,
   nombre,
 }: {
   state: AbcState;
   update: UpdateFn;
-  goTo: (n: number) => void;
+  goNext: () => void;
+  n: number;
   slug: string;
   nombre: string;
 }) {
   return (
     <div className="rise">
-      <Head n={4} titulo="Probá tu memoria" bajada="Llevá tu memoria a una IA de verdad y mirá la diferencia con y sin ella." />
+      <Head n={n} titulo="Probá tu memoria" bajada="Llevá tu memoria a una IA de verdad y mirá la diferencia con y sin ella." />
 
       {/* 1 · copiar memoria + pregunta */}
       <div className="rounded-2xl border border-teal/40 bg-teal/5 p-4">
@@ -593,7 +676,7 @@ function PasoIdaYVuelta({
       </div>
 
       <div className="mt-6 border-t border-line/60 pt-4">
-        <Button onClick={() => goTo(5)} className="w-full sm:w-auto">Ir a mi primer caso →</Button>
+        <Button onClick={goNext} className="w-full sm:w-auto">Ir a mi primer caso →</Button>
       </div>
     </div>
   );
@@ -603,13 +686,15 @@ function PasoIdaYVuelta({
 function Paso3({
   state,
   update,
-  goTo,
+  goNext,
+  n,
   slug,
   nombre,
 }: {
   state: AbcState;
   update: UpdateFn;
-  goTo: (n: number) => void;
+  goNext: () => void;
+  n: number;
   slug: string;
   nombre: string;
 }) {
@@ -640,7 +725,7 @@ function Paso3({
   if (!t) {
     return (
       <div className="rise">
-        <Head n={5} titulo="Tu primer caso real" bajada="Elegí lo que más se parezca a algo tuyo. Vas a usar la IA de verdad, ahora." />
+        <Head n={n} titulo="Tu primer caso real" bajada="Elegí lo que más se parezca a algo tuyo. Vas a usar la IA de verdad, ahora." />
         <div className="grid gap-3">
           {TARJETAS.map((c) => (
             <button
@@ -660,7 +745,7 @@ function Paso3({
 
   return (
     <div className="rise">
-      <Head n={5} titulo={`${t.emoji} ${t.titulo}`} bajada="Decile qué necesitás y contale lo mínimo. La IA te va a responder acá abajo." />
+      <Head n={n} titulo={`${t.emoji} ${t.titulo}`} bajada="Decile qué necesitás y contale lo mínimo. La IA te va a responder acá abajo." />
 
       <button
         onClick={() => update({ tarjeta: null, subtarea: null, resultado: "" })}
@@ -716,7 +801,7 @@ function Paso3({
       )}
 
       <div className="mt-6 border-t border-line/60 pt-4">
-        <Button variant="outline" onClick={() => goTo(6)} className="w-full sm:w-auto">
+        <Button variant="outline" onClick={goNext} className="w-full sm:w-auto">
           Terminar →
         </Button>
       </div>
@@ -725,10 +810,10 @@ function Paso3({
 }
 
 // ---------- Paso 4 · Cierre ----------
-function Paso4({ state, update }: { state: AbcState; update: UpdateFn }) {
+function Paso4({ state, update, n }: { state: AbcState; update: UpdateFn; n: number }) {
   return (
     <div className="rise">
-      <Head n={6} titulo="Para llevarte" bajada="Una sola idea, en tus palabras." />
+      <Head n={n} titulo="Para llevarte" bajada="Una sola idea, en tus palabras." />
 
       <div className="rounded-2xl border-gradient p-5 text-center">
         <p className="text-lg font-semibold text-foreground">{FRASE_ANCLA}</p>

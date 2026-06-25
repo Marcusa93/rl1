@@ -202,12 +202,13 @@ export interface PasoDef {
 
 export const PASOS: PasoDef[] = [
   { n: 0, titulo: "Vos", short: "Vos", bajada: "Contanos quién sos. Sin teoría todavía." },
-  { n: 1, titulo: "Qué es la IA", short: "Qué es", bajada: "Dos analogías para entenderla en un minuto." },
-  { n: 2, titulo: "Pedir bien", short: "Pedir bien", bajada: "Probá pedir mal y pedir bien. La diferencia se ve sola." },
-  { n: 3, titulo: "Tu memoria", short: "Memoria", bajada: "Armá lo que la IA tiene que saber de vos." },
-  { n: 4, titulo: "Probá tu memoria", short: "Probala", bajada: "Llevá tu memoria a una IA y mirá el contraste." },
-  { n: 5, titulo: "Tu primer caso", short: "Tu caso", bajada: "Usala para algo tuyo, de verdad." },
-  { n: 6, titulo: "Cierre", short: "Cierre", bajada: "Una idea para llevarte." },
+  { n: 1, titulo: "La IA no es Google", short: "Google vs IA", bajada: "La misma pregunta en Google y en una IA. La diferencia se ve sola." },
+  { n: 2, titulo: "Qué es la IA", short: "Qué es", bajada: "Dos analogías para entenderla en un minuto." },
+  { n: 3, titulo: "Pedir bien", short: "Pedir bien", bajada: "Probá pedir mal y pedir bien. La diferencia se ve sola." },
+  { n: 4, titulo: "Tu memoria", short: "Memoria", bajada: "Armá lo que la IA tiene que saber de vos." },
+  { n: 5, titulo: "Probá tu memoria", short: "Probala", bajada: "Llevá tu memoria a una IA y mirá el contraste." },
+  { n: 6, titulo: "Tu primer caso", short: "Tu caso", bajada: "Usala para algo tuyo, de verdad." },
+  { n: 7, titulo: "Cierre", short: "Cierre", bajada: "Una idea para llevarte." },
 ];
 
 // --- Paso "Pedir bien": mismo pedido, flojo vs COTIO (corre en la app) ---
@@ -414,13 +415,14 @@ export function casoUserMsg(s: AbcState): string {
 
 const AYUDA_PASO: Record<number, string> = {
   0: "Está en el onboarding: escribe qué hace en el día a día y elige una o dos situaciones que le suenan. Si no sabe qué poner, dale ejemplos simples.",
-  1: "Está leyendo las analogías (el asistente nuevo, el chef). Es solo para entender la idea; no hay que hacer nada más que leer y seguir.",
-  2: "Está probando la diferencia entre un prompt flojo y uno bien hecho (método COTIO), corriendo los dos en la app. Explicale que cuanto mejor le explica a la IA, mejor le responde; podés repasarle las letras de COTIO en palabras simples.",
-  3: "Está armando su memoria: responde 4 preguntas con opciones y la app le arma un texto para pegar en cualquier IA. Explicale que ese texto hace que la IA lo conozca y le responda mejor.",
-  4: "Está en PROBÁ TU MEMORIA (ida y vuelta): copia su prompt de memoria, lo pega en una IA y hace una pregunta; después hace la misma pregunta SIN la memoria, en otra conversación, y compara. Ayudalo a hacer el viaje (copiar → pegar → volver) y a notar el contraste con y sin memoria.",
-  5: "Está en su primer caso real: eligió una tarjeta (negocio, finanzas o lo cotidiano), elige qué quiere hacer y escribe un detalle; la IA le genera el resultado dentro de la app. Ayudalo a pedir mejor o a ajustar el resultado.",
-  6: "Está en el cierre: anota una cosa que aprendió hoy.",
-  7: "Está en RECURSOS: una lista de herramientas de IA (ChatGPT, Claude, Gemini, NotebookLM, Gamma, Suno, Napkin) con para qué sirve cada una y un botón para abrirlas. Si pregunta cuál usar, orientalo según lo que quiera hacer.",
+  1: "Está comparando Google vs IA: hace la misma búsqueda (cómo pedir un aumento) en Google y en una IA, abriendo ambas, para ver que Google da links y la IA da el mensaje listo. Explicale que no es que una sea mejor: son herramientas distintas.",
+  2: "Está leyendo las analogías (el asistente nuevo, el chef) y haciendo un mini-test. Es para entender la idea de que cuanto mejor le explica, mejor le responde.",
+  3: "Está probando la diferencia entre un prompt flojo y uno bien hecho (método COTIO), corriendo los dos en la app. Repasale las letras de COTIO en palabras simples.",
+  4: "Está armando su memoria: responde 4 preguntas con opciones y la app le arma un texto para pegar en cualquier IA. Explicale que ese texto hace que la IA lo conozca y le responda mejor.",
+  5: "Está en PROBÁ TU MEMORIA (ida y vuelta): copia su prompt de memoria, lo pega en una IA y hace una pregunta; después hace la misma pregunta SIN la memoria y compara. Ayudalo a hacer el viaje y a notar el contraste.",
+  6: "Está en su primer caso real: eligió una tarjeta (negocio, finanzas o lo cotidiano), elige qué quiere hacer y escribe un detalle; la IA le genera el resultado dentro de la app. Ayudalo a pedir mejor o a ajustar.",
+  7: "Está en el cierre: anota una cosa que aprendió hoy.",
+  8: "Está en RECURSOS: una lista de herramientas de IA (ChatGPT, Claude, Gemini, NotebookLM, Gamma, Suno, Napkin) con para qué sirve cada una y un botón para abrirlas. Si pregunta cuál usar, orientalo según lo que quiera hacer.",
 };
 
 export interface AbcCtx {
