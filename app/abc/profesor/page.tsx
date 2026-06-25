@@ -89,6 +89,8 @@ function Panel() {
     rows: { name: string; activity: string; item_key: string; payload: AbcState; updated_at: string }[];
   }>(`/api/session/${SLUG}/all-responses`, 2500);
   const [open, setOpen] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [filtro, setFiltro] = useState<"todos" | "curso" | "terminaron" | "trabados">("todos");
   const [now, setNow] = useState(() => Date.now());
   const origin = typeof window !== "undefined" ? window.location.origin : "";
 
@@ -255,12 +257,55 @@ function Panel() {
               </section>
             )}
 
-            <section className="mt-4">
-              <h2 className="mb-2 text-sm font-semibold text-muted">Participantes ({total}) · tocá un nombre para ver su recorrido</h2>
-              <div className="space-y-2">
-                {parsed
-                  .slice()
-                  .sort((a, b) => b.state.paso - a.state.paso)
+            {(() => {
+              const q = query.trim().toLowerCase();
+              const visibles = parsed
+                .filter((p) => {
+                  if (q && !`${p.name} ${p.state.ocupacion}`.toLowerCase().includes(q)) return false;
+                  const stuck = !p.state.completado && p.updatedAt > 0 && now - p.updatedAt > STUCK_MIN * 60000;
+                  if (filtro === "terminaron") return p.state.completado;
+                  if (filtro === "curso") return !p.state.completado;
+                  if (filtro === "trabados") return stuck;
+                  return true;
+                })
+                .sort((a, b) => b.state.paso - a.state.paso);
+              const FILTROS: { id: typeof filtro; label: string }[] = [
+                { id: "todos", label: "Todos" },
+                { id: "curso", label: "En curso" },
+                { id: "terminaron", label: "Terminaron" },
+                { id: "trabados", label: "Trabados" },
+              ];
+              return (
+                <section className="mt-4">
+                  <div className="mb-3 flex flex-wrap items-center gap-2">
+                    <h2 className="mr-1 text-sm font-semibold text-muted">
+                      Participantes <span className="text-faint">({visibles.length}/{total})</span>
+                    </h2>
+                    {FILTROS.map((f) => (
+                      <button
+                        key={f.id}
+                        onClick={() => setFiltro(f.id)}
+                        className={cn(
+                          "rounded-full border px-2.5 py-1 text-xs transition",
+                          filtro === f.id ? "border-teal/70 bg-teal/15 text-teal" : "border-line bg-panel/40 text-muted hover:border-teal/50",
+                        )}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
+                    <input
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Buscar por nombre…"
+                      className="ml-auto w-40 rounded-lg border border-line bg-ink-2/70 px-3 py-1.5 text-xs outline-none placeholder:text-faint focus:border-teal/60"
+                    />
+                  </div>
+                  <p className="mb-2 text-xs text-faint">Tocá un nombre para ver su recorrido completo.</p>
+                  {visibles.length === 0 ? (
+                    <p className="rounded-2xl border border-line bg-panel/40 p-4 text-center text-sm text-muted">Nadie coincide con el filtro.</p>
+                  ) : (
+                  <div className="space-y-2">
+                    {visibles
                   .map((p) => {
                     const t = getTarjeta(p.state.tarjeta);
                     const mins = p.updatedAt ? Math.floor((now - p.updatedAt) / 60000) : null;
@@ -294,8 +339,11 @@ function Panel() {
                       </div>
                     );
                   })}
-              </div>
-            </section>
+                  </div>
+                  )}
+                </section>
+              );
+            })()}
           </>
         )}
       </main>
@@ -311,9 +359,14 @@ function Detalle({ p }: { p: ParsedRow }) {
     <div className="mt-3 space-y-2 border-t border-line/60 pt-3 text-sm">
       {s.ocupacion && <Line k="Hace" v={s.ocupacion} />}
       {sit && <Line k="Le suena" v={sit} />}
+      {s.situacionOtro && <Line k="Otra situación" v={s.situacionOtro} />}
       {(s.negocio || s.equipo || s.estilo) && (
         <Line k="Perfil" v={[s.negocio, s.equipo, s.estilo].filter(Boolean).join(" · ")} />
       )}
+      {(s.resFlojo || s.resBueno) && (
+        <Line k="Pedir bien" v={`probó ${[s.resFlojo && "el flojo", s.resBueno && "el COTIO"].filter(Boolean).join(" y ")}`} />
+      )}
+      {(s.copilotoUsos ?? 0) > 0 && <Line k="Copiloto" v={`${s.copilotoUsos} consulta(s)`} />}
       {t && <Line k="Caso" v={`${t.emoji} ${t.titulo}${s.subtarea ? ` · ${s.subtarea}` : ""}`} />}
       {s.detalle && <Line k="Contó" v={s.detalle} />}
       {s.resultado && (
