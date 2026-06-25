@@ -178,18 +178,47 @@ export interface PasoDef {
 export const PASOS: PasoDef[] = [
   { n: 0, titulo: "Vos", short: "Vos", bajada: "Contanos quién sos. Sin teoría todavía." },
   { n: 1, titulo: "Qué es la IA", short: "Qué es", bajada: "Dos analogías para entenderla en un minuto." },
-  { n: 2, titulo: "Tu memoria", short: "Memoria", bajada: "Armá lo que la IA tiene que saber de vos." },
-  { n: 3, titulo: "Tu primer caso", short: "Tu caso", bajada: "Usala para algo tuyo, de verdad." },
-  { n: 4, titulo: "Cierre", short: "Cierre", bajada: "Una idea para llevarte." },
+  { n: 2, titulo: "Pedir bien", short: "Pedir bien", bajada: "Probá pedir mal y pedir bien. La diferencia se ve sola." },
+  { n: 3, titulo: "Tu memoria", short: "Memoria", bajada: "Armá lo que la IA tiene que saber de vos." },
+  { n: 4, titulo: "Tu primer caso", short: "Tu caso", bajada: "Usala para algo tuyo, de verdad." },
+  { n: 5, titulo: "Cierre", short: "Cierre", bajada: "Una idea para llevarte." },
+];
+
+// --- Paso "Pedir bien": mismo pedido, flojo vs COTIO (corre en la app) ---
+
+export const PRUEBA_ESCENARIO =
+  "Imaginá que tenés que escribirle un mensaje a tu jefe para avisarle que mañana no vas a poder ir a trabajar.";
+
+export const PRUEBA_SYSTEM =
+  "Sos un asistente en español rioplatense, claro y directo. Respondé solo con lo que te piden.";
+
+export const PROMPT_FLOJO = "escribime un mensaje para mi jefe";
+
+export const PROMPT_BUENO = `Sos mi asistente para escribir mensajes.
+[Contexto] Trabajo en una oficina y mi jefe es bastante formal.
+[Objetivo] Avisarle que mañana no voy a poder ir por un tema de salud.
+[Tarea] Escribime el mensaje.
+[Info] Quiero ser respetuoso, sin dar detalles personales de más, y ofrecer ponerme al día con lo pendiente.
+[Output] Cortito, formal, en un solo párrafo.`;
+
+/** COTIO explicado para principiantes (cada letra en criollo). */
+export const COTIO_SIMPLE: { letra: string; nombre: string; texto: string }[] = [
+  { letra: "C", nombre: "Contexto", texto: "Quién sos y cuál es la situación." },
+  { letra: "O", nombre: "Objetivo", texto: "Qué querés lograr." },
+  { letra: "T", nombre: "Tarea", texto: "Qué tiene que hacer la IA." },
+  { letra: "I", nombre: "Info", texto: "Los datos que le das." },
+  { letra: "O", nombre: "Output", texto: "Cómo querés la respuesta (corta, formal, etc.)." },
 ];
 
 // --- Estado del participante --------------------------------------------
 
 export interface AbcState {
-  paso: number; // máximo alcanzado (0..4)
+  paso: number; // máximo alcanzado (0..5)
   ocupacion: string; // qué hace en el día a día
   situaciones: string[]; // ids (1-2)
   situacionOtro: string; // texto libre si eligió "otro"
+  resFlojo: string; // resultado del prompt flojo (paso "pedir bien")
+  resBueno: string; // resultado del prompt bien hecho (COTIO)
   negocio: string | null;
   equipo: string | null;
   escribe: string[];
@@ -209,6 +238,8 @@ export function emptyAbcState(): AbcState {
     ocupacion: "",
     situaciones: [],
     situacionOtro: "",
+    resFlojo: "",
+    resBueno: "",
     negocio: null,
     equipo: null,
     escribe: [],
@@ -318,9 +349,10 @@ export function casoUserMsg(s: AbcState): string {
 const AYUDA_PASO: Record<number, string> = {
   0: "Está en el onboarding: escribe qué hace en el día a día y elige una o dos situaciones que le suenan. Si no sabe qué poner, dale ejemplos simples.",
   1: "Está leyendo las analogías (el asistente nuevo, el chef). Es solo para entender la idea; no hay que hacer nada más que leer y seguir.",
-  2: "Está armando su memoria: responde 4 preguntas con opciones y la app le arma un texto para pegar en cualquier IA. Explicale que ese texto hace que la IA lo conozca y le responda mejor.",
-  3: "Está en su primer caso real: eligió una tarjeta (negocio, finanzas o lo cotidiano), elige qué quiere hacer y escribe un detalle; la IA le genera el resultado dentro de la app. Ayudalo a pedir mejor o a ajustar el resultado.",
-  4: "Está en el cierre: anota una cosa que aprendió hoy.",
+  2: "Está probando la diferencia entre un prompt flojo y uno bien hecho (método COTIO), corriendo los dos en la app. Explicale que cuanto mejor le explica a la IA, mejor le responde; podés repasarle las letras de COTIO en palabras simples.",
+  3: "Está armando su memoria: responde 4 preguntas con opciones y la app le arma un texto para pegar en cualquier IA. Explicale que ese texto hace que la IA lo conozca y le responda mejor.",
+  4: "Está en su primer caso real: eligió una tarjeta (negocio, finanzas o lo cotidiano), elige qué quiere hacer y escribe un detalle; la IA le genera el resultado dentro de la app. Ayudalo a pedir mejor o a ajustar el resultado.",
+  5: "Está en el cierre: anota una cosa que aprendió hoy.",
 };
 
 export interface AbcCtx {

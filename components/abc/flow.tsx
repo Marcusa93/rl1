@@ -6,9 +6,14 @@ import {
   ABC_ACTIVITY,
   ABC_ITEM,
   ANALOGIAS,
+  COTIO_SIMPLE,
   FRASE_ANCLA,
   PASOS,
   PERFIL_PREGUNTAS,
+  PROMPT_BUENO,
+  PROMPT_FLOJO,
+  PRUEBA_ESCENARIO,
+  PRUEBA_SYSTEM,
   SITUACIONES,
   TARJETAS,
   casoSystem,
@@ -92,9 +97,10 @@ export function AbcFlow({ slug, me }: { slug: string; me: ParticipantRow }) {
       <div className="mt-5">
         {view === 0 && <Paso0 state={state} update={update} goTo={goTo} nombre={me.name} />}
         {view === 1 && <Paso1 goTo={goTo} />}
-        {view === 2 && <Paso2 state={state} update={update} goTo={goTo} nombre={me.name} />}
-        {view === 3 && <Paso3 state={state} update={update} goTo={goTo} slug={slug} nombre={me.name} />}
-        {view === 4 && <Paso4 state={state} update={update} />}
+        {view === 2 && <PasoPrueba state={state} update={update} goTo={goTo} slug={slug} />}
+        {view === 3 && <Paso2 state={state} update={update} goTo={goTo} nombre={me.name} />}
+        {view === 4 && <Paso3 state={state} update={update} goTo={goTo} slug={slug} nombre={me.name} />}
+        {view === 5 && <Paso4 state={state} update={update} />}
       </div>
       <Copiloto
         slug={slug}
@@ -257,6 +263,104 @@ function Paso1({ goTo }: { goTo: (n: number) => void }) {
   );
 }
 
+// ---------- Paso "Pedir bien" · flojo vs COTIO (corre en la app) ----------
+function PasoPrueba({
+  state,
+  update,
+  goTo,
+  slug,
+}: {
+  state: AbcState;
+  update: UpdateFn;
+  goTo: (n: number) => void;
+  slug: string;
+}) {
+  const [busy, setBusy] = useState<"" | "flojo" | "bueno">("");
+
+  async function correr(cual: "flojo" | "bueno") {
+    if (busy) return;
+    setBusy(cual);
+    const prompt = cual === "flojo" ? PROMPT_FLOJO : PROMPT_BUENO;
+    update(cual === "flojo" ? { resFlojo: "" } : { resBueno: "" });
+    try {
+      await streamGenerate(
+        slug,
+        [{ role: "user", content: prompt }],
+        (chunk) =>
+          update((s) =>
+            cual === "flojo" ? { ...s, resFlojo: s.resFlojo + chunk } : { ...s, resBueno: s.resBueno + chunk },
+          ),
+        { system: PRUEBA_SYSTEM, temperature: 0.6, maxTokens: 400 },
+      );
+    } catch {
+      /* el copiloto o reintento */
+    } finally {
+      setBusy("");
+    }
+  }
+
+  return (
+    <div className="rise">
+      <Head n={2} titulo="Pedir mal vs. pedir bien" bajada="Le vamos a pedir LO MISMO de dos formas. Mirá cómo cambia la respuesta." />
+
+      <div className="rounded-2xl border border-line bg-panel/40 p-4 text-sm text-foreground">
+        🎯 {PRUEBA_ESCENARIO}
+      </div>
+
+      <div className="mt-4 grid gap-3 lg:grid-cols-2">
+        {/* Flojo */}
+        <div className="rounded-2xl border border-line bg-panel/40 p-4">
+          <p className="text-sm font-semibold text-magenta">Prompt flojo 👎</p>
+          <pre className="mt-2 whitespace-pre-wrap rounded-lg border border-line bg-ink-2/70 p-2.5 font-mono text-xs text-muted">{PROMPT_FLOJO}</pre>
+          <Button variant="outline" onClick={() => correr("flojo")} disabled={!!busy} className="mt-3 w-full">
+            {busy === "flojo" ? <Spinner /> : "Probar el flojo"}
+          </Button>
+          {state.resFlojo && (
+            <div className="mt-3 whitespace-pre-wrap rounded-lg border border-line bg-ink-2/40 p-3 text-sm text-foreground">
+              {state.resFlojo}
+              {busy === "flojo" && <Spinner className="ml-1 inline-block" />}
+            </div>
+          )}
+        </div>
+
+        {/* Bueno (COTIO) */}
+        <div className="rounded-2xl border border-teal/50 bg-teal/5 p-4">
+          <p className="text-sm font-semibold text-teal">Prompt bien hecho 👍 <span className="text-faint">(COTIO)</span></p>
+          <pre className="mt-2 whitespace-pre-wrap rounded-lg border border-teal/30 bg-ink-2/70 p-2.5 font-mono text-xs text-muted">{PROMPT_BUENO}</pre>
+          <Button onClick={() => correr("bueno")} disabled={!!busy} className="mt-3 w-full">
+            {busy === "bueno" ? <Spinner /> : "Probar el bueno"}
+          </Button>
+          {state.resBueno && (
+            <div className="mt-3 whitespace-pre-wrap rounded-lg border border-teal/40 bg-ink-2/40 p-3 text-sm text-foreground">
+              {state.resBueno}
+              {busy === "bueno" && <Spinner className="ml-1 inline-block" />}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* COTIO explicado */}
+      <div className="mt-4 rounded-2xl border border-line bg-panel/40 p-4">
+        <p className="text-sm font-semibold text-foreground">La receta del buen pedido: COTIO</p>
+        <p className="text-xs text-faint">No hace falta usar todas siempre, pero cuantas más, mejor.</p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-5">
+          {COTIO_SIMPLE.map((c, i) => (
+            <div key={i} className="rounded-xl border border-line bg-ink-2/40 p-3 text-center">
+              <p className="text-lg font-bold text-teal">{c.letra}</p>
+              <p className="text-xs font-semibold text-foreground">{c.nombre}</p>
+              <p className="mt-0.5 text-[11px] text-muted">{c.texto}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-6 border-t border-line/60 pt-4">
+        <Button onClick={() => goTo(3)} className="w-full sm:w-auto">Continuar →</Button>
+      </div>
+    </div>
+  );
+}
+
 // ---------- Paso 2 · Tu memoria ----------
 function Paso2({
   state,
@@ -280,7 +384,7 @@ function Paso2({
 
   return (
     <div className="rise">
-      <Head n={2} titulo="Tu memoria" bajada="Esto hace que la IA te conozca y te responda como a vos te sirve." />
+      <Head n={3} titulo="Tu memoria" bajada="Esto hace que la IA te conozca y te responda como a vos te sirve." />
 
       <div className="rounded-2xl border border-violet/40 bg-violet/5 p-4">
         <p className="text-xs font-bold uppercase tracking-wide text-violet">Lo que tu asistente sabe de vos</p>
@@ -349,7 +453,7 @@ function Paso2({
       )}
 
       <div className="mt-6 border-t border-line/60 pt-4">
-        <Button onClick={() => goTo(3)} disabled={!listo} className="w-full sm:w-auto">
+        <Button onClick={() => goTo(4)} disabled={!listo} className="w-full sm:w-auto">
           Ir a mi primer caso →
         </Button>
         {!listo && <p className="mt-2 text-xs text-faint">Respondé las preguntas de arriba para armar tu memoria.</p>}
@@ -399,7 +503,7 @@ function Paso3({
   if (!t) {
     return (
       <div className="rise">
-        <Head n={3} titulo="Tu primer caso real" bajada="Elegí lo que más se parezca a algo tuyo. Vas a usar la IA de verdad, ahora." />
+        <Head n={4} titulo="Tu primer caso real" bajada="Elegí lo que más se parezca a algo tuyo. Vas a usar la IA de verdad, ahora." />
         <div className="grid gap-3">
           {TARJETAS.map((c) => (
             <button
@@ -419,7 +523,7 @@ function Paso3({
 
   return (
     <div className="rise">
-      <Head n={3} titulo={`${t.emoji} ${t.titulo}`} bajada="Decile qué necesitás y contale lo mínimo. La IA te va a responder acá abajo." />
+      <Head n={4} titulo={`${t.emoji} ${t.titulo}`} bajada="Decile qué necesitás y contale lo mínimo. La IA te va a responder acá abajo." />
 
       <button
         onClick={() => update({ tarjeta: null, subtarea: null, resultado: "" })}
@@ -475,7 +579,7 @@ function Paso3({
       )}
 
       <div className="mt-6 border-t border-line/60 pt-4">
-        <Button variant="outline" onClick={() => goTo(4)} className="w-full sm:w-auto">
+        <Button variant="outline" onClick={() => goTo(5)} className="w-full sm:w-auto">
           Terminar →
         </Button>
       </div>
@@ -487,7 +591,7 @@ function Paso3({
 function Paso4({ state, update }: { state: AbcState; update: UpdateFn }) {
   return (
     <div className="rise">
-      <Head n={4} titulo="Para llevarte" bajada="Una sola idea, en tus palabras." />
+      <Head n={5} titulo="Para llevarte" bajada="Una sola idea, en tus palabras." />
 
       <div className="rounded-2xl border-gradient p-5 text-center">
         <p className="text-lg font-semibold text-foreground">{FRASE_ANCLA}</p>
