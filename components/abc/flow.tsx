@@ -8,7 +8,9 @@ import {
   ANALOGIAS,
   COTIO_SIMPLE,
   FRASE_ANCLA,
+  IDA_VUELTA_PREGUNTA,
   PASOS,
+  RECURSOS,
   PERFIL_PREGUNTAS,
   PROMPT_BUENO,
   PROMPT_FLOJO,
@@ -87,7 +89,8 @@ export function AbcFlow({ slug, me }: { slug: string; me: ParticipantRow }) {
 
   function goTo(n: number) {
     setView(n);
-    update((s) => ({ ...s, paso: Math.max(s.paso, n) }));
+    // Las pestañas extra (Recursos=6, Práctica=7) no cuentan como avance lineal.
+    update((s) => ({ ...s, paso: Math.max(s.paso, Math.min(n, PASOS.length - 1)) }));
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -99,8 +102,10 @@ export function AbcFlow({ slug, me }: { slug: string; me: ParticipantRow }) {
         {view === 1 && <Paso1 goTo={goTo} />}
         {view === 2 && <PasoPrueba state={state} update={update} goTo={goTo} slug={slug} />}
         {view === 3 && <Paso2 state={state} update={update} goTo={goTo} nombre={me.name} />}
-        {view === 4 && <Paso3 state={state} update={update} goTo={goTo} slug={slug} nombre={me.name} />}
-        {view === 5 && <Paso4 state={state} update={update} />}
+        {view === 4 && <PasoIdaYVuelta state={state} update={update} goTo={goTo} slug={slug} nombre={me.name} />}
+        {view === 5 && <Paso3 state={state} update={update} goTo={goTo} slug={slug} nombre={me.name} />}
+        {view === 6 && <Paso4 state={state} update={update} />}
+        {view === 7 && <PasoRecursos />}
       </div>
       <Copiloto
         slug={slug}
@@ -112,10 +117,11 @@ export function AbcFlow({ slug, me }: { slug: string; me: ParticipantRow }) {
 }
 
 // ---------- Stepper ----------
+const TAB_RECURSOS = 7;
 function Stepper({ view, onPick }: { view: number; onPick: (n: number) => void }) {
   return (
     <div className="-mx-4 overflow-x-auto px-4 pb-1">
-      <div className="flex min-w-max gap-2">
+      <div className="flex min-w-max items-center gap-2">
         {PASOS.map((m) => {
           const active = m.n === view;
           return (
@@ -134,6 +140,16 @@ function Stepper({ view, onPick }: { view: number; onPick: (n: number) => void }
             </button>
           );
         })}
+        <span className="mx-1 h-5 w-px shrink-0 bg-line" />
+        <button
+          onClick={() => onPick(TAB_RECURSOS)}
+          className={cn(
+            "flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-medium transition",
+            view === TAB_RECURSOS ? "border-violet/70 bg-violet/15 text-violet" : "border-line bg-panel/40 text-muted hover:border-violet/50",
+          )}
+        >
+          📚 Recursos
+        </button>
       </div>
     </div>
   );
@@ -238,8 +254,13 @@ function Paso0({
   );
 }
 
-// ---------- Paso 1 · Qué es la IA (analogías) ----------
+// ---------- Paso 1 · Qué es la IA (analogías + mini test) ----------
 function Paso1({ goTo }: { goTo: (n: number) => void }) {
+  const [elegido, setElegido] = useState<"a" | "b" | null>(null);
+  const opciones: { id: "a" | "b"; texto: string }[] = [
+    { id: "a", texto: "«Hacé una torta.»" },
+    { id: "b", texto: "«Hacé una torta de chocolate, sin azúcar, para 8 personas, para un cumpleaños.»" },
+  ];
   return (
     <div className="rise">
       <Head n={1} titulo="Qué es, en criollo" bajada="No es un buscador. Es como tener a alguien que te ayuda a hacer las cosas." />
@@ -252,6 +273,41 @@ function Paso1({ goTo }: { goTo: (n: number) => void }) {
           </div>
         ))}
       </div>
+
+      {/* Mini test (instantáneo, sin IA): refuerza la idea jugando */}
+      <div className="mt-4 rounded-2xl border border-line bg-panel/40 p-4">
+        <p className="text-sm font-semibold text-foreground">Probá vos 👇</p>
+        <p className="mt-0.5 text-xs text-muted">
+          Le pedís una torta al chef. ¿Con cuál pedido te va a salir más cerca de lo que querías?
+        </p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          {opciones.map((o) => (
+            <button
+              key={o.id}
+              onClick={() => setElegido(o.id)}
+              className={cn(
+                "rounded-xl border p-3 text-left text-sm transition",
+                elegido === o.id ? "border-teal/70 bg-teal/10 text-foreground" : "border-line bg-ink-2/40 text-muted hover:border-teal/50",
+              )}
+            >
+              {o.texto}
+            </button>
+          ))}
+        </div>
+        {elegido && (
+          <div
+            className={cn(
+              "mt-3 rounded-xl border p-3 text-sm",
+              elegido === "b" ? "border-teal/50 bg-teal/10 text-foreground" : "border-amber-400/50 bg-amber-400/5 text-amber-100",
+            )}
+          >
+            {elegido === "b"
+              ? "✅ ¡Exacto! Con contexto (sabor, cantidad, ocasión) el chef te clava la torta que querías. Con la IA es igual."
+              : "🤔 Con un pedido así el chef improvisa: capaz te trae una torta… pero no la que tenías en la cabeza. Cuanto más le contás, mejor. Probá la otra opción."}
+          </div>
+        )}
+      </div>
+
       <div className="mt-4 rounded-2xl border-gradient p-4 text-sm text-foreground">
         La idea clave: <strong>cuanto mejor le explicás qué querés, mejor te responde.</strong> Eso es todo lo que
         necesitás saber para empezar.
@@ -454,9 +510,90 @@ function Paso2({
 
       <div className="mt-6 border-t border-line/60 pt-4">
         <Button onClick={() => goTo(4)} disabled={!listo} className="w-full sm:w-auto">
-          Ir a mi primer caso →
+          Probá tu memoria →
         </Button>
         {!listo && <p className="mt-2 text-xs text-faint">Respondé las preguntas de arriba para armar tu memoria.</p>}
+      </div>
+    </div>
+  );
+}
+
+// ---------- Paso "Probá tu memoria" · ida y vuelta + contraste ----------
+function PasoIdaYVuelta({
+  state,
+  update,
+  goTo,
+  nombre,
+}: {
+  state: AbcState;
+  update: UpdateFn;
+  goTo: (n: number) => void;
+  slug: string;
+  nombre: string;
+}) {
+  return (
+    <div className="rise">
+      <Head n={4} titulo="Probá tu memoria" bajada="Llevá tu memoria a una IA de verdad y mirá la diferencia con y sin ella." />
+
+      {/* 1 · copiar memoria + pregunta */}
+      <div className="rounded-2xl border border-teal/40 bg-teal/5 p-4">
+        <p className="text-sm font-semibold text-teal">1 · Copiá esto y abrí una IA</p>
+        <p className="mt-1 text-xs text-muted">Pegá primero tu memoria y, abajo, la pregunta. Después mandá.</p>
+        <p className="mt-3 text-xs font-medium text-faint">Tu memoria</p>
+        <CopyBox text={promptMemoria(state, nombre)} label="Copiar memoria" />
+        <p className="mt-3 text-xs font-medium text-faint">La pregunta de prueba</p>
+        <CopyBox text={IDA_VUELTA_PREGUNTA} label="Copiar pregunta" />
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          {AI_LINKS.map((l) => (
+            <a
+              key={l.id}
+              href={l.base}
+              target="_blank"
+              rel="noopener"
+              className="rounded-xl border border-line px-3 py-2 text-center text-sm font-medium text-foreground transition hover:border-teal/60 hover:text-teal"
+            >
+              {l.label} ↗
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {/* 2 · traer el resultado */}
+      <div className="mt-4 rounded-2xl border-gradient p-4">
+        <label className="block text-sm font-medium text-foreground">2 · Traé la respuesta y pegala acá</label>
+        <p className="text-xs text-faint">Copiá lo que te respondió la IA y traelo de vuelta.</p>
+        <textarea
+          value={state.ivResultado}
+          onChange={(e) => update({ ivResultado: e.target.value })}
+          rows={4}
+          placeholder="Pegá acá lo que te devolvió la IA…"
+          className="mt-2 w-full resize-y rounded-lg border border-line bg-ink-2/70 p-2.5 text-sm outline-none placeholder:text-faint focus:border-teal/60"
+        />
+      </div>
+
+      {/* 3 · el contraste */}
+      <div className="mt-4 rounded-2xl border border-amber-400/40 bg-amber-400/5 p-4">
+        <p className="text-sm font-semibold text-amber-200">3 · Ahora probá SIN la memoria</p>
+        <p className="mt-1 text-xs text-amber-100/90">
+          Abrí una conversación nueva y preguntá <strong>solo la pregunta</strong>, sin pegar tu memoria. Vas a ver que
+          te responde más genérico, porque no sabe nada de vos. Ese es el poder de la memoria.
+        </p>
+      </div>
+
+      {/* 4 · análisis */}
+      <div className="mt-4 rounded-2xl border border-line bg-panel/40 p-4">
+        <label className="block text-sm font-medium text-foreground">4 · ¿Qué diferencia notaste?</label>
+        <textarea
+          value={state.ivNota}
+          onChange={(e) => update({ ivNota: e.target.value })}
+          rows={2}
+          placeholder="Ej: con la memoria me dio ideas para mi rubro; sin la memoria me preguntó de qué se trataba."
+          className="mt-2 w-full resize-y rounded-lg border border-line bg-ink-2/70 p-2.5 text-sm outline-none placeholder:text-faint focus:border-teal/60"
+        />
+      </div>
+
+      <div className="mt-6 border-t border-line/60 pt-4">
+        <Button onClick={() => goTo(5)} className="w-full sm:w-auto">Ir a mi primer caso →</Button>
       </div>
     </div>
   );
@@ -503,7 +640,7 @@ function Paso3({
   if (!t) {
     return (
       <div className="rise">
-        <Head n={4} titulo="Tu primer caso real" bajada="Elegí lo que más se parezca a algo tuyo. Vas a usar la IA de verdad, ahora." />
+        <Head n={5} titulo="Tu primer caso real" bajada="Elegí lo que más se parezca a algo tuyo. Vas a usar la IA de verdad, ahora." />
         <div className="grid gap-3">
           {TARJETAS.map((c) => (
             <button
@@ -523,7 +660,7 @@ function Paso3({
 
   return (
     <div className="rise">
-      <Head n={4} titulo={`${t.emoji} ${t.titulo}`} bajada="Decile qué necesitás y contale lo mínimo. La IA te va a responder acá abajo." />
+      <Head n={5} titulo={`${t.emoji} ${t.titulo}`} bajada="Decile qué necesitás y contale lo mínimo. La IA te va a responder acá abajo." />
 
       <button
         onClick={() => update({ tarjeta: null, subtarea: null, resultado: "" })}
@@ -579,7 +716,7 @@ function Paso3({
       )}
 
       <div className="mt-6 border-t border-line/60 pt-4">
-        <Button variant="outline" onClick={() => goTo(5)} className="w-full sm:w-auto">
+        <Button variant="outline" onClick={() => goTo(6)} className="w-full sm:w-auto">
           Terminar →
         </Button>
       </div>
@@ -591,7 +728,7 @@ function Paso3({
 function Paso4({ state, update }: { state: AbcState; update: UpdateFn }) {
   return (
     <div className="rise">
-      <Head n={5} titulo="Para llevarte" bajada="Una sola idea, en tus palabras." />
+      <Head n={6} titulo="Para llevarte" bajada="Una sola idea, en tus palabras." />
 
       <div className="rounded-2xl border-gradient p-5 text-center">
         <p className="text-lg font-semibold text-foreground">{FRASE_ANCLA}</p>
@@ -632,6 +769,39 @@ function Paso4({ state, update }: { state: AbcState; update: UpdateFn }) {
           {state.aprendi.trim().length < 3 && <p className="mt-2 text-xs text-faint">Escribí una cosa que aprendiste para cerrar.</p>}
         </div>
       )}
+    </div>
+  );
+}
+
+// ---------- Pestaña · Recursos (herramientas de IA) ----------
+function PasoRecursos() {
+  return (
+    <div className="rise">
+      <div className="mb-4">
+        <p className="font-mono text-xs font-bold uppercase tracking-wider text-violet">Recursos</p>
+        <h2 className="mt-0.5 text-2xl font-semibold">Herramientas para tener a mano</h2>
+        <p className="mt-1 text-sm text-muted">Estas son las que vamos usando. Tocá para abrirlas (se abren en otra pestaña).</p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {RECURSOS.map((r) => (
+          <a
+            key={r.nombre}
+            href={r.url}
+            target="_blank"
+            rel="noopener"
+            className="flex items-start gap-3 rounded-2xl border border-line bg-panel/40 p-4 transition hover:border-teal/60"
+          >
+            <span className="text-2xl">{r.emoji}</span>
+            <span className="min-w-0">
+              <span className="block font-semibold text-foreground">{r.nombre} ↗</span>
+              <span className="mt-0.5 block text-xs text-muted">{r.para}</span>
+            </span>
+          </a>
+        ))}
+      </div>
+      <p className="mt-4 text-xs text-faint">
+        No hace falta usarlas todas. Para empezar, con ChatGPT, Claude o Gemini alcanza.
+      </p>
     </div>
   );
 }

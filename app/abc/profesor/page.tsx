@@ -366,6 +366,7 @@ function Detalle({ p }: { p: ParsedRow }) {
       {(s.resFlojo || s.resBueno) && (
         <Line k="Pedir bien" v={`probó ${[s.resFlojo && "el flojo", s.resBueno && "el COTIO"].filter(Boolean).join(" y ")}`} />
       )}
+      {(s.ivResultado || s.ivNota) && <Line k="Probó su memoria" v={s.ivNota || "trajo un resultado"} />}
       {(s.copilotoUsos ?? 0) > 0 && <Line k="Copiloto" v={`${s.copilotoUsos} consulta(s)`} />}
       {t && <Line k="Caso" v={`${t.emoji} ${t.titulo}${s.subtarea ? ` · ${s.subtarea}` : ""}`} />}
       {s.detalle && <Line k="Contó" v={s.detalle} />}
