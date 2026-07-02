@@ -370,23 +370,22 @@ function M2Prompt({
         <div className="mt-4 rounded-2xl border border-teal/50 bg-teal/5 p-4">
           <p className="mb-2 text-sm font-semibold text-teal">Tu prompt contextual — copialo y guardalo</p>
           <CopyBox text={state.promptContextual} label="Copiar mi prompt" />
-          <ol className="mt-3 list-decimal space-y-1 pl-5 text-xs text-muted">
-            <li>Creá un <strong className="text-foreground">Proyecto</strong> nuevo (botón de abajo).</li>
-            <li>Pegá esto en las <strong className="text-foreground">instrucciones del sistema</strong> del Proyecto.</li>
+          <p className="mt-3 text-sm font-semibold text-foreground">Ahora pegalo en tu Proyecto:</p>
+          <ol className="mt-1.5 list-decimal space-y-1.5 pl-5 text-sm text-muted">
+            <li>
+              Creá un Proyecto nuevo — abrilo directo:{" "}
+              {PROJECT_LINKS.map((l, i) => (
+                <span key={l.id}>
+                  {i > 0 && " o "}
+                  <a href={l.url} target="_blank" rel="noopener" className="font-semibold text-teal underline underline-offset-2 hover:text-cyan">
+                    {l.id === "claude" ? "Claude" : "ChatGPT"} ↗
+                  </a>
+                </span>
+              ))}
+              .
+            </li>
+            <li>Pegá este texto en las <strong className="text-foreground">instrucciones del sistema</strong> del Proyecto.</li>
           </ol>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            {PROJECT_LINKS.map((l) => (
-              <a
-                key={l.id}
-                href={l.url}
-                target="_blank"
-                rel="noopener"
-                className="rounded-xl border border-line px-3 py-2 text-center text-sm font-medium text-foreground transition hover:border-teal/60 hover:text-teal"
-              >
-                {l.label} ↗
-              </a>
-            ))}
-          </div>
         </div>
       )}
 
@@ -397,6 +396,17 @@ function M2Prompt({
       </div>
     </div>
   );
+}
+
+// Mapea el nombre de una herramienta del flujo a su link directo.
+function toolUrl(h: string): string | null {
+  const s = h.toLowerCase();
+  if (s.includes("claude") && s.includes("project")) return "https://claude.ai/projects";
+  if (s.includes("claude")) return "https://claude.ai/new";
+  if (s.includes("gemini")) return "https://gemini.google.com/app";
+  if (s.includes("notebook")) return "https://notebooklm.google.com/";
+  if (s.includes("gpt") || s.includes("chatgpt")) return "https://chatgpt.com/";
+  return null;
 }
 
 // ---------- Módulo 3 · Problema y flujo ----------
@@ -466,7 +476,13 @@ function M3Flujo({ state, update, n, goNext }: { state: Abc2State; update: Updat
                 <div className="flex items-start gap-3 rounded-xl border border-line bg-ink-2/40 p-3">
                   <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-teal/20 font-mono text-xs font-bold text-teal">{i + 1}</span>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-foreground">{paso.herramienta}</p>
+                    {toolUrl(paso.herramienta) ? (
+                      <a href={toolUrl(paso.herramienta)!} target="_blank" rel="noopener" className="text-sm font-semibold text-teal underline underline-offset-2 hover:text-cyan">
+                        {paso.herramienta} ↗
+                      </a>
+                    ) : (
+                      <p className="text-sm font-semibold text-foreground">{paso.herramienta}</p>
+                    )}
                     <p className="text-xs text-muted">{paso.que}</p>
                   </div>
                 </div>
