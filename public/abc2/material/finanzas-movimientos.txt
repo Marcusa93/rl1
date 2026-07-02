@@ -1,0 +1,14 @@
+RESUMEN DE MOVIMIENTOS DEL MES (ficticio)
+
+INGRESOS
+- Cobros en efectivo: $1.250.000
+- Cheques cobrados: $2.100.000
+- Transferencias: $980.000
+
+EGRESOS
+- Pago a proveedores: $2.400.000
+- Sueldos: $900.000
+- Servicios e impuestos: $320.000
+- Gastos varios: $180.000
+
+Pendiente: 5 cheques en cartera por $2.000.000 (uno vencido).

@@ -1,0 +1,17 @@
+MENÚ (ficticio)
+
+PIZZAS
+- Muzzarella ......... $7.500
+- Napolitana ......... $8.500
+- Fugazzeta .......... $8.000
+- Especial ........... $9.500
+
+PARA PICAR
+- Empanadas (docena) . $9.000
+- Papas fritas ....... $4.500
+
+BEBIDAS
+- Gaseosa 1.5L ....... $2.500
+- Cerveza 1L ......... $3.000
+
+Promo: 2 muzzarellas + gaseosa = $16.000

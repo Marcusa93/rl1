@@ -310,6 +310,111 @@ export function kitPara(perfil: Perfil | null): Kit {
   return hit ? hit.kit : kitGenerico(perfil.rubro);
 }
 
+// --- Material ficticio por rubro (descargable, varios formatos) ----------
+
+export interface MaterialArchivo {
+  nombre: string;
+  formato: "Excel" | "Texto" | "Imagen";
+  file: string;
+  blurb: string;
+}
+export interface MaterialPaquete {
+  label: string;
+  archivos: MaterialArchivo[];
+}
+
+const IMG_OCR = "La IA la lee con OCR.";
+export const MATERIAL: Record<string, MaterialPaquete> = {
+  comercio: {
+    label: "Comercio / ventas",
+    archivos: [
+      { nombre: "Ventas del mes", formato: "Excel", file: "/abc2/material/comercio-ventas.xlsx", blurb: "Planilla con ventas por producto." },
+      { nombre: "Lista de precios", formato: "Texto", file: "/abc2/material/comercio-precios.txt", blurb: "Los precios actuales." },
+      { nombre: "Pedido de un cliente (WhatsApp)", formato: "Imagen", file: "/abc2/material/comercio-pedido.jpg", blurb: `Captura de un pedido. ${IMG_OCR}` },
+    ],
+  },
+  finanzas: {
+    label: "Finanzas / contable",
+    archivos: [
+      { nombre: "Cheques por vencimiento", formato: "Excel", file: "/abc2/material/finanzas-cheques.xlsx", blurb: "Planilla de cheques en cartera." },
+      { nombre: "Movimientos del mes", formato: "Texto", file: "/abc2/material/finanzas-movimientos.txt", blurb: "Ingresos y egresos resumidos." },
+      { nombre: "Un cheque", formato: "Imagen", file: "/abc2/material/finanzas-cheque.jpg", blurb: `Imagen de un cheque. ${IMG_OCR}` },
+    ],
+  },
+  legal: {
+    label: "Legal / expedientes",
+    archivos: [
+      { nombre: "Planilla de causas", formato: "Excel", file: "/abc2/material/legal-causas.xlsx", blurb: "Expedientes, estado y próximas fechas." },
+      { nombre: "Resumen de un expediente", formato: "Texto", file: "/abc2/material/legal-expediente.txt", blurb: "Hechos, prueba y estado." },
+      { nombre: "Una carta documento", formato: "Imagen", file: "/abc2/material/legal-carta-documento.jpg", blurb: `Imagen de una CD. ${IMG_OCR}` },
+    ],
+  },
+  gastro: {
+    label: "Gastronomía / servicios",
+    archivos: [
+      { nombre: "Pedidos de la noche", formato: "Excel", file: "/abc2/material/gastro-pedidos.xlsx", blurb: "Planilla de pedidos y montos." },
+      { nombre: "El menú", formato: "Texto", file: "/abc2/material/gastro-menu.txt", blurb: "Productos y precios." },
+      { nombre: "Una reserva (WhatsApp)", formato: "Imagen", file: "/abc2/material/gastro-reserva.jpg", blurb: `Captura de una reserva. ${IMG_OCR}` },
+    ],
+  },
+  gestion: {
+    label: "Gestión / oficina",
+    archivos: [
+      { nombre: "Reporte del equipo", formato: "Excel", file: "/abc2/material/gestion-reporte.xlsx", blurb: "Tareas por área y estado." },
+      { nombre: "Informe semanal", formato: "Texto", file: "/abc2/material/gestion-informe.txt", blurb: "Logros, pendientes y próximos pasos." },
+      { nombre: "Un correo", formato: "Imagen", file: "/abc2/material/gestion-mail.jpg", blurb: `Captura de un mail. ${IMG_OCR}` },
+    ],
+  },
+  educacion: {
+    label: "Educación",
+    archivos: [
+      { nombre: "Planilla de notas", formato: "Excel", file: "/abc2/material/educacion-notas.xlsx", blurb: "Notas por alumno/trabajo." },
+      { nombre: "Un apunte", formato: "Texto", file: "/abc2/material/educacion-apunte.txt", blurb: "Apunte de una materia." },
+      { nombre: "Una consigna (TP)", formato: "Imagen", file: "/abc2/material/educacion-consigna.jpg", blurb: `Imagen de una consigna. ${IMG_OCR}` },
+    ],
+  },
+};
+
+// nombre curado → categoría de material
+const CATEGORIA: Record<string, string> = {
+  "Quesada Lucas": "comercio",
+  "Sebastián Rodriguez": "comercio",
+  meli: "gastro",
+  Milagros: "gastro",
+  Dodo: "gastro",
+  Aguitos: "finanzas",
+  Marcelo: "finanzas",
+  Verónica: "legal",
+  "Maria Acuña": "legal",
+  "Federico Javier": "legal",
+  Leonor: "gestion",
+  Florencia: "gestion",
+  "Benjamin de la Torre": "gestion",
+  "Carlos Arnau": "educacion",
+  "Marco Rossi": "educacion",
+};
+
+export function materialPara(perfil: Perfil | null): MaterialPaquete {
+  if (!perfil) return MATERIAL.gestion;
+  const inTok = new Set(norm(perfil.nombre).split(" ").filter(Boolean));
+  const hit = Object.keys(CATEGORIA).find((nom) => claves(nom).every((t) => inTok.has(t)));
+  return MATERIAL[hit ? CATEGORIA[hit] : "gestion"];
+}
+
+// --- Deep-links a herramientas y a crear un Project ----------------------
+
+export const TOOL_LINKS = [
+  { id: "claude", label: "Claude", url: "https://claude.ai/new" },
+  { id: "gemini", label: "Gemini", url: "https://gemini.google.com/app" },
+  { id: "notebooklm", label: "NotebookLM", url: "https://notebooklm.google.com/" },
+  { id: "gpt", label: "ChatGPT", url: "https://chatgpt.com/" },
+] as const;
+
+export const PROJECT_LINKS = [
+  { id: "claude", label: "Crear Project en Claude", url: "https://claude.ai/projects" },
+  { id: "gpt", label: "Crear Project en ChatGPT", url: "https://chatgpt.com/projects" },
+] as const;
+
 // --- Módulo 2 · generador de prompt contextual ---------------------------
 
 export interface PromptSeed {

@@ -9,11 +9,14 @@ import {
   HERRAMIENTAS,
   MODULOS,
   PC_SYSTEM,
+  PROJECT_LINKS,
+  TOOL_LINKS,
   WHATSAPP_GRUPO,
   buildPcUser,
   emptyAbc2State,
   getFlujo,
   kitPara,
+  materialPara,
   reconocer,
   seedPrompt,
   type Abc2State,
@@ -338,10 +341,22 @@ function M2Prompt({
           <p className="mb-2 text-sm font-semibold text-teal">Tu prompt contextual — copialo y guardalo</p>
           <CopyBox text={state.promptContextual} label="Copiar mi prompt" />
           <ol className="mt-3 list-decimal space-y-1 pl-5 text-xs text-muted">
-            <li>Abrí Claude (o ChatGPT).</li>
-            <li>Creá un <strong className="text-foreground">Proyecto</strong> nuevo.</li>
+            <li>Creá un <strong className="text-foreground">Proyecto</strong> nuevo (botón de abajo).</li>
             <li>Pegá esto en las <strong className="text-foreground">instrucciones del sistema</strong> del Proyecto.</li>
           </ol>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            {PROJECT_LINKS.map((l) => (
+              <a
+                key={l.id}
+                href={l.url}
+                target="_blank"
+                rel="noopener"
+                className="rounded-xl border border-line px-3 py-2 text-center text-sm font-medium text-foreground transition hover:border-teal/60 hover:text-teal"
+              >
+                {l.label} ↗
+              </a>
+            ))}
+          </div>
         </div>
       )}
 
@@ -456,10 +471,41 @@ function M4Practica({
   goTo: (n: number) => void;
 }) {
   const flujo = getFlujo(state.flujoId);
+  const material = materialPara(state.perfil);
   const listo = state.registro.trim().length >= 30;
   return (
     <div className="rise">
       <Head n={n} titulo="Manos a la obra" bajada="Ejecutá tu flujo con tu caso real. Tenés todo a mano acá." />
+
+      {/* Material de ejemplo del rubro (para procesar con el flujo) */}
+      <div className="mb-3 rounded-2xl border border-line bg-panel/40 p-4">
+        <p className="text-sm font-semibold text-foreground">📎 Material de ejemplo de tu rubro <span className="text-faint">({material.label})</span></p>
+        <p className="text-xs text-faint">¿No tenés tus datos a mano? Usá esto: bajalo y procesalo con tu flujo (subilo a NotebookLM o pegalo en tu Project).</p>
+        <ul className="mt-2 space-y-2">
+          {material.archivos.map((a) => (
+            <li key={a.file} className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm text-foreground">
+                  {a.nombre}
+                  <span className="ml-2 rounded-full bg-violet/15 px-1.5 py-0.5 text-[10px] font-bold uppercase text-violet">{a.formato}</span>
+                </p>
+                <p className="mt-0.5 text-xs text-muted">{a.blurb}</p>
+              </div>
+              <a href={a.file} download className="shrink-0 rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-muted transition hover:border-teal/60 hover:text-teal">⬇ Bajar</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Deep-links a las herramientas */}
+      <div className="mb-3 rounded-2xl border border-line bg-panel/40 p-4">
+        <p className="text-sm font-semibold text-foreground">🔗 Abrí las herramientas</p>
+        <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {TOOL_LINKS.map((l) => (
+            <a key={l.id} href={l.url} target="_blank" rel="noopener" className="rounded-xl border border-line px-3 py-2 text-center text-sm font-medium text-foreground transition hover:border-teal/60 hover:text-teal">{l.label} ↗</a>
+          ))}
+        </div>
+      </div>
 
       <details className="rounded-2xl border border-line bg-panel/40 p-4">
         <summary className="cursor-pointer list-none text-sm font-semibold text-foreground">🧭 Tu flujo (tocá para ver)</summary>

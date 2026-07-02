@@ -1,0 +1,11 @@
+LISTA DE PRECIOS (ficticia) — Tienda de bebidas
+
+Gaseosa 2.25L .......... $1.800
+Agua 2L ................ $900
+Cerveza rubia 1L ....... $2.200
+Vino tinto ............. $3.500
+Fernet 750ml ........... $9.500
+Jugo 1L ................ $1.100
+Energizante ............ $2.500
+
+Envíos: pedido mínimo $15.000. Zona centro y alrededores.
