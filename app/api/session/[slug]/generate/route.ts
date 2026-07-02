@@ -43,7 +43,7 @@ export async function POST(
       "X-Title": "RL1 Taller IA Abogacía",
     },
     body: JSON.stringify({
-      model: defaultModel(),
+      model: typeof body.model === "string" && body.model.trim() ? body.model : defaultModel(),
       temperature: body.temperature ?? 0.5,
       max_tokens: body.maxTokens ?? 1600,
       stream: true,

@@ -4,6 +4,7 @@ import { DEFAULT_SLUG, WORKSHOP_TITLE } from "./constants";
 import { EXP_SLUG, EXP_TITLE } from "./expediente";
 import { POSTA_SLUG, POSTA_TITLE } from "./posta";
 import { ABC_SLUG, ABC_TITLE } from "./abc";
+import { ABC2_SLUG, ABC2_TITLE } from "./abc2";
 import type { SessionRow } from "./types";
 
 // Clases que la app puede auto-crear la primera vez que alguien entra.
@@ -12,6 +13,7 @@ const AUTO_SESSIONS: Record<string, string> = {
   [EXP_SLUG]: EXP_TITLE,
   [POSTA_SLUG]: POSTA_TITLE,
   [ABC_SLUG]: ABC_TITLE,
+  [ABC2_SLUG]: ABC2_TITLE,
 };
 
 export function ok<T>(data: T, init?: number) {

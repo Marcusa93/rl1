@@ -7,7 +7,7 @@ export async function streamGenerate(
   slug: string,
   messages: ChatMessage[],
   onChunk: (text: string) => void,
-  opts?: { system?: string; temperature?: number; maxTokens?: number },
+  opts?: { system?: string; temperature?: number; maxTokens?: number; model?: string },
 ): Promise<void> {
   const res = await fetch(`/api/session/${slug}/generate`, {
     method: "POST",
