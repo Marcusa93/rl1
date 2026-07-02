@@ -226,7 +226,7 @@ const KITS: { nombre: string; kit: Kit }[] = [
     { titulo: "Separar lo del trabajo y lo del Trapiche", flujoId: "organizar-negocio" },
     { titulo: "Un asistente para responder pedidos", flujoId: "asistente-faq" },
   ], miniReto: "Esta semana armá el prompt contextual del Trapiche y usalo para ordenar tus compras de la semana." } },
-  { nombre: "Dodo Barcelo", kit: { problemas: [
+  { nombre: "Dodo", kit: { problemas: [
     { titulo: "Que más gente conozca el club", flujoId: "redes-contenido" },
     { titulo: "Organizar la comunicación con socios", flujoId: "organizar-negocio" },
     { titulo: "Contenido para la cantina", flujoId: "redes-contenido" },
