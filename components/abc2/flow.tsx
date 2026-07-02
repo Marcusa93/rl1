@@ -103,7 +103,15 @@ export function Abc2Flow({ slug, me }: { slug: string; me: ParticipantRow }) {
   return (
     <div>
       <Stepper view={view} onPick={goTo} tienePerfil={!!state.perfil || state.esNuevo} />
-      <div className="mt-5">{view < steps.length ? steps[view](view) : null}</div>
+      {view > 0 && (
+        <button
+          onClick={() => goTo(view - 1)}
+          className="mt-3 inline-flex items-center gap-1.5 rounded-xl border border-line bg-panel/40 px-3 py-1.5 text-xs font-medium text-muted transition hover:border-teal/60 hover:text-teal"
+        >
+          ← Atrás
+        </button>
+      )}
+      <div className="mt-4">{view < steps.length ? steps[view](view) : null}</div>
       <Copiloto
         slug={slug}
         ctx={{ modulo: view, perfil: state.perfil }}
@@ -274,9 +282,31 @@ function M1Ingreso({
       {match.tipo === "nuevo" && (
         <div className="rounded-2xl border border-line bg-panel/40 p-4">
           <p className="text-sm text-foreground">No te encontramos en la Clase 1.</p>
-          <p className="mt-1 text-xs text-muted">Puede ser por cómo está escrito el nombre, o porque sos nuevo. Igual entrás y armás todo.</p>
+          <p className="mt-1 text-xs text-muted">Puede ser por cómo está escrito el nombre. Buscate en la lista de acá abajo, o entrá como nuevo.</p>
           <Button onClick={comoNuevo} className="mt-3 px-3 py-1.5 text-sm">Entrar como nuevo →</Button>
         </div>
+      )}
+
+      {/* Lista completa de la Clase 1: por si el nombre no matcheó, se elige a mano */}
+      {perfiles.length > 0 && (
+        <details className="mt-4 rounded-2xl border border-line bg-panel/40 p-4" open={match.tipo === "nuevo"}>
+          <summary className="cursor-pointer list-none text-sm font-semibold text-foreground">
+            📋 ¿No aparecés? Buscá tu nombre en la lista de la Clase 1
+          </summary>
+          <p className="mt-1 text-xs text-faint">Tocá tu nombre (así te escribiste la vez pasada).</p>
+          <div className="mt-2 max-h-72 space-y-1.5 overflow-auto">
+            {perfiles.map((p) => (
+              <button
+                key={p.nombre}
+                onClick={() => elegir(p)}
+                className="w-full rounded-xl border border-line bg-ink-2/40 p-2.5 text-left transition hover:border-teal/60"
+              >
+                <span className="text-sm font-medium text-foreground">{p.nombre}</span>
+                <span className="ml-2 text-xs text-muted">{p.contexto}</span>
+              </button>
+            ))}
+          </div>
+        </details>
       )}
     </div>
   );
