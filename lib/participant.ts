@@ -16,3 +16,8 @@ export async function setParticipantCookie(id: string) {
     maxAge: 60 * 60 * 12,
   });
 }
+
+export async function clearParticipantCookie() {
+  const jar = await cookies();
+  jar.delete(COOKIE);
+}

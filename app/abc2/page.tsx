@@ -90,7 +90,19 @@ export default function Abc2Page() {
             <LogoRL1 size={24} wordmark={false} />
             <span className="text-gradient font-mono text-sm font-bold">Tu equipo invisible</span>
           </span>
-          <p className="text-xs text-faint">{me.name}</p>
+          <span className="flex items-center gap-3">
+            <span className="text-xs text-faint">{me.name}</span>
+            <button
+              onClick={async () => {
+                await fetch(`/api/session/${SLUG}/leave`, { method: "POST" }).catch(() => {});
+                setMe(null);
+                setName("");
+              }}
+              className="rounded-lg border border-line px-2.5 py-1 text-xs text-muted transition hover:border-magenta/60 hover:text-magenta"
+            >
+              Salir
+            </button>
+          </span>
         </div>
       </header>
       <main className="mx-auto max-w-3xl px-4 py-6">

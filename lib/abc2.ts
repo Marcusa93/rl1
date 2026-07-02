@@ -12,8 +12,8 @@ export const ABC2_TITLE = "Tu equipo invisible — Clase 2";
 export const ABC2_ACTIVITY = "abc2";
 export const ABC2_ITEM = "state";
 
-// ⚠️ Pegá acá el link de invitación del grupo de WhatsApp del taller.
-export const WHATSAPP_GRUPO = "";
+// Link de invitación del grupo de WhatsApp del taller (mes de consultas).
+export const WHATSAPP_GRUPO = "https://chat.whatsapp.com/HsSEQzuAxZTIa7bkoHfn9c?s=cl&p=i&mlu=2";
 
 // --- Perfil que viaja por todos los módulos (viene de la Clase 1) --------
 
@@ -417,10 +417,10 @@ export const GEMINI_CANVAS_URL = "https://gemini.google.com/app";
 
 export const VIBE: Record<string, VibeApp> = {
   comercio: {
-    app: "Calculadora de pedidos",
-    que: "Armás el pedido de un cliente y te da el total al instante.",
+    app: "Armador de pedidos",
+    que: "Armás el pedido del cliente, calcula el total y te lo deja listo para mandar por WhatsApp.",
     prompt:
-      "Creá una web app simple, en una sola pantalla, para calcular el total de un pedido de una tienda de bebidas. Debe tener: una lista de productos con su precio (gaseosa, cerveza, fernet, vino, agua, jugo, etc.) donde pueda sumar y restar cantidades con botones + y −; que muestre el subtotal por producto y el TOTAL general grande y bien visible; un botón para aplicar 10% de descuento; y un botón para vaciar el pedido. Todo en español, con números en pesos argentinos, diseño limpio y grande para usar desde el celular. No necesito login ni base de datos.",
+      "Creá una web app en una sola pantalla para armar el pedido de un cliente de una tienda de bebidas y calcular el total. Debe tener: un buscador para filtrar productos por nombre; una lista de productos con precio y botones + y − de cantidad; el subtotal por producto y un TOTAL grande y bien visible; un descuento automático del 10% cuando el total supera $80.000; un campo para sumar costo de envío; y un botón 'Copiar pedido' que genere un texto ordenado (cada producto con cantidad y precio, y el total) listo para pegar en WhatsApp. En español, pesos argentinos, diseño grande para el celular, sin login ni base de datos.",
   },
   finanzas: {
     app: "Organizador de cheques",
@@ -429,10 +429,10 @@ export const VIBE: Record<string, VibeApp> = {
       "Creá una web app simple para organizar cheques. Debe permitir cargar un cheque con: número, banco, emisor, monto y fecha de vencimiento; mostrar la lista ordenada por fecha de vencimiento (los más próximos arriba); pintar de rojo los vencidos y de amarillo los que vencen en los próximos 7 días; y mostrar arriba el total en cartera y cuánto está vencido. En español, pesos argentinos, pensada para el celular. Sin login ni base de datos.",
   },
   legal: {
-    app: "Agenda de vencimientos",
-    que: "Cargás tus causas y te avisa las próximas fechas.",
+    app: "Liquidador de indemnizaciones",
+    que: "Estima la indemnización por despido según la LCT.",
     prompt:
-      "Creá una web app simple tipo agenda para llevar los vencimientos de expedientes. Cargar una causa con: carátula, fuero, próxima fecha y una nota. Mostrar la lista ordenada por fecha, con las más próximas destacadas y un contador de 'días restantes'. Poder marcar una como 'hecha'. En español, para celular, sin login. No uses datos sensibles reales.",
+      "Creá una web app simple para estimar la indemnización por despido sin causa según la Ley de Contrato de Trabajo argentina. Ingresar: fecha de ingreso, fecha de egreso y la mejor remuneración mensual, normal y habitual. Calcular y mostrar por separado, con su explicación: (1) Indemnización por antigüedad (art. 245 LCT): un sueldo por cada año de servicio o fracción mayor a tres meses; (2) Preaviso (art. 232): medio mes, un mes o dos meses de sueldo según la antigüedad; (3) Integración del mes de despido (art. 233): la parte proporcional del mes no trabajado; y el TOTAL estimado grande y visible. Mostrar también la antigüedad calculada en años y meses. En español, pesos argentinos, para el celular, sin login. Aclarar que es una estimación orientativa y no reemplaza el cálculo de un profesional.",
   },
   gastro: {
     app: "Cuenta de la mesa",
@@ -441,16 +441,16 @@ export const VIBE: Record<string, VibeApp> = {
       "Creá una web app simple para calcular la cuenta de una mesa en una pizzería o cantina. Tener una lista de productos (pizzas, empanadas, papas, bebidas) con precio y botones + y − por cantidad; mostrar el detalle y el TOTAL grande; un botón para dividir la cuenta entre N personas; y un botón para reiniciar. En español, pesos argentinos, para el celular, sin login.",
   },
   gestion: {
-    app: "Tablero de tareas",
-    que: "Un tablero simple para ver qué hace cada uno.",
+    app: "Liquidador de sueldos",
+    que: "Cargás el sueldo bruto y te calcula el neto de bolsillo.",
     prompt:
-      "Creá una web app simple tipo tablero (kanban) con tres columnas: Pendiente, En curso y Listo. Poder agregar una tarjeta con título, responsable y prioridad, y moverla entre columnas. Que muestre cuántas tareas hay en cada columna. En español, diseño limpio, para usar en computadora o celular. Sin login.",
+      "Creá una web app simple para liquidar un sueldo. Ingresar el sueldo bruto y, opcionalmente, un adicional por antigüedad y un porcentaje de presentismo. Calcular y mostrar los descuentos de ley con su detalle: jubilación 11%, obra social 3% y PAMI - Ley 19.032 3%; el total de aportes; y el SUELDO NETO de bolsillo grande y bien visible. En español, pesos argentinos, para el celular, sin login. Aclarar que es una estimación orientativa.",
   },
   educacion: {
-    app: "Calculadora de promedios",
-    que: "Cargás las notas y te calcula el promedio.",
+    app: "Generador de infografías",
+    que: "Convertís un tema complejo en una infografía clara.",
     prompt:
-      "Creá una web app simple para calcular promedios. Poder agregar materias o trabajos con su nota; que calcule el promedio automáticamente y lo muestre grande; que indique con color si aprueba (verde) o no (rojo) según una nota mínima que yo pueda configurar. En español, para el celular, sin login.",
+      "Creá una web app simple para armar una infografía sobre un tema complejo. Ingresar un título y varios 'puntos clave', cada uno con un título corto y una explicación de una línea. Mostrar la infografía con un diseño lindo: el título arriba y los puntos como tarjetas con un ícono, colores agradables y buena tipografía; si el tema tiene etapas, poder mostrarlas como una línea de tiempo. Que se vea bien para descargar como imagen o imprimir. En español, diseño moderno y claro, sin login.",
   },
 };
 
