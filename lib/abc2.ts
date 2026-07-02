@@ -273,6 +273,21 @@ const KITS: { nombre: string; kit: Kit }[] = [
     { titulo: "Ordenar tareas administrativas", flujoId: "organizar-negocio" },
     { titulo: "Redactar mensajes y mails más rápido", flujoId: "asistente-faq" },
   ], miniReto: "Esta semana armá tu prompt contextual y usalo para escribir tres mails de trabajo." } },
+  { nombre: "Carlos Arnau", kit: { problemas: [
+    { titulo: "Organizar y resumir lo que tengo que estudiar", flujoId: "ordenar-docs" },
+    { titulo: "Preparar un trabajo práctico o una exposición", flujoId: "organizar-negocio" },
+    { titulo: "Ordenar mi semana entre el estudio y el rugby", flujoId: "organizar-negocio" },
+  ], miniReto: "Esta semana subí los apuntes de una materia a NotebookLM y pedile un resumen para estudiar para la próxima prueba." } },
+  { nombre: "Benjamin de la Torre", kit: { problemas: [
+    { titulo: "Ordenar la información de la empresa", flujoId: "organizar-negocio" },
+    { titulo: "Un asistente para las tareas de todos los días", flujoId: "asistente-faq" },
+    { titulo: "Analizar datos para tomar decisiones", flujoId: "ordenar-docs" },
+  ], miniReto: "Esta semana armá el prompt contextual de tu empresa y usalo para ordenar una tarea concreta de la semana." } },
+  { nombre: "Marco Rossi", kit: { problemas: [
+    { titulo: "Preparar material para mis clases", flujoId: "organizar-negocio" },
+    { titulo: "Generar contenido (posts, apuntes, ejercicios)", flujoId: "redes-contenido" },
+    { titulo: "Resumir y ordenar información", flujoId: "ordenar-docs" },
+  ], miniReto: "Esta semana usá tu asistente para preparar una clase o un contenido, y registrá qué salió." } },
 ];
 
 /** Genérico cuando no hay kit curado (o es participante nuevo). */
