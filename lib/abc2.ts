@@ -93,8 +93,13 @@ export type MatchResult =
 
 /** Cruza un nombre tipeado contra los perfiles de la Clase 1. */
 export function reconocer(nombre: string, perfiles: Perfil[]): MatchResult {
-  const inTok = new Set(norm(nombre).split(" ").filter(Boolean));
+  const nn = norm(nombre);
+  const inTok = new Set(nn.split(" ").filter(Boolean));
   if (inTok.size === 0) return { tipo: "nuevo" };
+  // 1) igualdad exacta de nombre completo (cubre nombres de una sola palabra)
+  const igual = perfiles.find((p) => norm(p.nombre) === nn);
+  if (igual) return { tipo: "exacto", perfil: igual };
+  // 2) match por nombre + apellido
   const exact = perfiles.find((p) => {
     const kt = claves(p.nombre);
     return kt.length >= 2 && kt.every((t) => inTok.has(t)) && inTok.size <= 3;
