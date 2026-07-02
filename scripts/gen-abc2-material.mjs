@@ -206,4 +206,23 @@ function imgChat({ name, contacto, mensajes }) {
   ], cuerpo: "Consigna: Elaborar un texto de una carilla explicando las causas internas y externas de la Revolución de Mayo. Incluir una línea de tiempo con los hechos principales de la Semana de Mayo. Nombrar a los integrantes de la Primera Junta. Trabajo individual, a mano o en computadora." });
 }
 
+// ===================== CLUB / DEPORTES (pádel) =====================
+{
+  const canchas = ["Cancha 1", "Cancha 2", "Cancha 3"];
+  const socios = ["Pérez", "Gómez", "Díaz", "Ruiz", "Torres", "Vega", "López", "Sosa", "Molina", "Ríos", "Castro", "Ortiz"];
+  const rows = [["Fecha", "Cancha", "Hora", "Socio", "Estado", "Precio"]];
+  for (let d = 0; d < 7; d++) for (let h = 14; h <= 22; h += 2) for (let c = 0; c < 3; c++) {
+    const ocup = (d * 3 + h + c) % 3 !== 0;
+    rows.push([pad2(19 + d) + "/07", canchas[c], pad2(h) + ":00", ocup ? socios[(d * 3 + h + c) % socios.length] : "—", ocup ? "Reservada" : "Libre", 9000]);
+  }
+  xlsx("club-reservas", rows);
+  txt("club-servicios", `PRECIOS Y SERVICIOS (ficticio) — Club de Pádel\n\n== ALQUILER DE CANCHA (90 min) ==\n- Socios .................. ${money(9000)}\n- No socios ............... ${money(12000)}\n- Con luz (después de 19h)  + ${money(1500)}\n\n== CLASES ==\n- Individual (60 min) ..... ${money(12000)}\n- Grupal (hasta 4) ........ ${money(6000)} por persona\n- Escuelita infantil (mes)  ${money(28000)}\n\n== CUOTA SOCIO ==\n- Mensual ................. ${money(15000)}\n  Incluye dos turnos con descuento y prioridad de reserva.\n\n== CANTINA ==\n- Cerveza 1L .............. ${money(3000)}\n- Gaseosa ................. ${money(2000)}\n- Picada para 4 .......... ${money(12000)}\n- Sándwich ................ ${money(4500)}\n\n== PROMOS ==\n- Combo previa (alquiler + cantina): 10% off.\n- Trae un amigo nuevo y tu próximo turno es gratis.\n\nHorarios: todos los días de 9 a 24. Reservas por WhatsApp o en el mostrador.\nLos sábados a la mañana coordinamos rugby infantil.`);
+  imgChat({ name: "club-reserva", contacto: "Socio (Martín)", mensajes: [
+    { yo: false, t: "Hola! Tenés cancha libre hoy a las 20?" },
+    { yo: false, t: "Somos 4, jugamos dobles" },
+    { yo: true, t: "Hola Martín! Sí, te reservo la Cancha 2 a las 20" },
+    { yo: false, t: "Genial! Despues pasamos por la cantina tambien" },
+  ]});
+}
+
 console.log("\nListo. Material en public/abc2/material/");

@@ -373,6 +373,14 @@ export const MATERIAL: Record<string, MaterialPaquete> = {
       { nombre: "Una consigna (TP)", formato: "Imagen", file: "/abc2/material/educacion-consigna.jpg", blurb: `Imagen de una consigna. ${IMG_OCR}` },
     ],
   },
+  club: {
+    label: "Club / deportes",
+    archivos: [
+      { nombre: "Reservas de canchas", formato: "Excel", file: "/abc2/material/club-reservas.xlsx", blurb: "Turnos por cancha, día y hora." },
+      { nombre: "Precios y servicios", formato: "Texto", file: "/abc2/material/club-servicios.txt", blurb: "Alquiler, clases, cuota de socio y cantina." },
+      { nombre: "Una reserva (WhatsApp)", formato: "Imagen", file: "/abc2/material/club-reserva.jpg", blurb: `Captura de una reserva. ${IMG_OCR}` },
+    ],
+  },
 };
 
 // nombre curado → categoría de material
@@ -381,7 +389,7 @@ const CATEGORIA: Record<string, string> = {
   "Sebastián Rodriguez": "comercio",
   meli: "gastro",
   Milagros: "gastro",
-  Dodo: "gastro",
+  Dodo: "club",
   Aguitos: "finanzas",
   Marcelo: "finanzas",
   Verónica: "legal",
@@ -451,6 +459,12 @@ export const VIBE: Record<string, VibeApp> = {
     que: "Convertís un tema complejo en una infografía clara.",
     prompt:
       "Creá una web app simple para armar una infografía sobre un tema complejo. Ingresar un título y varios 'puntos clave', cada uno con un título corto y una explicación de una línea. Mostrar la infografía con un diseño lindo: el título arriba y los puntos como tarjetas con un ícono, colores agradables y buena tipografía; si el tema tiene etapas, poder mostrarlas como una línea de tiempo. Que se vea bien para descargar como imagen o imprimir. En español, diseño moderno y claro, sin login.",
+  },
+  club: {
+    app: "Reserva de canchas",
+    que: "Cargás las reservas y ves qué cancha está libre a cada hora.",
+    prompt:
+      "Creá una web app simple para gestionar la reserva de canchas de un club de pádel. Mostrar una grilla por cancha (Cancha 1, 2 y 3) y por franja horaria (de 14 a 24 hs); poder marcar una franja como reservada escribiendo el nombre del socio; ver de un vistazo qué está libre y qué ocupado (verde/rojo); y poder cancelar una reserva. En español, para el celular, sin login.",
   },
 };
 
