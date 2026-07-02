@@ -443,10 +443,10 @@ export const VIBE: Record<string, VibeApp> = {
       "Creá una web app simple para estimar la indemnización por despido sin causa según la Ley de Contrato de Trabajo argentina. Ingresar: fecha de ingreso, fecha de egreso y la mejor remuneración mensual, normal y habitual. Calcular y mostrar por separado, con su explicación: (1) Indemnización por antigüedad (art. 245 LCT): un sueldo por cada año de servicio o fracción mayor a tres meses; (2) Preaviso (art. 232): medio mes, un mes o dos meses de sueldo según la antigüedad; (3) Integración del mes de despido (art. 233): la parte proporcional del mes no trabajado; y el TOTAL estimado grande y visible. Mostrar también la antigüedad calculada en años y meses. En español, pesos argentinos, para el celular, sin login. Aclarar que es una estimación orientativa y no reemplaza el cálculo de un profesional.",
   },
   gastro: {
-    app: "Cuenta de la mesa",
-    que: "Cargás lo que consumió la mesa y te da la cuenta.",
+    app: "Comanda y cuenta",
+    que: "Armás el pedido (de una mesa o de un delivery), sacás el total, lo dividís o sumás el envío.",
     prompt:
-      "Creá una web app simple para calcular la cuenta de una mesa en una pizzería o cantina. Tener una lista de productos (pizzas, empanadas, papas, bebidas) con precio y botones + y − por cantidad; mostrar el detalle y el TOTAL grande; un botón para dividir la cuenta entre N personas; y un botón para reiniciar. En español, pesos argentinos, para el celular, sin login.",
+      "Creá una web app simple para tomar el pedido de una pizzería, cantina o delivery de comida y calcular el total. Tener una lista de productos (pizzas, sándwiches, empanadas, papas, bebidas) con precio y botones + y − por cantidad; mostrar el detalle y el TOTAL grande; un botón para dividir la cuenta entre N personas (para una mesa); un campo para sumar el costo de envío (para delivery); y un botón para reiniciar. En español, pesos argentinos, para el celular, sin login.",
   },
   gestion: {
     app: "Liquidador de sueldos",
