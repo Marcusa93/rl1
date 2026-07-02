@@ -1,13 +1,27 @@
-INFORME SEMANAL (ficticio)
+INFORME SEMANAL (ficticio) — Semana del 23 al 29 de junio
 
-EQUIPO: 8 personas, 3 áreas.
+EQUIPO: 12 personas distribuidas en 6 áreas.
 
-LOGROS DE LA SEMANA
-- Se cerró el 80% del objetivo de ventas.
-- Bajó el tiempo de respuesta a clientes de 2 días a 1.
+1. RESUMEN EJECUTIVO
+La semana cerró con un cumplimiento del 82% de los objetivos previstos. Se destacan mejoras en atención al cliente y una demora en dos iniciativas de marketing por falta de definiciones.
 
-PENDIENTES / TRABAS
-- Falta definir la capacitación del equipo.
-- Dos tareas administrativas atrasadas por falta de datos.
+2. LOGROS
+- Ventas: se alcanzó el 82% del objetivo mensual, con buen ritmo para cerrar el mes.
+- Atención: el tiempo de respuesta bajó de 2 días a 1, tras reorganizar la bandeja de mensajes.
+- Administración: se concilió la caja de mayo y se pusieron al día dos cuentas corrientes.
+- Logística: se probó una nueva ruta de entrega que ahorró combustible.
 
-PRÓXIMOS PASOS: reunión el lunes para priorizar.
+3. PENDIENTES Y TRABAS
+- Marketing: la campaña de redes está frenada esperando aprobación de contenidos.
+- RRHH: falta definir fecha y temario de la capacitación del equipo.
+- Dos tareas administrativas atrasadas por falta de datos de otras áreas.
+
+4. INDICADORES
+- Objetivo de ventas: 82%.
+- Tiempo de respuesta: 1 día (antes 2).
+- Tareas cerradas en la semana: 14 de 24.
+
+5. PRÓXIMOS PASOS
+- Reunión el lunes para priorizar las tareas demoradas.
+- Aprobar los contenidos de la campaña.
+- Cerrar el temario de capacitación antes del viernes.

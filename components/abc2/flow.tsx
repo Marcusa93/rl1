@@ -7,6 +7,8 @@ import {
   ABC2_ITEM,
   FLUJOS,
   HERRAMIENTAS,
+  GEMINI_CANVAS_URL,
+  LOVABLE_URL,
   MODULOS,
   PC_SYSTEM,
   PROJECT_LINKS,
@@ -19,6 +21,7 @@ import {
   materialPara,
   reconocer,
   seedPrompt,
+  vibePara,
   type Abc2State,
   type Perfil,
 } from "@/lib/abc2";
@@ -518,6 +521,7 @@ function M4Practica({
 }) {
   const flujo = getFlujo(state.flujoId);
   const material = materialPara(state.perfil);
+  const vibe = vibePara(state.perfil);
   const listo = state.registro.trim().length >= 30;
   return (
     <div className="rise">
@@ -551,6 +555,24 @@ function M4Practica({
             <a key={l.id} href={l.url} target="_blank" rel="noopener" className="rounded-xl border border-line px-3 py-2 text-center text-sm font-medium text-foreground transition hover:border-teal/60 hover:text-teal">{l.label} ↗</a>
           ))}
         </div>
+      </div>
+
+      {/* Vibe coding: mini web-app sin programar */}
+      <div className="mb-3 rounded-2xl border-gradient p-4">
+        <p className="text-sm font-semibold text-teal">✨ Bonus · Armá una mini web-app (sin programar)</p>
+        <p className="mt-1 text-xs text-muted">
+          Se puede construir una appcita que resuelva algo chico de tu día. Para vos:{" "}
+          <strong className="text-foreground">{vibe.app}</strong> — {vibe.que}
+        </p>
+        <p className="mt-2 text-xs text-faint">Copiá este prompt y pegalo en una de estas dos; te la construye sola:</p>
+        <div className="mt-2">
+          <CopyBox text={vibe.prompt} label="Copiar el prompt" />
+        </div>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          <a href={LOVABLE_URL} target="_blank" rel="noopener" className="rounded-xl border border-line px-3 py-2 text-center text-sm font-medium text-foreground transition hover:border-teal/60 hover:text-teal">Abrir Lovable ↗</a>
+          <a href={GEMINI_CANVAS_URL} target="_blank" rel="noopener" className="rounded-xl border border-line px-3 py-2 text-center text-sm font-medium text-foreground transition hover:border-teal/60 hover:text-teal">Abrir Gemini (Canvas) ↗</a>
+        </div>
+        <p className="mt-2 text-[11px] text-faint">En Gemini, activá el modo «Canvas» antes de pegar el prompt.</p>
       </div>
 
       <details className="rounded-2xl border border-line bg-panel/40 p-4">

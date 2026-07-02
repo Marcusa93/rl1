@@ -394,11 +394,68 @@ const CATEGORIA: Record<string, string> = {
   "Marco Rossi": "educacion",
 };
 
-export function materialPara(perfil: Perfil | null): MaterialPaquete {
-  if (!perfil) return MATERIAL.gestion;
+export function categoriaDe(perfil: Perfil | null): string {
+  if (!perfil) return "gestion";
   const inTok = new Set(norm(perfil.nombre).split(" ").filter(Boolean));
   const hit = Object.keys(CATEGORIA).find((nom) => claves(nom).every((t) => inTok.has(t)));
-  return MATERIAL[hit ? CATEGORIA[hit] : "gestion"];
+  return hit ? CATEGORIA[hit] : "gestion";
+}
+
+export function materialPara(perfil: Perfil | null): MaterialPaquete {
+  return MATERIAL[categoriaDe(perfil)] ?? MATERIAL.gestion;
+}
+
+// --- Vibe coding: mini web-app por rubro (Lovable / Gemini Canvas) --------
+
+export interface VibeApp {
+  app: string;
+  que: string;
+  prompt: string;
+}
+export const LOVABLE_URL = "https://lovable.dev";
+export const GEMINI_CANVAS_URL = "https://gemini.google.com/app";
+
+export const VIBE: Record<string, VibeApp> = {
+  comercio: {
+    app: "Calculadora de pedidos",
+    que: "Armás el pedido de un cliente y te da el total al instante.",
+    prompt:
+      "Creá una web app simple, en una sola pantalla, para calcular el total de un pedido de una tienda de bebidas. Debe tener: una lista de productos con su precio (gaseosa, cerveza, fernet, vino, agua, jugo, etc.) donde pueda sumar y restar cantidades con botones + y −; que muestre el subtotal por producto y el TOTAL general grande y bien visible; un botón para aplicar 10% de descuento; y un botón para vaciar el pedido. Todo en español, con números en pesos argentinos, diseño limpio y grande para usar desde el celular. No necesito login ni base de datos.",
+  },
+  finanzas: {
+    app: "Organizador de cheques",
+    que: "Cargás cheques y los ordena por vencimiento, marcando los vencidos.",
+    prompt:
+      "Creá una web app simple para organizar cheques. Debe permitir cargar un cheque con: número, banco, emisor, monto y fecha de vencimiento; mostrar la lista ordenada por fecha de vencimiento (los más próximos arriba); pintar de rojo los vencidos y de amarillo los que vencen en los próximos 7 días; y mostrar arriba el total en cartera y cuánto está vencido. En español, pesos argentinos, pensada para el celular. Sin login ni base de datos.",
+  },
+  legal: {
+    app: "Agenda de vencimientos",
+    que: "Cargás tus causas y te avisa las próximas fechas.",
+    prompt:
+      "Creá una web app simple tipo agenda para llevar los vencimientos de expedientes. Cargar una causa con: carátula, fuero, próxima fecha y una nota. Mostrar la lista ordenada por fecha, con las más próximas destacadas y un contador de 'días restantes'. Poder marcar una como 'hecha'. En español, para celular, sin login. No uses datos sensibles reales.",
+  },
+  gastro: {
+    app: "Cuenta de la mesa",
+    que: "Cargás lo que consumió la mesa y te da la cuenta.",
+    prompt:
+      "Creá una web app simple para calcular la cuenta de una mesa en una pizzería o cantina. Tener una lista de productos (pizzas, empanadas, papas, bebidas) con precio y botones + y − por cantidad; mostrar el detalle y el TOTAL grande; un botón para dividir la cuenta entre N personas; y un botón para reiniciar. En español, pesos argentinos, para el celular, sin login.",
+  },
+  gestion: {
+    app: "Tablero de tareas",
+    que: "Un tablero simple para ver qué hace cada uno.",
+    prompt:
+      "Creá una web app simple tipo tablero (kanban) con tres columnas: Pendiente, En curso y Listo. Poder agregar una tarjeta con título, responsable y prioridad, y moverla entre columnas. Que muestre cuántas tareas hay en cada columna. En español, diseño limpio, para usar en computadora o celular. Sin login.",
+  },
+  educacion: {
+    app: "Calculadora de promedios",
+    que: "Cargás las notas y te calcula el promedio.",
+    prompt:
+      "Creá una web app simple para calcular promedios. Poder agregar materias o trabajos con su nota; que calcule el promedio automáticamente y lo muestre grande; que indique con color si aprueba (verde) o no (rojo) según una nota mínima que yo pueda configurar. En español, para el celular, sin login.",
+  },
+};
+
+export function vibePara(perfil: Perfil | null): VibeApp {
+  return VIBE[categoriaDe(perfil)] ?? VIBE.gestion;
 }
 
 // --- Deep-links a herramientas y a crear un Project ----------------------

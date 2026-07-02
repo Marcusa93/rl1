@@ -1,17 +1,34 @@
-MENÚ (ficticio)
+MENÚ (ficticio) — Pizzería / Cantina
 
-PIZZAS
-- Muzzarella ......... $7.500
-- Napolitana ......... $8.500
-- Fugazzeta .......... $8.000
-- Especial ........... $9.500
+== PIZZAS (grande, 8 porciones) ==
+- Muzzarella .................... $7.500
+- Napolitana ................... $8.500
+- Fugazzeta .................... $8.000
+- Fugazzeta rellena ............ $10.500
+- Especial (jamón y morrón) .... $9.500
+- Calabresa ................... $9.000
+- Roquefort .................... $9.800
+- Cuatro quesos ................ $10.500
 
-PARA PICAR
-- Empanadas (docena) . $9.000
-- Papas fritas ....... $4.500
+== EMPANADAS (unidad) ==
+- Carne / Pollo / J&Q / Verdura . $900
+- Docena surtida .............. $9.600
 
-BEBIDAS
-- Gaseosa 1.5L ....... $2.500
-- Cerveza 1L ......... $3.000
+== PARA PICAR ==
+- Papas fritas ................. $4.500
+- Papas con cheddar ........... $6.500
+- Provoleta ................... $5.500
 
-Promo: 2 muzzarellas + gaseosa = $16.000
+== BEBIDAS ==
+- Gaseosa 1.5L ................. $2.500
+- Cerveza 1L ................... $3.000
+- Agua / saborizada ........... $1.500
+- Vino de la casa ............. $4.000
+
+== PROMOS ==
+- Lunes/martes: 2 muzzarellas = $13.000
+- Combo partido: 1 grande + 6 empanadas + gaseosa = $16.000
+- Happy hour (18 a 20): cerveza 1L a $2.200
+
+Delivery: pedido mínimo $7.000. Zona: centro y barrios cercanos.
+Reservas y pedidos por WhatsApp. Atendemos de 19 a 00:30, jueves a domingo.

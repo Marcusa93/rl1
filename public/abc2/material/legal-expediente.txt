@@ -1,9 +1,35 @@
 RESUMEN DE EXPEDIENTE (ficticio)
+Carátula: "Pérez, Laura c/ Gómez, Juan s/ alimentos"
+Fuero: Familia — Juzgado N° 2
 
-"Pérez, Laura s/ alimentos" — Fuero de Familia
+1. PARTES
+- Actora: Laura Pérez, en representación de su hija menor (4 años).
+- Demandado: Juan Gómez, progenitor.
 
-HECHOS: La actora reclama cuota alimentaria para su hija de 4 años. El progenitor aporta de manera irregular. Se acompañan comprobantes de gastos (jardín, obra social) y capturas de mensajes.
+2. OBJETO
+Se reclama la fijación de una cuota alimentaria a favor de la hija. La actora manifiesta que el demandado aporta de manera irregular e insuficiente desde hace ocho meses.
 
-PRUEBA: recibos, testimonial de dos testigos, pedido de informe a la AFIP sobre ingresos del demandado.
+3. HECHOS
+- Las partes se separaron hace dos años. Al inicio el demandado aportaba una suma mensual, que fue reduciéndose.
+- En los últimos seis meses los aportes fueron esporádicos, por debajo de las necesidades de la niña.
+- La niña asiste a un jardín privado y tiene cobertura de obra social a cargo de la actora.
+- El demandado trabaja de manera independiente; se presume una capacidad económica mayor a la declarada.
 
-ESTADO: audiencia fijada para el 08/07. Falta acompañar la última liquidación de gastos.
+4. PRUEBA OFRECIDA
+- Documental: comprobantes de gastos (jardín, obra social, salud), capturas de mensajes.
+- Testimonial: dos testigos del entorno familiar.
+- Informativa: oficios a entidades bancarias y a la AFIP para acreditar ingresos.
+- Pericial: contable, sobre movimientos del demandado.
+
+5. NORMATIVA APLICABLE
+- Código Civil y Comercial: deber alimentario de los progenitores; contenido de la cuota; proporcionalidad según necesidades e ingresos.
+
+6. ESTADO PROCESAL
+- Se corrió traslado de la demanda; el demandado contestó negando la insuficiencia.
+- Se fijó audiencia preliminar para el 08/07/2026.
+- Pendiente: acompañar la última liquidación de gastos y diligenciar los oficios.
+
+7. ESTRATEGIA / PENDIENTES
+- Actualizar el detalle de gastos mensuales de la niña.
+- Insistir con el oficio a la AFIP para acreditar ingresos reales.
+- Evaluar pedido de cuota alimentaria provisoria mientras tramita el principal.

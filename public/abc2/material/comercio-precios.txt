@@ -1,11 +1,42 @@
-LISTA DE PRECIOS (ficticia) — Tienda de bebidas
+LISTA DE PRECIOS (ficticia) — Tienda de bebidas 'LAND'
+Vigente desde el 01/07/2026. Precios finales por unidad. Sujetos a cambio sin previo aviso.
 
-Gaseosa 2.25L .......... $1.800
-Agua 2L ................ $900
-Cerveza rubia 1L ....... $2.200
-Vino tinto ............. $3.500
-Fernet 750ml ........... $9.500
-Jugo 1L ................ $1.100
-Energizante ............ $2.500
+== BEBIDAS SIN ALCOHOL ==
+- Gaseosa 2.25L......... $1.800
+- Agua 2L............... $900
+- Jugo 1L............... $1.100
+- Energizante........... $2.500
+- Soda sifón............ $1.200
 
-Envíos: pedido mínimo $15.000. Zona centro y alrededores.
+== CERVEZAS ==
+- Cerveza rubia 1L...... $2.200
+- Cerveza negra 1L...... $2.600
+
+== VINOS ==
+- Vino tinto............ $3.500
+- Vino blanco........... $3.200
+
+== APERITIVOS ==
+- Fernet 750ml.......... $9.500
+
+== DESTILADOS ==
+- Gin 750ml............. $12.000
+- Whisky 750ml.......... $18.000
+
+CONDICIONES DE VENTA
+- Pedido mínimo para envío: $15.000.
+- Zona centro y alrededores. Consultar otras zonas.
+- Cuenta corriente para clientes habituales (bares y kioscos), a 30 días.
+- Descuento del 10% por compra mayor a $80.000.
+
+PROMOS DEL MES
+- 12 cervezas rubias: $24.000 (10% off).
+- Combo previa: 1 fernet + 2 gaseosas 2.25L = $12.000.
+- 6 vinos surtidos: $19.000.
+
+HORARIOS
+Lunes a sábados de 9 a 13 y de 17 a 21. Domingos de 10 a 13.
+Entregas: de 10 a 12 y de 17 a 20.
+
+CONTACTO
+WhatsApp de pedidos: (0381) 15-xxx-xxxx. Instagram: @land.bebidas

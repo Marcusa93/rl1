@@ -1,14 +1,32 @@
-RESUMEN DE MOVIMIENTOS DEL MES (ficticio)
+RESUMEN DE MOVIMIENTOS (ficticio) — Mes: Junio 2026
 
-INGRESOS
-- Cobros en efectivo: $1.250.000
-- Cheques cobrados: $2.100.000
-- Transferencias: $980.000
+=== INGRESOS ===
+Cobros en efectivo ................ $1.250.000
+Cheques cobrados .................. $2.100.000
+Transferencias recibidas .......... $980.000
+Ventas con tarjeta (neto) ......... $640.000
+TOTAL INGRESOS .................... $4.970.000
 
-EGRESOS
-- Pago a proveedores: $2.400.000
-- Sueldos: $900.000
-- Servicios e impuestos: $320.000
-- Gastos varios: $180.000
+=== EGRESOS ===
+Pago a proveedores ................ $2.400.000
+Sueldos y cargas .................. $900.000
+Alquiler .......................... $350.000
+Servicios (luz, gas, internet) .... $180.000
+Impuestos (IIBB, monotributo) ..... $220.000
+Combustible / fletes .............. $140.000
+Gastos varios ..................... $160.000
+TOTAL EGRESOS ..................... $4.350.000
 
-Pendiente: 5 cheques en cartera por $2.000.000 (uno vencido).
+=== RESULTADO ===
+Resultado del mes ................. $620.000
+
+=== CHEQUES EN CARTERA ===
+Se mantienen 30 cheques por un total aproximado de $9.800.000.
+De esos, 4 están vencidos ($1.350.000) y 6 vencen en los próximos 10 días.
+Acción sugerida: priorizar la gestión de cobro de los vencidos y avisar a los emisores de los próximos.
+
+=== OBSERVACIONES ===
+- Los cobros en efectivo cayeron 8% respecto de mayo.
+- Subió el uso de transferencias (buena señal para la conciliación).
+- Un proveedor aumentó 12% y conviene renegociar o buscar alternativa.
+- Revisar la cuenta corriente de 3 clientes que se atrasaron más de 30 días.
