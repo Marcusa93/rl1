@@ -229,6 +229,41 @@ function Deck() {
 
 // --- Render por tipo de placa ---------------------------------------------
 
+/** Red de nodos flotando detrás de la portada. */
+function Constelacion() {
+  const nodos: Array<[number, number, number]> = [
+    [80, 60, 3], [220, 30, 2.5], [370, 80, 3.5], [520, 40, 2.5], [660, 90, 3],
+    [140, 190, 2.5], [330, 220, 3], [500, 200, 2.5], [620, 240, 3.5], [60, 300, 3],
+    [250, 330, 2.5], [450, 310, 3], [680, 330, 2.5],
+  ];
+  const lineas: Array<[number, number]> = [
+    [0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [2, 6], [4, 8], [5, 6], [6, 7], [7, 8], [5, 9], [6, 10], [7, 11], [8, 12], [10, 11],
+  ];
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 740 380"
+      className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[130%] w-[130%] -translate-x-1/2 -translate-y-1/2 opacity-25"
+    >
+      {lineas.map(([a, b], i) => (
+        <line
+          key={i}
+          x1={nodos[a][0]} y1={nodos[a][1]} x2={nodos[b][0]} y2={nodos[b][1]}
+          stroke="#5eead4" strokeWidth="0.7"
+        >
+          <animate attributeName="opacity" values="0.15;0.6;0.15" dur={`${4 + (i % 5)}s`} repeatCount="indefinite" />
+        </line>
+      ))}
+      {nodos.map(([x, y, r], i) => (
+        <circle key={i} cx={x} cy={y} r={r} fill={i % 3 === 0 ? "#8b5cf6" : "#5eead4"}>
+          <animate attributeName="opacity" values="0.4;1;0.4" dur={`${3 + (i % 4)}s`} begin={`${i * 0.3}s`} repeatCount="indefinite" />
+          <animate attributeName="cy" values={`${y};${y - 6};${y}`} dur={`${6 + (i % 5)}s`} repeatCount="indefinite" />
+        </circle>
+      ))}
+    </svg>
+  );
+}
+
 /** **negrita** inline sin markdown completo. */
 function Rico({ text }: { text: string }) {
   return (
@@ -270,6 +305,7 @@ function Slide({ slide }: { slide: ClaseSlide }) {
                 "radial-gradient(ellipse at 30% 40%, rgba(94,234,212,0.5), transparent 60%), radial-gradient(ellipse at 70% 60%, rgba(139,92,246,0.5), transparent 60%)",
             }}
           />
+          <Constelacion />
           <LogoRL1 size={56} wordmark={false} className="mb-6" />
           <h1 className="text-gradient font-mono text-7xl font-bold tracking-tight">{COM_TITLE}</h1>
           <p className="rise mt-4 text-2xl text-muted" style={{ animationDelay: "0.2s" }}>
@@ -297,22 +333,19 @@ function Slide({ slide }: { slide: ClaseSlide }) {
         </div>
       );
 
-    case "texto":
-      return (
-        <div>
-          <Eyebrow color={slide.eyebrow === "Concepto" ? "teal" : "violet"}>{slide.eyebrow}</Eyebrow>
-          <h1 className="max-w-4xl text-5xl font-bold leading-tight tracking-tight">{slide.titulo}</h1>
-          {slide.diagrama && (
-            <div className="mt-8 flex justify-center">
-              <Diagrama id={slide.diagrama} />
-            </div>
-          )}
+    case "texto": {
+      // "io" es apaisado y va centrado a lo ancho; el resto acompaña al texto en dos columnas.
+      const diagramaAncho = slide.diagrama === "io";
+      const aCostado = Boolean(slide.diagrama) && !diagramaAncho;
+      const textoSize = aCostado ? "text-xl" : "text-2xl";
+      const contenido = (
+        <>
           {slide.bullets && (
-            <ul className="mt-8 max-w-3xl space-y-4">
+            <ul className="mt-8 space-y-4">
               {slide.bullets.map((b, i) => (
                 <li
                   key={b}
-                  className="rise flex gap-4 text-2xl leading-snug"
+                  className={cn("rise flex gap-4 leading-snug", textoSize)}
                   style={{ animationDelay: `${0.14 * i + 0.15}s` }}
                 >
                   <span className="font-bold text-teal">—</span>
@@ -324,11 +357,11 @@ function Slide({ slide }: { slide: ClaseSlide }) {
             </ul>
           )}
           {slide.pasos && (
-            <ol className="mt-8 max-w-3xl space-y-4">
+            <ol className="mt-8 space-y-4">
               {slide.pasos.map((p, i) => (
                 <li
                   key={p}
-                  className="rise flex items-baseline gap-4 text-2xl"
+                  className={cn("rise flex items-baseline gap-4", textoSize)}
                   style={{ animationDelay: `${0.14 * i + 0.15}s` }}
                 >
                   <span className="flex size-9 flex-none items-center justify-center rounded-full bg-violet/25 font-mono text-base text-violet">
@@ -341,14 +374,38 @@ function Slide({ slide }: { slide: ClaseSlide }) {
           )}
           {slide.lede && (
             <p
-              className="rise mt-8 max-w-3xl text-2xl leading-relaxed text-muted"
+              className={cn("rise mt-8 leading-relaxed text-muted", textoSize)}
               style={{ animationDelay: `${0.14 * (slide.bullets?.length ?? slide.pasos?.length ?? 0) + 0.2}s` }}
             >
               <Rico text={slide.lede} />
             </p>
           )}
+        </>
+      );
+      return (
+        <div>
+          <Eyebrow color={slide.eyebrow === "Concepto" ? "teal" : "violet"}>{slide.eyebrow}</Eyebrow>
+          <h1 className="max-w-4xl text-5xl font-bold leading-tight tracking-tight">{slide.titulo}</h1>
+          {aCostado ? (
+            <div className="mt-4 grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+              <div className="max-w-2xl">{contenido}</div>
+              <div className="rise glass rounded-2xl p-4" style={{ animationDelay: "0.25s" }}>
+                <Diagrama id={slide.diagrama!} />
+              </div>
+            </div>
+          ) : (
+            <>
+              {slide.diagrama && (
+                <div className="rise mt-8 flex justify-center" style={{ animationDelay: "0.2s" }}>
+                  <Diagrama id={slide.diagrama} />
+                </div>
+              )}
+              <div className="max-w-3xl">{contenido}</div>
+            </>
+          )}
         </div>
       );
+    }
 
     case "caso":
       return (

@@ -73,6 +73,7 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     parte: "Parte I · La empresa y la IA",
     eyebrow: "Apertura",
     titulo: "Una empresa que ya cambió",
+    diagrama: "decisiones",
     lede:
       "En algún lugar, ahora mismo, un sistema decide **a quién le prestan**, **qué precio ve cada cliente**, o **qué currículum pasa a la próxima ronda**. Nadie lo escribió a mano: lo entrenaron con datos y lo dejaron correr.",
   },
@@ -80,6 +81,7 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     t: "texto",
     eyebrow: "El plan de hoy",
     titulo: "Tres partes, un hilo",
+    diagrama: "ruta",
     pasos: [
       "La empresa y la IA, hoy — con casos reales",
       "El abogado en el recorrido del cliente — cinco escenas",
@@ -100,6 +102,7 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     t: "texto",
     eyebrow: "Concepto",
     titulo: "¿Qué es la IA?",
+    diagrama: "reglas",
     bullets: [
       "Automatización tradicional: reglas fijas, escritas a mano.",
       "IA: clasifica, predice, recomienda o genera — a partir de patrones en datos.",
@@ -117,6 +120,7 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     t: "texto",
     eyebrow: "Concepto",
     titulo: "Transformación digital ≠ comprar software",
+    diagrama: "engranajes",
     bullets: [
       "Es cambiar procesos, decisiones y organización.",
       "Sin cambiar el proceso, no hay transformación — hay gasto.",
@@ -135,6 +139,7 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     t: "texto",
     eyebrow: "Casos reales",
     titulo: "Esto no es futuro: ya maneja empresas",
+    diagrama: "hub",
     lede:
       "Tres empresas que usás todas las semanas donde las decisiones centrales —el precio, quién trabaja, quién recibe crédito— **ya las toma un algoritmo**.",
   },
@@ -193,6 +198,7 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     t: "texto",
     eyebrow: "Concepto",
     titulo: "Tarea, no puesto",
+    diagrama: "tareas",
     bullets: [
       "Se automatizan tareas, no profesiones enteras.",
       "El puesto cambia de contenido — no siempre desaparece.",
@@ -203,6 +209,7 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     t: "texto",
     eyebrow: "Concepto",
     titulo: "Quien decide, responde",
+    diagrama: "boomerang",
     bullets: [
       "El sistema ejecuta.",
       "La empresa decide incorporarlo, cómo, y con qué controles.",
@@ -215,6 +222,7 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     parte: "Parte II · El recorrido del cliente",
     eyebrow: "Parte II",
     titulo: "Ahora, del otro lado del escritorio",
+    diagrama: "escritorio",
     lede:
       "Ya vimos a la empresa. Pasemos al **abogado que la asesora** — cinco escenas de un mismo cliente, del primer llamado al primer conflicto.",
   },
@@ -222,6 +230,7 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     t: "texto",
     eyebrow: "El recorrido del cliente",
     titulo: "Cinco escenas",
+    diagrama: "escenas",
     pasos: [
       "Quiere incorporar IA",
       "Encontró una herramienta y quiere contratarla",
@@ -242,6 +251,7 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     t: "texto",
     eyebrow: "Concepto",
     titulo: "¿Qué estás contratando, en realidad?",
+    diagrama: "contrato",
     bullets: [
       "¿Licencia? ¿Servicio en línea? ¿Un modelo de un tercero?",
       "Mirá: precio y duración, tus datos, confidencialidad, de quién son los resultados, qué pasa si te vas.",
@@ -258,6 +268,7 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     t: "texto",
     eyebrow: "Concepto",
     titulo: "El riesgo puertas adentro",
+    diagrama: "fuga",
     bullets: [
       "Datos personales, secreto comercial, know-how, material confidencial.",
       "Una política interna: qué se puede cargar, dónde, y bajo qué autorización.",
@@ -274,6 +285,7 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     t: "texto",
     eyebrow: "Concepto",
     titulo: "Usar, tener derechos, impedir — no es lo mismo",
+    diagrama: "anillos",
     bullets: [
       "¿Qué intervención humana hubo?",
       "¿Qué dicen los términos del proveedor?",
@@ -293,6 +305,7 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     parte: "Parte III · El caso Prisma",
     eyebrow: "Antes del caso",
     titulo: "Dos ideas más",
+    diagrama: "cadena",
     bullets: [
       "Derecho a la imagen y a la voz: una autorización limitada no se extiende sola.",
       "Responsabilidad en cadena: empresa, agencia, proveedor — hay que reconstruir el rol de cada uno.",
@@ -313,6 +326,7 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     parte: "Cierre",
     eyebrow: "Síntesis",
     titulo: "Cinco ideas para llevarse",
+    diagrama: "sellos",
     bullets: [
       "La IA automatiza tareas antes que puestos: preguntá siempre qué tarea, no qué profesión.",
       "El sistema ejecuta; la empresa decide incorporarlo. Quien decide, responde.",
