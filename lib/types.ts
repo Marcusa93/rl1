@@ -9,7 +9,16 @@ export type ActivityKey =
   | "cotio"
   | "chat"
   | "caso"
-  | "tarea";
+  | "tarea"
+  // Clase "Empresas e IA" (/empresas) — prefijo emp_ para no pisar las de arriba
+  | "emp_encuesta"
+  | "emp_usos"
+  | "emp_b1"
+  | "emp_b2"
+  | "emp_b3"
+  | "emp_b4"
+  | "emp_b5"
+  | "emp_cierre";
 
 export type SessionStatus = "lobby" | "live" | "ended";
 

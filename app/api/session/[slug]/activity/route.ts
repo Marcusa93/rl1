@@ -13,6 +13,15 @@ const VALID: ActivityKey[] = [
   "chat",
   "caso",
   "tarea",
+  // Empresas e IA (/empresas)
+  "emp_encuesta",
+  "emp_usos",
+  "emp_b1",
+  "emp_b2",
+  "emp_b3",
+  "emp_b4",
+  "emp_b5",
+  "emp_cierre",
 ];
 
 export async function POST(

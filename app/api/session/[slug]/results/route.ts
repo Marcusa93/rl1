@@ -34,6 +34,49 @@ export async function GET(
   }
   let summary: Record<string, unknown> = { total: list.length };
 
+  // --- Empresas e IA (/empresas) — aula grande: se agrega y se recorta ---
+  if (activity === "emp_encuesta") {
+    const byQuestion: Record<string, Record<string, number>> = {};
+    for (const r of list) {
+      const ans = (r.payload?.answers as Record<string, string | string[]>) ?? {};
+      for (const [q, opt] of Object.entries(ans)) {
+        byQuestion[q] ??= {};
+        for (const o of Array.isArray(opt) ? opt : [opt]) byQuestion[q][o] = (byQuestion[q][o] ?? 0) + 1;
+      }
+    }
+    return ok({ activity, participants: participants ?? 0, responded: responders.length, responders: [], summary: { total: list.length, byQuestion }, config: session.activity_config ?? {} });
+  }
+  if (activity === "emp_usos") {
+    const counts: Record<string, number> = {};
+    for (const r of list) for (const id of (r.payload?.selected as string[]) ?? []) counts[id] = (counts[id] ?? 0) + 1;
+    return ok({ activity, participants: participants ?? 0, responded: responders.length, responders: [], summary: { total: list.length, counts }, config: session.activity_config ?? {} });
+  }
+  const BLOQUES = ["emp_b1", "emp_b2", "emp_b3", "emp_b4", "emp_b5"];
+  if (BLOQUES.includes(activity)) {
+    // Razonamiento abierto: solo las últimas respuestas, para no mandar
+    // 200 textos en cada poll — el docente elige cuáles leer en voz alta.
+    const respuestas = list
+      .filter((r) => String(r.payload?.respuesta ?? "").trim())
+      .slice(-40)
+      .map((r) => ({
+        name: (r.participants?.name as string) ?? "—",
+        respuesta: String(r.payload?.respuesta ?? "").slice(0, 300),
+      }));
+    return ok({ activity, participants: participants ?? 0, responded: responders.length, responders: [], summary: { total: list.length, respuestas }, config: session.activity_config ?? {} });
+  }
+  if (activity === "emp_cierre") {
+    const counts: Record<string, number> = {};
+    for (const r of list) {
+      const w = String(r.payload?.palabra ?? "").trim().toLowerCase();
+      if (w) counts[w] = (counts[w] ?? 0) + 1;
+    }
+    const palabras = Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 60)
+      .map(([palabra, n]) => ({ palabra, n }));
+    return ok({ activity, participants: participants ?? 0, responded: responders.length, responders: [], summary: { total: list.length, palabras }, config: session.activity_config ?? {} });
+  }
+
   if (activity === "encuesta") {
     const byQuestion: Record<string, Record<string, number>> = {};
     for (const r of list) {
