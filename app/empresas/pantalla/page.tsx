@@ -5,8 +5,12 @@ import { Markdown } from "@/components/markdown";
 import { useLive } from "@/components/use-live";
 import { useComResults, type ComResultsResp } from "@/components/comercial/results";
 import {
+  COM_AUTOR,
+  COM_AUTOR_CARGO,
   COM_ENCUESTA,
+  COM_INSTAGRAM_URL,
   COM_POLL,
+  COM_QR_SRC,
   COM_SLUG,
   COM_SUBTITLE,
   COM_TITLE,
@@ -46,7 +50,33 @@ export default function PantallaEmpresasPage() {
         {bloque && <Bloque bloque={bloque} r={r} />}
         {activity === "emp_cierre" && <Cierre r={r} />}
       </main>
+
+      <footer className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 py-3 text-xs text-faint">
+        <span>
+          {COM_AUTOR} · {COM_AUTOR_CARGO}
+        </span>
+      </footer>
     </div>
+  );
+}
+
+function InstagramQR({ size = 96 }: { size?: number }) {
+  return (
+    <a
+      href={COM_INSTAGRAM_URL}
+      target="_blank"
+      rel="noreferrer"
+      className="flex flex-col items-center gap-1.5"
+    >
+      <img
+        src={COM_QR_SRC}
+        alt="Código QR a Instagram"
+        width={size}
+        height={size}
+        className="rounded-lg border border-line bg-white p-1.5"
+      />
+      <span className="text-xs text-faint">@marquitorossi</span>
+    </a>
   );
 }
 
@@ -67,6 +97,10 @@ function Lobby({ count }: { count: number }) {
       <div className="mt-10 flex items-center gap-3 text-muted">
         <span className="size-3 animate-pulse rounded-full bg-teal" />
         <span className="text-2xl font-semibold">{count}</span> conectados
+      </div>
+      <div className="mt-12 flex flex-col items-center gap-3">
+        <p className="text-xs uppercase tracking-widest text-faint">Seguime</p>
+        <InstagramQR size={120} />
       </div>
     </div>
   );
@@ -154,7 +188,6 @@ function Bloque({
   bloque: NonNullable<ReturnType<typeof getBloque>>;
   r: ComResultsResp | null;
 }) {
-  const respuestas = (r?.summary?.respuestas as Array<{ name: string; respuesta: string }>) ?? [];
   return (
     <div className="rise">
       <p className="mb-2 font-mono text-sm uppercase tracking-widest text-faint">Bloque {bloque.n}</p>
@@ -170,26 +203,86 @@ function Bloque({
           </div>
         </div>
         <div className="glass max-h-[62vh] overflow-auto rounded-2xl p-5">
-          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-teal">
-            Respuestas del curso ({Number(r?.summary?.total ?? 0)})
-          </p>
-          {respuestas.length === 0 ? (
-            <p className="text-sm text-faint">Todavía no hay respuestas.</p>
-          ) : (
-            <div className="space-y-2.5">
-              {respuestas
-                .slice()
-                .reverse()
-                .map((p, i) => (
-                  <p key={i} className="text-sm leading-snug text-muted">
-                    <span className="font-semibold text-teal">{p.name.split(/\s+/)[0]}</span> · {p.respuesta}
-                  </p>
-                ))}
-            </div>
-          )}
+          <BloqueRespuestas bloque={bloque} r={r} />
         </div>
       </div>
     </div>
+  );
+}
+
+function BloqueRespuestas({
+  bloque,
+  r,
+}: {
+  bloque: NonNullable<ReturnType<typeof getBloque>>;
+  r: ComResultsResp | null;
+}) {
+  if (bloque.kind === "chips" || bloque.kind === "opciones") {
+    const counts = (r?.summary?.counts as Record<string, number>) ?? {};
+    const max = Math.max(1, ...Object.values(counts));
+    const comentarios =
+      bloque.kind === "opciones"
+        ? ((r?.summary?.comentarios as Array<{ name: string; comentario: string }>) ?? [])
+        : [];
+    return (
+      <>
+        <p className="mb-2 text-xs font-bold uppercase tracking-wider text-teal">
+          Respuestas del curso ({Number(r?.summary?.total ?? 0)})
+        </p>
+        <div className="space-y-2">
+          {bloque.opciones.map((o) => (
+            <div key={o.id} className="flex items-center gap-3">
+              <div className="w-44 shrink-0 text-right text-sm">
+                <span className="mr-1.5">{o.emoji}</span>
+                {o.label}
+              </div>
+              <div className="h-6 flex-1 overflow-hidden rounded-lg bg-panel/50">
+                <div
+                  className="flex h-full items-center justify-end rounded-lg bg-gradient-to-r from-teal via-cyan to-violet px-2 text-xs font-bold text-ink transition-all duration-700"
+                  style={{ width: `${((counts[o.id] ?? 0) / max) * 100}%` }}
+                >
+                  {(counts[o.id] ?? 0) > 0 && counts[o.id]}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        {comentarios.length > 0 && (
+          <div className="mt-4 space-y-2 border-t border-line/60 pt-3">
+            {comentarios
+              .slice()
+              .reverse()
+              .map((p, i) => (
+                <p key={i} className="text-sm leading-snug text-muted">
+                  <span className="font-semibold text-teal">{p.name.split(/\s+/)[0]}</span> · {p.comentario}
+                </p>
+              ))}
+          </div>
+        )}
+      </>
+    );
+  }
+  const respuestas = (r?.summary?.respuestas as Array<{ name: string; respuesta: string }>) ?? [];
+  return (
+    <>
+      <p className="mb-2 text-xs font-bold uppercase tracking-wider text-teal">
+        Respuestas del curso ({Number(r?.summary?.total ?? 0)})
+      </p>
+      {respuestas.length === 0 ? (
+        <p className="text-sm text-faint">Todavía no hay respuestas.</p>
+      ) : (
+        <div className="space-y-2.5">
+          {respuestas
+            .slice()
+            .reverse()
+            .map((p, i) => (
+              <p key={i} className="text-sm leading-snug text-muted">
+                <span className="font-semibold text-teal">{p.name.split(/\s+/)[0]}</span> · {p.respuesta}
+              </p>
+            ))}
+        </div>
+      )}
+    </>
   );
 }
 
@@ -224,6 +317,11 @@ function Cierre({ r }: { r: ComResultsResp | null }) {
           En el celular, en esta última pantalla: los conceptos de hoy (scoring, pricing, compliance,
           sesgo, gobernanza…) definidos en criollo, en PDF.
         </p>
+      </div>
+
+      <div className="mt-8 flex flex-col items-center gap-3">
+        <p className="text-xs uppercase tracking-widest text-faint">Seguime</p>
+        <InstagramQR size={110} />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useLive } from "@/components/use-live";
-import { COM_ENCUESTA, COM_POLL, COM_SLUG, COM_USOS, getBloque } from "@/lib/comercial";
+import { COM_ENCUESTA, COM_POLL, COM_SLUG, COM_USOS, getBloque, type ComBloque } from "@/lib/comercial";
 
 export type ComResultsResp = {
   activity: string;
@@ -51,7 +51,7 @@ export function ComResults({ activity }: { activity: string }) {
         ) : activity === "emp_usos" ? (
           <UsosR r={r} />
         ) : bloque ? (
-          <BloqueR r={r} />
+          <BloqueR r={r} bloque={bloque} />
         ) : activity === "emp_cierre" ? (
           <CierreR r={r} />
         ) : null}
@@ -114,7 +114,44 @@ function UsosR({ r }: { r: ComResultsResp }) {
   );
 }
 
-function BloqueR({ r }: { r: ComResultsResp }) {
+function BloqueR({ r, bloque }: { r: ComResultsResp; bloque: ComBloque }) {
+  if (bloque.kind === "chips") {
+    const counts = (r.summary?.counts as Record<string, number>) ?? {};
+    const max = Math.max(1, ...Object.values(counts));
+    return (
+      <div className="space-y-1.5">
+        {bloque.opciones.map((o) => (
+          <Bar key={o.id} label={o.label} emoji={o.emoji} n={counts[o.id] ?? 0} max={max} />
+        ))}
+      </div>
+    );
+  }
+  if (bloque.kind === "opciones") {
+    const counts = (r.summary?.counts as Record<string, number>) ?? {};
+    const comentarios = (r.summary?.comentarios as Array<{ name: string; comentario: string }>) ?? [];
+    const max = Math.max(1, ...Object.values(counts));
+    return (
+      <div>
+        <div className="space-y-1.5">
+          {bloque.opciones.map((o) => (
+            <Bar key={o.id} label={o.label} emoji={o.emoji} n={counts[o.id] ?? 0} max={max} />
+          ))}
+        </div>
+        {comentarios.length > 0 && (
+          <div className="mt-3 max-h-56 space-y-1.5 overflow-auto border-t border-line/60 pt-3">
+            {comentarios
+              .slice()
+              .reverse()
+              .map((p, i) => (
+                <p key={i} className="text-xs text-muted">
+                  <span className="font-semibold text-teal">{p.name.split(/\s+/)[0]}</span> · {p.comentario}
+                </p>
+              ))}
+          </div>
+        )}
+      </div>
+    );
+  }
   const respuestas = (r.summary?.respuestas as Array<{ name: string; respuesta: string }>) ?? [];
   return (
     <div>

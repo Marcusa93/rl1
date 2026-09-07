@@ -12,6 +12,11 @@ export const COM_TITLE = "Empresas e IA";
 export const COM_SUBTITLE = "Transformación digital, trabajo y riesgos";
 export const COM_MATERIA = "Derecho Comercial · Facultad de Derecho y Cs. Sociales, UNT";
 
+export const COM_AUTOR = "Dr. Marco Rossi";
+export const COM_AUTOR_CARGO = "Director del Laboratorio de IA de la Facultad de Derecho";
+export const COM_INSTAGRAM_URL = "https://www.instagram.com/marquitorossi";
+export const COM_QR_SRC = "/empresas/qr-instagram.png";
+
 /**
  * Intervalos de polling (ms) pensados para un aula grande.
  * Con ~200 celulares, el alumno consulta la sesión cada 5 s y NADA más;
@@ -190,15 +195,24 @@ export const COM_USOS: ComCard[] = [
 /** Tarjeta que, si se elige, deselecciona todas las demás. */
 export const COM_USOS_EXCLUSIVA = "ninguno";
 
-// --- 3 · Bloques del recorrido del cliente (razonamiento abierto) -------
+// --- 3 · Bloques del recorrido del cliente -------------------------------
 //
-// Estructura del docente: el recorrido completo de un cliente de estudio
-// jurídico —incorpora IA, contrata una herramienta, habilita su uso interno,
-// explota los resultados y enfrenta las consecuencias— en 5 bloques, cada
-// uno cerrado por "la pregunta del abogado". El alumno responde en una
-// frase corta; el proyector arma un muro de respuestas para discutir.
+// El recorrido completo de un cliente de estudio jurídico —incorpora IA,
+// contrata una herramienta, habilita su uso interno, explota los resultados
+// y enfrenta las consecuencias— en 5 bloques, cada uno cerrado por "la
+// pregunta del abogado". Se activan como cualquier otra actividad: al
+// activar el bloque, el alumno ve todo junto (escenario + pregunta + forma
+// de responder) — no hay un paso aparte para "mostrar la pregunta".
+//
+// Formas de responder, de más simple a más abierta:
+// - "texto": una frase corta libre (bloques 1 y 5, más conceptuales).
+// - "texto2": dos frases cortas guiadas, con pistas (bloque 2).
+// - "chips": elegir tarjetas, como en "Usos de la IA" (bloque 3).
+// - "opciones": elegir entre 2-3 posturas + un comentario corto opcional (bloque 4).
 
-export interface ComBloque {
+export type ComBloqueKind = "texto" | "texto2" | "chips" | "opciones";
+
+interface ComBloqueBase {
   key: Extract<ComActivity, `emp_b${number}`>;
   n: number;
   titulo: string;
@@ -207,14 +221,55 @@ export interface ComBloque {
   cuerpoMd: string;
   /** "La pregunta del abogado", destacada al pie del bloque. */
   pregunta: string;
+}
+
+export interface ComBloqueTexto extends ComBloqueBase {
+  kind: "texto";
   placeholder: string;
   maxChars: number;
 }
+
+export interface ComCampo {
+  id: string;
+  label: string;
+  placeholder: string;
+  maxChars: number;
+}
+
+export interface ComBloqueTexto2 extends ComBloqueBase {
+  kind: "texto2";
+  campos: [ComCampo, ComCampo];
+  /** Pistas que se muestran como referencia, no interactivas. */
+  ayuda: string[];
+}
+
+export interface ComBloqueChips extends ComBloqueBase {
+  kind: "chips";
+  opciones: ComCard[];
+  /** Tarjeta que, si se elige, deselecciona todas las demás (ej. "ninguna de estas"). */
+  exclusiva?: string;
+}
+
+export interface ComOpcion {
+  id: string;
+  emoji: string;
+  label: string;
+}
+
+export interface ComBloqueOpciones extends ComBloqueBase {
+  kind: "opciones";
+  opciones: ComOpcion[];
+  comentarioPlaceholder: string;
+  comentarioMax: number;
+}
+
+export type ComBloque = ComBloqueTexto | ComBloqueTexto2 | ComBloqueChips | ComBloqueOpciones;
 
 export const COM_BLOQUES: ComBloque[] = [
   {
     key: "emp_b1",
     n: 1,
+    kind: "texto",
     titulo: "Quiero incorporar inteligencia artificial a mi empresa",
     bajada: "Antes de hablar de riesgos, hay que entender qué se quiere delegar.",
     cuerpoMd: `Una automatización tradicional sigue reglas fijas. Un sistema de **IA** puede clasificar, predecir, recomendar o generar contenidos a partir de patrones.
@@ -229,42 +284,60 @@ Un cliente llega al estudio y dice que quiere usar IA. La primera tarea profesio
   {
     key: "emp_b2",
     n: 2,
+    kind: "texto2",
     titulo: "Encontré una herramienta de IA y quiero contratarla",
     bajada: "El cliente ya eligió una plataforma. Hay que saber qué está contratando realmente.",
     cuerpoMd: `¿Una licencia de software? ¿Un servicio en línea? ¿Una solución hecha a medida? ¿El acceso a un modelo administrado por un tercero? Cada una trae un régimen distinto.
 
 Antes de firmar hay que revisar: los términos de uso, el precio y la duración, si el proveedor puede modificar el servicio unilateralmente, qué hace con los datos, la confidencialidad, de quién son los resultados, los límites de responsabilidad, y qué pasa con la información de la empresa si el vínculo termina.`,
-    pregunta: "¿Qué derechos recibe la empresa y qué control conserva el proveedor?",
-    placeholder: "La empresa recibe… pero el proveedor conserva…",
-    maxChars: 220,
+    pregunta: "¿Qué recibe la empresa, y qué conserva el proveedor?",
+    campos: [
+      { id: "empresa", label: "La empresa recibe…", placeholder: "usar la herramienta, soporte…", maxChars: 90 },
+      { id: "proveedor", label: "El proveedor conserva…", placeholder: "tus datos, el código…", maxChars: 90 },
+    ],
+    ayuda: ["Precio y duración", "Tus datos", "Confidencialidad", "De quién son los resultados", "Qué pasa si te vas"],
   },
   {
     key: "emp_b3",
     n: 3,
+    kind: "chips",
     titulo: "Quiero que mis empleados empiecen a usar IA",
     bajada: "El riesgo ya no está solo en el contrato con el proveedor: está puertas adentro.",
     cuerpoMd: `Los trabajadores podrían cargar, sin pensarlo dos veces, bases de clientes, contratos, diseños, fotografías, código fuente, información contable o estrategia comercial en una herramienta de terceros.
 
 El abogado tiene que clasificar esa información —datos personales, secretos comerciales, know-how, obras protegidas, material confidencial— y después diseñar una política interna: qué herramientas pueden usarse, qué información puede cargarse, qué usos requieren autorización, y cuáles quedan directamente prohibidos.`,
-    pregunta: "¿Qué información puede introducirse, en qué herramienta, y bajo qué condiciones?",
-    placeholder: "Puede introducirse… en… bajo la condición de…",
-    maxChars: 220,
+    pregunta: "¿Qué NO debería cargar nunca un empleado en una herramienta de IA de terceros?",
+    opciones: [
+      { id: "datos_clientes", emoji: "🧾", label: "Datos personales de clientes" },
+      { id: "contratos", emoji: "📑", label: "Contratos y cifras del negocio" },
+      { id: "codigo", emoji: "💻", label: "Código fuente o diseños propios" },
+      { id: "accesos", emoji: "🔑", label: "Contraseñas y accesos" },
+      { id: "legajos", emoji: "🗂️", label: "Legajos o datos de empleados" },
+      { id: "nada", emoji: "🤷", label: "Nada: se puede cargar cualquier cosa" },
+    ],
+    exclusiva: "nada",
   },
   {
     key: "emp_b4",
     n: 4,
+    kind: "opciones",
     titulo: "Generamos esto con IA y queremos venderlo",
     bajada: "Usar, tener derechos e impedir que otros usen no es lo mismo.",
     cuerpoMd: `El cliente lleva al estudio una campaña, un logotipo, un diseño, un programa o una colección creada con IA, y pregunta si puede explotarla comercialmente.
 
 Hay tres preguntas distintas escondidas en una: ¿la empresa puede usar el resultado? ¿tiene derechos sobre él? ¿puede impedir que otros lo utilicen? Hay que mirar qué intervención humana existió, qué materiales se usaron como referencia, qué establecen los términos del proveedor, y si el resultado puede afectar derechos de autor, marcas o diseños de terceros.`,
     pregunta: "¿La empresa tiene un activo jurídicamente protegible, o solamente un resultado que puede utilizar?",
-    placeholder: "Tiene / no tiene un activo protegible porque…",
-    maxChars: 220,
+    opciones: [
+      { id: "activo", emoji: "🔒", label: "Tiene un activo protegible" },
+      { id: "uso", emoji: "🔓", label: "Solo puede usarlo" },
+    ],
+    comentarioPlaceholder: "¿Por qué? (opcional)",
+    comentarioMax: 140,
   },
   {
     key: "emp_b5",
     n: 5,
+    kind: "texto",
     titulo: "Caso: Óptica Prisma",
     bajada: "Los cuatro bloques anteriores, juntos, en un conflicto real.",
     cuerpoMd: `## Óptica Prisma — caso ficticio

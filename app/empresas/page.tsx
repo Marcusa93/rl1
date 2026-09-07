@@ -6,6 +6,8 @@ import { Button, Spinner } from "@/components/ui";
 import { useLive } from "@/components/use-live";
 import { ComercialActivity } from "@/components/comercial/flow";
 import {
+  COM_AUTOR,
+  COM_AUTOR_CARGO,
   COM_MATERIA,
   COM_POLL,
   COM_SLUG,
@@ -75,6 +77,9 @@ export default function EmpresasPage() {
             <h1 className="text-gradient font-mono text-3xl font-bold tracking-tight">{COM_TITLE}</h1>
             <p className="mt-2 text-sm text-muted">{COM_SUBTITLE}</p>
             <p className="mt-1 text-xs text-faint">{COM_MATERIA}</p>
+            <p className="mt-3 text-xs text-faint">
+              {COM_AUTOR} · {COM_AUTOR_CARGO}
+            </p>
           </div>
           <form onSubmit={join} className="glass glow-teal rounded-2xl p-6">
             <label className="text-sm text-muted">Tu nombre</label>

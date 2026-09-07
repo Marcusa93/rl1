@@ -6,7 +6,6 @@ import { Markdown } from "@/components/markdown";
 import { Button, Spinner } from "@/components/ui";
 import { DescargarGlosario } from "@/components/comercial/descargar-glosario";
 import {
-  COM_BLOQUES,
   COM_CIERRE_BAJADA,
   COM_CIERRE_NOTA,
   COM_CIERRE_TITULO,
@@ -16,6 +15,7 @@ import {
   COM_USOS,
   COM_USOS_EXCLUSIVA,
   getBloque,
+  type ComBloque,
   type ComQuestion,
 } from "@/lib/comercial";
 import type { ParticipantRow, SessionRow } from "@/lib/types";
@@ -242,14 +242,49 @@ function Usos() {
 }
 
 // --- 3-7 · Bloques del recorrido del cliente -----------------------------
+//
+// Al activar el bloque el alumno ve todo junto de una: escenario, "la
+// pregunta del abogado" y la forma de responder — no hay un paso aparte
+// para "activar la pregunta".
 
-function Bloque({ bloque }: { bloque: (typeof COM_BLOQUES)[number] }) {
+function BloqueHead({ bloque }: { bloque: ComBloque }) {
+  return (
+    <>
+      <p className="font-mono text-xs uppercase tracking-widest text-faint">Bloque {bloque.n}</p>
+      <h2 className="mt-1 text-xl font-semibold">{bloque.titulo}</h2>
+      <p className="mt-1 text-sm text-muted">{bloque.bajada}</p>
+
+      <div className="glass mt-4 rounded-2xl p-5">
+        <Markdown text={bloque.cuerpoMd} />
+      </div>
+
+      <div className="mt-4 rounded-2xl border-gradient p-4">
+        <p className="text-xs font-bold uppercase tracking-wider text-teal">La pregunta del abogado</p>
+        <p className="mt-1 text-sm text-muted">{bloque.pregunta}</p>
+      </div>
+    </>
+  );
+}
+
+function Bloque({ bloque }: { bloque: ComBloque }) {
+  switch (bloque.kind) {
+    case "texto":
+      return <BloqueTexto bloque={bloque} />;
+    case "texto2":
+      return <BloqueTexto2 bloque={bloque} />;
+    case "chips":
+      return <BloqueChips bloque={bloque} />;
+    case "opciones":
+      return <BloqueOpciones bloque={bloque} />;
+  }
+}
+
+function BloqueTexto({ bloque }: { bloque: Extract<ComBloque, { kind: "texto" }> }) {
   const [respuesta, setRespuesta] = useState("");
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
 
-  // el celular puede reusarse entre bloques: reiniciar al cambiar de bloque
   useEffect(() => {
     setRespuesta("");
     setSent(false);
@@ -271,19 +306,7 @@ function Bloque({ bloque }: { bloque: (typeof COM_BLOQUES)[number] }) {
 
   return (
     <div className="rise">
-      <p className="font-mono text-xs uppercase tracking-widest text-faint">Bloque {bloque.n}</p>
-      <h2 className="mt-1 text-xl font-semibold">{bloque.titulo}</h2>
-      <p className="mt-1 text-sm text-muted">{bloque.bajada}</p>
-
-      <div className="glass mt-4 rounded-2xl p-5">
-        <Markdown text={bloque.cuerpoMd} />
-      </div>
-
-      <div className="mt-4 rounded-2xl border-gradient p-4">
-        <p className="text-xs font-bold uppercase tracking-wider text-teal">La pregunta del abogado</p>
-        <p className="mt-1 text-sm text-muted">{bloque.pregunta}</p>
-      </div>
-
+      <BloqueHead bloque={bloque} />
       {!sent ? (
         <div className="mt-4">
           <textarea
@@ -303,6 +326,213 @@ function Bloque({ bloque }: { bloque: (typeof COM_BLOQUES)[number] }) {
         </div>
       ) : (
         <Enviado onEdit={() => setSent(false)}>✓ Respuesta enviada. Mirá el proyector.</Enviado>
+      )}
+    </div>
+  );
+}
+
+function BloqueTexto2({ bloque }: { bloque: Extract<ComBloque, { kind: "texto2" }> }) {
+  const [v1, setV1] = useState("");
+  const [v2, setV2] = useState("");
+  const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const [c1, c2] = bloque.campos;
+
+  useEffect(() => {
+    setV1("");
+    setV2("");
+    setSent(false);
+    setErr("");
+  }, [bloque.key]);
+
+  async function send() {
+    setBusy(true);
+    setErr("");
+    try {
+      await responder(bloque.key, { [c1.id]: v1.trim(), [c2.id]: v2.trim() });
+      setSent(true);
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="rise">
+      <BloqueHead bloque={bloque} />
+
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {bloque.ayuda.map((h) => (
+          <span key={h} className="rounded-full border border-line bg-panel/40 px-2.5 py-1 text-xs text-muted">
+            💡 {h}
+          </span>
+        ))}
+      </div>
+
+      {!sent ? (
+        <div className="mt-4 space-y-3">
+          {[
+            [c1, v1, setV1] as const,
+            [c2, v2, setV2] as const,
+          ].map(([campo, val, setVal]) => (
+            <div key={campo.id}>
+              <label className="text-sm text-muted">{campo.label}</label>
+              <input
+                value={val}
+                onChange={(e) => setVal(e.target.value.slice(0, campo.maxChars))}
+                placeholder={campo.placeholder}
+                className="mt-1 w-full rounded-xl border border-line bg-ink-2/70 px-4 py-3 text-sm outline-none placeholder:text-faint focus:border-teal/60"
+              />
+            </div>
+          ))}
+          {err && <p className="text-center text-sm text-magenta">{err}</p>}
+          <Button onClick={send} disabled={busy || (v1.trim().length < 2 && v2.trim().length < 2)} className="w-full">
+            {busy ? <Spinner /> : "Enviar mi respuesta"}
+          </Button>
+        </div>
+      ) : (
+        <Enviado onEdit={() => setSent(false)}>✓ Respuesta enviada. Mirá el proyector.</Enviado>
+      )}
+    </div>
+  );
+}
+
+function BloqueChips({ bloque }: { bloque: Extract<ComBloque, { kind: "chips" }> }) {
+  const [sel, setSel] = useState<string[]>([]);
+  const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  useEffect(() => {
+    setSel([]);
+    setSent(false);
+    setErr("");
+  }, [bloque.key]);
+
+  function toggle(id: string) {
+    setSel((prev) => {
+      if (bloque.exclusiva && id === bloque.exclusiva) return prev.includes(id) ? [] : [id];
+      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
+      return bloque.exclusiva ? next.filter((x) => x !== bloque.exclusiva) : next;
+    });
+  }
+
+  async function send() {
+    setBusy(true);
+    setErr("");
+    try {
+      await responder(bloque.key, { selected: sel });
+      setSent(true);
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="rise">
+      <BloqueHead bloque={bloque} />
+      <div className="mt-4 grid grid-cols-2 gap-3">
+        {bloque.opciones.map((o) => {
+          const on = sel.includes(o.id);
+          return (
+            <button
+              key={o.id}
+              onClick={() => !sent && toggle(o.id)}
+              disabled={sent}
+              className={cn(
+                "flex flex-col items-start gap-2 rounded-2xl border p-4 text-left transition",
+                on ? "border-teal/70 bg-teal/10 glow-teal" : "border-line bg-panel/40 hover:border-faint",
+                sent && "opacity-70",
+              )}
+            >
+              <span className="text-2xl">{o.emoji}</span>
+              <span className="text-sm font-medium leading-tight">{o.label}</span>
+            </button>
+          );
+        })}
+      </div>
+      {err && <p className="mt-3 text-center text-sm text-magenta">{err}</p>}
+      {!sent ? (
+        <Button onClick={send} disabled={busy || sel.length === 0} className="mt-3 w-full">
+          {busy ? <Spinner /> : "Enviar"}
+        </Button>
+      ) : (
+        <Enviado onEdit={() => setSent(false)} />
+      )}
+    </div>
+  );
+}
+
+function BloqueOpciones({ bloque }: { bloque: Extract<ComBloque, { kind: "opciones" }> }) {
+  const [opcion, setOpcion] = useState("");
+  const [comentario, setComentario] = useState("");
+  const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  useEffect(() => {
+    setOpcion("");
+    setComentario("");
+    setSent(false);
+    setErr("");
+  }, [bloque.key]);
+
+  async function send() {
+    setBusy(true);
+    setErr("");
+    try {
+      await responder(bloque.key, { opcion, comentario: comentario.trim().slice(0, bloque.comentarioMax) });
+      setSent(true);
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="rise">
+      <BloqueHead bloque={bloque} />
+      <div className="mt-4 grid grid-cols-2 gap-3">
+        {bloque.opciones.map((o) => {
+          const on = opcion === o.id;
+          return (
+            <button
+              key={o.id}
+              onClick={() => !sent && setOpcion(o.id)}
+              disabled={sent}
+              className={cn(
+                "flex flex-col items-center gap-2 rounded-2xl border py-6 text-center transition active:scale-[0.98]",
+                on ? "border-teal bg-teal/15 text-teal glow-teal" : "border-line bg-panel/40 hover:border-faint",
+                sent && "opacity-70",
+              )}
+            >
+              <span className="text-2xl">{o.emoji}</span>
+              <span className="text-sm font-semibold">{o.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {!sent ? (
+        <div className="mt-4">
+          <input
+            value={comentario}
+            onChange={(e) => setComentario(e.target.value.slice(0, bloque.comentarioMax))}
+            placeholder={bloque.comentarioPlaceholder}
+            className="w-full rounded-xl border border-line bg-ink-2/70 px-4 py-3 text-sm outline-none placeholder:text-faint focus:border-teal/60"
+          />
+          {err && <p className="mt-2 text-center text-sm text-magenta">{err}</p>}
+          <Button onClick={send} disabled={busy || !opcion} className="mt-2 w-full">
+            {busy ? <Spinner /> : "Enviar"}
+          </Button>
+        </div>
+      ) : (
+        <Enviado onEdit={() => setSent(false)} />
       )}
     </div>
   );

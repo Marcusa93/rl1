@@ -1,4 +1,5 @@
 import { fail, getSession, ok } from "@/lib/api";
+import { getBloque } from "@/lib/comercial";
 import { getAdmin } from "@/lib/supabase/server";
 import type { CotioVar } from "@/lib/types";
 
@@ -51,18 +52,44 @@ export async function GET(
     for (const r of list) for (const id of (r.payload?.selected as string[]) ?? []) counts[id] = (counts[id] ?? 0) + 1;
     return ok({ activity, participants: participants ?? 0, responded: responders.length, responders: [], summary: { total: list.length, counts }, config: session.activity_config ?? {} });
   }
-  const BLOQUES = ["emp_b1", "emp_b2", "emp_b3", "emp_b4", "emp_b5"];
-  if (BLOQUES.includes(activity)) {
-    // Razonamiento abierto: solo las últimas respuestas, para no mandar
-    // 200 textos en cada poll — el docente elige cuáles leer en voz alta.
+  const bloque = getBloque(activity);
+  if (bloque) {
+    const base = { activity, participants: participants ?? 0, responded: responders.length, responders: [], config: session.activity_config ?? {} };
+    if (bloque.kind === "chips") {
+      const counts: Record<string, number> = {};
+      for (const r of list) for (const id of (r.payload?.selected as string[]) ?? []) counts[id] = (counts[id] ?? 0) + 1;
+      return ok({ ...base, summary: { total: list.length, counts } });
+    }
+    if (bloque.kind === "opciones") {
+      const counts: Record<string, number> = {};
+      for (const r of list) {
+        const op = String(r.payload?.opcion ?? "");
+        if (op) counts[op] = (counts[op] ?? 0) + 1;
+      }
+      const comentarios = list
+        .filter((r) => String(r.payload?.comentario ?? "").trim())
+        .slice(-40)
+        .map((r) => ({
+          name: (r.participants?.name as string) ?? "—",
+          comentario: String(r.payload?.comentario ?? "").slice(0, 200),
+        }));
+      return ok({ ...base, summary: { total: list.length, counts, comentarios } });
+    }
+    // "texto" y "texto2": razonamiento abierto — solo las últimas respuestas,
+    // para no mandar 200 textos en cada poll; el docente elige qué leer en voz alta.
     const respuestas = list
-      .filter((r) => String(r.payload?.respuesta ?? "").trim())
-      .slice(-40)
-      .map((r) => ({
-        name: (r.participants?.name as string) ?? "—",
-        respuesta: String(r.payload?.respuesta ?? "").slice(0, 300),
-      }));
-    return ok({ activity, participants: participants ?? 0, responded: responders.length, responders: [], summary: { total: list.length, respuestas }, config: session.activity_config ?? {} });
+      .map((r) => {
+        if (bloque.kind === "texto2") {
+          const [c1, c2] = bloque.campos;
+          const v1 = String(r.payload?.[c1.id] ?? "").trim();
+          const v2 = String(r.payload?.[c2.id] ?? "").trim();
+          return { name: (r.participants?.name as string) ?? "—", respuesta: v1 || v2 ? `${c1.label} ${v1 || "—"} · ${c2.label} ${v2 || "—"}` : "" };
+        }
+        return { name: (r.participants?.name as string) ?? "—", respuesta: String(r.payload?.respuesta ?? "").slice(0, 300) };
+      })
+      .filter((r) => r.respuesta.trim())
+      .slice(-40);
+    return ok({ ...base, summary: { total: list.length, respuestas } });
   }
   if (activity === "emp_cierre") {
     const counts: Record<string, number> = {};
