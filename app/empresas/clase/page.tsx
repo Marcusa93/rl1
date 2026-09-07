@@ -418,11 +418,29 @@ function Slide({ slide }: { slide: ClaseSlide }) {
           )}
           {slide.lede && (
             <p
-              className={cn("rise mt-8 leading-relaxed text-muted", textoSize)}
+              className={cn("rise mt-8 leading-relaxed text-muted", slide.checklist ? "mt-5 text-xl" : textoSize)}
               style={{ animationDelay: `${0.14 * (slide.bullets?.length ?? slide.pasos?.length ?? 0) + 0.2}s` }}
             >
               <Rico text={slide.lede} />
             </p>
+          )}
+          {slide.checklist && (
+            <div className="mt-6 grid gap-x-10 gap-y-3.5 lg:grid-cols-2">
+              {slide.checklist.map((c, i) => (
+                <div
+                  key={c}
+                  className="rise flex items-start gap-3 rounded-xl border border-line bg-panel/40 px-4 py-3"
+                  style={{ animationDelay: `${0.09 * i + 0.2}s` }}
+                >
+                  <span className="mt-0.5 flex size-6 flex-none items-center justify-center rounded-full bg-teal/20 text-sm font-bold text-teal">
+                    ✓
+                  </span>
+                  <span className="text-lg leading-snug">
+                    <Rico text={c} />
+                  </span>
+                </div>
+              ))}
+            </div>
           )}
         </>
       );
@@ -444,7 +462,7 @@ function Slide({ slide }: { slide: ClaseSlide }) {
                   <Diagrama id={slide.diagrama} />
                 </div>
               )}
-              <div className="max-w-3xl">{contenido}</div>
+              <div className={slide.checklist ? undefined : "max-w-3xl"}>{contenido}</div>
             </>
           )}
         </div>

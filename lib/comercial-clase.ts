@@ -26,6 +26,8 @@ export interface SlideTexto {
   lede?: string; // admite **negrita**
   bullets?: string[];
   pasos?: string[]; // lista numerada
+  /** Ítems con ✓ en dos columnas (ej. checklist de contratos). */
+  checklist?: string[];
   diagrama?: DiagramaId;
 }
 export interface SlideCaso {
@@ -104,6 +106,17 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     pregunta: "¿Usás IA? ¿Trabajaste en una empresa? ¿Creés que te va a reemplazar?",
   },
 
+  {
+    t: "texto",
+    eyebrow: "Concepto",
+    titulo: "¿Qué es una empresa?",
+    diagrama: "empresa",
+    bullets: [
+      "Una organización de medios **materiales** (planta, máquinas, stock) e **inmateriales** (marca, know-how, software)…",
+      "…ordenados a un fin: **prestar servicios, ejecutar obras o realizar productos**.",
+      "La IA entra exactamente ahí: es un **medio inmaterial más de la empresa** — y de los que más valor concentran hoy.",
+    ],
+  },
   {
     t: "texto",
     eyebrow: "Concepto",
@@ -281,6 +294,18 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     ],
   },
   {
+    t: "texto",
+    eyebrow: "Concepto",
+    titulo: "Datos personales: no es prudencia, es ley",
+    diagrama: "datos",
+    bullets: [
+      "**Ley 25.326**: rige todo tratamiento de datos personales que exceda el uso doméstico.",
+      "La autoridad es la **AAIP** (Agencia de Acceso a la Información Pública): las bases de datos deben **inscribirse** en su Registro Nacional.",
+      "Deber de **seguridad y confidencialidad**; el titular puede exigir acceso, rectificación y supresión.",
+      "¿Empresa estatal o con participación del Estado? Se suma el **control interno de la SIGEN** (Ley 24.156).",
+    ],
+  },
+  {
     t: "actividad",
     activa: "emp_b3",
     escena: "Escena 3",
@@ -306,6 +331,24 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     pregunta: "¿La empresa tiene un activo protegible, o solo un resultado que puede usar?",
   },
 
+  {
+    t: "texto",
+    eyebrow: "Panorama",
+    titulo: "Los contratos de la empresa, releídos por la IA",
+    lede: "Casi ningún contrato comercial queda igual. El checklist del abogado de empresa, hoy:",
+    checklist: [
+      "**Licencia de software / SaaS** — la herramienta de IA que se contrata",
+      "**Términos y condiciones con consumidores** — chatbots, decisiones automatizadas, deber de información",
+      "**Contrato de trabajo y reglamento interno** — política de uso de IA y confidencialidad",
+      "**Acuerdos de confidencialidad (NDA)** — qué puede tocar una IA de terceros",
+      "**Encargo de tratamiento de datos** (art. 25, Ley 25.326) — cuando otro procesa tus datos",
+      "**Contratos con agencias y creativos** — contenido generado, derechos de imagen y de autor",
+      "**Cesión de derechos y licencias de PI** — titularidad de lo generado con IA",
+      "**Distribución, suministro y e-commerce** — pricing dinámico y defensa de la competencia",
+      "**Seguros** — responsabilidad civil y ciberriesgo",
+      "**Compliance e integridad** (Ley 27.401) — si la empresa contrata con el Estado",
+    ],
+  },
   {
     t: "texto",
     parte: "Parte III · El caso Prisma",

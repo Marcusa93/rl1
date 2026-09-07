@@ -30,7 +30,9 @@ export type DiagramaId =
   | "fuga"
   | "anillos"
   | "cadena"
-  | "sellos";
+  | "sellos"
+  | "empresa"
+  | "datos";
 
 export function Diagrama({ id }: { id: DiagramaId }) {
   switch (id) {
@@ -70,6 +72,10 @@ export function Diagrama({ id }: { id: DiagramaId }) {
       return <DiagramaCadena />;
     case "sellos":
       return <DiagramaSellos />;
+    case "empresa":
+      return <DiagramaEmpresa />;
+    case "datos":
+      return <DiagramaDatos />;
   }
 }
 
@@ -702,6 +708,120 @@ export function DiagramaCadena() {
       </text>
       <text x="240" y="226" textAnchor="middle" fill={FAINT} fontSize="11">
         y la autorización limitada no se extiende sola
+      </text>
+    </svg>
+  );
+}
+
+/** La empresa: medios materiales e inmateriales ordenados a un fin. */
+export function DiagramaEmpresa() {
+  const materiales = ["planta", "máquinas", "stock"];
+  const inmateriales = ["marca", "know-how", "software", "IA"];
+  return (
+    <svg viewBox="0 0 480 300" role="img" aria-label="La empresa como organización de medios" className="w-full">
+      <text x="88" y="26" textAnchor="middle" fill={CYAN} fontSize="11" fontWeight="700" fontFamily="monospace">
+        MEDIOS MATERIALES
+      </text>
+      {materiales.map((m, i) => (
+        <g key={m}>
+          <rect x="30" y={38 + i * 40} width="116" height="28" rx="8" fill="none" stroke={CYAN} strokeWidth="1.6" />
+          <text x="88" y={57 + i * 40} textAnchor="middle" fill={TEXT} fontSize="11">
+            {m}
+          </text>
+          <line x1="146" y1={52 + i * 40} x2="204" y2="150" stroke={LINE} strokeWidth="1.4" />
+        </g>
+      ))}
+      <text x="88" y="184" textAnchor="middle" fill={VIOLET} fontSize="11" fontWeight="700" fontFamily="monospace">
+        MEDIOS INMATERIALES
+      </text>
+      {inmateriales.map((m, i) => {
+        const esIA = m === "IA";
+        return (
+          <g key={m}>
+            <rect x="30" y={196 + i * 24} width="116" height="19" rx="6" fill={esIA ? VIOLET : "none"} opacity={esIA ? 0.16 : 1} stroke={VIOLET} strokeWidth={esIA ? 2.2 : 1.4}>
+              {esIA && <animate attributeName="opacity" values="0.08;0.3;0.08" dur="2.4s" repeatCount="indefinite" />}
+            </rect>
+            <text x="88" y={210 + i * 24} textAnchor="middle" fill={esIA ? VIOLET : TEXT} fontSize="10.5" fontWeight={esIA ? 700 : 400}>
+              {m}
+            </text>
+            <line x1="146" y1={205 + i * 24} x2="204" y2="160" stroke={LINE} strokeWidth="1.4" />
+          </g>
+        );
+      })}
+      <rect x="204" y="120" width="120" height="70" rx="14" fill="#171a37" stroke={TEAL} strokeWidth="2.4" />
+      <text x="264" y="151" textAnchor="middle" fill={TEAL} fontSize="13" fontWeight="700" fontFamily="monospace">
+        LA
+      </text>
+      <text x="264" y="168" textAnchor="middle" fill={TEAL} fontSize="13" fontWeight="700" fontFamily="monospace">
+        EMPRESA
+      </text>
+      {["servicios", "obras", "productos"].map((f, i) => (
+        <g key={f}>
+          <line x1="324" y1="155" x2="376" y2={70 + i * 80} stroke={LINE} strokeWidth="1.6" />
+          <circle r="3.5" fill={TEAL}>
+            <animateMotion dur="2.2s" begin={`${i * 0.7}s`} repeatCount="indefinite" path={`M324,155 L376,${70 + i * 80}`} />
+          </circle>
+          <rect x="376" y={54 + i * 80} width="90" height="32" rx="8" fill={TEAL} opacity="0.1" stroke={TEAL} strokeWidth="1.6" />
+          <text x="421" y={74 + i * 80} textAnchor="middle" fill={TEXT} fontSize="11" fontWeight="600">
+            {f}
+          </text>
+        </g>
+      ))}
+      <text x="240" y="290" textAnchor="middle" fill={FAINT} fontSize="11">
+        la IA ya es uno de esos medios — y de los que más valen
+      </text>
+    </svg>
+  );
+}
+
+/** Datos personales: base inscripta, segura y con derechos del titular. */
+export function DiagramaDatos() {
+  return (
+    <svg viewBox="0 0 480 280" role="img" aria-label="Obligaciones sobre datos personales" className="w-full">
+      <ellipse cx="120" cy="80" rx="58" ry="16" fill="none" stroke={CYAN} strokeWidth="2" />
+      <path d="M62,80 L62,150 A58,16 0 0 0 178,150 L178,80" fill="none" stroke={CYAN} strokeWidth="2" />
+      <ellipse cx="120" cy="115" rx="58" ry="16" fill="none" stroke={CYAN} strokeWidth="1" opacity="0.5" />
+      <text x="120" y="200" textAnchor="middle" fill={TEXT} fontSize="12" fontWeight="600">
+        base de datos de la empresa
+      </text>
+      <text x="120" y="218" textAnchor="middle" fill={FAINT} fontSize="10.5">
+        clientes · empleados · proveedores
+      </text>
+      <g>
+        <rect x="270" y="40" width="180" height="44" rx="10" fill={TEAL} opacity="0.1" stroke={TEAL} strokeWidth="1.8" />
+        <text x="360" y="59" textAnchor="middle" fill={TEAL} fontSize="11.5" fontWeight="700">
+          inscripta en la AAIP ✓
+        </text>
+        <text x="360" y="75" textAnchor="middle" fill={FAINT} fontSize="9.5">
+          Registro Nacional de Bases de Datos
+        </text>
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="4.5s" repeatCount="indefinite" />
+      </g>
+      <g>
+        <rect x="270" y="100" width="180" height="44" rx="10" fill="none" stroke={VIOLET} strokeWidth="1.8" />
+        <text x="360" y="119" textAnchor="middle" fill={VIOLET} fontSize="11.5" fontWeight="700">
+          🔒 deber de seguridad
+        </text>
+        <text x="360" y="135" textAnchor="middle" fill={FAINT} fontSize="9.5">
+          y de confidencialidad
+        </text>
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="4.5s" begin="1.5s" repeatCount="indefinite" />
+      </g>
+      <g>
+        <rect x="270" y="160" width="180" height="44" rx="10" fill="none" stroke={AMBER} strokeWidth="1.8" />
+        <text x="360" y="179" textAnchor="middle" fill={AMBER} fontSize="11.5" fontWeight="700">
+          derechos del titular
+        </text>
+        <text x="360" y="195" textAnchor="middle" fill={FAINT} fontSize="9.5">
+          acceso · rectificación · supresión
+        </text>
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="4.5s" begin="3s" repeatCount="indefinite" />
+      </g>
+      {[0, 1, 2].map((i) => (
+        <line key={i} x1="180" y1={110 + i * 8} x2="268" y2={62 + i * 60} stroke={LINE} strokeWidth="1.4" strokeDasharray="4 5" />
+      ))}
+      <text x="240" y="262" textAnchor="middle" fill={FAINT} fontSize="12">
+        Ley 25.326 — no es prudencia: es ley, con sanciones
       </text>
     </svg>
   );
