@@ -33,12 +33,13 @@ export interface SlideCaso {
   pregunta: string; // la pregunta jurídica que abre
   diagrama: DiagramaId;
 }
-export interface SlideVideo {
-  t: "video";
+export interface SlideShorts {
+  t: "shorts";
   eyebrow: string;
   titulo: string;
-  youtubeId: string;
-  nota: string;
+  lede?: string;
+  /** Videos cortos (Shorts) en formato vertical, lado a lado. IDs de YouTube, fáciles de cambiar. */
+  videos: { youtubeId: string; titulo: string }[];
 }
 export interface SlideActividad {
   t: "actividad";
@@ -52,19 +53,24 @@ export interface SlideFinal {
   t: "final";
 }
 
-export type ClaseSlide =
+export type ClaseSlide = (
   | SlidePortada
   | SlideTexto
   | SlideCaso
-  | SlideVideo
+  | SlideShorts
   | SlideActividad
-  | SlideFinal;
+  | SlideFinal
+) & {
+  /** Marca el comienzo de una parte de la clase; se muestra en el pie hasta la próxima marca. */
+  parte?: string;
+};
 
 export const CLASE_SLIDES: ClaseSlide[] = [
   { t: "portada", activa: "lobby" },
 
   {
     t: "texto",
+    parte: "Parte I · La empresa y la IA",
     eyebrow: "Apertura",
     titulo: "Una empresa que ya cambió",
     lede:
@@ -172,11 +178,15 @@ export const CLASE_SLIDES: ClaseSlide[] = [
     pregunta: "¿Cómo se defiende el sancionado por un algoritmo que nadie le explica?",
   },
   {
-    t: "video",
+    t: "shorts",
     eyebrow: "Para ver",
-    titulo: "La dictadura del algoritmo",
-    youtubeId: "TVornWcWTAg",
-    nota: "Fragmento sugerido: los primeros minutos. Si no carga, abrilo directo en YouTube.",
+    titulo: "En un minuto",
+    lede: "Tres cortos: elegí uno o dos y lo vemos juntos.",
+    videos: [
+      { youtubeId: "Myo3x1RXA9c", titulo: "¿Qué es la tarifa dinámica?" },
+      { youtubeId: "TvHkutPR7mI", titulo: "Qué influye para recibir más pedidos en Rappi" },
+      { youtubeId: "8CC-Zw7cAqQ", titulo: "La IA no solo redefine empleos" },
+    ],
   },
 
   {
@@ -202,6 +212,7 @@ export const CLASE_SLIDES: ClaseSlide[] = [
 
   {
     t: "texto",
+    parte: "Parte II · El recorrido del cliente",
     eyebrow: "Parte II",
     titulo: "Ahora, del otro lado del escritorio",
     lede:
@@ -279,6 +290,7 @@ export const CLASE_SLIDES: ClaseSlide[] = [
 
   {
     t: "texto",
+    parte: "Parte III · El caso Prisma",
     eyebrow: "Antes del caso",
     titulo: "Dos ideas más",
     bullets: [
@@ -298,6 +310,7 @@ export const CLASE_SLIDES: ClaseSlide[] = [
 
   {
     t: "texto",
+    parte: "Cierre",
     eyebrow: "Síntesis",
     titulo: "Cinco ideas para llevarse",
     bullets: [

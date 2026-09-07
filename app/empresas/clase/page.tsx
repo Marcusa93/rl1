@@ -146,6 +146,9 @@ function Deck() {
 
   // La placa manda: si esta placa tiene actividad asociada, se activa sola.
   const slide = CLASE_SLIDES[idx];
+  const parteActual = CLASE_SLIDES.slice(0, idx + 1)
+    .reverse()
+    .find((s) => s.parte)?.parte;
   useEffect(() => {
     const key = "activa" in slide ? slide.activa : undefined;
     if (!key || lastActivada.current === key) return;
@@ -189,12 +192,18 @@ function Deck() {
         <Slide slide={slide} />
       </main>
 
-      {/* pie: navegación + créditos + folio */}
+      {/* pie: créditos + parte + navegación */}
       <footer className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between px-5 py-3 text-xs text-faint">
         <span className="hidden sm:block">
           {COM_AUTOR} · {COM_AUTOR_CARGO}
         </span>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          {idx === 0 && <span className="hidden md:block">← → para avanzar</span>}
+          {parteActual && (
+            <span className="hidden rounded-full border border-line bg-panel/60 px-2.5 py-1 font-mono text-[11px] text-muted md:block">
+              {parteActual}
+            </span>
+          )}
           <button
             onClick={() => go(idx - 1)}
             className="rounded-lg border border-line bg-panel/60 px-3 py-1.5 text-muted transition hover:text-teal"
@@ -251,15 +260,32 @@ function Slide({ slide }: { slide: ClaseSlide }) {
   switch (slide.t) {
     case "portada":
       return (
-        <div className="flex flex-col items-center text-center">
+        <div className="relative flex flex-col items-center text-center">
+          {/* resplandor ambiente detrás del título */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[420px] w-[720px] -translate-x-1/2 -translate-y-1/4 opacity-40 blur-3xl"
+            style={{
+              background:
+                "radial-gradient(ellipse at 30% 40%, rgba(94,234,212,0.5), transparent 60%), radial-gradient(ellipse at 70% 60%, rgba(139,92,246,0.5), transparent 60%)",
+            }}
+          />
           <LogoRL1 size={56} wordmark={false} className="mb-6" />
           <h1 className="text-gradient font-mono text-7xl font-bold tracking-tight">{COM_TITLE}</h1>
-          <p className="mt-4 text-2xl text-muted">{COM_SUBTITLE}</p>
-          <p className="mt-2 text-sm text-faint">{COM_MATERIA}</p>
-          <p className="mt-6 text-lg font-medium">{COM_AUTOR}</p>
-          <p className="text-sm text-muted">{COM_AUTOR_CARGO}</p>
-          <div className="mt-10 flex items-center gap-8">
-            <div className="rounded-2xl border-gradient px-8 py-5">
+          <p className="rise mt-4 text-2xl text-muted" style={{ animationDelay: "0.2s" }}>
+            {COM_SUBTITLE}
+          </p>
+          <p className="rise mt-2 text-sm text-faint" style={{ animationDelay: "0.3s" }}>
+            {COM_MATERIA}
+          </p>
+          <p className="rise mt-6 text-lg font-medium" style={{ animationDelay: "0.4s" }}>
+            {COM_AUTOR}
+          </p>
+          <p className="rise text-sm text-muted" style={{ animationDelay: "0.45s" }}>
+            {COM_AUTOR_CARGO}
+          </p>
+          <div className="rise mt-10 flex items-center gap-8" style={{ animationDelay: "0.6s" }}>
+            <div className="pulse-ring rounded-2xl border-gradient px-8 py-5">
               <p className="text-xs uppercase tracking-widest text-faint">Entrá desde tu celular</p>
               <p className="text-gradient mt-1 font-mono text-2xl font-bold">{LINK_ALUMNOS}</p>
             </div>
@@ -283,8 +309,12 @@ function Slide({ slide }: { slide: ClaseSlide }) {
           )}
           {slide.bullets && (
             <ul className="mt-8 max-w-3xl space-y-4">
-              {slide.bullets.map((b) => (
-                <li key={b} className="flex gap-4 text-2xl leading-snug">
+              {slide.bullets.map((b, i) => (
+                <li
+                  key={b}
+                  className="rise flex gap-4 text-2xl leading-snug"
+                  style={{ animationDelay: `${0.14 * i + 0.15}s` }}
+                >
                   <span className="font-bold text-teal">—</span>
                   <span>
                     <Rico text={b} />
@@ -296,7 +326,11 @@ function Slide({ slide }: { slide: ClaseSlide }) {
           {slide.pasos && (
             <ol className="mt-8 max-w-3xl space-y-4">
               {slide.pasos.map((p, i) => (
-                <li key={p} className="flex items-baseline gap-4 text-2xl">
+                <li
+                  key={p}
+                  className="rise flex items-baseline gap-4 text-2xl"
+                  style={{ animationDelay: `${0.14 * i + 0.15}s` }}
+                >
                   <span className="flex size-9 flex-none items-center justify-center rounded-full bg-violet/25 font-mono text-base text-violet">
                     {i + 1}
                   </span>
@@ -306,7 +340,10 @@ function Slide({ slide }: { slide: ClaseSlide }) {
             </ol>
           )}
           {slide.lede && (
-            <p className="mt-8 max-w-3xl text-2xl leading-relaxed text-muted">
+            <p
+              className="rise mt-8 max-w-3xl text-2xl leading-relaxed text-muted"
+              style={{ animationDelay: `${0.14 * (slide.bullets?.length ?? slide.pasos?.length ?? 0) + 0.2}s` }}
+            >
               <Rico text={slide.lede} />
             </p>
           )}
@@ -326,50 +363,63 @@ function Slide({ slide }: { slide: ClaseSlide }) {
           </div>
           <div className="mt-8 grid items-center gap-10 lg:grid-cols-[1fr_1fr]">
             <ul className="space-y-4">
-              {slide.bullets.map((b) => (
-                <li key={b} className="flex gap-3 text-xl leading-snug">
+              {slide.bullets.map((b, i) => (
+                <li
+                  key={b}
+                  className="rise flex gap-3 text-xl leading-snug"
+                  style={{ animationDelay: `${0.14 * i + 0.15}s` }}
+                >
                   <span className="font-bold text-teal">—</span>
                   {b}
                 </li>
               ))}
             </ul>
-            <div className="glass rounded-2xl p-4">
+            <div className="rise glass rounded-2xl p-4" style={{ animationDelay: "0.25s" }}>
               <Diagrama id={slide.diagrama} />
             </div>
           </div>
-          <div className="mt-8 max-w-4xl rounded-2xl border border-violet/40 bg-violet/10 p-5">
+          <div
+            className="rise mt-8 max-w-4xl rounded-2xl border border-violet/40 bg-violet/10 p-5"
+            style={{ animationDelay: `${0.14 * slide.bullets.length + 0.3}s` }}
+          >
             <p className="text-xs font-bold uppercase tracking-wider text-violet">La pregunta jurídica</p>
             <p className="mt-1 text-2xl leading-snug">{slide.pregunta}</p>
           </div>
         </div>
       );
 
-    case "video":
+    case "shorts":
       return (
         <div>
           <Eyebrow color="violet">{slide.eyebrow}</Eyebrow>
-          <h1 className="text-4xl font-bold tracking-tight">{slide.titulo}</h1>
-          <div className="mt-6 overflow-hidden rounded-2xl border border-line bg-black" style={{ aspectRatio: "16/9", maxHeight: "60vh" }}>
-            <iframe
-              width="100%"
-              height="100%"
-              src={`https://www.youtube.com/embed/${slide.youtubeId}`}
-              title={slide.titulo}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+          <div className="flex items-baseline justify-between gap-6">
+            <h1 className="text-4xl font-bold tracking-tight">{slide.titulo}</h1>
+            {slide.lede && <p className="text-base text-muted">{slide.lede}</p>}
           </div>
-          <p className="mt-3 text-sm text-faint">
-            {slide.nota}{" "}
-            <a
-              href={`https://www.youtube.com/watch?v=${slide.youtubeId}`}
-              target="_blank"
-              rel="noreferrer"
-              className="text-teal underline-offset-2 hover:underline"
-            >
-              Abrir en YouTube ↗
-            </a>
-          </p>
+          <div className="mt-6 flex justify-center gap-6">
+            {slide.videos.map((v, i) => (
+              <div
+                key={v.youtubeId}
+                className="rise flex w-full max-w-[300px] flex-col gap-2"
+                style={{ animationDelay: `${0.12 * i + 0.15}s` }}
+              >
+                <div
+                  className="overflow-hidden rounded-2xl border border-line bg-black"
+                  style={{ aspectRatio: "9/16", maxHeight: "62vh" }}
+                >
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={`https://www.youtube.com/embed/${v.youtubeId}`}
+                    title={v.titulo}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+                <p className="text-center text-sm leading-snug text-muted">{v.titulo}</p>
+              </div>
+            ))}
+          </div>
         </div>
       );
 
@@ -404,12 +454,12 @@ function Actividad({ slide }: { slide: SlideActividad }) {
           {slide.resumen && <p className="mt-2 max-w-3xl text-base leading-relaxed text-muted">{slide.resumen}</p>}
           <p className="mt-3 max-w-3xl text-xl italic leading-snug text-muted">“{slide.pregunta}”</p>
         </div>
-        <div className="shrink-0 rounded-xl border-gradient px-4 py-3 text-center">
+        <div className="pulse-ring shrink-0 rounded-xl border-gradient px-4 py-3 text-center">
           <p className="text-[10px] uppercase tracking-widest text-faint">Respondé en tu celular</p>
           <p className="text-gradient mt-0.5 font-mono text-sm font-bold">{LINK_ALUMNOS}</p>
         </div>
       </div>
-      <div className="mt-6 flex-1">
+      <div className="rise mt-6 flex-1" style={{ animationDelay: "0.2s" }}>
         <Vivo activity={slide.activa} />
       </div>
     </div>
@@ -428,7 +478,7 @@ function Vivo({ activity }: { activity: string }) {
   const bloque = getBloque(activity);
 
   return (
-    <div className="glass flex min-h-[40vh] flex-col rounded-2xl p-5">
+    <div className="glass glow-teal flex min-h-[40vh] flex-col rounded-2xl p-5">
       <div className="mb-3 flex items-center gap-2 text-sm text-faint">
         <span className="size-2 animate-pulse rounded-full bg-teal" />
         Resultados en vivo
