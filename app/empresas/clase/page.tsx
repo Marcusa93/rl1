@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LogoRL1 } from "@/components/brand/logo-rl1";
 import { Button, Spinner } from "@/components/ui";
+import { useLive } from "@/components/use-live";
 import { Diagrama } from "@/components/comercial/diagramas";
 import { useComResults } from "@/components/comercial/results";
 import { CLASE_SLIDES, type ClaseSlide, type SlideActividad } from "@/lib/comercial-clase";
@@ -18,6 +19,7 @@ import {
   COM_ENCUESTA,
   COM_INSTAGRAM_URL,
   COM_MATERIA,
+  COM_QR_PLATAFORMA,
   COM_QR_SRC,
   COM_SLUG,
   COM_SUBTITLE,
@@ -229,6 +231,35 @@ function Deck() {
 
 // --- Render por tipo de placa ---------------------------------------------
 
+/** Placa de ingreso: QR gigante para que entren todos, con contador en vivo. */
+function Ingreso() {
+  const { data } = useLive<{ participants: number }>(`/api/session/${COM_SLUG}`, 3000);
+  return (
+    <div className="flex flex-col items-center text-center">
+      <p className="text-sm uppercase tracking-[0.3em] text-faint">Sacá el celular y escaneá</p>
+      <div className="rise mt-6" style={{ animationDelay: "0.15s" }}>
+        <img
+          src={COM_QR_PLATAFORMA}
+          alt="QR para entrar a la plataforma"
+          className="pulse-ring rounded-3xl border border-line bg-white p-4"
+          style={{ width: "min(46vh, 420px)", height: "min(46vh, 420px)" }}
+        />
+      </div>
+      <p className="rise mt-6 text-sm text-faint" style={{ animationDelay: "0.3s" }}>
+        o escribí el link
+      </p>
+      <p className="text-gradient rise font-mono text-4xl font-bold tracking-tight" style={{ animationDelay: "0.35s" }}>
+        {LINK_ALUMNOS}
+      </p>
+      <div className="rise mt-6 flex items-center gap-3 text-muted" style={{ animationDelay: "0.5s" }}>
+        <span className="size-3 animate-pulse rounded-full bg-teal" />
+        <span className="text-3xl font-semibold text-foreground">{data?.participants ?? 0}</span>
+        <span className="text-lg">ya entraron</span>
+      </div>
+    </div>
+  );
+}
+
 /** Red de nodos flotando detrás de la portada. */
 function Constelacion() {
   const nodos: Array<[number, number, number]> = [
@@ -320,18 +351,31 @@ function Slide({ slide }: { slide: ClaseSlide }) {
           <p className="rise text-sm text-muted" style={{ animationDelay: "0.45s" }}>
             {COM_AUTOR_CARGO}
           </p>
-          <div className="rise mt-10 flex items-center gap-8" style={{ animationDelay: "0.6s" }}>
-            <div className="pulse-ring rounded-2xl border-gradient px-8 py-5">
-              <p className="text-xs uppercase tracking-widest text-faint">Entrá desde tu celular</p>
-              <p className="text-gradient mt-1 font-mono text-2xl font-bold">{LINK_ALUMNOS}</p>
+          <div className="rise mt-10 flex items-center gap-10" style={{ animationDelay: "0.6s" }}>
+            <div className="flex items-center gap-5">
+              <img
+                src={COM_QR_PLATAFORMA}
+                alt="QR para entrar a la plataforma"
+                width={170}
+                height={170}
+                className="rounded-xl border border-line bg-white p-2"
+              />
+              <div className="pulse-ring rounded-2xl border-gradient px-7 py-5 text-left">
+                <p className="text-xs uppercase tracking-widest text-faint">Entrá desde tu celular</p>
+                <p className="text-gradient mt-1 font-mono text-2xl font-bold">{LINK_ALUMNOS}</p>
+                <p className="mt-1 text-xs text-faint">escaneá el QR o escribí el link</p>
+              </div>
             </div>
             <a href={COM_INSTAGRAM_URL} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-1.5">
-              <img src={COM_QR_SRC} alt="QR a Instagram" width={104} height={104} className="rounded-lg border border-line bg-white p-1.5" />
+              <img src={COM_QR_SRC} alt="QR a Instagram" width={140} height={140} className="rounded-xl border border-line bg-white p-2" />
               <span className="text-xs text-faint">@marquitorossi</span>
             </a>
           </div>
         </div>
       );
+
+    case "ingreso":
+      return <Ingreso />;
 
     case "texto": {
       // "io" es apaisado y va centrado a lo ancho; el resto acompaña al texto en dos columnas.
@@ -490,9 +534,9 @@ function Slide({ slide }: { slide: ClaseSlide }) {
           <p className="mt-4 text-lg text-muted">{COM_MATERIA}</p>
           <p className="mt-6 text-lg font-medium">{COM_AUTOR}</p>
           <p className="text-sm text-muted">{COM_AUTOR_CARGO}</p>
-          <a href={COM_INSTAGRAM_URL} target="_blank" rel="noreferrer" className="mt-10 flex flex-col items-center gap-2">
-            <img src={COM_QR_SRC} alt="QR a Instagram" width={130} height={130} className="rounded-xl border border-line bg-white p-2" />
-            <span className="font-mono text-sm text-teal">@marquitorossi</span>
+          <a href={COM_INSTAGRAM_URL} target="_blank" rel="noreferrer" className="mt-10 flex flex-col items-center gap-3">
+            <img src={COM_QR_SRC} alt="QR a Instagram" width={210} height={210} className="rounded-2xl border border-line bg-white p-3" />
+            <span className="font-mono text-lg text-teal">@marquitorossi</span>
           </a>
         </div>
       );
@@ -511,9 +555,18 @@ function Actividad({ slide }: { slide: SlideActividad }) {
           {slide.resumen && <p className="mt-2 max-w-3xl text-base leading-relaxed text-muted">{slide.resumen}</p>}
           <p className="mt-3 max-w-3xl text-xl italic leading-snug text-muted">“{slide.pregunta}”</p>
         </div>
-        <div className="pulse-ring shrink-0 rounded-xl border-gradient px-4 py-3 text-center">
-          <p className="text-[10px] uppercase tracking-widest text-faint">Respondé en tu celular</p>
-          <p className="text-gradient mt-0.5 font-mono text-sm font-bold">{LINK_ALUMNOS}</p>
+        <div className="pulse-ring flex shrink-0 items-center gap-3 rounded-xl border-gradient px-4 py-3">
+          <img
+            src={COM_QR_PLATAFORMA}
+            alt="QR para entrar a la plataforma"
+            width={92}
+            height={92}
+            className="rounded-lg border border-line bg-white p-1"
+          />
+          <div className="text-left">
+            <p className="text-[10px] uppercase tracking-widest text-faint">Respondé en tu celular</p>
+            <p className="text-gradient mt-0.5 font-mono text-sm font-bold">{LINK_ALUMNOS}</p>
+          </div>
         </div>
       </div>
       <div className="rise mt-6 flex-1" style={{ animationDelay: "0.2s" }}>

@@ -15,6 +15,10 @@ export interface SlidePortada {
   t: "portada";
   activa: ComActivity; // al pararse acá, manda a todos al lobby
 }
+export interface SlideIngreso {
+  t: "ingreso";
+  activa: ComActivity; // mantiene a todos en el lobby mientras entran
+}
 export interface SlideTexto {
   t: "texto";
   eyebrow: string;
@@ -55,6 +59,7 @@ export interface SlideFinal {
 
 export type ClaseSlide = (
   | SlidePortada
+  | SlideIngreso
   | SlideTexto
   | SlideCaso
   | SlideShorts
@@ -67,6 +72,7 @@ export type ClaseSlide = (
 
 export const CLASE_SLIDES: ClaseSlide[] = [
   { t: "portada", activa: "lobby" },
+  { t: "ingreso", activa: "lobby" },
 
   {
     t: "texto",

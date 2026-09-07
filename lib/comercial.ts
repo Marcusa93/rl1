@@ -16,6 +16,8 @@ export const COM_AUTOR = "Dr. Marco Rossi";
 export const COM_AUTOR_CARGO = "Director del Laboratorio de IA de la Facultad de Derecho";
 export const COM_INSTAGRAM_URL = "https://www.instagram.com/marquitorossi";
 export const COM_QR_SRC = "/empresas/qr-instagram.png";
+/** QR que apunta a https://rl1-beige.vercel.app/empresas (ingreso de alumnos). */
+export const COM_QR_PLATAFORMA = "/empresas/qr-plataforma.png";
 
 /**
  * Intervalos de polling (ms) pensados para un aula grande.
