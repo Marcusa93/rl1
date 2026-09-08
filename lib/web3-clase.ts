@@ -176,11 +176,15 @@ export interface W3Placa {
   diagrama: DiagramaW3Id;
   /** Botón para salir a una demo en vivo (ej. explorador de blockchain). */
   link?: { url: string; label: string };
+  /** Momento de demo física en el aula (ej. mostrar el visor Quest 3). */
+  demo?: string;
 }
 export interface W3SlideActividad {
   t: "actividad";
   activa: ActivityKey;
   escena: string;
+  /** Imágenes A/B incrustadas en la placa (ej. el juego "¿cuál es real?"). */
+  imagenes?: { a: string; b: string };
 }
 export interface W3Final {
   t: "final";
@@ -287,7 +291,8 @@ export const W3_SLIDES: W3Slide[] = [
     bajada: "Hoy una imagen puede mostrar algo que nunca ocurrió.",
     diagrama: "deepfake",
   },
-  { t: "actividad", activa: "w3_cual", escena: "El juego" },
+  // A = fotografía real (Picsum #1018) · B = imagen generada con IA.
+  { t: "actividad", activa: "w3_cual", escena: "El juego", imagenes: { a: "/web3/cual-a.jpg", b: "/web3/cual-b.jpg" } },
   {
     t: "placa",
     titulo: "También puedo fabricar una voz",
@@ -319,6 +324,20 @@ export const W3_SLIDES: W3Slide[] = [
     titulo: "Verificar sin mostrar todo",
     bajada: "A veces alcanza con demostrar un dato.",
     diagrama: "credencial",
+  },
+  {
+    t: "placa",
+    titulo: "Ahora también entramos a la pantalla",
+    bajada: "Realidad virtual y realidad aumentada: presencia sin cuerpo, datos sobre el mundo.",
+    diagrama: "vrar",
+    demo: "🥽 Demo en vivo: probamos un visor Quest 3",
+  },
+  {
+    t: "placa",
+    titulo: "Lo virtual también es jurídico",
+    bajada: "Tu avatar actúa, compra y se relaciona en mundos persistentes.",
+    pills: ["identidad del avatar", "bienes virtuales", "NFTs", "conductas y daños en VR", "jurisdicción"],
+    diagrama: "avatar",
   },
 
   // --- Parte III · La máquina ya no sólo responde ------------------------

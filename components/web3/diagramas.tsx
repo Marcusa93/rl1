@@ -21,7 +21,8 @@ export type DiagramaW3Id =
   | "phishing" | "imagenajena" | "proteger" | "credencial" | "procedencia"
   | "reglascodigo" | "nopodes" | "smart" | "justicia" | "distribuidas"
   | "dao" | "ballena" | "responde" | "arquitectura" | "traductor"
-  | "evolucion" | "voz" | "maquina" | "genera" | "agente" | "grados";
+  | "evolucion" | "voz" | "maquina" | "genera" | "agente" | "grados"
+  | "vrar" | "avatar";
 
 export function DiagramaW3({ id }: { id: DiagramaW3Id }) {
   const D: Record<DiagramaW3Id, () => React.ReactNode> = {
@@ -32,6 +33,7 @@ export function DiagramaW3({ id }: { id: DiagramaW3Id }) {
     reglascodigo: ReglasCodigo, nopodes: NoPodes, smart: Smart, justicia: Justicia, distribuidas: Distribuidas,
     dao: Dao, ballena: Ballena, responde: Responde, arquitectura: Arquitectura, traductor: Traductor,
     evolucion: Evolucion, voz: Voz, maquina: Maquina, genera: Genera, agente: Agente, grados: Grados,
+    vrar: VrAr, avatar: Avatar,
   };
   return <>{D[id]()}</>;
 }
@@ -925,6 +927,90 @@ function Grados() {
       <text x="240" y="40" textAnchor="middle" fill={TEXT} fontSize="13" fontWeight="600">
         cada escalón delega más — y compromete más
       </text>
+    </svg>
+  );
+}
+
+// Realidad virtual vs. realidad aumentada.
+function VrAr() {
+  return (
+    <svg viewBox={VB} className="w-full" role="img" aria-label="Realidad virtual y realidad aumentada">
+      {/* VR: el visor te mete en otro mundo */}
+      <g>
+        <rect x="55" y="52" width="150" height="110" rx="14" fill={VIOLET} opacity="0.1" stroke={VIOLET} strokeWidth="2" />
+        {[0, 1, 2].map((i) => (
+          <circle key={i} cx={95 + i * 35} cy={95 + (i % 2) * 22} r="9" fill="none" stroke={VIOLET} strokeWidth="1.6">
+            <animate attributeName="r" values="7;11;7" dur="3.5s" begin={`${i * 0.8}s`} repeatCount="indefinite" />
+          </circle>
+        ))}
+        <text x="130" y="150" textAnchor="middle" fill={VIOLET} fontSize="10.5" fontWeight="700" fontFamily="monospace">
+          OTRO MUNDO
+        </text>
+        <rect x="96" y="176" width="68" height="34" rx="12" fill={PANEL} stroke={TEXT} strokeWidth="2.2" />
+        <rect x="106" y="186" width="20" height="14" rx="4" fill={VIOLET} opacity="0.7" />
+        <rect x="134" y="186" width="20" height="14" rx="4" fill={VIOLET} opacity="0.7" />
+        <text x="130" y="232" textAnchor="middle" fill={TEXT} fontSize="12" fontWeight="600">
+          VR: entrás vos
+        </text>
+      </g>
+      {/* AR: capas de datos sobre el mundo real */}
+      <g>
+        <rect x="275" y="52" width="150" height="110" rx="14" fill="none" stroke={CYAN} strokeWidth="2" />
+        <path d="M290,150 L330,105 L360,130 L395,88 L410,150 Z" fill="none" stroke={FAINT} strokeWidth="1.6" />
+        {[
+          { x: 330, y: 84, l: "$ 120.000" },
+          { x: 392, y: 66, l: "3,2 km" },
+        ].map((e, i) => (
+          <g key={e.l}>
+            <rect x={e.x - 34} y={e.y - 13} width="68" height="20" rx="6" fill={CYAN} opacity="0.15" stroke={CYAN} strokeWidth="1.4" />
+            <text x={e.x} y={e.y + 1} textAnchor="middle" fill={CYAN} fontSize="9.5" fontFamily="monospace">
+              {e.l}
+            </text>
+            <animate attributeName="opacity" values="0.3;1;0.3" dur="3.5s" begin={`${i * 1.2}s`} repeatCount="indefinite" />
+          </g>
+        ))}
+        <text x="350" y="150" textAnchor="middle" fill={CYAN} fontSize="10.5" fontWeight="700" fontFamily="monospace">
+          MUNDO REAL + CAPAS
+        </text>
+        <text x="350" y="232" textAnchor="middle" fill={TEXT} fontSize="12" fontWeight="600">
+          AR: entra la información
+        </text>
+        <text x="350" y="196" textAnchor="middle" fontSize="19">🥽</text>
+      </g>
+      <Pie>ya no sólo miramos pantallas: entramos en ellas — o ellas salen al mundo</Pie>
+    </svg>
+  );
+}
+
+// El avatar: la identidad también habita mundos persistentes.
+function Avatar() {
+  return (
+    <svg viewBox={VB} className="w-full" role="img" aria-label="Persona y avatar en un mundo virtual">
+      <Muneco x={110} y={120} color={TEAL} escala={1.8} />
+      <text x="110" y="180" textAnchor="middle" fill={TEXT} fontSize="12">vos</text>
+      <line x1="150" y1="115" x2="240" y2="115" stroke={LINE} strokeWidth="2" strokeDasharray="5 6" />
+      <circle r="4.5" fill={AMBER}>
+        <animateMotion dur="2.4s" repeatCount="indefinite" path="M150,115 L240,115" />
+      </circle>
+      <g>
+        <rect x="250" y="42" width="180" height="160" rx="16" fill={VIOLET} opacity="0.08" stroke={VIOLET} strokeWidth="2" />
+        <Muneco x={310} y={110} color={VIOLET} escala={1.6} />
+        <text x="310" y="162" textAnchor="middle" fill={VIOLET} fontSize="11.5" fontWeight="600">tu avatar</text>
+        {[
+          { x: 388, y: 78, e: "🏠" },
+          { x: 396, y: 122, e: "🖼️" },
+          { x: 388, y: 166, e: "🪙" },
+        ].map((b, i) => (
+          <g key={b.e}>
+            <circle cx={b.x} cy={b.y} r="16" fill={PANEL} stroke={CYAN} strokeWidth="1.6">
+              <animate attributeName="stroke-opacity" values="0.4;1;0.4" dur="4s" begin={`${i * 1.3}s`} repeatCount="indefinite" />
+            </circle>
+            <text x={b.x} y={b.y + 5} textAnchor="middle" fontSize="12">{b.e}</text>
+          </g>
+        ))}
+        <text x="340" y="192" textAnchor="middle" fill={FAINT} fontSize="9.5">mundo persistente · bienes · conductas</text>
+      </g>
+      <Pie>¿de quién es el avatar? ¿y lo que compra? ¿y lo que hace?</Pie>
     </svg>
   );
 }

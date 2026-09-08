@@ -311,6 +311,13 @@ function Slide({ slide }: { slide: W3Slide }) {
               </a>
             </div>
           )}
+          {slide.demo && (
+            <div className="rise mt-5 flex justify-center" style={{ animationDelay: "0.35s" }}>
+              <span className="pulse-ring rounded-xl border border-yellow-400/50 bg-yellow-400/10 px-6 py-3 text-base font-semibold text-yellow-400">
+                {slide.demo}
+              </span>
+            </div>
+          )}
           {slide.pills && (
             <div className="mt-6 flex flex-wrap justify-center gap-2">
               {slide.pills.map((p, i) => (
@@ -335,7 +342,7 @@ function Slide({ slide }: { slide: W3Slide }) {
     case "actividad": {
       const act = getW3Actividad(slide.activa);
       if (!act) return null;
-      return <SlideActividad act={act} escena={slide.escena} />;
+      return <SlideActividad act={act} escena={slide.escena} imagenes={slide.imagenes} />;
     }
 
     case "final":
@@ -385,7 +392,15 @@ function Ingreso() {
 
 // --- Placa de actividad + resultados en vivo -------------------------------
 
-function SlideActividad({ act, escena }: { act: W3Actividad; escena: string }) {
+function SlideActividad({
+  act,
+  escena,
+  imagenes,
+}: {
+  act: W3Actividad;
+  escena: string;
+  imagenes?: { a: string; b: string };
+}) {
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-start justify-between gap-6">
@@ -411,8 +426,25 @@ function SlideActividad({ act, escena }: { act: W3Actividad; escena: string }) {
           </div>
         </div>
       </div>
-      <div className="rise mt-6 flex-1" style={{ animationDelay: "0.2s" }}>
-        <Vivo act={act} />
+
+      {imagenes && (
+        <div className="rise mt-5 grid grid-cols-2 gap-6" style={{ animationDelay: "0.15s" }}>
+          {[
+            { letra: "A", src: imagenes.a },
+            { letra: "B", src: imagenes.b },
+          ].map((im) => (
+            <figure key={im.letra} className="relative overflow-hidden rounded-2xl border border-line">
+              <img src={im.src} alt={`Imagen ${im.letra}`} className="h-[38vh] w-full object-cover" />
+              <figcaption className="absolute left-3 top-3 flex size-11 items-center justify-center rounded-xl bg-ink/80 font-mono text-2xl font-bold text-teal backdrop-blur">
+                {im.letra}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      )}
+
+      <div className="rise mt-6 flex-1" style={{ animationDelay: "0.25s" }}>
+        <Vivo act={act} compacto={Boolean(imagenes)} />
       </div>
     </div>
   );
@@ -424,12 +456,12 @@ type VivoResp = {
   summary: Record<string, unknown>;
 };
 
-function Vivo({ act }: { act: W3Actividad }) {
+function Vivo({ act, compacto }: { act: W3Actividad; compacto?: boolean }) {
   const { data } = useLive<VivoResp>(`/api/session/${W3_SLUG}/results?activity=${act.key}`, W3_POLL.deck);
   const r = data ?? null;
 
   return (
-    <div className="glass glow-teal flex min-h-[40vh] flex-col rounded-2xl p-5">
+    <div className={cn("glass glow-teal flex flex-col rounded-2xl p-5", compacto ? "min-h-[16vh]" : "min-h-[40vh]")}>
       <div className="mb-3 flex items-center gap-2 text-sm text-faint">
         <span className="size-2 animate-pulse rounded-full bg-teal" />
         Resultados en vivo
