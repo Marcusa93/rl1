@@ -1,0 +1,263 @@
+===========================================================
+GUIÓN DE CLASE — WEB3, DESCENTRALIZACIÓN Y GOBERNANZA
+Diplomatura en Derecho 5.0 (UMSA) · Dr. Marco Rossi
+Presentación: rl1-beige.vercel.app/web3/clase  (clave docente)
+Alumnos:      rl1-beige.vercel.app/web3
+40 placas · avanzás con las flechas ← →
+===========================================================
+
+ANTES DE EMPEZAR
+- Abrí /web3/clase y poné la clave. Compartí ESA ventana en Zoom.
+- Las actividades se activan solas al llegar a su placa. No toques nada más.
+- Arriba a la derecha vas a ver un cartelito verde: "en vivo: ...". Si dice
+  rojo, recargá la página y volvé a poner la clave.
+- Tené el visor Quest 3 a mano (lo usás en la placa 26).
+
+DATOS QUE NO TENÉS QUE OLVIDAR
+- Placa 19 (el juego): LA REAL ES LA "A". La B la generó una IA.
+- Placa 36 (votación DAO): cuando voten, la pantalla muestra DOS resultados.
+  El de la derecha suma 10.000 tokens tuyos en contra y da vuelta todo.
+  Esa es la bisagra de la clase. No la adelantes.
+
+-----------------------------------------------------------
+APERTURA
+-----------------------------------------------------------
+
+1. PORTADA
+   Presentate. Decí que esta es la última clase y que hoy no vas a
+   explicar tecnología nueva: van a ver todas juntas las que ya vieron.
+   Avisá que van a usar el celular varias veces.
+
+2. INGRESO (QR grande)
+   "Saquen el celular y escaneen. Pongan su nombre. Nada más."
+   Quedate acá hasta que el contador deje de subir. No apures.
+
+3. ACTIVIDAD — Encuesta relámpago
+   "Tres preguntas rápidas para saber quiénes son."
+   Esperá los votos. Leé en voz alta lo que llame la atención:
+   cuántos usaron cripto, cuántos casi caen en un phishing,
+   cuántos dejarían que una IA haga un trámite por ellos.
+   Cerrá: "guardemos esto, lo vamos a retomar."
+
+-----------------------------------------------------------
+PARTE I — DE LA PALABRA AL ALGORITMO
+-----------------------------------------------------------
+
+4. La confianza viene primero
+   Arrancá con la pregunta grande: ¿cómo hizo la humanidad para confiar
+   en gente que no conoce? Antes de blockchain, antes de internet,
+   ese problema ya existía.
+
+5. Cuando alcanzaba con la palabra
+   Comunidades chicas. Todos se conocen. La reputación alcanza.
+   Si alguien no cumple, el pueblo se entera. Eso era la garantía.
+
+6. Después fuimos demasiados
+   Creció el comercio, crecieron las ciudades. Empezás a tratar con
+   gente que nunca viste. Conocerse dejó de ser posible.
+
+7. Inventamos quién diera fe
+   Sellos, firmas, documentos, escribanos, registros, monedas, jueces.
+   Decilo así: no son burocracia, son TECNOLOGÍA SOCIAL. Se inventaron
+   para resolver un problema concreto: confiar sin conocerse.
+
+8. El Derecho también es tecnología
+   Esta es la idea que quiero que se lleven de la parte I.
+   El Derecho registra, certifica, reconoce y resuelve.
+   Todo eso es producir confianza entre desconocidos.
+
+9. Después digitalizamos la confianza
+   Mirá la línea de tiempo: sello, firma, DNI, home banking, QR, blockchain.
+   Cambian los objetos. La función es siempre la misma.
+
+10. Los intermediarios no desaparecieron
+    Internet prometía descentralizar y terminó creando intermediarios
+    más grandes que los anteriores. Hoy confiás en Google, en el banco,
+    en Mercado Libre, en la plataforma.
+
+11. ACTIVIDAD — ¿A quién le confiás tu plata?
+    "Voten. Es anónimo."
+    Cuando salgan los resultados, comentá lo que ves. Si gana la billetera
+    digital: "le confiamos a una app lo que antes le confiábamos a un banco
+    con sucursal y gerente. ¿Cuándo decidimos eso?"
+
+12. ¿Y si sacamos al centro?
+    Recién acá aparece Web3. No como moda: como el próximo intento de
+    resolver el mismo problema de siempre.
+    A la izquierda una red con un solo validador. A la derecha, todos validan.
+
+13. Esto se puede ver  → HAY UN BOTÓN, ABRILO
+    Salí de las placas y abrí el explorador de blockchain.
+    Mostrá una transacción real: montos, horario, confirmaciones.
+    "Nadie me dio permiso para ver esto. Está abierto. Eso es lo distinto."
+    Volvé a la presentación (la pestaña queda donde estaba).
+
+14. La confianza cambió de lugar
+    Cierre de la parte I. Palabra → institución → plataforma → red.
+    Frase: "no dejamos de necesitar confianza; cambiamos la forma
+    de producirla."
+
+-----------------------------------------------------------
+PARTE II — ¿CÓMO SABEMOS QUE SOS VOS?
+-----------------------------------------------------------
+
+15. Ahora el problema sos vos
+    Cambio de tema. Ya vimos cómo verificar transacciones.
+    Ahora: cómo verificar PERSONAS.
+
+16. Tu identidad ya no es sólo un documento
+    Tu identidad digital son tus cuentas, tu cara, tu voz, tus dispositivos,
+    tu historial. El DNI es apenas una parte.
+
+17. Durante mucho tiempo, ver era creer
+    Preparás el terreno. "Si lo veo o lo escucho, pasó."
+    Con eso funcionó la prueba durante décadas. Fotos, videos, audios.
+
+18. Eso cambió
+    Hoy una imagen puede mostrar algo que nunca ocurrió.
+    No hace falta ser experto ni tener plata. Es gratis y toma segundos.
+
+19. ACTIVIDAD — ¿Cuál es real?   ← LA REAL ES LA "A"
+    Las dos imágenes están en la placa. Dales unos segundos.
+    "Voten: A o B."
+    Cuando terminen de votar, revelá: la A es una foto de verdad,
+    la B la generé yo con IA para esta clase.
+    Rematá: "si acá, tranquilos y avisados, nos costó… imaginen
+    a las tres de la mañana con un audio de un familiar."
+
+20. También puedo fabricar una voz
+    No es sólo la imagen. Con unos segundos de audio se clona un timbre
+    de voz. El caso típico: "hola, mamá, soy yo, perdí el celular,
+    necesito que me transfieras."
+
+21. El phishing también aprendió IA
+    Antes el engaño se notaba: mal escrito, mal traducido.
+    Ahora es personalizado, sin errores, con tu nombre y tus datos.
+    La regla vieja ("desconfiá si está mal escrito") ya no sirve.
+
+22. Tu imagen puede actuar sin vos
+    Publicidad que nunca aceptaste, cuentas falsas, videos con tu cara.
+    Tu identidad puede actuar sin tu presencia y sin tu consentimiento.
+
+23. Entonces, ¿qué significa ser vos?
+    La distinción clave de este bloque:
+    IDENTIFICAR es reconocer quién sos.
+    AUTENTICAR es probar que algo lo hiciste vos.
+    Antes alcanzaba con lo primero. Ahora hace falta lo segundo.
+
+24. ACTIVIDAD — El audio falso
+    Planteá el caso: aparece un audio con tu voz pidiendo plata.
+    Vos sabés que es falso. Sos abogado. ¿Qué hacés PRIMERO?
+    Esperá que escriban. Leé dos o tres en voz alta.
+    Comentá lo que aparece: preservar la prueba, pericia, denuncia,
+    pedir el original, metadatos. Y lo difícil: probar un hecho negativo.
+
+25. Verificar sin mostrar todo
+    La salida técnica: credenciales verificables.
+    Ejemplo simple: probar que sos mayor de edad sin mostrar el DNI entero.
+    Hoy para entrar a un boliche mostrás nombre, domicilio y número.
+    Alcanzaba con un "sí, es mayor".
+
+26. Ahora también entramos a la pantalla   ← SACÁ EL VISOR QUEST 3
+    Explicá la diferencia con el diagrama:
+    VR = entrás vos a otro mundo.  AR = entra la información a tu mundo.
+    Mostrá el visor. Si podés, que alguien lo pruebe o pasalo por cámara.
+    Tomate el tiempo, es el momento que más se acuerdan.
+
+27. Lo virtual también es jurídico
+    Bajá la demo a lo jurídico, con las preguntas de la placa:
+    ¿de quién es el avatar? ¿y lo que compra adentro?
+    ¿qué pasa con una conducta dañosa dentro de un mundo virtual?
+    ¿qué juez interviene?
+
+-----------------------------------------------------------
+PARTE III — LA MÁQUINA YA NO SÓLO RESPONDE
+-----------------------------------------------------------
+
+28. La máquina antes respondía
+    Cambio de bloque. Hasta acá la IA conversaba. Ahora HACE.
+
+29. Primero generó
+    Texto, imágenes, análisis. Esto ya lo vieron en la diplomatura.
+    Es el punto de partida, no la novedad.
+
+30. Después empezó a actuar
+    Los agentes encadenan tareas: leer, buscar, redactar, enviar.
+    Un solo pedido, cuatro pasos. Nadie apretó un botón en el medio.
+
+31. Y algunas reglas pueden ejecutarse solas
+    Smart contracts: la condición se cumple y la consecuencia pasa sola.
+    Sin demanda, sin mora, sin ejecución forzada.
+
+32. Generar no es decidir
+    La escalera de la placa, escalón por escalón:
+    generar (propone) → decidir (elige) → ejecutar (produce efectos).
+    Cada escalón delega más y compromete más.
+
+33. ACTIVIDAD — ¿Qué dejarías que un agente haga solo?
+    "Sin pedirles confirmación. Marquen todo lo que aceptarían."
+    Cuando salgan los resultados, marcá dónde está la línea del grupo.
+    Casi nadie va a marcar "presentar un escrito". Preguntá por qué.
+    Ahí sale sola la idea de supervisión humana y responsabilidad.
+
+-----------------------------------------------------------
+PARTE IV — GOBERNAR SIN CENTRO
+-----------------------------------------------------------
+
+34. ¿Y si también distribuimos las decisiones?
+    Si la confianza se puede distribuir, y las reglas también,
+    la organización también puede.
+
+35. ¿Quién manda si nadie manda?
+    Qué es una DAO, en una línea: hay una propuesta, hay participantes,
+    hay votos y hay una regla que ejecuta el resultado.
+    No expliques más que eso.
+
+36. ACTIVIDAD — La votación DAO   ← EL MOMENTO CLAVE
+    "Somos una DAO. Propuesta: destinar el 10% del tesoro a marketing.
+    Voten."
+    Dejá que voten. Mirá la pantalla: hay DOS resultados.
+    Izquierda: una persona, un voto → gana lo que votó la sala.
+    Derecha: un token, un voto → yo tengo 10.000 tokens y voté en contra.
+    Decilo con calma: "ganó mi voto. Ustedes son treinta. Yo soy uno."
+    Dejá el silencio.
+
+37. Descentralizar no elimina el poder
+    Cerrá la idea: descentralización técnica no es descentralización
+    política. La red puede estar distribuida y el poder concentradísimo.
+    "Sacar el centro no significa eliminar el poder."
+    Y las preguntas que quedan: quién representa, quién responde,
+    qué tribunal, dónde está domiciliada.
+
+-----------------------------------------------------------
+CIERRE — TODO ESTO YA LO VIMOS
+-----------------------------------------------------------
+
+38. El trabajo sigue siendo traducir
+    Repasá en voz alta lo que pasó por la pantalla en esta hora:
+    blockchain, IA generativa, phishing, identidad, agentes,
+    smart contracts, gobernanza. Casi nada era nuevo para ellos.
+    Hoy aparecieron juntos, funcionando en un mismo ecosistema.
+    La tesis: el abogado no necesita programar. Necesita entender
+    qué está viendo, qué riesgo genera, quién responde y qué derechos
+    están en juego.
+    Frase de cierre: "el abogado del futuro no es el que conoce todas
+    las tecnologías; es el que sabe traducirlas jurídicamente."
+
+39. ACTIVIDAD — Una palabra que te llevás
+    "De esta clase o de toda la diplomatura. Una palabra."
+    Esperá que se arme la nube. Leé las que más se repiten.
+    Es un buen momento para agradecer.
+
+40. FINAL — Gracias
+    QR de tu Instagram en pantalla. Despedida.
+
+===========================================================
+SI ALGO FALLA
+- No cambia la actividad en los celulares: recargá /web3/clase
+  y volvé a poner la clave (se activa sola al entrar a la placa).
+- Alguien no puede entrar: que escriba el link a mano,
+  rl1-beige.vercel.app/web3
+- El explorador de blockchain no abre: seguí de largo, la placa 13
+  se entiende igual con el diagrama.
+===========================================================
