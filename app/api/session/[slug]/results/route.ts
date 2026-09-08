@@ -1,5 +1,6 @@
 import { fail, getSession, ok } from "@/lib/api";
 import { getBloque } from "@/lib/comercial";
+import { getW3Actividad } from "@/lib/web3-clase";
 import { getAdmin } from "@/lib/supabase/server";
 import type { CotioVar } from "@/lib/types";
 
@@ -91,6 +92,54 @@ export async function GET(
       .slice(-40);
     return ok({ ...base, summary: { total: list.length, respuestas } });
   }
+  // --- Web3 (/web3) — agregación por tipo de actividad -------------------
+  const w3 = getW3Actividad(activity);
+  if (w3) {
+    const base = { activity, participants: participants ?? 0, responded: responders.length, responders: [], config: session.activity_config ?? {} };
+    if (w3.kind === "encuesta") {
+      const byQuestion: Record<string, Record<string, number>> = {};
+      for (const r of list) {
+        const ans = (r.payload?.answers as Record<string, string>) ?? {};
+        for (const [q, opt] of Object.entries(ans)) {
+          byQuestion[q] ??= {};
+          byQuestion[q][String(opt)] = (byQuestion[q][String(opt)] ?? 0) + 1;
+        }
+      }
+      return ok({ ...base, summary: { total: list.length, byQuestion } });
+    }
+    if (w3.kind === "opciones") {
+      const counts: Record<string, number> = {};
+      for (const r of list) {
+        const op = String(r.payload?.opcion ?? "");
+        if (op) counts[op] = (counts[op] ?? 0) + 1;
+      }
+      return ok({ ...base, summary: { total: list.length, counts } });
+    }
+    if (w3.kind === "chips") {
+      const counts: Record<string, number> = {};
+      for (const r of list) for (const id of (r.payload?.selected as string[]) ?? []) counts[id] = (counts[id] ?? 0) + 1;
+      return ok({ ...base, summary: { total: list.length, counts } });
+    }
+    if (w3.kind === "texto") {
+      const respuestas = list
+        .map((r) => ({ name: (r.participants?.name as string) ?? "—", respuesta: String(r.payload?.respuesta ?? "").slice(0, 300) }))
+        .filter((r) => r.respuesta.trim())
+        .slice(-40);
+      return ok({ ...base, summary: { total: list.length, respuestas } });
+    }
+    // "palabra"
+    const counts: Record<string, number> = {};
+    for (const r of list) {
+      const w = String(r.payload?.palabra ?? "").trim().toLowerCase();
+      if (w) counts[w] = (counts[w] ?? 0) + 1;
+    }
+    const palabras = Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 60)
+      .map(([palabra, n]) => ({ palabra, n }));
+    return ok({ ...base, summary: { total: list.length, palabras } });
+  }
+
   if (activity === "emp_cierre") {
     const counts: Record<string, number> = {};
     for (const r of list) {

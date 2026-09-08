@@ -20,7 +20,8 @@ export type DiagramaW3Id =
   | "sosvos" | "rastros" | "verescuchar" | "deepfake" | "autenticidad"
   | "phishing" | "imagenajena" | "proteger" | "credencial" | "procedencia"
   | "reglascodigo" | "nopodes" | "smart" | "justicia" | "distribuidas"
-  | "dao" | "ballena" | "responde" | "arquitectura" | "traductor";
+  | "dao" | "ballena" | "responde" | "arquitectura" | "traductor"
+  | "evolucion" | "voz" | "maquina" | "genera" | "agente" | "grados";
 
 export function DiagramaW3({ id }: { id: DiagramaW3Id }) {
   const D: Record<DiagramaW3Id, () => React.ReactNode> = {
@@ -30,6 +31,7 @@ export function DiagramaW3({ id }: { id: DiagramaW3Id }) {
     phishing: Phishing, imagenajena: ImagenAjena, proteger: Proteger, credencial: Credencial, procedencia: Procedencia,
     reglascodigo: ReglasCodigo, nopodes: NoPodes, smart: Smart, justicia: Justicia, distribuidas: Distribuidas,
     dao: Dao, ballena: Ballena, responde: Responde, arquitectura: Arquitectura, traductor: Traductor,
+    evolucion: Evolucion, voz: Voz, maquina: Maquina, genera: Genera, agente: Agente, grados: Grados,
   };
   return <>{D[id]()}</>;
 }
@@ -763,6 +765,166 @@ function Arquitectura() {
         </text>
       </g>
       <Pie>comprender lo suficiente para formular la pregunta jurídica correcta</Pie>
+    </svg>
+  );
+}
+
+// Evolución de la confianza en objetos: del sello al bloque.
+function Evolucion() {
+  const hitos = [
+    { e: "🪧", l: "sello" }, { e: "✍️", l: "firma" }, { e: "🪪", l: "DNI" },
+    { e: "🏦", l: "home banking" }, { e: "🔳", l: "QR" }, { e: "⛓️", l: "blockchain" },
+  ];
+  return (
+    <svg viewBox={VB} className="w-full" role="img" aria-label="Los objetos de la confianza a través del tiempo">
+      <line x1="40" y1="130" x2="440" y2="130" stroke={LINE} strokeWidth="2" />
+      <circle r="6" fill={AMBER}>
+        <animateMotion dur="7s" repeatCount="indefinite" path="M40,130 L440,130" />
+      </circle>
+      {hitos.map((h, i) => (
+        <g key={h.l}>
+          <circle cx={65 + i * 70} cy="130" r="26" fill={PANEL} stroke={i >= 4 ? TEAL : LINE} strokeWidth={i >= 4 ? 2.4 : 1.8}>
+            <animate attributeName="stroke-opacity" values="0.4;1;0.4" dur="7s" begin={`${i * 1.15}s`} repeatCount="indefinite" />
+          </circle>
+          <text x={65 + i * 70} y="138" textAnchor="middle" fontSize="17">{h.e}</text>
+          <text x={65 + i * 70} y={i % 2 === 0 ? 180 : 90} textAnchor="middle" fill={TEXT} fontSize="10.5">{h.l}</text>
+        </g>
+      ))}
+      <Pie>los objetos cambian; la función es la misma: producir confianza</Pie>
+    </svg>
+  );
+}
+
+// También puedo fabricar una voz.
+function Voz() {
+  const onda = (y: number) => `M70,${y} q12,-18 24,0 q12,18 24,0 q12,-22 24,0 q12,22 24,0 q12,-14 24,0 q12,14 24,0`;
+  return (
+    <svg viewBox={VB} className="w-full" role="img" aria-label="Voz real y voz clonada">
+      <text x="40" y="95" textAnchor="middle" fontSize="22">🎙️</text>
+      <path d={onda(90)} fill="none" stroke={TEAL} strokeWidth="2.4" />
+      <text x="300" y="95" fill={TEXT} fontSize="12">tu voz</text>
+      <g>
+        <text x="40" y="175" textAnchor="middle" fontSize="22">🤖</text>
+        <path d={onda(170)} fill="none" stroke={ROSA} strokeWidth="2.4" strokeDasharray="230" strokeDashoffset="230">
+          <animate attributeName="stroke-dashoffset" values="230;0;0" keyTimes="0;0.5;1" dur="4s" repeatCount="indefinite" />
+        </path>
+        <text x="300" y="175" fill={ROSA} fontSize="12">
+          la copia
+          <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.45;0.55;1" dur="4s" repeatCount="indefinite" />
+        </text>
+      </g>
+      <text x="395" y="135" textAnchor="middle" fill={AMBER} fontSize="15" fontWeight="700">
+        ¿cuál?
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="2.4s" repeatCount="indefinite" />
+      </text>
+      <Pie>unos segundos de audio alcanzan para clonar un timbre de voz</Pie>
+    </svg>
+  );
+}
+
+// La máquina antes respondía; ahora también hace.
+function Maquina() {
+  return (
+    <svg viewBox={VB} className="w-full" role="img" aria-label="De responder a hacer">
+      <g>
+        <rect x="55" y="75" width="160" height="44" rx="14" fill="none" stroke={CYAN} strokeWidth="1.8" />
+        <text x="135" y="102" textAnchor="middle" fill={TEXT} fontSize="12">“¿qué dice la ley?”</text>
+        <rect x="85" y="135" width="160" height="44" rx="14" fill={CYAN} opacity="0.1" stroke={CYAN} strokeWidth="1.8" />
+        <text x="165" y="162" textAnchor="middle" fill={TEXT} fontSize="12">respuesta 💬</text>
+        <text x="150" y="215" textAnchor="middle" fill={FAINT} fontSize="11.5">antes: conversaba</text>
+      </g>
+      <line x1="255" y1="130" x2="295" y2="130" stroke={LINE} strokeWidth="2" strokeDasharray="4 5" />
+      <g>
+        <rect x="305" y="95" width="130" height="70" rx="14" fill={PANEL} stroke={VIOLET} strokeWidth="2.2">
+          <animate attributeName="stroke-opacity" values="0.5;1;0.5" dur="2.6s" repeatCount="indefinite" />
+        </rect>
+        <text x="370" y="125" textAnchor="middle" fontSize="19">🦾</text>
+        <text x="370" y="148" textAnchor="middle" fill={VIOLET} fontSize="11" fontWeight="700">hace cosas</text>
+        <text x="370" y="215" textAnchor="middle" fill={FAINT} fontSize="11.5">ahora: también actúa</text>
+      </g>
+      <Pie>el salto de esta clase: de la respuesta a la acción</Pie>
+    </svg>
+  );
+}
+
+// Primero generó: texto, imagen, análisis.
+function Genera() {
+  const outs = [
+    { e: "📄", l: "texto" }, { e: "🖼️", l: "imagen" }, { e: "📊", l: "análisis" },
+  ];
+  return (
+    <svg viewBox={VB} className="w-full" role="img" aria-label="La IA generativa produce contenido">
+      <circle cx="120" cy="128" r="46" fill={PANEL} stroke={VIOLET} strokeWidth="2.4">
+        <animate attributeName="stroke-opacity" values="0.5;1;0.5" dur="2.4s" repeatCount="indefinite" />
+      </circle>
+      <text x="120" y="122" textAnchor="middle" fontSize="20">✨</text>
+      <text x="120" y="146" textAnchor="middle" fill={VIOLET} fontSize="10" fontWeight="700" fontFamily="monospace">GENERA</text>
+      {outs.map((o, i) => (
+        <g key={o.l}>
+          <line x1="166" y1="128" x2="270" y2={62 + i * 66} stroke={LINE} strokeWidth="1.4" />
+          <circle r="4" fill={AMBER}>
+            <animateMotion dur="2.2s" begin={`${i * 0.7}s`} repeatCount="indefinite" path={`M166,128 L270,${62 + i * 66}`} />
+          </circle>
+          <rect x="272" y={40 + i * 66} width="150" height="46" rx="10" fill="none" stroke={TEAL} strokeWidth="1.8" />
+          <text x="305" y={69 + i * 66} textAnchor="middle" fontSize="16">{o.e}</text>
+          <text x="360" y={69 + i * 66} textAnchor="middle" fill={TEXT} fontSize="12">{o.l}</text>
+        </g>
+      ))}
+      <Pie>esto ya lo vieron: la diplomatura empezó acá</Pie>
+    </svg>
+  );
+}
+
+// Después empezó a actuar: el agente encadena tareas.
+function Agente() {
+  const pasos = ["leer", "buscar", "redactar", "enviar"];
+  return (
+    <svg viewBox={VB} className="w-full" role="img" aria-label="Un agente encadena tareas">
+      {pasos.map((p, i) => (
+        <g key={p}>
+          <rect x={45 + i * 105} y="100" width="85" height="52" rx="12" fill={PANEL} stroke={TEAL} strokeWidth="2">
+            <animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="4.8s" begin={`${i * 1.2}s`} repeatCount="indefinite" />
+          </rect>
+          <text x={87 + i * 105} y="131" textAnchor="middle" fill={TEXT} fontSize="13" fontWeight="600">
+            {p}
+          </text>
+          {i < 3 && (
+            <circle r="4.5" fill={AMBER}>
+              <animateMotion dur="4.8s" begin={`${i * 1.2}s`} repeatCount="indefinite" path={`M${130 + i * 105},126 L${150 + i * 105},126`} keyPoints="0;1;1" keyTimes="0;0.25;1" calcMode="linear" />
+            </circle>
+          )}
+        </g>
+      ))}
+      <text x="240" y="70" textAnchor="middle" fill={VIOLET} fontSize="13" fontWeight="700" fontFamily="monospace">
+        UN SOLO PEDIDO → CUATRO PASOS
+      </text>
+      <Pie>nadie apretó un botón entre paso y paso</Pie>
+    </svg>
+  );
+}
+
+// Generar no es decidir; decidir no es ejecutar.
+function Grados() {
+  const niveles = [
+    { l: "genera", d: "propone un borrador", h: 60, col: TEAL },
+    { l: "decide", d: "elige entre opciones", h: 105, col: AMBER },
+    { l: "ejecuta", d: "produce efectos reales", h: 150, col: ROSA },
+  ];
+  return (
+    <svg viewBox={VB} className="w-full" role="img" aria-label="Grados de automatización">
+      {niveles.map((n, i) => (
+        <g key={n.l}>
+          <rect x={80 + i * 120} y={200 - n.h} width="86" rx="10" height={n.h} fill={n.col} opacity="0.16" stroke={n.col} strokeWidth="2">
+            <animate attributeName="height" values={`0;${n.h}`} dur="1s" begin={`${i * 0.4}s`} fill="freeze" />
+            <animate attributeName="y" values={`200;${200 - n.h}`} dur="1s" begin={`${i * 0.4}s`} fill="freeze" />
+          </rect>
+          <text x={123 + i * 120} y="220" textAnchor="middle" fill={n.col} fontSize="13" fontWeight="700">{n.l}</text>
+          <text x={123 + i * 120} y="236" textAnchor="middle" fill={FAINT} fontSize="9.5">{n.d}</text>
+        </g>
+      ))}
+      <text x="240" y="40" textAnchor="middle" fill={TEXT} fontSize="13" fontWeight="600">
+        cada escalón delega más — y compromete más
+      </text>
     </svg>
   );
 }

@@ -22,6 +22,14 @@ const VALID: ActivityKey[] = [
   "emp_b4",
   "emp_b5",
   "emp_cierre",
+  // Web3 (/web3)
+  "w3_encuesta",
+  "w3_confianza",
+  "w3_cual",
+  "w3_probar",
+  "w3_delegar",
+  "w3_dao",
+  "w3_palabra",
 ];
 
 export async function POST(
