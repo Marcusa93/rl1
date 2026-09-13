@@ -20,6 +20,8 @@ import { Captura, Leyenda, LEYENDAS, type CapturaId } from "@/components/justici
 import { SimuladorConflicto } from "@/components/justicia/simulador";
 import { Explorables } from "@/components/clase/explorables";
 import { LluviaReacciones } from "@/components/clase/reacciones";
+import { useRemotoDeck } from "@/components/clase/remoto";
+import { rem } from "@/lib/remoto";
 import {
   getJusActividad,
   JUS_AUTOR,
@@ -35,6 +37,7 @@ import {
   JUS_SLUG,
   JUS_SUBTITLE,
   JUS_TITLE,
+  tituloPlaca,
   type JusPlaca,
   type JusSlide,
 } from "@/lib/justicia-clase";
@@ -191,6 +194,9 @@ function Deck() {
   const parteActual = JUS_SLIDES.slice(0, idx + 1)
     .reverse()
     .find((s) => s.parte)?.parte;
+
+  // Control desde el celular del docente (justicia.rossi-ia.com/control).
+  useRemotoDeck({ slug: JUS_SLUG, idx, total: JUS_SLIDES.length, titulo: tituloPlaca(slide), parte: parteActual, go });
 
   const estadoNombre = estado ? (getJusActividad(estado.key)?.titulo ?? "Ingreso") : "";
   // El kit se despliega solo en las placas marcadas; en el resto, a un clic.
@@ -436,6 +442,7 @@ function PlacaVista({ slide }: { slide: JusPlaca & { parte?: string } }) {
             <button
               key={c}
               onClick={() => setCaptura(captura === c ? null : c)}
+              {...rem(`📸 Así se ve: ${NOMBRE_CAPTURA[c]}`, captura === c)}
               className={cn(
                 "rounded-xl border px-3 py-1.5 text-sm font-medium transition",
                 captura === c ? "border-teal/60 bg-teal/15 text-teal" : "border-line bg-panel/60 text-muted hover:border-teal/60 hover:text-teal",
@@ -582,6 +589,7 @@ function SlideActividad({
         <div className="mt-4 flex justify-end">
           <button
             onClick={onRevelar}
+            {...rem("✓ Ver respuesta", revelada)}
             className={cn(
               "rounded-xl border px-4 py-2 text-sm font-medium transition",
               revelada

@@ -218,6 +218,24 @@ export type JusSlide = (JusPortada | JusIngreso | JusPlaca | JusActividad | JusS
   kit?: boolean;
 };
 
+/** Nombre corto de una placa (índice del control remoto). */
+export function tituloPlaca(s: JusSlide): string {
+  switch (s.t) {
+    case "portada":
+      return "Portada";
+    case "ingreso":
+      return "Ingreso con QR";
+    case "placa":
+      return s.titulo;
+    case "actividad":
+      return `🗳️ ${getJusActividad(s.activa)?.titulo ?? "Actividad"}`;
+    case "simulador":
+      return "🎬 Un conflicto. Un clic.";
+    case "final":
+      return "Gracias";
+  }
+}
+
 export const JUS_SLIDES: JusSlide[] = [
   { t: "portada", activa: "lobby" },
   { t: "ingreso", activa: "lobby" },

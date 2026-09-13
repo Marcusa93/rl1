@@ -9,6 +9,7 @@ const REWRITES: Record<string, Record<string, string>> = {
   "justicia.rossi-ia.com": {
     "/": "/justicia",
     "/clase": "/justicia/clase",
+    "/control": "/justicia/control",
   },
   "taller.rossi-ia.com": {
     "/": "/taller-ia",

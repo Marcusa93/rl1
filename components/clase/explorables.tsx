@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from "react";
 import type { Explorable } from "@/lib/clase-vivo";
+import { rem } from "@/lib/remoto";
 import { cn } from "@/lib/utils";
 
 export function Explorables({ items, columnas = 2 }: { items: Explorable[]; columnas?: 1 | 2 }) {
@@ -39,6 +40,7 @@ export function Explorables({ items, columnas = 2 }: { items: Explorable[]; colu
               )}
               style={{ animationDelay: `${0.3 + i * 0.07}s` }}
               aria-pressed={on}
+              {...rem(`${it.emoji} ${it.label}`, on)}
             >
               <span className="text-xl">{it.emoji}</span>
               <span className="min-w-0 flex-1 text-sm font-medium leading-snug sm:text-base">{it.label}</span>

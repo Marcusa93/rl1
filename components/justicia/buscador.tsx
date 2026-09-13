@@ -6,6 +6,7 @@
 // la cédula es un escaneo sin texto: tener el PDF no alcanza para usarlo.
 
 import { useState } from "react";
+import { rem } from "@/lib/remoto";
 import { cn } from "@/lib/utils";
 
 interface Archivo {
@@ -92,6 +93,7 @@ export function BuscadorExpediente() {
               <button
                 key={a.nombre}
                 onClick={() => abrir(a.nombre)}
+                {...rem(`📄 ${a.nombre}`, on)}
                 className={cn(
                   "rise flex flex-col items-center gap-1 rounded-xl border p-2.5 text-center transition active:scale-[0.97]",
                   acierto
@@ -120,6 +122,7 @@ export function BuscadorExpediente() {
             setBuscado(true);
             if (encontrado) abrir(encontrado.nombre);
           }}
+          {...rem("🔎 Buscar en todo el expediente", buscado)}
           className="pulse-ring mt-4 w-full rounded-xl border-gradient px-5 py-3 text-left transition hover:brightness-110"
         >
           <span className="text-gradient text-base font-bold">🔎 Buscar “{TERMINO}…” en todo el expediente</span>

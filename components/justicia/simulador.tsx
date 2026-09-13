@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import { useResultados } from "@/components/clase/vivo";
+import { rem } from "@/lib/remoto";
 import { cn } from "@/lib/utils";
 
 type Camino = "mensajes" | "contrato";
@@ -163,7 +164,7 @@ export function SimuladorConflicto({ slug, activity, intervalo }: { slug: string
             <Boton variante="suave" onClick={() => setPaso("uso")}>
               ← Volver al uso
             </Boton>
-            <Boton variante="alterna" onClick={verAlternativa}>
+            <Boton variante="alterna" onClick={verAlternativa} remoto={`↺ Ver qué habría pasado con ${NOMBRE[OTRO[eligio]]}`}>
               ↺ Ver qué habría pasado con {NOMBRE[OTRO[eligio]]}
             </Boton>
           </div>
@@ -223,15 +224,19 @@ function Boton({
   onClick,
   variante = "principal",
   className,
+  remoto,
 }: {
   children: React.ReactNode;
   onClick: () => void;
   variante?: "principal" | "suave" | "ia" | "alterna";
   className?: string;
+  /** Etiqueta para el control remoto (por defecto, el texto del botón). */
+  remoto?: string;
 }) {
   return (
     <button
       onClick={onClick}
+      {...rem(remoto ?? (typeof children === "string" ? children : "Botón"))}
       className={cn(
         "rounded-2xl px-5 py-3 text-base font-semibold transition active:scale-[0.98] sm:text-lg",
         variante === "principal" && "bg-gradient-to-r from-teal to-cyan text-ink hover:brightness-110",
@@ -304,6 +309,7 @@ function Votacion({
           <button
             key={o.id}
             onClick={() => onElegir(o.id)}
+            {...rem(`${o.emoji} ${o.label}`)}
             className="glass group flex flex-col items-center gap-3 rounded-3xl border-2 border-line p-8 transition hover:border-teal/70 hover:brightness-125"
           >
             <span className="text-6xl">{o.emoji}</span>
@@ -336,10 +342,14 @@ function BloqueIA({ funcion, activa, onActivar, children }: { funcion: FuncionIA
   if (!activa)
     return (
       <div className="flex flex-wrap items-center gap-3">
-        <Boton variante="ia" onClick={activar}>
+        <Boton variante="ia" onClick={activar} remoto={`✨ ${IA[funcion].boton}`}>
           {cargando ? "✨ Analizando…" : `✨ ${IA[funcion].boton}`}
         </Boton>
-        <button onClick={() => setVerInstruccion((v) => !v)} className="text-sm text-faint underline-offset-4 hover:text-muted hover:underline">
+        <button
+          onClick={() => setVerInstruccion((v) => !v)}
+          className="text-sm text-faint underline-offset-4 hover:text-muted hover:underline"
+          {...rem("📝 Instrucción preparada", verInstruccion)}
+        >
           {verInstruccion ? "ocultar instrucción" : "ver la instrucción preparada"}
         </button>
         {verInstruccion && <p className="w-full rounded-xl border border-line bg-ink-2/60 p-3 font-mono text-sm text-muted">{IA[funcion].instruccion}</p>}
