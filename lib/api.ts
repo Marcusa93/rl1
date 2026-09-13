@@ -8,6 +8,7 @@ import { ABC2_SLUG, ABC2_TITLE } from "./abc2";
 import { COM_SLUG, COM_TITLE } from "./comercial";
 import { W3_SLUG, W3_TITLE } from "./web3-clase";
 import { JUS_SLUG, JUS_TITLE } from "./justicia-clase";
+import { TAL_SLUG, TAL_TITLE } from "./taller-clase";
 import type { SessionRow } from "./types";
 
 // Clases que la app puede auto-crear la primera vez que alguien entra.
@@ -20,6 +21,7 @@ const AUTO_SESSIONS: Record<string, string> = {
   [COM_SLUG]: COM_TITLE,
   [W3_SLUG]: W3_TITLE,
   [JUS_SLUG]: JUS_TITLE,
+  [TAL_SLUG]: TAL_TITLE,
 };
 
 export function ok<T>(data: T, init?: number) {

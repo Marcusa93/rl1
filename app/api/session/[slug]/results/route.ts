@@ -2,6 +2,7 @@ import { fail, getSession, ok } from "@/lib/api";
 import { getBloque } from "@/lib/comercial";
 import { getW3Actividad } from "@/lib/web3-clase";
 import { getJusActividad } from "@/lib/justicia-clase";
+import { getTalActividad } from "@/lib/taller-clase";
 import { getAdmin } from "@/lib/supabase/server";
 import type { CotioVar } from "@/lib/types";
 
@@ -93,8 +94,8 @@ export async function GET(
       .slice(-40);
     return ok({ ...base, summary: { total: list.length, respuestas } });
   }
-  // --- Clases en vivo (/web3, /justicia) — agregación por tipo de actividad
-  const w3 = getW3Actividad(activity) ?? getJusActividad(activity);
+  // --- Clases en vivo (/web3, /justicia, /taller-ia) — agregación por tipo de actividad
+  const w3 = getW3Actividad(activity) ?? getJusActividad(activity) ?? getTalActividad(activity);
   if (w3) {
     const base = { activity, participants: participants ?? 0, responded: responders.length, responders: [], config: session.activity_config ?? {} };
     if (w3.kind === "encuesta") {

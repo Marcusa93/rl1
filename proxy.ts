@@ -10,6 +10,10 @@ const REWRITES: Record<string, Record<string, string>> = {
     "/": "/justicia",
     "/clase": "/justicia/clase",
   },
+  "taller.rossi-ia.com": {
+    "/": "/taller-ia",
+    "/clase": "/taller-ia/clase",
+  },
 };
 
 export function proxy(request: NextRequest) {
