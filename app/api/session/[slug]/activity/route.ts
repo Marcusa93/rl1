@@ -30,6 +30,15 @@ const VALID: ActivityKey[] = [
   "w3_delegar",
   "w3_dao",
   "w3_palabra",
+  // Justicia aumentada (/justicia)
+  "jus_encuesta",
+  "jus_tarea",
+  "jus_camino",
+  "jus_herramienta",
+  "jus_resumen",
+  "jus_entrada",
+  "jus_frase",
+  "jus_oficina",
 ];
 
 export async function POST(

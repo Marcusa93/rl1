@@ -26,7 +26,16 @@ export type ActivityKey =
   | "w3_probar"
   | "w3_delegar"
   | "w3_dao"
-  | "w3_palabra";
+  | "w3_palabra"
+  // Masterclass "Justicia aumentada" (/justicia) — prefijo jus_
+  | "jus_encuesta"
+  | "jus_tarea"
+  | "jus_camino"
+  | "jus_herramienta"
+  | "jus_resumen"
+  | "jus_entrada"
+  | "jus_frase"
+  | "jus_oficina";
 
 export type SessionStatus = "lobby" | "live" | "ended";
 

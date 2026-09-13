@@ -1,0 +1,283 @@
+===========================================================
+GUIÓN — MASTERCLASS "JUSTICIA AUMENTADA"
+Semana de la Mediación · El Salvador · Lunes 14/09/2026
+Público: Corte Suprema, PGR, docentes y estudiantes UEES
+Presentación: rl1-beige.vercel.app/justicia/clase  (clave docente)
+Participantes: rl1-beige.vercel.app/justicia
+35 placas · 45 minutos + 5 de margen · ← → para avanzar
+===========================================================
+
+ANTES DE EMPEZAR
+- Abrí /justicia/clase, poné la clave y compartí ESA ventana.
+- Las actividades se activan solas al llegar a su placa.
+- Arriba a la derecha: cartel verde "en vivo: ...". Si se pone rojo,
+  recargá y volvé a poner la clave.
+- SI ENSAYASTE ANTES: apretá Shift+R en la presentación para borrar
+  los participantes y respuestas de prueba. Hacelo antes de que entre
+  el público.
+- Al público le hablamos de "usted" en pantalla. Vos hablá como te salga.
+
+DATOS QUE NO TENÉS QUE OLVIDAR
+- Todo el expediente es FICTICIO y la pantalla lo dice. Decilo también.
+- La demo es un PROTOTIPO GUIADO: el análisis está preparado. Lo que
+  mostrás en vivo es el método (fuente, revisión, decisión humana).
+  Si preguntan, decilo así, sin vueltas.
+- CuscatIA: es un proyecto en investigación, NO un sistema implementado.
+- La placa 32 tiene un botón: "Incorporar la conversación completa".
+  Apretalo recién después de que voten en la placa 31.
+
+TIEMPOS APROXIMADOS
+  Apertura (1-6) 6 min · Parte 1 (7-8) 5 · Parte 2 (9-11) 6 ·
+  Parte 3 (12-15) 6 · Parte 4 (16-21) 6 · Parte 5 (22-24) 5 ·
+  Parte 6 y cierre (25-35) 12
+
+-----------------------------------------------------------
+APERTURA
+-----------------------------------------------------------
+
+1. PORTADA — Justicia aumentada
+   Agradecé a la Corte, a la PGR y a la UEES. La pregunta de hoy:
+   cómo podemos ampliar nuestra capacidad de administrar justicia y
+   resolver conflictos con tecnología, sin perder la conducción humana.
+
+2. INGRESO (QR grande)
+   "Saquen el celular, escaneen el código y escriban su nombre."
+   Quedate hasta que el contador deje de subir.
+
+3. Estuve de ese lado
+   Tu recorrido en pocas frases: trabajaste en la justicia, hoy
+   desarrollás tecnología. Una situación concreta que viviste:
+   reconstruir un expediente, buscar un dato disperso, repetir lo mismo.
+
+4. ACTIVIDAD — ¿Quiénes estamos hoy?
+   Dos preguntas rápidas. Comentá la mezcla de la sala y cuántos
+   usan IA todos los días. Es también la prueba de que todo funciona.
+
+5. ACTIVIDAD — ¿Qué dejarían de hacer mañana?
+   "Marquen las tareas repetitivas que más tiempo les quitan."
+   Leé las dos o tres más votadas y decí: "las vamos a retomar
+   al final, en la demostración."
+
+6. El tiempo también importa
+   Cuánto del día se va en preparar información (buscar, copiar,
+   revisar) y cuánto en comprender y decidir. Aclarar que la
+   distribución del gráfico es ilustrativa.
+   Pregunta: ¿qué parte necesita realmente nuestro criterio?
+
+-----------------------------------------------------------
+PARTE 1 — DEL CONFLICTO AL DIÁLOGO
+-----------------------------------------------------------
+
+7. Antes del expediente, el conflicto
+   La pregunta cercana: ¿cómo convivimos cuando queremos cosas
+   distintas? Compartir recursos, poner límites, repartir tareas.
+   Acá va el ejemplo de Salu: sin hablar, te hace saber lo que le
+   gusta y lo que no. El conflicto empieza antes que las palabras.
+
+8. Inventamos formas de resolver
+   Negociar entre los involucrados, acudir a alguien reconocido por
+   la comunidad (sabios, ancianos), acuerdos apoyados en la costumbre,
+   procedimientos ante autoridades.
+   Clave: NO es una línea donde una reemplaza a la otra. Conviven.
+   Qué permite pasar del enfrentamiento a un procedimiento: aceptar
+   reglas, reconocer a un tercero, poder hablar, una salida sostenible.
+
+-----------------------------------------------------------
+PARTE 2 — JUICIO, ARBITRAJE Y MEDIACIÓN
+-----------------------------------------------------------
+
+9. El juicio es una tecnología
+   La idea central de la clase. Tecnología en sentido amplio: un
+   método para organizar acciones y alcanzar un fin. El juicio
+   organiza quién interviene, cómo se presenta la información, cómo
+   se discute y quién resuelve.
+
+10. Un conflicto, distintos caminos
+    Mirá la barra: a la izquierda deciden las partes (negociar,
+    mediar), a la derecha decide un tercero (arbitrar, juzgar).
+    Las cuatro preguntas: ¿quién decide?, ¿qué necesita conocer?,
+    ¿cómo participan?, ¿qué resultado se busca?
+    Por qué pensamos todo como futuro litigio: así nos formaron.
+
+11. ACTIVIDAD — ¿Qué camino elegirían?
+    Proveedor y cliente discuten un saldo pero tienen que seguir
+    trabajando juntos un año más.
+    Comentá el resultado. Conclusión: la herramienta depende del
+    problema — y una herramienta digital también. Lo que sirve para
+    ordenar una sentencia puede no servir para preparar una mediación.
+
+-----------------------------------------------------------
+PARTE 3 — QUÉ TRANSFORMA LO DIGITAL
+-----------------------------------------------------------
+
+12. Del papel a la pantalla
+    Documentos digitales, presentaciones electrónicas, notificaciones,
+    audiencias remotas. Acá contá la creación del juzgado digital.
+
+13. ¿Y cuánto cambió el trabajo?
+    "¿Quién sigue buscando un dato a mano entre muchos PDF?" (manos).
+    Digitalizar cambia el soporte. Transformar cambia cómo se obtiene
+    y usa la información. Tener más documentos no es poder usarlos.
+
+14. Diseñar cómo trabajamos
+    Descomponé una tarea: preparar antecedentes = reunir documentos,
+    identificar personas y fechas, ordenar hechos, comprobar
+    referencias. Cada paso admite una ayuda concreta.
+    La pregunta: ¿qué dificultad queremos resolver y cómo sabremos
+    si la herramienta ayuda? (tiempo, claridad, acceso, calidad).
+
+15. ACTIVIDAD — ¿Qué herramienta construirían?
+    "Una función que les gustaría tener mañana. En una frase."
+    Leé dos o tres. Traducilas a una tarea observable
+    ("eso es localizar una referencia", "eso es comparar versiones").
+
+-----------------------------------------------------------
+PARTE 4 — IA: CAPACIDADES Y LÍMITES
+-----------------------------------------------------------
+
+16. IA: trabajar con lenguaje
+    Produce contenido a partir de patrones y del contexto que recibe.
+    Tareas reconocibles: preguntar, resumir, comparar, generar.
+
+17. Responder bien requiere contexto
+    "Analice este caso" vs. un encargo delimitado: qué fuentes, qué
+    tarea, qué formato y que señale lo que falta.
+
+18. Una herramienta combina capacidades
+    Un buscador encuentra, una función calcula, unas reglas controlan
+    plazos y un modelo ayuda a redactar. Desarrollar = combinar
+    capacidades alrededor de una necesidad.
+
+19. Hablar con seguridad no alcanza
+    Tres errores típicos: atribuir a la parte equivocada, completar un
+    dato ausente, convertir una posibilidad en certeza.
+    La distinción que vamos a usar todo el resto: lo que surge de los
+    antecedentes / lo que infiere el modelo / lo que propone.
+    Ejemplo: "necesita dinero de inmediato" puede ser razonable, pero
+    el reclamo solo no lo demuestra.
+
+20. ACTIVIDAD — ¿Aceptarían este resumen?
+    En pantalla están los correos y el resumen de la IA.
+    "Lean primero. Decidan después." Esperá los votos.
+
+21. Lo que el resumen agregó
+    Mostrá el correo: ofrece US$ 1.000 PERO pide aclarar los equipos.
+    El resumen inventó un acuerdo sobre la deuda. Eso lo agregó la
+    herramienta, no lo dijeron las partes.
+
+-----------------------------------------------------------
+PARTE 5 — HUMAN IN THE LOOP
+-----------------------------------------------------------
+
+22. Human in the loop
+    Participación activa, informada y con capacidad real de corregir.
+    Empieza al definir el problema y sigue en todo el recorrido.
+    "Lo que acaban de hacer con el resumen es exactamente esto."
+
+23. Delegar tareas, conservar el criterio
+    Delegación cognitiva total: la IA elige qué importa, formula las
+    hipótesis y redacta; la persona solo aprueba. Aun la lectura
+    final queda condicionada si todo el encuadre vino de ahí.
+    En lo judicial: responsabilidades de la función. En mediación:
+    la autonomía de las partes — una hipótesis sobre sus necesidades
+    se contrasta con ellas. Confidencialidad y trazabilidad.
+
+24. Una forma concreta de trabajar
+    Pedir. Verificar. Corregir. Aprobar.
+    "Estos pasos los van a ver ahora, en la herramienta."
+
+-----------------------------------------------------------
+PARTE 6 — DEL EXPEDIENTE A LA ACCIÓN
+-----------------------------------------------------------
+
+25. En Argentina ya hay experiencias
+    Prometea, del Ministerio Público Fiscal de la Ciudad de Buenos
+    Aires: automatización documental y asistencia en tareas
+    repetitivas. Frase puente: "trabajé en la justicia y hoy desarrollo
+    tecnología; ahora les muestro qué podemos construir con un
+    problema que ustedes conocen."
+
+26. DEMO — Ahora, nuestro propio caso
+    Decí que es ficticio. Climatec reclama el saldo; el Colegio dice
+    que la entrega fue incompleta y un equipo no enfría.
+    Hacé clic en uno o dos documentos para que vean que se abren.
+
+27. ACTIVIDAD — ¿Por dónde empezamos?
+    "Les llega este expediente hoy. ¿Qué necesitan saber primero?"
+    Qué ocurrió / Qué reclama cada parte / Dónde difieren.
+
+28. DEMO — El recorrido que eligieron
+    La pestaña más votada aparece sola, con el cartel "votada".
+    Hacé clic en una fila o en un chip D1..D5: a la derecha se abre
+    el documento con el fragmento resaltado.
+    Mostrá la diferencia entre fecha "documentada" y "mencionada".
+    Podés pasar a las otras pestañas si hay tiempo.
+
+29. ¿Cómo "aprende" del expediente?
+    Incorporar documentos, dividirlos en fragmentos, recuperar los
+    relevantes para cada pregunta y responder con la fuente.
+    Aclaración importante: no se reentrena el modelo; se le da
+    contexto. (Es cómo funcionan estas herramientas en general;
+    esta demo muestra ese método con un análisis preparado.)
+
+30. DEMO — Mostrame de dónde sale
+    EL MOMENTO FUERTE: hacé clic en una afirmación y aparece el
+    documento que la sostiene.
+    Mostrá los tres colores: surge del documento / afirmación de una
+    parte / inferencia. Y el cuadro de información que falta.
+    Hacé clic en "El cliente reconoció haber recibido todos los
+    equipos" — la fuente es una captura. Dejalo picando.
+
+31. ACTIVIDAD — "Sí, recibimos todo"
+    Muestra la captura. "¿Qué les permite concluir esta frase?"
+    Esperá los votos. No reveles nada todavía.
+
+32. DEMO — Aparece un mensaje más
+    Apretá "Incorporar la conversación completa".
+    A la derecha: el "recibimos todo" y enseguida "Son 10 cajas...
+    todavía no revisamos el contenido". Al día siguiente: faltan 2
+    unidades y un equipo no enfría.
+    La afirmación queda tachada y "en revisión"; la cronología suma
+    el hecho nuevo.
+    Aclarar (está en pantalla): el contexto cambia la interpretación,
+    pero comparar no acredita autenticidad, autoría ni valor
+    probatorio. Eso requiere su revisión propia.
+    (Si hay que repetirla: "deshacer (para ensayar)".)
+
+33. DEMO — Del análisis al trabajo concreto
+    Decidí en voz alta cada propuesta:
+    O1 (recibió todo) → DESCARTO o CORRIJO.
+    O2 (faltan equipos) → CORRIJO: es la versión del Colegio.
+    O3 (falta el acta) → ACEPTO.
+    O4 (coinciden en la deuda) → DESCARTO, es el error de la placa 20.
+    Mirá cómo cambia el borrador a la derecha y cómo se llena el
+    registro de decisiones (trazabilidad).
+    Truco didáctico: aceptá una propuesta mala y mostrá la alerta
+    roja en el borrador. Después corregila.
+    Cambiá a "Preparación de mediación": posiciones expresadas,
+    intereses como HIPÓTESIS a confirmar con las partes, preguntas.
+    Abajo aparece CuscatIA: investiga asistencia para tareas
+    instrumentales de redacción judicial con control humano y
+    trazabilidad. Proyecto, no sistema implementado.
+
+34. ACTIVIDAD — ¿Qué construiríamos para su oficina?
+    "Acabamos de trabajar con un caso ficticio. Piensen en su oficina:
+    ¿qué tarea concreta elegirían para empezar?"
+    Leé una o dos y cerrá: "podemos partir de esa tarea, construir un
+    prototipo y evaluar con quienes la hacen si mejora el trabajo.
+    Ahí se juntan mi experiencia en la justicia y lo que hoy hago
+    desarrollando tecnología."
+
+35. FINAL — Gracias
+    Logos, tu Instagram. Agradecé otra vez a las tres instituciones.
+
+===========================================================
+SI ALGO FALLA
+- Los celulares no cambian de actividad: recargá /justicia/clase y
+  volvé a poner la clave; la actividad se activa al entrar a la placa.
+- Alguien no puede entrar: que escriba rl1-beige.vercel.app/justicia
+- La demo (26, 28, 30, 32, 33) viene cargada con la página: si se
+  corta internet a mitad de la clase, sigue funcionando. Lo único que
+  se pierde es el cartel "votada" y los resultados en vivo.
+- Borrar datos de ensayo: Shift+R en la presentación.
+===========================================================
