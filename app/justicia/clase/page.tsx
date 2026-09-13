@@ -13,6 +13,8 @@ import { LogoRL1 } from "@/components/brand/logo-rl1";
 import { Button, Spinner } from "@/components/ui";
 import { ChipResponda, Constelacion, PlacaIngreso, ResultadosVivo } from "@/components/clase/vivo";
 import { DiagramaJus } from "@/components/justicia/diagramas";
+import { BuscadorExpediente } from "@/components/justicia/buscador";
+import { Explorables } from "@/components/clase/explorables";
 import { DEMO_INICIAL, DemoExpediente, EtiquetaDemo, type DemoEstado } from "@/components/justicia/expediente";
 import {
   getJusActividad,
@@ -375,13 +377,26 @@ function Slide({
           <p className="rise mt-3 max-w-3xl text-lg leading-snug text-muted sm:text-2xl" style={{ animationDelay: "0.12s" }}>
             {slide.bajada}
           </p>
-          {slide.diagrama && (
+          {slide.diagrama && slide.explora ? (
+            // Diagrama y tarjetas explorables lado a lado; apilados en pantallas angostas.
+            <div className="mt-6 grid items-start gap-5 lg:grid-cols-[1.1fr_1fr] lg:gap-6">
+              <div className="rise glass rounded-2xl p-3 sm:p-5" style={{ animationDelay: "0.25s" }}>
+                <DiagramaJus id={slide.diagrama} />
+              </div>
+              <Explorables items={slide.explora} columnas={slide.explora.length > 4 ? 1 : 2} />
+            </div>
+          ) : slide.diagrama ? (
             <div className="rise mx-auto mt-7 w-full max-w-3xl" style={{ animationDelay: "0.25s" }}>
               <div className="glass rounded-2xl p-3 sm:p-5">
                 <DiagramaJus id={slide.diagrama} />
               </div>
             </div>
-          )}
+          ) : slide.explora ? (
+            <div className="mt-6">
+              <Explorables items={slide.explora} />
+            </div>
+          ) : null}
+          {slide.interactivo === "pdfs" && <BuscadorExpediente />}
           {slide.herramientas && <TarjetasHerramientas ids={slide.herramientas} />}
           {slide.pills && (
             <div className="mt-5 flex flex-wrap justify-center gap-2">

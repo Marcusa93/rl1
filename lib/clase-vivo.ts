@@ -37,6 +37,17 @@ export interface ActividadVivo {
   maxChars?: number;
 }
 
+/**
+ * Tarjeta explorable de una placa: el docente la toca y se despliega una
+ * explicación, con un ejemplo opcional (pedido a la IA y respuesta).
+ */
+export interface Explorable {
+  emoji: string;
+  label: string;
+  texto: string;
+  ejemplo?: { pedido: string; respuesta: string };
+}
+
 /** Datos de una clase que necesitan la app del alumno y el deck. */
 export interface ClaseVivoConfig {
   slug: string;
