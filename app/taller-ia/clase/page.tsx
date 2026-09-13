@@ -1,16 +1,34 @@
 "use client";
 
-// Presentación del taller "IA para arbitraje y mediación" (El Salvador,
-// 16 y 17/09/2026). Mismo motor que /justicia/clase: la placa manda (activa
-// sola su actividad), resultados en vivo, kit de herramientas abajo.
-// Teclado: ← → avanzar · Home inicio · Shift+R reiniciar la sesión
-// (usarlo entre el grupo del miércoles y el del jueves).
+// Presentación del taller "IA aplicada a la resolución de conflictos"
+// (El Salvador, 16 y 17/09/2026). Misma lógica que /justicia/clase: la placa
+// manda (activa las actividades sola) y, además, libera documentos y prompts
+// a la app de cada grupo y le pasa la etapa de los dos recorridos.
+//
+// Teclado: ← → avanzar · Home inicio · 1–9 tarjetas · V revelar respuesta ·
+// Shift+R reiniciar (entre el grupo del miércoles y el del jueves).
+// Control remoto: taller.rossi-ia.com/control.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { LogoRL1 } from "@/components/brand/logo-rl1";
-import { Button, Spinner } from "@/components/ui";
+import { AccesoDocente } from "@/components/clase/acceso-docente";
 import { ChipResponda, Constelacion, PlacaIngreso, ResultadosVivo } from "@/components/clase/vivo";
 import { Explorables } from "@/components/clase/explorables";
+import { LluviaReacciones } from "@/components/clase/reacciones";
+import { useRemotoDeck } from "@/components/clase/remoto";
+import {
+  BarraRecorridos,
+  DocumentoCaso,
+  MatrizTrabajo,
+  PromptCaja,
+  RecorridoFinal,
+  RecorridosGrande,
+  RolesGrupo,
+  Saltos,
+} from "@/components/taller/piezas";
+import { COM_INSTAGRAM_URL, COM_QR_SRC } from "@/lib/comercial";
+import type { ActividadVivo } from "@/lib/clase-vivo";
+import { rem } from "@/lib/remoto";
+import { TAL_DOCS, TAL_PROMPTS, type ConfigTaller, type LiberadoId } from "@/lib/taller-caso";
 import {
   getTalActividad,
   TAL_AUTOR,
@@ -18,6 +36,7 @@ import {
   TAL_CONFIG,
   TAL_EVENTO,
   TAL_FECHA,
+  TAL_KIT,
   TAL_LINK,
   TAL_LOGOS,
   TAL_QR_PLATAFORMA,
@@ -25,141 +44,131 @@ import {
   TAL_SLUG,
   TAL_SUBTITLE,
   TAL_TITLE,
+  tituloPlacaTaller,
+  type TalDocumento,
+  type TalPlaca,
+  type TalPrompt,
   type TalSlide,
 } from "@/lib/taller-clase";
-import { JUS_KIT } from "@/lib/justicia-clase";
-import { COM_INSTAGRAM_URL, COM_QR_SRC } from "@/lib/comercial";
-import type { ActividadVivo } from "@/lib/clase-vivo";
 import { cn } from "@/lib/utils";
 
-const STORAGE_KEY = "taller-ia-clase-slide";
-
-// --- Acceso docente -------------------------------------------------------------
+const STORAGE_KEY = "taller-clase-slide";
+const STORAGE_VISTAS = "taller-clase-vistas";
 
 export default function TallerClasePage() {
-  const [authed, setAuthed] = useState<boolean | null>(null);
-  const [password, setPassword] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState("");
-
-  useEffect(() => {
-    fetch("/api/teacher/me")
-      .then((r) => r.json())
-      .then((d) => setAuthed(d.teacher))
-      .catch(() => setAuthed(false));
-  }, []);
-
-  async function login(e: React.FormEvent) {
-    e.preventDefault();
-    setBusy(true);
-    setErr("");
-    const res = await fetch("/api/teacher/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
-    });
-    setBusy(false);
-    if (res.ok) setAuthed(true);
-    else setErr("Clave incorrecta");
-  }
-
-  if (authed === null)
-    return (
-      <main className="flex min-h-dvh items-center justify-center">
-        <Spinner />
-      </main>
-    );
-
-  if (!authed)
-    return (
-      <main className="bg-grid flex min-h-dvh items-center justify-center px-5">
-        <form onSubmit={login} className="glass w-full max-w-sm rounded-2xl p-6 rise">
-          <div className="mb-5 flex justify-center">
-            <LogoRL1 size={38} />
-          </div>
-          <h1 className="text-lg font-semibold">Presentación · {TAL_TITLE}</h1>
-          <p className="mt-1 text-sm text-muted">La presentación activa las actividades por su cuenta; por eso pide la clave docente.</p>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="clave"
-            autoFocus
-            className="mt-4 w-full rounded-xl border border-line bg-ink-2/70 px-4 py-3 outline-none placeholder:text-faint focus:border-teal/60"
-          />
-          {err && <p className="mt-2 text-sm text-magenta">{err}</p>}
-          <Button type="submit" disabled={busy} className="mt-4 w-full">
-            {busy ? <Spinner /> : "Entrar"}
-          </Button>
-        </form>
-      </main>
-    );
-
-  return <Deck />;
+  return (
+    <AccesoDocente titulo={`Presentación · ${TAL_TITLE}`}>
+      <Deck />
+    </AccesoDocente>
+  );
 }
 
-// --- La presentación ---------------------------------------------------------------
+function leer<T>(key: string, fallback: T): T {
+  try {
+    const v = localStorage.getItem(key);
+    return v ? (JSON.parse(v) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+function guardar(key: string, v: unknown) {
+  try {
+    localStorage.setItem(key, JSON.stringify(v));
+  } catch {}
+}
+
+/** Lo que ya se liberó: documentos y prompts de las placas visitadas, en orden de visita. */
+function calcularConfig(vistas: number[], idx: number): ConfigTaller {
+  const liberados: LiberadoId[] = [];
+  for (const v of vistas) for (const id of TAL_SLIDES[v]?.libera ?? []) if (!liberados.includes(id)) liberados.push(id);
+  const previas = TAL_SLIDES.slice(0, idx + 1).reverse();
+  const caso = previas.find((s) => s.caso !== undefined)?.caso;
+  const trabajo = previas.find((s) => s.trabajo !== undefined)?.trabajo;
+  return { liberados, caso, trabajo };
+}
 
 type EstadoActivacion = { key: string; status: "enviando" | "ok" | "error" } | null;
 
 function Deck() {
-  const [idx, setIdx] = useState(() => {
-    try {
-      const v = parseInt(localStorage.getItem(STORAGE_KEY) ?? "0", 10);
-      return Number.isFinite(v) ? Math.min(Math.max(v, 0), TAL_SLIDES.length - 1) : 0;
-    } catch {
-      return 0;
-    }
-  });
+  const [idx, setIdx] = useState(() => Math.min(Math.max(leer<number>(STORAGE_KEY, 0), 0), TAL_SLIDES.length - 1));
+  const [vistas, setVistas] = useState<number[]>(() => leer<number[]>(STORAGE_VISTAS, []));
   const [estado, setEstado] = useState<EstadoActivacion>(null);
-  // null = lo que indique la placa; true/false = lo que eligió el docente en esta placa
   const [kitManual, setKitManual] = useState<boolean | null>(null);
-  const lastActivada = useRef<string | null>(null);
+  const [revelada, setRevelada] = useState(false);
+  const enviado = useRef<{ activa: string | null; cfg: string }>({ activa: null, cfg: "" });
 
   const go = useCallback((n: number) => {
     const next = Math.min(Math.max(n, 0), TAL_SLIDES.length - 1);
     setIdx(next);
     setKitManual(null);
-    try {
-      localStorage.setItem(STORAGE_KEY, String(next));
-    } catch {}
+    setRevelada(false);
+    guardar(STORAGE_KEY, next);
   }, []);
+  const irA = useCallback(
+    (id: string) => {
+      const n = TAL_SLIDES.findIndex((s) => s.id === id);
+      if (n >= 0) go(n);
+    },
+    [go],
+  );
 
   const slide = TAL_SLIDES[idx];
 
-  const activar = useCallback((key: string) => {
-    lastActivada.current = key;
-    setEstado({ key, status: "enviando" });
+  // Registrar la placa como vista (libera sus documentos y prompts).
+  useEffect(() => {
+    setVistas((v) => {
+      if (v.includes(idx)) return v;
+      const nv = [...v, idx];
+      guardar(STORAGE_VISTAS, nv);
+      return nv;
+    });
+  }, [idx]);
+
+  // La placa manda: activa su actividad y le pasa a los grupos lo liberado y la etapa.
+  useEffect(() => {
+    const cfg = calcularConfig(vistas.includes(idx) ? vistas : [...vistas, idx], idx);
+    const cfgStr = JSON.stringify(cfg);
+    const key = "activa" in slide ? slide.activa : undefined;
+    let body: Record<string, unknown> | null = null;
+    if (key && key !== enviado.current.activa) body = { current_activity: key, activity_config: cfg };
+    else if (cfgStr !== enviado.current.cfg) body = { activity_config: cfg };
+    if (!body) return;
+    if (key) enviado.current.activa = key;
+    enviado.current.cfg = cfgStr;
+    const nombre = key ?? enviado.current.activa ?? "lobby";
+    if (key) setEstado({ key: nombre, status: "enviando" });
     fetch(`/api/session/${TAL_SLUG}/activity`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ current_activity: key }),
+      body: JSON.stringify(body),
     })
-      .then((r) => setEstado({ key, status: r.ok ? "ok" : "error" }))
-      .catch(() => setEstado({ key, status: "error" }));
-  }, []);
-
-  // La placa manda: si tiene actividad asociada, se activa sola.
-  useEffect(() => {
-    const key = "activa" in slide ? slide.activa : undefined;
-    if (!key || lastActivada.current === key) return;
-    activar(key);
-  }, [slide, activar]);
+      .then((r) => {
+        if (!r.ok) enviado.current = { activa: null, cfg: "" };
+        if (key || !r.ok) setEstado({ key: nombre, status: r.ok ? "ok" : "error" });
+      })
+      .catch(() => {
+        enviado.current = { activa: null, cfg: "" };
+        setEstado({ key: nombre, status: "error" });
+      });
+  }, [slide, idx, vistas]);
 
   useEffect(() => {
     async function reiniciar() {
-      if (!confirm("¿Reiniciar la sesión? Se borran todos los participantes y sus respuestas.")) return;
+      if (!confirm("¿Reiniciar el taller? Se borran los grupos, sus respuestas y los documentos liberados.")) return;
       await fetch(`/api/session/${TAL_SLUG}/reset`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ all: true }),
       });
-      const actual = TAL_SLIDES[idx];
-      if ("activa" in actual) activar(actual.activa);
+      enviado.current = { activa: null, cfg: "" };
+      const nv = [idx];
+      guardar(STORAGE_VISTAS, nv);
+      setVistas(nv);
     }
     function onKey(e: KeyboardEvent) {
       if ((e.target as HTMLElement)?.tagName === "INPUT") return;
-      if (["ArrowRight", "PageDown", " "].includes(e.key)) {
+      if (e.key === "v" || e.key === "V") setRevelada((r) => !r);
+      else if (["ArrowRight", "PageDown", " "].includes(e.key)) {
         e.preventDefault();
         go(idx + 1);
       } else if (["ArrowLeft", "PageUp"].includes(e.key)) {
@@ -170,11 +179,16 @@ function Deck() {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [go, idx, activar]);
+  }, [go, idx]);
 
   const parteActual = TAL_SLIDES.slice(0, idx + 1)
     .reverse()
     .find((s) => s.parte)?.parte;
+  const etapa = calcularConfig([], idx);
+  const conBarra = slide.t !== "portada" && slide.t !== "ingreso" && slide.t !== "final" && (etapa.caso !== undefined || etapa.trabajo !== undefined);
+
+  useRemotoDeck({ slug: TAL_SLUG, idx, total: TAL_SLIDES.length, titulo: tituloPlacaTaller(slide), parte: parteActual, go });
+
   const estadoNombre = estado ? (getTalActividad(estado.key)?.titulo ?? "Ingreso") : "";
   const kitVisible = kitManual ?? Boolean(slide.kit);
 
@@ -204,18 +218,25 @@ function Deck() {
       <main
         key={idx}
         className={cn(
-          "rise mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 py-10 sm:px-10 sm:py-16",
+          "rise mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 py-10 sm:px-10 sm:py-14",
           kitVisible && "pb-32 sm:pb-32",
         )}
       >
-        <Slide slide={slide} />
+        {conBarra && (
+          <div className="mb-5">
+            <BarraRecorridos caso={etapa.caso} trabajo={etapa.trabajo} />
+          </div>
+        )}
+        <Slide slide={slide} revelada={revelada} onRevelar={() => setRevelada((r) => !r)} onSalto={irA} />
       </main>
+
+      <LluviaReacciones slug={TAL_SLUG} contador={slide.t === "final"} />
 
       {kitVisible && (
         <div className="fixed inset-x-0 bottom-14 z-40 flex justify-center px-4">
           <div className="rise glass flex max-w-full flex-wrap items-center justify-center gap-2 rounded-2xl px-3 py-2">
             <span className="px-1 text-[11px] uppercase tracking-widest text-faint">Kit</span>
-            {JUS_KIT.map((h) => (
+            {TAL_KIT.map((h) => (
               <a
                 key={h.id}
                 href={h.url}
@@ -240,34 +261,22 @@ function Deck() {
               kitVisible ? "border-teal/60 bg-teal/15 text-teal" : "border-line bg-panel/60 text-muted hover:text-teal",
             )}
             aria-expanded={kitVisible}
-            aria-label="Kit de herramientas"
           >
             🧰 Herramientas
           </button>
           <span className="hidden min-w-0 truncate lg:block">{TAL_AUTOR} · Laboratorio de IA · Facultad de Derecho y Ciencias Sociales, UNT</span>
         </div>
         <div className="ml-auto flex shrink-0 items-center gap-3">
-          {idx === 0 && <span className="hidden md:block">← → para avanzar</span>}
           {parteActual && (
-            <span className="hidden rounded-full border border-line bg-panel/60 px-2.5 py-1 font-mono text-[11px] text-muted md:block">
-              {parteActual}
-            </span>
+            <span className="hidden rounded-full border border-line bg-panel/60 px-2.5 py-1 font-mono text-[11px] text-muted md:block">{parteActual}</span>
           )}
-          <button
-            onClick={() => go(idx - 1)}
-            className="rounded-lg border border-line bg-panel/60 px-3 py-1.5 text-muted transition hover:text-teal"
-            aria-label="Anterior"
-          >
+          <button onClick={() => go(idx - 1)} className="rounded-lg border border-line bg-panel/60 px-3 py-1.5 text-muted transition hover:text-teal" aria-label="Anterior">
             ◀
           </button>
           <span className="font-mono">
             {idx + 1} / {TAL_SLIDES.length}
           </span>
-          <button
-            onClick={() => go(idx + 1)}
-            className="rounded-lg border border-line bg-panel/60 px-3 py-1.5 text-muted transition hover:text-teal"
-            aria-label="Siguiente"
-          >
+          <button onClick={() => go(idx + 1)} className="rounded-lg border border-line bg-panel/60 px-3 py-1.5 text-muted transition hover:text-teal" aria-label="Siguiente">
             ▶
           </button>
         </div>
@@ -276,7 +285,7 @@ function Deck() {
   );
 }
 
-// --- Placas ------------------------------------------------------------------------------
+// --- Placas -----------------------------------------------------------------------------
 
 function Logos({ alto = 64 }: { alto?: number }) {
   return (
@@ -294,16 +303,54 @@ function Logos({ alto = 64 }: { alto?: number }) {
   );
 }
 
-function Slide({ slide }: { slide: TalSlide }) {
+function Parte({ texto }: { texto: string }) {
+  return (
+    <p className="mb-3 flex items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-violet">
+      <span className="size-1.5 rounded-full bg-current" />
+      {texto}
+    </p>
+  );
+}
+
+function Titulo({ titulo, bajada }: { titulo: string; bajada: string }) {
+  return (
+    <>
+      <h1 className="max-w-5xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">{titulo}</h1>
+      <p className="rise mt-3 max-w-4xl text-lg leading-snug text-muted sm:text-2xl" style={{ animationDelay: "0.12s" }}>
+        {bajada}
+      </p>
+    </>
+  );
+}
+
+function Slide({
+  slide,
+  revelada,
+  onRevelar,
+  onSalto,
+}: {
+  slide: TalSlide;
+  revelada: boolean;
+  onRevelar: () => void;
+  onSalto: (a: string) => void;
+}) {
+  const saltos = slide.saltos ? <Saltos saltos={slide.saltos} onSalto={onSalto} /> : null;
   switch (slide.t) {
     case "portada":
       return (
         <div className="relative flex flex-col items-center text-center">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[420px] w-[720px] -translate-x-1/2 -translate-y-1/4 opacity-40 blur-3xl"
+            style={{
+              background:
+                "radial-gradient(ellipse at 30% 40%, rgba(94,234,212,0.5), transparent 60%), radial-gradient(ellipse at 70% 60%, rgba(139,92,246,0.5), transparent 60%)",
+            }}
+          />
           <Constelacion />
           <Logos alto={62} />
-          <h1 className="text-gradient mt-8 max-w-full break-words font-mono text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-            {TAL_TITLE}
-          </h1>
+          <p className="mt-8 font-mono text-sm uppercase tracking-[0.3em] text-violet">Taller práctico</p>
+          <h1 className="text-gradient mt-3 max-w-5xl break-words font-mono text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">{TAL_TITLE}</h1>
           <p className="rise mt-4 max-w-3xl text-lg text-muted sm:text-2xl" style={{ animationDelay: "0.2s" }}>
             {TAL_SUBTITLE}
           </p>
@@ -316,63 +363,54 @@ function Slide({ slide }: { slide: TalSlide }) {
           <p className="rise text-sm text-muted" style={{ animationDelay: "0.45s" }}>
             {TAL_CARGO}
           </p>
-          <div className="rise mt-8 flex flex-wrap items-center justify-center gap-6 sm:gap-10" style={{ animationDelay: "0.6s" }}>
-            <div className="flex flex-wrap items-center justify-center gap-5">
-              <img src={TAL_QR_PLATAFORMA} alt="Código QR para ingresar" width={150} height={150} className="rounded-xl border border-line bg-white p-2" />
-              <div className="pulse-ring rounded-2xl border-gradient px-5 py-4 text-left sm:px-7 sm:py-5">
-                <p className="text-xs uppercase tracking-widest text-faint">Ingrese desde su celular</p>
-                <p className="text-gradient mt-1 break-all font-mono text-xl font-bold sm:text-2xl">{TAL_LINK}</p>
-                <p className="mt-1 text-xs text-faint">escanee el código o escriba la dirección</p>
-              </div>
+          <div className="rise mt-8 flex flex-wrap items-center justify-center gap-5" style={{ animationDelay: "0.6s" }}>
+            <img src={TAL_QR_PLATAFORMA} alt="Código QR para ingresar" width={150} height={150} className="rounded-xl border border-line bg-white p-2" />
+            <div className="pulse-ring rounded-2xl border-gradient px-5 py-4 text-left sm:px-7 sm:py-5">
+              <p className="text-xs uppercase tracking-widest text-faint">Un dispositivo por grupo</p>
+              <p className="text-gradient mt-1 break-all font-mono text-xl font-bold sm:text-2xl">{TAL_LINK}</p>
+              <p className="mt-1 text-xs text-faint">escaneen el código o escriban la dirección</p>
             </div>
-            <a href={COM_INSTAGRAM_URL} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-1.5">
-              <img src={COM_QR_SRC} alt="Código QR a Instagram" width={110} height={110} className="rounded-xl border border-line bg-white p-2" />
-              <span className="text-xs text-faint">@marquitorossi</span>
-            </a>
           </div>
         </div>
       );
 
     case "ingreso":
-      return <PlacaIngreso slug={TAL_SLUG} qr={TAL_QR_PLATAFORMA} link={TAL_LINK} />;
-
-    case "placa":
       return (
         <div>
-          {slide.parte && (
-            <p className="mb-4 flex items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-violet">
-              <span className="size-1.5 rounded-full bg-current" />
-              {slide.parte}
-            </p>
-          )}
-          <h1 className="max-w-4xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">{slide.titulo}</h1>
-          <p className="rise mt-3 max-w-3xl text-lg leading-snug text-muted sm:text-2xl" style={{ animationDelay: "0.12s" }}>
-            {slide.bajada}
-          </p>
-          {slide.explora && (
-            <div className="mt-6">
-              <Explorables items={slide.explora} />
-            </div>
-          )}
-          {slide.lede && (
-            <p className="rise mx-auto mt-5 max-w-3xl text-center text-xl italic leading-relaxed text-muted" style={{ animationDelay: "0.4s" }}>
-              {slide.lede}
-            </p>
-          )}
+          <PlacaIngreso slug={TAL_SLUG} qr={TAL_QR_PLATAFORMA} link={TAL_LINK} />
+          <p className="mt-4 text-center text-lg text-muted">Ingresen con el nombre del grupo: ahí van a recibir los documentos y los prompts.</p>
         </div>
       );
+
+    case "placa":
+      return <PlacaVista slide={slide} saltos={saltos} />;
 
     case "actividad": {
       const act = getTalActividad(slide.activa);
       if (!act) return null;
-      return <SlideActividad act={act} escena={slide.escena} />;
+      return (
+        <div>
+          {slide.parte && <Parte texto={slide.parte} />}
+          <SlideActividad act={act} escena={slide.escena} revelada={revelada} onRevelar={onRevelar} />
+          {saltos}
+        </div>
+      );
     }
+
+    case "documento":
+      return <DocumentoVista slide={slide} saltos={saltos} />;
+
+    case "prompt":
+      return <PromptVista slide={slide} saltos={saltos} />;
 
     case "final":
       return (
         <div className="flex flex-col items-center text-center">
           <Logos alto={54} />
           <h1 className="text-gradient mt-8 font-mono text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">Gracias</h1>
+          <p className="rise mt-5 rounded-full border border-teal/40 bg-teal/10 px-5 py-2 text-lg text-foreground sm:text-xl" style={{ animationDelay: "0.2s" }}>
+            👏 Manden su aplauso desde el celular
+          </p>
           <p className="mt-4 text-lg text-muted">{TAL_EVENTO}</p>
           <p className="mt-5 text-lg font-medium">{TAL_AUTOR}</p>
           <p className="text-sm text-muted">{TAL_CARGO}</p>
@@ -385,7 +423,128 @@ function Slide({ slide }: { slide: TalSlide }) {
   }
 }
 
-function SlideActividad({ act, escena }: { act: ActividadVivo; escena: string }) {
+function PlacaVista({ slide, saltos }: { slide: TalPlaca & { parte?: string }; saltos: React.ReactNode }) {
+  return (
+    <div>
+      {slide.parte && <Parte texto={slide.parte} />}
+      <Titulo titulo={slide.titulo} bajada={slide.bajada} />
+      {slide.visual === "recorridos" && <RecorridosGrande />}
+      {slide.visual === "matriz" && <MatrizTrabajo />}
+      {slide.visual === "recorrido-final" && <RecorridoFinal />}
+      {slide.visual === "roles" && <RolesGrupo />}
+      {slide.explora && (
+        <div className="mt-6">
+          <Explorables items={slide.explora} />
+        </div>
+      )}
+      {slide.lede && (
+        <p className="rise mx-auto mt-5 max-w-4xl text-center text-xl italic leading-relaxed text-muted" style={{ animationDelay: "0.4s" }}>
+          {slide.lede}
+        </p>
+      )}
+      {saltos}
+    </div>
+  );
+}
+
+function DocumentoVista({ slide, saltos }: { slide: TalDocumento & { parte?: string }; saltos: React.ReactNode }) {
+  const lateral = Boolean(slide.pregunta || slide.puntos || slide.explora);
+  const docs = slide.docs.map((d) => TAL_DOCS[d]);
+  return (
+    <div>
+      {slide.parte && <Parte texto={slide.parte} />}
+      <Titulo titulo={slide.titulo} bajada={slide.bajada} />
+      <div className={cn("mt-6 grid items-start gap-5", lateral ? "lg:grid-cols-[1.25fr_1fr]" : docs.length > 1 && "lg:grid-cols-2")}>
+        {lateral ? (
+          <div className="rise flex flex-col gap-4" style={{ animationDelay: "0.2s" }}>
+            {docs.map((d) => (
+              <DocumentoCaso key={d.id} doc={d} grande />
+            ))}
+          </div>
+        ) : (
+          docs.map((d, i) => (
+            <div key={d.id} className="rise" style={{ animationDelay: `${0.2 + i * 0.12}s` }}>
+              <DocumentoCaso doc={d} grande />
+            </div>
+          ))
+        )}
+        {lateral && (
+          <div className="flex flex-col gap-4">
+            {slide.pregunta && (
+              <p className="rise rounded-2xl border border-yellow-400/50 bg-yellow-400/10 p-5 text-xl font-semibold leading-snug sm:text-2xl" style={{ animationDelay: "0.3s" }}>
+                {slide.pregunta}
+              </p>
+            )}
+            {slide.puntos && (
+              <div className="rise glass rounded-2xl p-5" style={{ animationDelay: "0.35s" }}>
+                <p className="text-xs font-bold uppercase tracking-wider text-teal">Estado del caso</p>
+                <ul className="mt-2 space-y-1.5 text-base leading-snug sm:text-lg">
+                  {slide.puntos.map((p) => (
+                    <li key={p}>• {p}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {slide.explora && <Explorables items={slide.explora} columnas={1} />}
+          </div>
+        )}
+      </div>
+      <p className="mt-3 text-sm text-faint">📲 Ya está en el dispositivo de cada grupo, con botón para copiarlo.</p>
+      {saltos}
+    </div>
+  );
+}
+
+function PromptVista({ slide, saltos }: { slide: TalPrompt & { parte?: string }; saltos: React.ReactNode }) {
+  const prompt = TAL_PROMPTS[slide.prompt];
+  const conDocs = slide.con.length
+    ? slide.con.map((d) => `${TAL_DOCS[d].numero ? `Documento ${TAL_DOCS[d].numero}` : TAL_DOCS[d].titulo}`).join(" y ")
+    : "todos los documentos que tienen";
+  const pasos = [
+    { e: "🧰", t: "Abran su herramienta: ChatGPT, Claude, Gemini o NotebookLM." },
+    { e: "📂", t: `Peguen ${conDocs} (botón «Copiar» en su dispositivo).` },
+    { e: "✍️", t: "Peguen la instrucción." },
+    { e: "🔍", t: slide.despues },
+  ];
+  return (
+    <div>
+      {slide.parte && <Parte texto={slide.parte} />}
+      <Titulo titulo={slide.titulo} bajada={slide.bajada} />
+      <div className="mt-6 grid items-start gap-5 lg:grid-cols-[1.35fr_1fr]">
+        <div className="rise" style={{ animationDelay: "0.2s" }}>
+          <PromptCaja prompt={prompt} grande />
+        </div>
+        <ol className="flex flex-col gap-2.5">
+          {pasos.map((p, i) => (
+            <li key={i} className="rise glass flex items-start gap-3 rounded-2xl p-4 text-base leading-snug sm:text-lg" style={{ animationDelay: `${0.3 + i * 0.1}s` }}>
+              <span className="text-2xl">{p.e}</span>
+              <span>
+                <b className="mr-1 font-mono text-teal">{i + 1}.</b>
+                {p.t}
+              </span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      {saltos}
+    </div>
+  );
+}
+
+// --- Placa de actividad ------------------------------------------------------------------
+
+function SlideActividad({
+  act,
+  escena,
+  revelada,
+  onRevelar,
+}: {
+  act: ActividadVivo;
+  escena: string;
+  revelada: boolean;
+  onRevelar: () => void;
+}) {
+  const nube = act.kind === "palabra";
   return (
     <div className="flex h-full flex-col">
       <div className="flex flex-col-reverse items-start gap-5 md:flex-row md:justify-between md:gap-6">
@@ -399,9 +558,27 @@ function SlideActividad({ act, escena }: { act: ActividadVivo; escena: string })
         </div>
         <ChipResponda qr={TAL_QR_PLATAFORMA} link={TAL_LINK} />
       </div>
-      <div className="rise mt-5 flex-1" style={{ animationDelay: "0.25s" }}>
-        <ResultadosVivo slug={TAL_SLUG} act={act} intervalo={TAL_CONFIG.poll.deck} />
+
+      <div className={cn("rise mt-5 flex flex-1 flex-col", nube && "[&>div]:min-h-[48vh]")} style={{ animationDelay: "0.25s" }}>
+        <ResultadosVivo slug={TAL_SLUG} act={act} intervalo={TAL_CONFIG.poll.deck} revelada={revelada} />
       </div>
+
+      {act.correcta && (
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={onRevelar}
+            {...rem("✓ Ver respuesta", revelada)}
+            className={cn(
+              "rounded-xl border px-4 py-2 text-sm font-medium transition",
+              revelada
+                ? "border-emerald-400/60 bg-emerald-400/15 text-emerald-300"
+                : "border-line bg-panel/60 text-muted hover:border-teal/60 hover:text-teal",
+            )}
+          >
+            {revelada ? "Ocultar respuesta" : "Ver respuesta"} <span className="ml-1 font-mono text-xs text-faint">V</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

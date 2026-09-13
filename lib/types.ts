@@ -34,7 +34,21 @@ export type ActivityKey =
   | "jus_x_principio"
   | "jus_x_delegar"
   | "jus_sim"
-  | "jus_nube";
+  | "jus_nube"
+  // Taller "IA aplicada a la resolución de conflictos" (/taller-ia) — prefijo tal_
+  | "tal_ficha"
+  | "tal_camino1"
+  | "tal_captura"
+  | "tal_marcar"
+  | "tal_obligaciones"
+  | "tal_camino2"
+  | "tal_correccion"
+  | "tal_inconsistencia"
+  | "tal_intereses"
+  | "tal_alternativa"
+  | "tal_giro"
+  | "tal_prompt_util"
+  | "tal_nube";
 
 export type SessionStatus = "lobby" | "live" | "ended";
 

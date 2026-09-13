@@ -69,4 +69,6 @@ export interface ClaseVivoConfig {
   getActividad: (key: string) => ActividadVivo | undefined;
   /** Muestra la barra de emojis en el celular (llegan flotando a la pantalla). */
   reacciones?: boolean;
+  /** Texto del campo de ingreso (por defecto, "Su nombre"). Ej.: ingresar como grupo. */
+  nombre?: { etiqueta: string; placeholder: string };
 }

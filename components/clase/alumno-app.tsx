@@ -18,9 +18,12 @@ type SessionResp = { session: SessionRow; participants: number };
 export function AlumnoApp({
   config,
   logos,
+  tutor: Tutor,
 }: {
   config: ClaseVivoConfig;
   logos?: { src: string; alt: string; fondo?: boolean }[];
+  /** Panel propio de la clase debajo de la actividad (ej.: documentos y prompts del taller). */
+  tutor?: React.ComponentType<{ session: SessionRow }>;
 }) {
   const [me, setMe] = useState<ParticipantRow | null | undefined>(undefined);
   const [name, setName] = useState("");
@@ -93,11 +96,11 @@ export function AlumnoApp({
             </p>
           </div>
           <form onSubmit={join} className="glass glow-teal rounded-2xl p-6">
-            <label className="text-sm text-muted">Su nombre</label>
+            <label className="text-sm text-muted">{config.nombre?.etiqueta ?? "Su nombre"}</label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Nombre y apellido"
+              placeholder={config.nombre?.placeholder ?? "Nombre y apellido"}
               autoFocus
               className="mt-2 w-full rounded-xl border border-line bg-ink-2/70 px-4 py-3 outline-none placeholder:text-faint focus:border-teal/60"
             />
@@ -131,6 +134,7 @@ export function AlumnoApp({
       </header>
       <main className={cn("mx-auto max-w-3xl px-4 py-6", config.reacciones && "pb-32")}>
         <ActividadParticipante config={config} session={data.session} me={me} />
+        {Tutor && <Tutor session={data.session} />}
       </main>
       {config.reacciones && <BarraReacciones slug={config.slug} />}
     </div>
