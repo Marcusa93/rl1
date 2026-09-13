@@ -29,13 +29,17 @@ export function ResultadosVivo({
   act,
   intervalo,
   compacto,
+  revelada,
 }: {
   slug: string;
   act: ActividadVivo;
   intervalo: number;
   compacto?: boolean;
+  /** Pregunta exprés: marca la opción correcta y muestra la explicación. */
+  revelada?: boolean;
 }) {
   const { data: r } = useResultados(slug, act.key, intervalo);
+  const correcta = revelada ? act.correcta : undefined;
 
   return (
     <div className={cn("glass glow-teal flex flex-col rounded-2xl p-5", compacto ? "min-h-[14vh]" : "min-h-[38vh]")}>
@@ -53,11 +57,20 @@ export function ResultadosVivo({
       ) : act.kind === "encuesta" ? (
         <VivoEncuesta act={act} byQ={(r.summary?.byQuestion as Record<string, Record<string, number>>) ?? {}} />
       ) : act.kind === "opciones" || act.kind === "chips" ? (
-        <VivoBarras
-          counts={(r.summary?.counts as Record<string, number>) ?? {}}
-          opciones={act.opciones ?? []}
-          ordenar={act.kind === "chips"}
-        />
+        <>
+          <VivoBarras
+            counts={(r.summary?.counts as Record<string, number>) ?? {}}
+            opciones={act.opciones ?? []}
+            ordenar={act.kind === "chips"}
+            correcta={correcta}
+          />
+          {correcta && act.revela && (
+            <p className="rise mt-5 rounded-xl border border-emerald-400/40 bg-emerald-400/10 p-4 text-lg leading-snug text-foreground sm:text-xl">
+              <span className="mr-2 font-bold text-emerald-300">✓</span>
+              {act.revela}
+            </p>
+          )}
+        </>
       ) : act.kind === "texto" ? (
         <VivoMuro items={(r.summary?.respuestas as Array<{ name: string; respuesta: string }>) ?? []} />
       ) : (
@@ -89,28 +102,76 @@ function VivoEncuesta({ act, byQ }: { act: ActividadVivo; byQ: Record<string, Re
   );
 }
 
-function VivoBarras({ counts, opciones, ordenar }: { counts: Record<string, number>; opciones: ActOpcion[]; ordenar?: boolean }) {
+function VivoBarras({
+  counts,
+  opciones,
+  ordenar,
+  correcta,
+}: {
+  counts: Record<string, number>;
+  opciones: ActOpcion[];
+  ordenar?: boolean;
+  correcta?: string;
+}) {
   const max = Math.max(1, ...Object.values(counts));
   const rows = ordenar ? [...opciones].sort((a, b) => (counts[b.id] ?? 0) - (counts[a.id] ?? 0)) : opciones;
   return (
     <div className="space-y-2">
       {rows.map((o) => (
-        <Barra key={o.id} label={o.label} emoji={o.emoji} n={counts[o.id] ?? 0} max={max} grande />
+        <Barra
+          key={o.id}
+          label={o.label}
+          emoji={o.emoji}
+          n={counts[o.id] ?? 0}
+          max={max}
+          grande
+          marca={correcta ? (o.id === correcta ? "correcta" : "apagada") : undefined}
+        />
       ))}
     </div>
   );
 }
 
-export function Barra({ label, emoji, n, max, grande }: { label: string; emoji?: string; n: number; max: number; grande?: boolean }) {
+export function Barra({
+  label,
+  emoji,
+  n,
+  max,
+  grande,
+  marca,
+}: {
+  label: string;
+  emoji?: string;
+  n: number;
+  max: number;
+  grande?: boolean;
+  marca?: "correcta" | "apagada";
+}) {
   return (
-    <div className="flex items-center gap-3">
-      <div className={cn("shrink-0 truncate text-right", grande ? "w-72 text-base" : "w-44 text-xs")}>
+    <div className={cn("flex items-center gap-3 transition-opacity duration-500", marca === "apagada" && "opacity-35")}>
+      <div
+        className={cn(
+          "shrink-0 truncate text-right",
+          grande ? "w-40 text-sm sm:w-72 sm:text-base" : "w-28 text-xs sm:w-44",
+          marca === "correcta" && "font-bold text-emerald-300",
+        )}
+      >
+        {marca === "correcta" && <span className="mr-1.5">✓</span>}
         {emoji && <span className="mr-1.5">{emoji}</span>}
         {label}
       </div>
-      <div className={cn("flex-1 overflow-hidden rounded-lg bg-panel/50", grande ? "h-7" : "h-5")}>
+      <div
+        className={cn(
+          "flex-1 overflow-hidden rounded-lg bg-panel/50",
+          grande ? "h-7" : "h-5",
+          marca === "correcta" && "ring-2 ring-emerald-400/70",
+        )}
+      >
         <div
-          className="flex h-full items-center justify-end rounded-lg bg-gradient-to-r from-teal via-cyan to-violet px-2 text-xs font-bold text-ink transition-all duration-700"
+          className={cn(
+            "flex h-full items-center justify-end rounded-lg px-2 text-xs font-bold text-ink transition-all duration-700",
+            marca === "correcta" ? "bg-emerald-400" : "bg-gradient-to-r from-teal via-cyan to-violet",
+          )}
           style={{ width: `${(n / max) * 100}%` }}
         >
           {n > 0 && n}
@@ -136,21 +197,42 @@ function VivoMuro({ items }: { items: Array<{ name: string; respuesta: string }>
   );
 }
 
+const COLORES_NUBE = ["#5eead4", "#22d3ee", "#a78bfa", "#f0abfc", "#fbbf24", "#e2e8f0"];
+
+function hashPalabra(s: string) {
+  let h = 0;
+  for (const c of s) h = (h * 31 + c.charCodeAt(0)) | 0;
+  return Math.abs(h);
+}
+
+/** Nube de palabras: las más repetidas, más grandes y al centro. */
 function VivoPalabras({ palabras }: { palabras: Array<{ palabra: string; n: number }> }) {
   if (!palabras.length) return <p className="text-sm text-faint">Esperando las primeras palabras…</p>;
   const max = Math.max(1, ...palabras.map((p) => p.n));
+  // Ordenadas de mayor a menor y repartidas a los costados: la más votada queda en el medio.
+  const orden = [...palabras].sort((a, b) => b.n - a.n || a.palabra.localeCompare(b.palabra));
+  const nube: typeof orden = [];
+  orden.forEach((p, i) => (i % 2 ? nube.push(p) : nube.unshift(p)));
   return (
-    <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 py-6">
-      {palabras.map((p) => (
-        <span
-          key={p.palabra}
-          className="font-semibold transition-all duration-700"
-          style={{ fontSize: `${1 + (p.n / max) * 1.8}rem`, opacity: 0.55 + (p.n / max) * 0.45 }}
-        >
-          {p.palabra}
-          {p.n > 1 && <span className="ml-1 text-base text-teal">×{p.n}</span>}
-        </span>
-      ))}
+    <div className="flex flex-1 flex-wrap items-center justify-center gap-x-7 gap-y-2 py-6">
+      {nube.map((p) => {
+        const peso = p.n / max;
+        const h = hashPalabra(p.palabra);
+        return (
+          <span
+            key={p.palabra}
+            className="rise inline-block font-bold leading-none transition-all duration-700"
+            style={{
+              fontSize: `clamp(1rem, ${1.1 + peso * 3.4}vw, ${1.2 + peso * 3.6}rem)`,
+              color: COLORES_NUBE[h % COLORES_NUBE.length],
+              opacity: 0.6 + peso * 0.4,
+              transform: `translateY(${(h % 5) - 2}px) rotate(${peso > 0.6 ? 0 : (h % 7) - 3}deg)`,
+            }}
+          >
+            {p.palabra}
+          </span>
+        );
+      })}
     </div>
   );
 }

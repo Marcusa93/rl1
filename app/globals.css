@@ -95,6 +95,21 @@ body {
 }
 .rise { animation: rise 0.4s ease both; }
 
+/* Reacciones en vivo: el emoji sube, deriva un poco y se desvanece. */
+@keyframes flotar {
+  0% { opacity: 0; transform: translate(0, 10vh) scale(0.5); }
+  12% { opacity: 1; transform: translate(0, -6vh) scale(1); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx, 0), -92vh) scale(1.15); }
+}
+@keyframes flotar-corto {
+  0% { opacity: 0; transform: translate(0, -60px) scale(0.6); }
+  20% { opacity: 1; transform: translate(0, -110px) scale(1.1); }
+  100% { opacity: 0; transform: translate(var(--dx, 0), -40vh) scale(1); }
+}
+.flotar { animation: flotar var(--dur, 4s) ease-out forwards; }
+.flotar-corto { animation: flotar-corto var(--dur, 1.6s) ease-out forwards; }
+
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--color-line); border-radius: 999px; }
 ::selection { background: rgba(94, 234, 212, 0.3); }

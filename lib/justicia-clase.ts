@@ -103,15 +103,78 @@ export const JUS_ACTIVIDADES: ActividadVivo[] = [
     ],
     exclusiva: "ninguna",
   },
+  // --- Exprés: un toque y listo --------------------------------------------
   {
-    key: "jus_resumen",
+    key: "jus_x_alucina",
     kind: "opciones",
-    titulo: "¿Aceptarían este resumen?",
-    bajada: "Lea el correo y el resumen que aparecen en la pantalla. Después vote.",
+    titulo: "Exprés: ¿de dónde sale la respuesta?",
+    bajada: "Un chat general, sin búsqueda ni documentos cargados. Le pido un precedente. ¿Qué hace?",
     opciones: [
-      { id: "si", emoji: "✅", label: "Sí, es correcto" },
-      { id: "no", emoji: "❌", label: "No, agrega algo" },
-      { id: "nose", emoji: "🤔", label: "Necesito más información" },
+      { id: "busca", emoji: "🔎", label: "Lo busca en una base de fallos" },
+      { id: "predice", emoji: "🧠", label: "Predice el texto más probable" },
+      { id: "avisa", emoji: "🙋", label: "Me avisa si no lo sabe" },
+    ],
+    correcta: "predice",
+    revela: "Predice. Sin búsqueda ni documentos, arma la respuesta que suena más probable, aunque el fallo no exista.",
+  },
+  {
+    key: "jus_x_sesgo",
+    kind: "opciones",
+    titulo: "Exprés: si la herramienta discrimina…",
+    bajada: "¿De quién es la responsabilidad?",
+    opciones: [
+      { id: "disena", emoji: "🛠️", label: "De quien la diseña" },
+      { id: "usa", emoji: "🧑‍⚖️", label: "De quien la usa" },
+      { id: "adopta", emoji: "🏛️", label: "De la institución que la adopta" },
+      { id: "todos", emoji: "🤝", label: "De todos ellos" },
+    ],
+  },
+  {
+    key: "jus_x_principio",
+    kind: "opciones",
+    titulo: "Exprés: ¿qué principio es el más difícil de cumplir hoy?",
+    bajada: "Piense en su oficina, no en el ideal.",
+    opciones: [
+      { id: "verificacion", emoji: "🔍", label: "Verificación" },
+      { id: "control", emoji: "✋", label: "Control humano" },
+      { id: "privacidad", emoji: "🔐", label: "Privacidad" },
+      { id: "transparencia", emoji: "🪟", label: "Transparencia" },
+      { id: "igualdad", emoji: "⚖️", label: "Igualdad" },
+    ],
+  },
+  {
+    key: "jus_x_delegar",
+    kind: "encuesta",
+    titulo: "Exprés: ¿se lo delegaría a una IA?",
+    bajada: "Semáforo: verde, amarillo (con revisión) o rojo.",
+    preguntas: [
+      {
+        id: "transcribir",
+        q: "Transcribir una audiencia",
+        opciones: [
+          { id: "si", emoji: "🟢", label: "Sí" },
+          { id: "revision", emoji: "🟡", label: "Con revisión" },
+          { id: "no", emoji: "🔴", label: "No" },
+        ],
+      },
+      {
+        id: "notificar",
+        q: "Redactar una notificación en lenguaje claro",
+        opciones: [
+          { id: "si", emoji: "🟢", label: "Sí" },
+          { id: "revision", emoji: "🟡", label: "Con revisión" },
+          { id: "no", emoji: "🔴", label: "No" },
+        ],
+      },
+      {
+        id: "decidir",
+        q: "Decidir una medida cautelar",
+        opciones: [
+          { id: "si", emoji: "🟢", label: "Sí" },
+          { id: "revision", emoji: "🟡", label: "Con revisión" },
+          { id: "no", emoji: "🔴", label: "No" },
+        ],
+      },
     ],
   },
   {
@@ -121,6 +184,12 @@ export const JUS_ACTIVIDADES: ActividadVivo[] = [
     bajada: "Una tarea concreta con la que empezaría. Sobre esa tarea se arma un primer prototipo.",
     placeholder: "Empezaría por…",
     maxChars: 160,
+  },
+  {
+    key: "jus_nube",
+    kind: "palabra",
+    titulo: "Una palabra para llevarse",
+    bajada: "¿Con qué palabra se va de esta clase?",
   },
 ];
 
@@ -136,6 +205,7 @@ export const JUS_CONFIG: ClaseVivoConfig = {
   cargo: JUS_CARGO,
   poll: { alumno: 4000, alumnoMe: 20000, deck: 2500 },
   getActividad: getJusActividad,
+  reacciones: true,
 };
 
 // --- Kit de herramientas (barra inferior del deck) -------------------------
@@ -158,8 +228,6 @@ export const JUS_KIT: HerramientaKit[] = [
 ];
 
 // --- Placas del deck --------------------------------------------------------
-
-export type ModoDemo = "documentos" | "recorrido" | "fuentes" | "nuevo" | "revision";
 
 export interface JusPortada {
   t: "portada";
@@ -187,14 +255,6 @@ export interface JusActividad {
   t: "actividad";
   activa: ActivityKey;
   escena: string;
-  /** Material que se muestra en la placa, sobre los resultados. */
-  material?: "resumen";
-}
-export interface JusDemo {
-  t: "demo";
-  titulo: string;
-  bajada: string;
-  modo: ModoDemo;
 }
 /** Recreación ilustrativa de una interfaz (respaldo si no se puede mostrar en vivo). */
 export interface JusCaptura {
@@ -206,7 +266,7 @@ export interface JusCaptura {
 export interface JusFinal {
   t: "final";
 }
-export type JusSlide = (JusPortada | JusIngreso | JusPlaca | JusActividad | JusDemo | JusCaptura | JusFinal) & {
+export type JusSlide = (JusPortada | JusIngreso | JusPlaca | JusActividad | JusCaptura | JusFinal) & {
   parte?: string;
   /** Abre el kit de herramientas al llegar a esta placa. */
   kit?: boolean;
@@ -386,11 +446,12 @@ export const JUS_SLIDES: JusSlide[] = [
     bajada: "Una respuesta convincente puede equivocarse.",
     diagrama: "seguridad",
     explora: [
-      { emoji: "📄", label: "Lo que surge de los antecedentes", texto: "Está escrito en un documento y se puede señalar: «el cliente ofreció US$ 1.000»." },
-      { emoji: "💭", label: "Lo que infiere el modelo", texto: "Una conclusión razonable, pero no escrita: «necesita dinero con urgencia». Hay que confirmarla." },
-      { emoji: "💡", label: "Lo que propone", texto: "Una idea para discutir: «ofrecer un plan de pagos». No es un hecho: es una opción." },
+      { emoji: "📄", label: "Lo que surge de los documentos", texto: "Está escrito y se puede señalar: «la audiencia se celebró el 14 de febrero»." },
+      { emoji: "💭", label: "Lo que infiere el modelo", texto: "Una conclusión razonable, pero no escrita: «la parte no tenía interés en conciliar». Hay que confirmarla." },
+      { emoji: "💡", label: "Lo que propone", texto: "Una idea para discutir: «ofrecer una nueva audiencia de conciliación». No es un hecho: es una opción." },
     ],
   },
+  { t: "actividad", activa: "jus_x_alucina", escena: "Exprés · un toque" },
   {
     t: "placa",
     titulo: "Alucinación: seis precedentes que no existían",
@@ -414,13 +475,6 @@ export const JUS_SLIDES: JusSlide[] = [
         texto: "Pedir la fuente de cada cita, verificarla en una base oficial y usar herramientas que respondan desde documentos cargados (RAG).",
       },
     ],
-  },
-  { t: "actividad", activa: "jus_resumen", escena: "Lean primero. Decidan después.", material: "resumen" },
-  {
-    t: "placa",
-    titulo: "Lo que el resumen agregó",
-    bajada: "Ofrecer un pago no aclara todo.",
-    diagrama: "agrego",
   },
   {
     t: "placa",
@@ -446,6 +500,7 @@ export const JUS_SLIDES: JusSlide[] = [
       },
     ],
   },
+  { t: "actividad", activa: "jus_x_sesgo", escena: "Exprés · un toque" },
 
   // --- 5 · Cómo se instruye un modelo ----------------------------------------
   {
@@ -589,12 +644,6 @@ export const JUS_SLIDES: JusSlide[] = [
     ],
   },
   {
-    t: "demo",
-    titulo: "Una herramienta propia: cada afirmación, con su fuente",
-    bajada: "Expediente ficticio · haga clic en una afirmación.",
-    modo: "fuentes",
-  },
-  {
     t: "placa",
     titulo: "Una herramienta combina capacidades",
     bajada: "IA, búsquedas, cálculos y reglas.",
@@ -607,10 +656,91 @@ export const JUS_SLIDES: JusSlide[] = [
     ],
   },
 
-  // --- 6 · Human in the loop -------------------------------------------------
+  // --- 6 · Lo que dijo la Sala de lo Constitucional ------------------------------
+  // Inconstitucionalidad 57-2025 (resolución del 13/03/2026, comunicado del
+  // 16/03/2026) y seminario-taller de la Sala de lo Penal con GIZ (04/09/2026).
   {
     t: "placa",
-    parte: "6 · Human in the loop",
+    parte: "6 · Lo que dijo la Sala",
+    titulo: "La Sala de lo Constitucional ya se pronunció",
+    bajada: "Estándares éticos y legales para usar IA en el Estado y en los tribunales.",
+    diagrama: "sala",
+    pills: ["Inconstitucionalidad 57-2025", "Resolución del 13 de marzo de 2026"],
+    explora: [
+      {
+        emoji: "📝",
+        label: "Cómo empezó",
+        texto: "Unos ciudadanos usaron inteligencia artificial para redactar su demanda. La Sala vio la necesidad de aclarar qué es la IA, qué tipos hay y cómo funciona.",
+      },
+      {
+        emoji: "🌎",
+        label: "Qué revisó",
+        texto: "Las reglas nacionales e internacionales sobre su desarrollo y uso, y cómo la IA interactúa con los derechos fundamentales: reconoció sus beneficios y también sus riesgos.",
+      },
+      {
+        emoji: "🏛️",
+        label: "A quiénes alcanza",
+        texto: "El uso de IA generativa en las instituciones públicas y en los tribunales de justicia.",
+      },
+      {
+        emoji: "🎓",
+        label: "Y siguió",
+        texto: "El 4 de septiembre, la Sala de lo Penal (con la cooperación alemana, GIZ) hizo un seminario-taller con el mismo eje: que la IA no sustituya el razonamiento judicial ni la valoración humana.",
+      },
+    ],
+  },
+  {
+    t: "placa",
+    titulo: "Dos ámbitos, un mismo límite",
+    bajada: "Eficiencia, sí. Una persona que decide, siempre.",
+    diagrama: "ambitos",
+    explora: [
+      {
+        emoji: "🏢",
+        label: "Administración pública",
+        texto: "La IA puede agilizar trámites, mejorar la eficiencia y reducir la corrupción. Pero la automatización no debe provocar discriminación algorítmica por sesgos en los sistemas.",
+      },
+      {
+        emoji: "⚖️",
+        label: "Administración de justicia",
+        texto: "Toda persona tiene derecho a un juez humano y a un procurador humano. Por eso, la IA en labores judiciales va bajo estrictos controles éticos y legales, con supervisión humana obligatoria.",
+      },
+      {
+        emoji: "🏛️",
+        label: "«Procurador humano»",
+        texto: "La Sala no habla solo de jueces: también de quienes representan y defienden. La PGR está alcanzada por el mismo estándar.",
+      },
+      {
+        emoji: "🔗",
+        label: "Por qué",
+        texto: "Por lo que ya vimos: la alucinación y los sesgos no se resuelven solo con mejor tecnología, sino con una persona que revisa y responde por el resultado.",
+      },
+    ],
+  },
+  {
+    t: "placa",
+    titulo: "Los principios que fijó la Sala",
+    bajada: "Y el porqué de cada uno, con lo que vimos hoy.",
+    lede: "El objetivo: equilibrar los avances tecnológicos con las obligaciones del Estado, los jueces y los abogados frente a las personas.",
+    explora: [
+      { emoji: "🪟", label: "Transparencia", texto: "Saber cuándo y cómo se usó IA. Por qué: quien recibe una decisión tiene derecho a entender de dónde salió." },
+      { emoji: "🧾", label: "Responsabilidad", texto: "Siempre responde una persona. Por qué: la herramienta no firma. En Mata v. Avianca se sancionó a los abogados, no a ChatGPT." },
+      { emoji: "🔐", label: "Privacidad", texto: "Los datos de un expediente son de las personas. Por qué: lo que se carga en una herramienta externa puede quedar en su memoria o en sus servidores." },
+      { emoji: "✋", label: "Control humano", texto: "La IA asiste; no decide. Por qué: el derecho a un juez humano y a un procurador humano." },
+      { emoji: "🛡️", label: "Prevención de riesgos", texto: "Evaluar antes de usar. Por qué: conocer las fallas (alucinación, sesgo) permite diseñar controles antes del error." },
+      { emoji: "⚖️", label: "Igualdad", texto: "No discriminar. Por qué: si los datos del pasado discriminan, la herramienta repite la discriminación, como en COMPAS." },
+      { emoji: "🔍", label: "Verificación", texto: "Contrastar cada dato con su fuente. Por qué: una respuesta convincente puede ser falsa. RAG ayuda, pero no reemplaza la revisión." },
+      { emoji: "🧭", label: "Ética", texto: "Lo técnicamente posible no siempre es lo debido. Por qué: la dignidad humana y el debido proceso van primero." },
+      { emoji: "📘", label: "Buenas prácticas", texto: "Un método compartido en la oficina: pedir, verificar, corregir, aprobar. Por qué: sin método, cada persona improvisa." },
+      { emoji: "🔄", label: "Adaptación constante", texto: "Revisar reglas y capacitarse. Por qué: las herramientas cambian cada pocos meses; los criterios deben acompañarlas." },
+    ],
+  },
+  { t: "actividad", activa: "jus_x_principio", escena: "Exprés · un toque" },
+
+  // --- 7 · Human in the loop -------------------------------------------------
+  {
+    t: "placa",
+    parte: "7 · Human in the loop",
     titulo: "Human in the loop",
     bajada: "Dirigir, contrastar y corregir.",
     diagrama: "hitl",
@@ -632,6 +762,7 @@ export const JUS_SLIDES: JusSlide[] = [
       { emoji: "🚩", label: "Señales de alarma", texto: "Aprobar sin leer las fuentes, no poder explicar una conclusión, quedarse con el primer borrador." },
     ],
   },
+  { t: "actividad", activa: "jus_x_delegar", escena: "Exprés · semáforo" },
   {
     t: "placa",
     titulo: "Una forma concreta de trabajar",
@@ -646,10 +777,10 @@ export const JUS_SLIDES: JusSlide[] = [
     ],
   },
 
-  // --- 7 · Que la justicia construya sus herramientas -----------------------
+  // --- 8 · Que la justicia construya sus herramientas -----------------------
   {
     t: "placa",
-    parte: "7 · Soberanía tecnológica",
+    parte: "8 · Soberanía tecnológica",
     titulo: "La tecnología amplifica capacidades",
     bajada: "Lo que hacemos bien… y también lo que hacemos mal.",
     diagrama: "amplifica",
@@ -705,5 +836,6 @@ export const JUS_SLIDES: JusSlide[] = [
     diagrama: "antecedente",
   },
   { t: "actividad", activa: "jus_oficina", escena: "Una tarea concreta. Un primer prototipo." },
+  { t: "actividad", activa: "jus_nube", escena: "Para cerrar" },
   { t: "final" },
 ];

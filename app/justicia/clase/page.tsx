@@ -5,8 +5,10 @@
 // activa sola vía la API (cookie docente) y muestra los resultados en
 // vivo. Los participantes responden desde /justicia.
 //
-// Teclado: ← → avanzar · Home inicio · Shift+R reiniciar la sesión
-// (borra participantes y respuestas — usar después de ensayar).
+// Teclado: ← → avanzar · Home inicio · V revelar la respuesta de una
+// pregunta exprés · Shift+R reiniciar la sesión (borra participantes y
+// respuestas — usar después de ensayar). Los emojis que mandan desde el
+// celular flotan sobre cualquier placa.
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LogoRL1 } from "@/components/brand/logo-rl1";
@@ -16,7 +18,7 @@ import { DiagramaJus } from "@/components/justicia/diagramas";
 import { BuscadorExpediente } from "@/components/justicia/buscador";
 import { Captura, Leyenda, LEYENDAS } from "@/components/justicia/capturas";
 import { Explorables } from "@/components/clase/explorables";
-import { DEMO_INICIAL, DemoExpediente, EtiquetaDemo, type DemoEstado } from "@/components/justicia/expediente";
+import { LluviaReacciones } from "@/components/clase/reacciones";
 import {
   getJusActividad,
   JUS_AUTOR,
@@ -32,10 +34,8 @@ import {
   JUS_SLUG,
   JUS_SUBTITLE,
   JUS_TITLE,
-  type JusDemo,
   type JusSlide,
 } from "@/lib/justicia-clase";
-import { getDoc } from "@/lib/justicia-caso";
 import { COM_INSTAGRAM_URL, COM_QR_SRC } from "@/lib/comercial";
 import type { ActividadVivo } from "@/lib/clase-vivo";
 import { cn } from "@/lib/utils";
@@ -120,16 +120,16 @@ function Deck() {
     }
   });
   const [estado, setEstado] = useState<EstadoActivacion>(null);
-  const [demo, setDemoRaw] = useState<DemoEstado>(DEMO_INICIAL);
   // null = lo que indique la placa; true/false = lo que eligió el docente en esta placa
   const [kitManual, setKitManual] = useState<boolean | null>(null);
-  const setDemo = useCallback((fn: (e: DemoEstado) => DemoEstado) => setDemoRaw(fn), []);
+  const [revelada, setRevelada] = useState(false);
   const lastActivada = useRef<string | null>(null);
 
   const go = useCallback((n: number) => {
     const next = Math.min(Math.max(n, 0), JUS_SLIDES.length - 1);
     setIdx(next);
     setKitManual(null);
+    setRevelada(false);
     try {
       localStorage.setItem(STORAGE_KEY, String(next));
     } catch {}
@@ -164,12 +164,15 @@ function Deck() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ all: true }),
       });
-      setDemoRaw(DEMO_INICIAL);
       const actual = JUS_SLIDES[idx];
       if ("activa" in actual) activar(actual.activa);
     }
     function onKey(e: KeyboardEvent) {
       if ((e.target as HTMLElement)?.tagName === "INPUT") return;
+      if (e.key === "v" || e.key === "V") {
+        setRevelada((r) => !r);
+        return;
+      }
       if (["ArrowRight", "PageDown", " "].includes(e.key)) {
         e.preventDefault();
         go(idx + 1);
@@ -221,8 +224,10 @@ function Deck() {
           kitVisible && "pb-32 sm:pb-32",
         )}
       >
-        <Slide slide={slide} demo={demo} setDemo={setDemo} />
+        <Slide slide={slide} revelada={revelada} onRevelar={() => setRevelada((r) => !r)} />
       </main>
+
+      <LluviaReacciones slug={JUS_SLUG} contador={slide.t === "final"} />
 
       {kitVisible && (
         <div className="fixed inset-x-0 bottom-14 z-40 flex justify-center px-4">
@@ -307,15 +312,7 @@ function Logos({ alto = 64 }: { alto?: number }) {
   );
 }
 
-function Slide({
-  slide,
-  demo,
-  setDemo,
-}: {
-  slide: JusSlide;
-  demo: DemoEstado;
-  setDemo: (fn: (e: DemoEstado) => DemoEstado) => void;
-}) {
+function Slide({ slide, revelada, onRevelar }: { slide: JusSlide; revelada: boolean; onRevelar: () => void }) {
   switch (slide.t) {
     case "portada":
       return (
@@ -423,11 +420,8 @@ function Slide({
     case "actividad": {
       const act = getJusActividad(slide.activa);
       if (!act) return null;
-      return <SlideActividad act={act} escena={slide.escena} material={slide.material} />;
+      return <SlideActividad act={act} escena={slide.escena} revelada={revelada} onRevelar={onRevelar} />;
     }
-
-    case "demo":
-      return <SlideDemo slide={slide} demo={demo} setDemo={setDemo} />;
 
     case "captura":
       return (
@@ -450,6 +444,9 @@ function Slide({
         <div className="flex flex-col items-center text-center">
           <Logos alto={54} />
           <h1 className="text-gradient mt-8 font-mono text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">Gracias</h1>
+          <p className="rise mt-5 rounded-full border border-teal/40 bg-teal/10 px-5 py-2 text-lg text-foreground sm:text-xl" style={{ animationDelay: "0.2s" }}>
+            👏 Mande su aplauso desde el celular
+          </p>
           <p className="mt-4 text-lg text-muted">{JUS_EVENTO}</p>
           <p className="mt-5 text-lg font-medium">{JUS_AUTOR}</p>
           <p className="text-sm text-muted">{JUS_CARGO}</p>
@@ -495,7 +492,7 @@ function TarjetasHerramientas({ ids }: { ids: string[] }) {
         <span className="text-3xl">🛠️</span>
         <span>
           <span className="block text-xl font-semibold text-violet">Herramientas propias</span>
-          <span className="block text-sm text-muted">las vemos en un momento</span>
+          <span className="block text-sm text-muted">las vemos más adelante</span>
         </span>
       </div>
     </div>
@@ -504,7 +501,18 @@ function TarjetasHerramientas({ ids }: { ids: string[] }) {
 
 // --- Placa de actividad ---------------------------------------------------------------
 
-function SlideActividad({ act, escena, material }: { act: ActividadVivo; escena: string; material?: "resumen" }) {
+function SlideActividad({
+  act,
+  escena,
+  revelada,
+  onRevelar,
+}: {
+  act: ActividadVivo;
+  escena: string;
+  revelada: boolean;
+  onRevelar: () => void;
+}) {
+  const nube = act.kind === "palabra";
   return (
     <div className="flex h-full flex-col">
       <div className="flex flex-col-reverse items-start gap-5 md:flex-row md:justify-between md:gap-6">
@@ -519,61 +527,25 @@ function SlideActividad({ act, escena, material }: { act: ActividadVivo; escena:
         <ChipResponda qr={JUS_QR_PLATAFORMA} link={JUS_LINK} />
       </div>
 
-      {material === "resumen" && <MaterialResumen />}
-
-      <div className="rise mt-5 flex-1" style={{ animationDelay: "0.25s" }}>
-        <ResultadosVivo slug={JUS_SLUG} act={act} intervalo={JUS_CONFIG.poll.deck} compacto={Boolean(material)} />
+      <div className={cn("rise mt-5 flex flex-1 flex-col", nube && "[&>div]:min-h-[48vh]")} style={{ animationDelay: "0.25s" }}>
+        <ResultadosVivo slug={JUS_SLUG} act={act} intervalo={JUS_CONFIG.poll.deck} revelada={revelada} />
       </div>
-    </div>
-  );
-}
 
-/** Placa 18: el intercambio y el resumen que la IA produjo sobre él. */
-function MaterialResumen() {
-  const d4 = getDoc("D4");
-  return (
-    <div className="rise mt-5 grid gap-5 lg:grid-cols-2" style={{ animationDelay: "0.12s" }}>
-      <div className="glass rounded-2xl p-5">
-        <p className="mb-3 text-xs font-bold uppercase tracking-wider text-cyan">El intercambio (ficticio)</p>
-        <div className="space-y-2.5">
-          {d4.fragmentos.map((f) => (
-            <p key={f.id} className="rounded-lg border border-line/60 p-3 text-base leading-relaxed">
-              {f.texto}
-            </p>
-          ))}
+      {act.correcta && (
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={onRevelar}
+            className={cn(
+              "rounded-xl border px-4 py-2 text-sm font-medium transition",
+              revelada
+                ? "border-emerald-400/60 bg-emerald-400/15 text-emerald-300"
+                : "border-line bg-panel/60 text-muted hover:border-teal/60 hover:text-teal",
+            )}
+          >
+            {revelada ? "Ocultar respuesta" : "Ver respuesta"} <span className="ml-1 font-mono text-xs text-faint">V</span>
+          </button>
         </div>
-      </div>
-      <div className="glass flex flex-col rounded-2xl p-5">
-        <p className="mb-3 text-xs font-bold uppercase tracking-wider text-violet">✨ Resumen generado por IA</p>
-        <p className="flex flex-1 items-center rounded-xl border border-violet/40 bg-violet/10 p-5 text-xl font-medium leading-snug sm:text-2xl">
-          “Las partes coinciden en la deuda; solo discuten el plazo de pago.”
-        </p>
-      </div>
-    </div>
-  );
-}
-
-// --- Placa de demostración ---------------------------------------------------------------
-
-function SlideDemo({
-  slide,
-  demo,
-  setDemo,
-}: {
-  slide: JusDemo;
-  demo: DemoEstado;
-  setDemo: (fn: (e: DemoEstado) => DemoEstado) => void;
-}) {
-  return (
-    <div>
-      <div className="flex flex-col items-start gap-3 md:flex-row md:justify-between md:gap-6">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">{slide.titulo}</h1>
-          <p className="mt-2 text-base text-muted sm:text-xl">{slide.bajada}</p>
-        </div>
-        <EtiquetaDemo />
-      </div>
-      <DemoExpediente modo={slide.modo} estado={demo} setEstado={setDemo} />
+      )}
     </div>
   );
 }

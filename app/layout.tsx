@@ -6,9 +6,9 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "RL1 · Taller IA Abogacía",
+  title: "Clases en vivo · Laboratorio de IA",
   description:
-    "Aula en vivo — el docente activa las actividades, los participantes responden en tiempo real.",
+    "Aula en vivo del Dr. Marco Rossi: el docente activa las actividades y los participantes responden en tiempo real desde el celular.",
 };
 
 export default function RootLayout({

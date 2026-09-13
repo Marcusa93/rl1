@@ -35,7 +35,17 @@ export interface ActividadVivo {
   /** kind "texto" */
   placeholder?: string;
   maxChars?: number;
+  /** Pregunta exprés con respuesta: el deck la revela a pedido del docente. */
+  correcta?: string;
+  /** Explicación que acompaña a la respuesta revelada. */
+  revela?: string;
 }
+
+/** Emojis que el participante puede mandar a la pantalla en cualquier momento. */
+export const REACCIONES = ["👏", "💡", "🤖", "😮", "❤️", "🔥"] as const;
+export type Reaccion = (typeof REACCIONES)[number];
+/** Actividad bajo la que se guardan las reacciones en `responses`. */
+export const REACCION_ACTIVITY = "reaccion";
 
 /**
  * Tarjeta explorable de una placa: el docente la toca y se despliega una
@@ -57,4 +67,6 @@ export interface ClaseVivoConfig {
   cargo: string;
   poll: { alumno: number; alumnoMe: number; deck: number };
   getActividad: (key: string) => ActividadVivo | undefined;
+  /** Muestra la barra de emojis en el celular (llegan flotando a la pantalla). */
+  reacciones?: boolean;
 }

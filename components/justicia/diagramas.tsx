@@ -16,18 +16,20 @@ const PANEL = "#171a37";
 export type DiagramaJusId =
   | "bio" | "tiempo" | "conflicto" | "formas" | "juicio" | "caminos"
   | "papel" | "pdfs" | "flujo" | "verbos" | "contexto" | "combina"
-  | "seguridad" | "agrego" | "hitl" | "delegacion" | "metodo"
+  | "seguridad" | "hitl" | "delegacion" | "metodo"
   | "antecedente" | "rag"
   | "alucinacion" | "sesgos" | "sistema" | "memoria" | "proyectos" | "tareas"
+  | "sala" | "ambitos"
   | "amplifica" | "soberania" | "herramientas" | "lenguajeclaro";
 
 export function DiagramaJus({ id }: { id: DiagramaJusId }) {
   const D: Record<DiagramaJusId, () => React.ReactNode> = {
     bio: Bio, tiempo: Tiempo, conflicto: Conflicto, formas: Formas, juicio: Juicio, caminos: Caminos,
     papel: Papel, pdfs: Pdfs, flujo: Flujo, verbos: Verbos, contexto: Contexto, combina: Combina,
-    seguridad: Seguridad, agrego: Agrego, hitl: Hitl, delegacion: Delegacion, metodo: Metodo,
+    seguridad: Seguridad, hitl: Hitl, delegacion: Delegacion, metodo: Metodo,
     antecedente: Antecedente, rag: Rag,
     alucinacion: Alucinacion, sesgos: Sesgos, sistema: Sistema, memoria: Memoria, proyectos: Proyectos, tareas: Tareas,
+    sala: Sala, ambitos: Ambitos,
     amplifica: Amplifica, soberania: Soberania, herramientas: Herramientas, lenguajeclaro: LenguajeClaro,
   };
   return <>{D[id]()}</>;
@@ -424,7 +426,7 @@ function Combina() {
 // Hablar con seguridad no alcanza.
 function Seguridad() {
   const errores = [
-    { x: 90, y: 180, l: "atribuye a la parte equivocada" },
+    { x: 90, y: 180, l: "cita una norma que no aplica" },
     { x: 240, y: 208, l: "completa un dato ausente" },
     { x: 390, y: 180, l: "convierte una posibilidad en certeza" },
   ];
@@ -433,10 +435,10 @@ function Seguridad() {
       <rect x="90" y="40" width="300" height="80" rx="18" fill={PANEL} stroke={TEAL} strokeWidth="2" />
       <path d="M150,120 L140,142 L175,120" fill={PANEL} stroke={TEAL} strokeWidth="2" />
       <text x="240" y="74" textAnchor="middle" fill={TEXT} fontSize="13.5" fontWeight="600">
-        “Sin duda, las partes coinciden
+        “Sin duda, el plazo para recurrir
       </text>
       <text x="240" y="96" textAnchor="middle" fill={TEXT} fontSize="13.5" fontWeight="600">
-        en la deuda.”
+        es de diez días.”
       </text>
       {errores.map((e, i) => (
         <text key={e.l} x={e.x} y={e.y} textAnchor="middle" fill={ROSA} fontSize="11" fontWeight="600">
@@ -449,41 +451,88 @@ function Seguridad() {
   );
 }
 
-// Lo que el resumen agregó.
-function Agrego() {
+// La Sala de lo Constitucional ya se pronunció (Inc. 57-2025).
+function Sala() {
+  const pasos = [
+    { x: 16, color: CYAN, icono: "📝", l1: "Una demanda", l2: "redactada con IA" },
+    { x: 174, color: VIOLET, icono: "🔎", l1: "La Sala analiza:", l2: "IA, normas, derechos" },
+    { x: 332, color: TEAL, icono: "📜", l1: "Fija estándares", l2: "éticos y legales" },
+  ];
+  const w = 132;
   return (
-    <svg viewBox="0 0 480 280" className="w-full" role="img" aria-label="El resumen agregó un acuerdo que el correo no expresa">
-      <rect x="20" y="30" width="215" height="190" rx="14" fill={PANEL} stroke={CYAN} strokeWidth="1.8" />
-      <text x="36" y="54" fill={CYAN} fontSize="10" fontWeight="700" fontFamily="monospace">EL CORREO (08/04)</text>
-      {[
-        "“Podemos transferir US$ 1.000",
-        "esta semana, pero necesitamos",
-        "aclarar qué pasó con los dos",
-        "equipos que no están instalados",
-        "y con el del aula 3, que no enfría.”",
-      ].map((l, i) => (
-        <text key={l} x="36" y={84 + i * 22} fill={i >= 1 ? TEXT : FAINT} fontSize="11.5">
-          {l}
+    <svg viewBox={VB} className="w-full" role="img" aria-label="De una demanda redactada con IA a los estándares fijados por la Sala">
+      {pasos.map((p, i) => (
+        <g key={p.l1}>
+          <rect x={p.x} y="62" width={w} height="104" rx="16" fill={PANEL} stroke={p.color} strokeWidth="2">
+            <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="6s" begin={`${i * 2}s`} repeatCount="indefinite" />
+          </rect>
+          <text x={p.x + w / 2} y="100" textAnchor="middle" fontSize="24">
+            {p.icono}
+          </text>
+          <text x={p.x + w / 2} y="130" textAnchor="middle" fill={TEXT} fontSize="12" fontWeight="600">
+            {p.l1}
+          </text>
+          <text x={p.x + w / 2} y="148" textAnchor="middle" fill={FAINT} fontSize="11">
+            {p.l2}
+          </text>
+        </g>
+      ))}
+      {[148, 306].map((x) => (
+        <g key={x}>
+          <line x1={x + 2} y1="114" x2={x + 24} y2="114" stroke={LINE} strokeWidth="2" />
+          <path d={`M${x + 20},109 L${x + 26},114 L${x + 20},119`} fill="none" stroke={LINE} strokeWidth="2" />
+        </g>
+      ))}
+      <circle r="5" fill={AMBER}>
+        <animateMotion dur="6s" repeatCount="indefinite" path="M82,178 L240,178 L398,178" />
+      </circle>
+      <line x1="82" y1="178" x2="398" y2="178" stroke={LINE} strokeWidth="1.2" strokeDasharray="4 5" />
+      <text x="240" y="36" textAnchor="middle" fill={VIOLET} fontSize="11" fontWeight="700" fontFamily="monospace">
+        SALA DE LO CONSTITUCIONAL · INC. 57-2025
+      </text>
+      <Pie y={222}>alcanza a las instituciones públicas y a los tribunales</Pie>
+      <Pie y={242}>13 de marzo de 2026</Pie>
+    </svg>
+  );
+}
+
+// Dos ámbitos, un mismo límite.
+function Ambitos() {
+  const col = (x: number, titulo: string, color: string, filas: { t: string; c?: string }[]) => (
+    <g>
+      <rect x={x} y="22" width="212" height="164" rx="14" fill={PANEL} stroke={color} strokeWidth="1.8" />
+      <text x={x + 106} y="46" textAnchor="middle" fill={color} fontSize="10.5" fontWeight="700" fontFamily="monospace">
+        {titulo}
+      </text>
+      {filas.map((f, i) => (
+        <text key={f.t} x={x + 16} y={78 + i * 26} fill={f.c ?? TEXT} fontSize="12">
+          {f.t}
+          <animate attributeName="opacity" values="0.4;1;0.4" dur="8s" begin={`${i * 1.5}s`} repeatCount="indefinite" />
         </text>
       ))}
-      <rect x="30" y="96" width="198" height="94" rx="6" fill={AMBER} opacity="0.1">
-        <animate attributeName="opacity" values="0.04;0.2;0.04" dur="3s" repeatCount="indefinite" />
+    </g>
+  );
+  return (
+    <svg viewBox={VB} className="w-full" role="img" aria-label="Administración pública y administración de justicia: controles y supervisión humana">
+      {col(20, "ADMINISTRACIÓN PÚBLICA", CYAN, [
+        { t: "✓ agilizar trámites" },
+        { t: "✓ más eficiencia" },
+        { t: "✓ menos corrupción" },
+        { t: "⚠ sin discriminación algorítmica", c: ROSA },
+      ])}
+      {col(248, "ADMINISTRACIÓN DE JUSTICIA", TEAL, [
+        { t: "👤 derecho a un juez humano" },
+        { t: "👤 y a un procurador humano" },
+        { t: "✋ supervisión humana" },
+        { t: "    obligatoria", c: AMBER },
+      ])}
+      <rect x="20" y="200" width="440" height="30" rx="15" fill="none" stroke={VIOLET} strokeWidth="1.8">
+        <animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="4s" repeatCount="indefinite" />
       </rect>
-      <rect x="245" y="30" width="215" height="190" rx="14" fill={PANEL} stroke={ROSA} strokeWidth="1.8" />
-      <text x="261" y="54" fill={ROSA} fontSize="10" fontWeight="700" fontFamily="monospace">EL RESUMEN</text>
-      <text x="261" y="90" fill={TEXT} fontSize="12">“Las partes coinciden</text>
-      <text x="261" y="112" fill={TEXT} fontSize="12">en la deuda; solo discuten</text>
-      <text x="261" y="134" fill={TEXT} fontSize="12">el plazo de pago.”</text>
-      <line x1="261" y1="94" x2="400" y2="94" stroke={ROSA} strokeWidth="2">
-        <animate attributeName="x2" values="261;400;400" keyTimes="0;0.4;1" dur="3s" repeatCount="indefinite" />
-      </line>
-      <text x="352" y="180" textAnchor="middle" fill={ROSA} fontSize="11.5" fontWeight="700">
-        ⚠ agregó un acuerdo
+      <text x="240" y="220" textAnchor="middle" fill={TEXT} fontSize="12" fontWeight="600">
+        en los dos: controles éticos y legales
       </text>
-      <text x="352" y="198" textAnchor="middle" fill={FAINT} fontSize="10">que el correo no expresa</text>
-      <text x="240" y="258" textAnchor="middle" fill={FAINT} fontSize="12">
-        lo que dijeron las partes ≠ lo que interpretó la herramienta
-      </text>
+      <Pie y={252}>la IA asiste; la persona responde</Pie>
     </svg>
   );
 }

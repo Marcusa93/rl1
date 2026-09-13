@@ -8,7 +8,9 @@ import { LogoRL1 } from "@/components/brand/logo-rl1";
 import { Button, Spinner } from "@/components/ui";
 import { useLive } from "@/components/use-live";
 import { ActividadParticipante } from "@/components/clase/flow-vivo";
+import { BarraReacciones } from "@/components/clase/reacciones";
 import type { ClaseVivoConfig } from "@/lib/clase-vivo";
+import { cn } from "@/lib/utils";
 import type { ParticipantRow, SessionRow } from "@/lib/types";
 
 type SessionResp = { session: SessionRow; participants: number };
@@ -127,9 +129,10 @@ export function AlumnoApp({
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-3xl px-4 py-6">
+      <main className={cn("mx-auto max-w-3xl px-4 py-6", config.reacciones && "pb-32")}>
         <ActividadParticipante config={config} session={data.session} me={me} />
       </main>
+      {config.reacciones && <BarraReacciones slug={config.slug} />}
     </div>
   );
 }
