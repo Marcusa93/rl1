@@ -2,13 +2,13 @@
 GUIÓN — MASTERCLASS "JUSTICIA AUMENTADA"
 Semana de la Mediación · El Salvador · Lunes 14/09/2026
 Público: Corte Suprema, PGR, docentes y estudiantes UEES
-Presentación: rl1-beige.vercel.app/justicia/clase  (clave docente)
-Participantes: rl1-beige.vercel.app/justicia
+Presentación: justicia.rossi-ia.com/clase  (clave docente)
+Participantes: justicia.rossi-ia.com
 35 placas · 45 minutos + 5 de margen · ← → para avanzar
 ===========================================================
 
 ANTES DE EMPEZAR
-- Abrí /justicia/clase, poné la clave y compartí ESA ventana.
+- Abrí justicia.rossi-ia.com/clase, poné la clave y compartí ESA ventana.
 - Las actividades se activan solas al llegar a su placa.
 - Arriba a la derecha: cartel verde "en vivo: ...". Si se pone rojo,
   recargá y volvé a poner la clave.
@@ -273,9 +273,9 @@ PARTE 6 — DEL EXPEDIENTE A LA ACCIÓN
 
 ===========================================================
 SI ALGO FALLA
-- Los celulares no cambian de actividad: recargá /justicia/clase y
+- Los celulares no cambian de actividad: recargá justicia.rossi-ia.com/clase y
   volvé a poner la clave; la actividad se activa al entrar a la placa.
-- Alguien no puede entrar: que escriba rl1-beige.vercel.app/justicia
+- Alguien no puede entrar: que escriba justicia.rossi-ia.com
 - La demo (26, 28, 30, 32, 33) viene cargada con la página: si se
   corta internet a mitad de la clase, sigue funcionando. Lo único que
   se pierde es el cartel "votada" y los resultados en vivo.
