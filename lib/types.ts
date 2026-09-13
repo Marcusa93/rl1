@@ -31,10 +31,8 @@ export type ActivityKey =
   | "jus_encuesta"
   | "jus_tarea"
   | "jus_camino"
-  | "jus_herramienta"
+  | "jus_ias"
   | "jus_resumen"
-  | "jus_entrada"
-  | "jus_frase"
   | "jus_oficina";
 
 export type SessionStatus = "lobby" | "live" | "ended";

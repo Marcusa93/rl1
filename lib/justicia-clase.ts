@@ -87,12 +87,20 @@ export const JUS_ACTIVIDADES: ActividadVivo[] = [
     ],
   },
   {
-    key: "jus_herramienta",
-    kind: "texto",
-    titulo: "¿Qué herramienta construirían?",
-    bajada: "Una función que le gustaría tener mañana en su oficina. En una frase.",
-    placeholder: "Una herramienta que…",
-    maxChars: 160,
+    key: "jus_ias",
+    kind: "chips",
+    titulo: "¿Qué herramientas de IA usa?",
+    bajada: "Marque todas las que haya usado alguna vez.",
+    opciones: [
+      { id: "chatgpt", emoji: "🟢", label: "ChatGPT" },
+      { id: "claude", emoji: "🟠", label: "Claude" },
+      { id: "gemini", emoji: "🔵", label: "Gemini" },
+      { id: "notebooklm", emoji: "📓", label: "NotebookLM" },
+      { id: "copilot", emoji: "🪟", label: "Copilot" },
+      { id: "otra", emoji: "✨", label: "Otra" },
+      { id: "ninguna", emoji: "🚫", label: "Ninguna" },
+    ],
+    exclusiva: "ninguna",
   },
   {
     key: "jus_resumen",
@@ -103,28 +111,6 @@ export const JUS_ACTIVIDADES: ActividadVivo[] = [
       { id: "si", emoji: "✅", label: "Sí, es correcto" },
       { id: "no", emoji: "❌", label: "No, agrega algo" },
       { id: "nose", emoji: "🤔", label: "Necesito más información" },
-    ],
-  },
-  {
-    key: "jus_entrada",
-    kind: "opciones",
-    titulo: "¿Por dónde empezamos?",
-    bajada: "Les llega este expediente hoy. ¿Qué necesitan saber primero?",
-    opciones: [
-      { id: "hechos", emoji: "🕐", label: "Qué ocurrió" },
-      { id: "posiciones", emoji: "🧭", label: "Qué reclama cada parte" },
-      { id: "diferencias", emoji: "🔀", label: "Dónde difieren los documentos" },
-    ],
-  },
-  {
-    key: "jus_frase",
-    kind: "opciones",
-    titulo: "“Sí, recibimos todo”",
-    bajada: "Una captura de WhatsApp del 28/03. ¿Qué les permite concluir esta frase?",
-    opciones: [
-      { id: "todo", emoji: "✅", label: "Que el cliente recibió todo conforme" },
-      { id: "cajas", emoji: "📦", label: "Que llegaron las cajas" },
-      { id: "nada", emoji: "🤷", label: "Nada, sin más contexto" },
     ],
   },
   {
@@ -151,6 +137,25 @@ export const JUS_CONFIG: ClaseVivoConfig = {
   getActividad: getJusActividad,
 };
 
+// --- Kit de herramientas (barra inferior del deck) -------------------------
+
+export interface HerramientaKit {
+  id: string;
+  label: string;
+  emoji: string;
+  url: string;
+}
+
+/** Siempre a mano abajo en la presentación, para abrir en vivo lo que haga falta. */
+export const JUS_KIT: HerramientaKit[] = [
+  { id: "claude", label: "Claude", emoji: "🟠", url: "https://claude.ai" },
+  { id: "chatgpt", label: "ChatGPT", emoji: "🟢", url: "https://chatgpt.com" },
+  { id: "gemini", label: "Gemini", emoji: "🔵", url: "https://gemini.google.com" },
+  { id: "notebooklm", label: "NotebookLM", emoji: "📓", url: "https://notebooklm.google.com" },
+  { id: "pinpoint", label: "Pinpoint", emoji: "📌", url: "https://journaliststudio.google.com/pinpoint" },
+  { id: "tareas", label: "Tareas programadas", emoji: "⏰", url: "https://chatgpt.com/tasks" },
+];
+
 // --- Placas del deck --------------------------------------------------------
 
 export type ModoDemo = "documentos" | "recorrido" | "fuentes" | "nuevo" | "revision";
@@ -169,14 +174,16 @@ export interface JusPlaca {
   bajada: string;
   lede?: string;
   pills?: string[];
-  diagrama: DiagramaJusId;
+  diagrama?: DiagramaJusId;
+  /** Tarjetas grandes para abrir herramientas en vivo (reemplazan al diagrama). */
+  herramientas?: string[];
 }
 export interface JusActividad {
   t: "actividad";
   activa: ActivityKey;
   escena: string;
   /** Material que se muestra en la placa, sobre los resultados. */
-  material?: "resumen" | "captura";
+  material?: "resumen";
 }
 export interface JusDemo {
   t: "demo";
@@ -189,6 +196,8 @@ export interface JusFinal {
 }
 export type JusSlide = (JusPortada | JusIngreso | JusPlaca | JusActividad | JusDemo | JusFinal) & {
   parte?: string;
+  /** Abre el kit de herramientas al llegar a esta placa. */
+  kit?: boolean;
 };
 
 export const JUS_SLIDES: JusSlide[] = [
@@ -259,33 +268,14 @@ export const JUS_SLIDES: JusSlide[] = [
     diagrama: "pdfs",
     lede: "Tener la información disponible no es lo mismo que poder usarla.",
   },
-  {
-    t: "placa",
-    titulo: "Diseñar cómo trabajamos",
-    bajada: "Ingreso, organización, consulta y revisión.",
-    diagrama: "flujo",
-  },
-  { t: "actividad", activa: "jus_herramienta", escena: "Partamos de una necesidad real" },
 
-  // --- 4 · IA: capacidades y límites ----------------------------------------
+  // --- 4 · IA: capacidades y riesgos conocidos ------------------------------
   {
     t: "placa",
-    parte: "4 · IA: capacidades y límites",
+    parte: "4 · IA: capacidades y riesgos",
     titulo: "IA: trabajar con lenguaje",
     bajada: "Preguntar, resumir, comparar y generar.",
     diagrama: "verbos",
-  },
-  {
-    t: "placa",
-    titulo: "Responder bien requiere contexto",
-    bajada: "Documentos, instrucciones y una tarea clara.",
-    diagrama: "contexto",
-  },
-  {
-    t: "placa",
-    titulo: "Una herramienta combina capacidades",
-    bajada: "IA, búsquedas, cálculos y reglas.",
-    diagrama: "combina",
   },
   {
     t: "placa",
@@ -294,6 +284,14 @@ export const JUS_SLIDES: JusSlide[] = [
     pills: ["lo que surge de los antecedentes", "lo que infiere el modelo", "lo que propone y debe discutirse"],
     diagrama: "seguridad",
   },
+  {
+    t: "placa",
+    titulo: "Alucinación: seis precedentes que no existían",
+    bajada: "Mata v. Avianca, Nueva York, 2023.",
+    diagrama: "alucinacion",
+    lede: "Los abogados los obtuvieron de ChatGPT y no los verificaron. El tribunal los sancionó.",
+    kit: true,
+  },
   { t: "actividad", activa: "jus_resumen", escena: "Lean primero. Decidan después.", material: "resumen" },
   {
     t: "placa",
@@ -301,11 +299,89 @@ export const JUS_SLIDES: JusSlide[] = [
     bajada: "Ofrecer un pago no aclara todo.",
     diagrama: "agrego",
   },
-
-  // --- 5 · Human in the loop -------------------------------------------------
   {
     t: "placa",
-    parte: "5 · Human in the loop",
+    titulo: "Sesgos: el modelo aprende de lo que ve",
+    bajada: "Si los datos del pasado discriminan, la herramienta repite la discriminación.",
+    pills: [
+      "COMPAS (EE. UU., 2016): el doble de falsos “alto riesgo” en personas negras",
+      "Amazon (2018): selección de personal que penalizaba a mujeres",
+      "sesgo de automatización: confiar de más en la máquina",
+    ],
+    diagrama: "sesgos",
+    kit: true,
+  },
+
+  // --- 5 · Cómo se instruye un modelo ----------------------------------------
+  {
+    t: "placa",
+    parte: "5 · Cómo se instruye un modelo",
+    titulo: "Prompt de sistema y prompt de usuario",
+    bajada: "Reglas estables de la herramienta y el pedido de cada consulta.",
+    diagrama: "sistema",
+  },
+  {
+    t: "placa",
+    titulo: "Responder bien requiere contexto",
+    bajada: "Documentos, instrucciones y una tarea clara.",
+    diagrama: "contexto",
+    kit: true,
+  },
+  {
+    t: "placa",
+    titulo: "Memoria persistente",
+    bajada: "La herramienta recuerda de una conversación a otra.",
+    diagrama: "memoria",
+    lede: "Ahorra repetir el contexto. En el trabajo judicial, cuidado con lo que queda guardado.",
+    kit: true,
+  },
+  {
+    t: "placa",
+    titulo: "Proyectos y skills",
+    bajada: "Dónde se trabaja un asunto y cómo se hace una tarea.",
+    pills: ["Proyectos en Claude y ChatGPT", "Gems en Gemini", "Skills: procedimientos reutilizables"],
+    diagrama: "proyectos",
+    kit: true,
+  },
+  {
+    t: "placa",
+    titulo: "Tareas programadas y agentes",
+    bajada: "La herramienta ya no solo responde: también trabaja sola.",
+    diagrama: "tareas",
+    kit: true,
+  },
+  { t: "actividad", activa: "jus_ias", escena: "Antes de mostrarlo en vivo" },
+  {
+    t: "placa",
+    titulo: "Veámoslo en vivo",
+    bajada: "Las mismas ideas, en herramientas que ya existen.",
+    herramientas: ["claude", "chatgpt", "gemini", "notebooklm", "pinpoint"],
+  },
+  {
+    t: "placa",
+    titulo: "RAG: responder desde sus fuentes",
+    bajada: "Incorporar, organizar y recuperar contexto.",
+    diagrama: "rag",
+    lede: "Así trabaja NotebookLM: responde desde los documentos que usted carga y señala el pasaje. No se reentrena el modelo.",
+    kit: true,
+  },
+  {
+    t: "demo",
+    titulo: "Una herramienta propia: cada afirmación, con su fuente",
+    bajada: "Expediente ficticio · haga clic en una afirmación.",
+    modo: "fuentes",
+  },
+  {
+    t: "placa",
+    titulo: "Una herramienta combina capacidades",
+    bajada: "IA, búsquedas, cálculos y reglas.",
+    diagrama: "combina",
+  },
+
+  // --- 6 · Human in the loop -------------------------------------------------
+  {
+    t: "placa",
+    parte: "6 · Human in the loop",
     titulo: "Human in the loop",
     bajada: "Dirigir, contrastar y corregir.",
     diagrama: "hitl",
@@ -321,56 +397,43 @@ export const JUS_SLIDES: JusSlide[] = [
     titulo: "Una forma concreta de trabajar",
     bajada: "Pedir. Verificar. Corregir. Aprobar.",
     diagrama: "metodo",
-    lede: "Estos cuatro pasos los vamos a ver ahora, en la herramienta.",
+    lede: "Vale para cualquier herramienta, propia o ajena.",
   },
 
-  // --- 6 · Del expediente a la acción ----------------------------------------
+  // --- 7 · Que la justicia construya sus herramientas -----------------------
   {
     t: "placa",
-    parte: "6 · Del expediente a la acción",
+    parte: "7 · Soberanía tecnológica",
+    titulo: "La tecnología amplifica capacidades",
+    bajada: "Lo que hacemos bien… y también lo que hacemos mal.",
+    diagrama: "amplifica",
+  },
+  {
+    t: "placa",
+    titulo: "Que la justicia sea dueña de sus herramientas",
+    bajada: "Datos propios, reglas propias, control propio.",
+    diagrama: "soberania",
+  },
+  {
+    t: "placa",
+    titulo: "Lo que la justicia puede construir",
+    bajada: "Herramientas de IA al servicio del justiciable.",
+    diagrama: "herramientas",
+    lede: "CuscatIA investiga cómo diseñar asistencia para la redacción judicial, con control humano y trazabilidad. Es un proyecto en desarrollo.",
+  },
+  {
+    t: "placa",
+    titulo: "Lenguaje claro",
+    bajada: "Que la persona entienda su propio caso.",
+    diagrama: "lenguajeclaro",
+    kit: true,
+  },
+  {
+    t: "placa",
     titulo: "En Argentina ya hay experiencias",
     bajada: "Tecnología aplicada al trabajo judicial.",
     pills: ["Prometea · Ministerio Público Fiscal de la Ciudad de Buenos Aires", "automatización documental", "asistencia en tareas repetitivas"],
     diagrama: "antecedente",
-  },
-  {
-    t: "demo",
-    titulo: "Ahora, nuestro propio caso",
-    bajada: "Un conflicto ficticio. Documentos para explorar.",
-    modo: "documentos",
-  },
-  { t: "actividad", activa: "jus_entrada", escena: "Ustedes eligen por dónde empezar" },
-  {
-    t: "demo",
-    titulo: "El recorrido que eligieron",
-    bajada: "Cada resultado, vinculado al documento que lo sostiene.",
-    modo: "recorrido",
-  },
-  {
-    t: "placa",
-    titulo: "¿Cómo “aprende” del expediente?",
-    bajada: "Incorporar, organizar y recuperar contexto.",
-    diagrama: "rag",
-    lede: "Trabajar con el contexto de un expediente no significa reentrenar el modelo.",
-  },
-  {
-    t: "demo",
-    titulo: "Mostrame de dónde sale",
-    bajada: "Cada afirmación, con su fuente.",
-    modo: "fuentes",
-  },
-  { t: "actividad", activa: "jus_frase", escena: "Prueba digital", material: "captura" },
-  {
-    t: "demo",
-    titulo: "Aparece un mensaje más",
-    bajada: "Nuevo contexto. Conclusiones en revisión.",
-    modo: "nuevo",
-  },
-  {
-    t: "demo",
-    titulo: "Del análisis al trabajo concreto",
-    bajada: "Antecedentes judiciales y preparación de una mediación.",
-    modo: "revision",
   },
   { t: "actividad", activa: "jus_oficina", escena: "Una tarea concreta. Un primer prototipo." },
   { t: "final" },

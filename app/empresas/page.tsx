@@ -104,16 +104,16 @@ export default function EmpresasPage() {
   return (
     <div className="bg-grid min-h-dvh">
       <header className="sticky top-0 z-10 border-b border-line/60 bg-ink/80 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-          <LogoRL1 size={24} />
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1.5 rounded-full bg-teal/10 px-2.5 py-1 text-xs text-teal">
-              <span className="size-1.5 animate-pulse rounded-full bg-teal" />
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
+          <LogoRL1 size={24} className="shrink-0" />
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+            <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-teal/10 px-2.5 py-1 text-xs text-teal">
+              <span className="size-1.5 shrink-0 animate-pulse rounded-full bg-teal" />
               {data.participants} en clase
             </span>
-            <div className="text-right">
-              <p className="text-xs text-faint">{me.name.split(/\s+/)[0]}</p>
-              <p className="text-xs font-medium text-teal">{step.short}</p>
+            <div className="min-w-0 text-right">
+              <p className="truncate text-xs text-faint">{me.name.split(/\s+/)[0]}</p>
+              <p className="truncate text-xs font-medium text-teal">{step.short}</p>
             </div>
           </div>
         </div>

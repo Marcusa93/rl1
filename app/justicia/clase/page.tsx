@@ -11,7 +11,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LogoRL1 } from "@/components/brand/logo-rl1";
 import { Button, Spinner } from "@/components/ui";
-import { ChipResponda, Constelacion, ganador, PlacaIngreso, ResultadosVivo, useResultados } from "@/components/clase/vivo";
+import { ChipResponda, Constelacion, PlacaIngreso, ResultadosVivo } from "@/components/clase/vivo";
 import { DiagramaJus } from "@/components/justicia/diagramas";
 import { DEMO_INICIAL, DemoExpediente, EtiquetaDemo, type DemoEstado } from "@/components/justicia/expediente";
 import {
@@ -21,6 +21,7 @@ import {
   JUS_CONFIG,
   JUS_EVENTO,
   JUS_FECHA,
+  JUS_KIT,
   JUS_LINK,
   JUS_LOGOS,
   JUS_QR_PLATAFORMA,
@@ -117,12 +118,15 @@ function Deck() {
   });
   const [estado, setEstado] = useState<EstadoActivacion>(null);
   const [demo, setDemoRaw] = useState<DemoEstado>(DEMO_INICIAL);
+  // null = lo que indique la placa; true/false = lo que eligió el docente en esta placa
+  const [kitManual, setKitManual] = useState<boolean | null>(null);
   const setDemo = useCallback((fn: (e: DemoEstado) => DemoEstado) => setDemoRaw(fn), []);
   const lastActivada = useRef<string | null>(null);
 
   const go = useCallback((n: number) => {
     const next = Math.min(Math.max(n, 0), JUS_SLIDES.length - 1);
     setIdx(next);
+    setKitManual(null);
     try {
       localStorage.setItem(STORAGE_KEY, String(next));
     } catch {}
@@ -181,6 +185,8 @@ function Deck() {
     .find((s) => s.parte)?.parte;
 
   const estadoNombre = estado ? (getJusActividad(estado.key)?.titulo ?? "Ingreso") : "";
+  // El kit se despliega solo en las placas marcadas; en el resto, a un clic.
+  const kitVisible = kitManual ?? Boolean(slide.kit);
 
   return (
     <div className="bg-grid relative flex min-h-dvh flex-col overflow-hidden">
@@ -205,13 +211,52 @@ function Deck() {
         </div>
       )}
 
-      <main key={idx} className="rise mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-10 py-16">
+      <main
+        key={idx}
+        className={cn(
+          "rise mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 py-10 sm:px-10 sm:py-16",
+          kitVisible && "pb-32 sm:pb-32",
+        )}
+      >
         <Slide slide={slide} demo={demo} setDemo={setDemo} />
       </main>
 
-      <footer className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between px-5 py-3 text-xs text-faint">
-        <span className="hidden sm:block">{JUS_AUTOR} · Laboratorio de IA · Facultad de Derecho y Ciencias Sociales, UNT</span>
-        <div className="flex items-center gap-3">
+      {kitVisible && (
+        <div className="fixed inset-x-0 bottom-14 z-40 flex justify-center px-4">
+          <div className="rise glass flex max-w-full flex-wrap items-center justify-center gap-2 rounded-2xl px-3 py-2">
+            <span className="px-1 text-[11px] uppercase tracking-widest text-faint">Kit</span>
+            {JUS_KIT.map((h) => (
+              <a
+                key={h.id}
+                href={h.url}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1.5 whitespace-nowrap rounded-xl border border-line bg-panel/60 px-3 py-1.5 text-sm text-foreground transition hover:border-teal/60 hover:text-teal"
+              >
+                <span>{h.emoji}</span>
+                {h.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <footer className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 px-5 py-3 text-xs text-faint">
+        <div className="flex min-w-0 items-center gap-3">
+          <button
+            onClick={() => setKitManual(!kitVisible)}
+            className={cn(
+              "shrink-0 rounded-lg border px-3 py-1.5 transition",
+              kitVisible ? "border-teal/60 bg-teal/15 text-teal" : "border-line bg-panel/60 text-muted hover:text-teal",
+            )}
+            aria-expanded={kitVisible}
+            aria-label="Kit de herramientas"
+          >
+            🧰 Herramientas
+          </button>
+          <span className="hidden min-w-0 truncate lg:block">{JUS_AUTOR} · Laboratorio de IA · Facultad de Derecho y Ciencias Sociales, UNT</span>
+        </div>
+        <div className="ml-auto flex shrink-0 items-center gap-3">
           {idx === 0 && <span className="hidden md:block">← → para avanzar</span>}
           {parteActual && (
             <span className="hidden rounded-full border border-line bg-panel/60 px-2.5 py-1 font-mono text-[11px] text-muted md:block">
@@ -245,13 +290,13 @@ function Deck() {
 
 function Logos({ alto = 64 }: { alto?: number }) {
   return (
-    <div className="flex items-center justify-center gap-8">
+    <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8">
       {JUS_LOGOS.map((l) => (
         <img
           key={l.src}
           src={l.src}
           alt={l.alt}
-          style={{ height: alto }}
+          style={{ height: alto, maxHeight: "9vw" }}
           className={cn("w-auto", l.fondo && "rounded-xl bg-white p-1.5")}
         />
       ))}
@@ -282,8 +327,10 @@ function Slide({
           />
           <Constelacion />
           <Logos alto={62} />
-          <h1 className="text-gradient mt-8 font-mono text-7xl font-bold tracking-tight">{JUS_TITLE}</h1>
-          <p className="rise mt-4 max-w-3xl text-2xl text-muted" style={{ animationDelay: "0.2s" }}>
+          <h1 className="text-gradient mt-8 max-w-full break-words font-mono text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+            {JUS_TITLE}
+          </h1>
+          <p className="rise mt-4 max-w-3xl text-lg text-muted sm:text-2xl" style={{ animationDelay: "0.2s" }}>
             {JUS_SUBTITLE}
           </p>
           <p className="rise mt-2 text-sm text-faint" style={{ animationDelay: "0.3s" }}>
@@ -295,12 +342,12 @@ function Slide({
           <p className="rise text-sm text-muted" style={{ animationDelay: "0.45s" }}>
             {JUS_CARGO}
           </p>
-          <div className="rise mt-8 flex items-center gap-10" style={{ animationDelay: "0.6s" }}>
-            <div className="flex items-center gap-5">
+          <div className="rise mt-8 flex flex-wrap items-center justify-center gap-6 sm:gap-10" style={{ animationDelay: "0.6s" }}>
+            <div className="flex flex-wrap items-center justify-center gap-5">
               <img src={JUS_QR_PLATAFORMA} alt="Código QR para ingresar" width={150} height={150} className="rounded-xl border border-line bg-white p-2" />
-              <div className="pulse-ring rounded-2xl border-gradient px-7 py-5 text-left">
+              <div className="pulse-ring rounded-2xl border-gradient px-5 py-4 text-left sm:px-7 sm:py-5">
                 <p className="text-xs uppercase tracking-widest text-faint">Ingrese desde su celular</p>
-                <p className="text-gradient mt-1 font-mono text-2xl font-bold">{JUS_LINK}</p>
+                <p className="text-gradient mt-1 break-all font-mono text-xl font-bold sm:text-2xl">{JUS_LINK}</p>
                 <p className="mt-1 text-xs text-faint">escanee el código o escriba la dirección</p>
               </div>
             </div>
@@ -324,15 +371,18 @@ function Slide({
               {slide.parte}
             </p>
           )}
-          <h1 className="max-w-4xl text-5xl font-bold leading-tight tracking-tight">{slide.titulo}</h1>
-          <p className="rise mt-3 max-w-3xl text-2xl leading-snug text-muted" style={{ animationDelay: "0.12s" }}>
+          <h1 className="max-w-4xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">{slide.titulo}</h1>
+          <p className="rise mt-3 max-w-3xl text-lg leading-snug text-muted sm:text-2xl" style={{ animationDelay: "0.12s" }}>
             {slide.bajada}
           </p>
-          <div className="rise mx-auto mt-7 w-full max-w-3xl" style={{ animationDelay: "0.25s" }}>
-            <div className="glass rounded-2xl p-5">
-              <DiagramaJus id={slide.diagrama} />
+          {slide.diagrama && (
+            <div className="rise mx-auto mt-7 w-full max-w-3xl" style={{ animationDelay: "0.25s" }}>
+              <div className="glass rounded-2xl p-3 sm:p-5">
+                <DiagramaJus id={slide.diagrama} />
+              </div>
             </div>
-          </div>
+          )}
+          {slide.herramientas && <TarjetasHerramientas ids={slide.herramientas} />}
           {slide.pills && (
             <div className="mt-5 flex flex-wrap justify-center gap-2">
               {slide.pills.map((p, i) => (
@@ -367,7 +417,7 @@ function Slide({
       return (
         <div className="flex flex-col items-center text-center">
           <Logos alto={54} />
-          <h1 className="text-gradient mt-8 font-mono text-7xl font-bold tracking-tight">Gracias</h1>
+          <h1 className="text-gradient mt-8 font-mono text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">Gracias</h1>
           <p className="mt-4 text-lg text-muted">{JUS_EVENTO}</p>
           <p className="mt-5 text-lg font-medium">{JUS_AUTOR}</p>
           <p className="text-sm text-muted">{JUS_CARGO}</p>
@@ -380,25 +430,64 @@ function Slide({
   }
 }
 
+/** "Veámoslo en vivo": tarjetas grandes que abren cada herramienta en otra pestaña. */
+const QUE_MOSTRAR: Record<string, string> = {
+  claude: "proyectos, skills y memoria",
+  chatgpt: "prompt de sistema y tareas programadas",
+  gemini: "gems y búsqueda con fuentes",
+  notebooklm: "RAG: respuestas desde sus documentos",
+  pinpoint: "búsqueda en grandes volúmenes de documentos",
+};
+
+function TarjetasHerramientas({ ids }: { ids: string[] }) {
+  const items = JUS_KIT.filter((h) => ids.includes(h.id));
+  return (
+    <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {items.map((h, i) => (
+        <a
+          key={h.id}
+          href={h.url}
+          target="_blank"
+          rel="noreferrer"
+          className="rise glass group flex items-center gap-4 rounded-2xl p-5 transition hover:brightness-125"
+          style={{ animationDelay: `${0.15 + i * 0.08}s` }}
+        >
+          <span className="text-3xl">{h.emoji}</span>
+          <span className="min-w-0">
+            <span className="block text-xl font-semibold group-hover:text-teal">{h.label} ↗</span>
+            <span className="block text-sm text-muted">{QUE_MOSTRAR[h.id]}</span>
+          </span>
+        </a>
+      ))}
+      <div className="rise flex items-center gap-4 rounded-2xl border border-dashed border-violet/50 p-5" style={{ animationDelay: `${0.15 + items.length * 0.08}s` }}>
+        <span className="text-3xl">🛠️</span>
+        <span>
+          <span className="block text-xl font-semibold text-violet">Herramientas propias</span>
+          <span className="block text-sm text-muted">las vemos en un momento</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 // --- Placa de actividad ---------------------------------------------------------------
 
-function SlideActividad({ act, escena, material }: { act: ActividadVivo; escena: string; material?: "resumen" | "captura" }) {
+function SlideActividad({ act, escena, material }: { act: ActividadVivo; escena: string; material?: "resumen" }) {
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-start justify-between gap-6">
-        <div>
-          <p className="mb-3 flex items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-yellow-400">
-            <span className="size-1.5 rounded-full bg-current" />
+      <div className="flex flex-col-reverse items-start gap-5 md:flex-row md:justify-between md:gap-6">
+        <div className="min-w-0">
+          <p className="mb-3 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-yellow-400 sm:text-sm">
+            <span className="size-1.5 shrink-0 rounded-full bg-current" />
             {escena} · en vivo
           </p>
-          <h1 className="text-4xl font-bold tracking-tight">{act.titulo}</h1>
-          <p className="mt-3 max-w-3xl text-xl italic leading-snug text-muted">{act.bajada}</p>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">{act.titulo}</h1>
+          <p className="mt-3 max-w-3xl text-base italic leading-snug text-muted sm:text-xl">{act.bajada}</p>
         </div>
         <ChipResponda qr={JUS_QR_PLATAFORMA} link={JUS_LINK} />
       </div>
 
       {material === "resumen" && <MaterialResumen />}
-      {material === "captura" && <MaterialCaptura />}
 
       <div className="rise mt-5 flex-1" style={{ animationDelay: "0.25s" }}>
         <ResultadosVivo slug={JUS_SLUG} act={act} intervalo={JUS_CONFIG.poll.deck} compacto={Boolean(material)} />
@@ -424,30 +513,9 @@ function MaterialResumen() {
       </div>
       <div className="glass flex flex-col rounded-2xl p-5">
         <p className="mb-3 text-xs font-bold uppercase tracking-wider text-violet">✨ Resumen generado por IA</p>
-        <p className="flex flex-1 items-center rounded-xl border border-violet/40 bg-violet/10 p-5 text-2xl font-medium leading-snug">
+        <p className="flex flex-1 items-center rounded-xl border border-violet/40 bg-violet/10 p-5 text-xl font-medium leading-snug sm:text-2xl">
           “Las partes coinciden en la deuda; solo discuten el plazo de pago.”
         </p>
-      </div>
-    </div>
-  );
-}
-
-/** Placa 28: la captura que se incorporó al expediente. */
-function MaterialCaptura() {
-  return (
-    <div className="rise mt-6 flex justify-center" style={{ animationDelay: "0.12s" }}>
-      <div className="w-full max-w-md rounded-3xl border border-line bg-ink-2/80 p-5 shadow-2xl">
-        <div className="mb-4 flex items-center gap-3 border-b border-line/60 pb-3">
-          <span className="flex size-9 items-center justify-center rounded-full bg-teal/20 text-sm">🏫</span>
-          <div>
-            <p className="text-sm font-semibold">Encargado · Colegio Los Almendros</p>
-            <p className="text-xs text-faint">captura agregada al expediente · D5 · ficticia</p>
-          </div>
-        </div>
-        <div className="flex justify-start">
-          <p className="rounded-2xl rounded-tl-sm bg-teal/15 px-5 py-3 text-2xl">Sí, recibimos todo 👍</p>
-        </div>
-        <p className="mt-2 text-right font-mono text-xs text-faint">28/03/2026 · 18:42</p>
       </div>
     </div>
   );
@@ -464,26 +532,16 @@ function SlideDemo({
   demo: DemoEstado;
   setDemo: (fn: (e: DemoEstado) => DemoEstado) => void;
 }) {
-  // El voto del público ("¿por dónde empezamos?") decide la vista inicial del recorrido.
-  const { data } = useResultados(JUS_SLUG, "jus_entrada", 4000);
-  const elegida = ganador(data?.summary?.counts as Record<string, number> | undefined);
-
   return (
     <div>
-      <div className="flex items-start justify-between gap-6">
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight">{slide.titulo}</h1>
-          <p className="mt-2 text-xl text-muted">{slide.bajada}</p>
+      <div className="flex flex-col items-start gap-3 md:flex-row md:justify-between md:gap-6">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">{slide.titulo}</h1>
+          <p className="mt-2 text-base text-muted sm:text-xl">{slide.bajada}</p>
         </div>
         <EtiquetaDemo />
       </div>
-      <DemoExpediente modo={slide.modo} estado={demo} setEstado={setDemo} ganador={elegida} />
-      {slide.modo === "revision" && (
-        <p className="mt-4 text-center text-sm text-faint">
-          <b className="text-muted">CuscatIA</b> investiga cómo diseñar asistencia para tareas instrumentales de redacción judicial, con control
-          humano y trazabilidad. Es un proyecto en desarrollo, no un sistema institucional implementado.
-        </p>
-      )}
+      <DemoExpediente modo={slide.modo} estado={demo} setEstado={setDemo} />
     </div>
   );
 }

@@ -17,7 +17,9 @@ export type DiagramaJusId =
   | "bio" | "tiempo" | "conflicto" | "formas" | "juicio" | "caminos"
   | "papel" | "pdfs" | "flujo" | "verbos" | "contexto" | "combina"
   | "seguridad" | "agrego" | "hitl" | "delegacion" | "metodo"
-  | "antecedente" | "rag";
+  | "antecedente" | "rag"
+  | "alucinacion" | "sesgos" | "sistema" | "memoria" | "proyectos" | "tareas"
+  | "amplifica" | "soberania" | "herramientas" | "lenguajeclaro";
 
 export function DiagramaJus({ id }: { id: DiagramaJusId }) {
   const D: Record<DiagramaJusId, () => React.ReactNode> = {
@@ -25,6 +27,8 @@ export function DiagramaJus({ id }: { id: DiagramaJusId }) {
     papel: Papel, pdfs: Pdfs, flujo: Flujo, verbos: Verbos, contexto: Contexto, combina: Combina,
     seguridad: Seguridad, agrego: Agrego, hitl: Hitl, delegacion: Delegacion, metodo: Metodo,
     antecedente: Antecedente, rag: Rag,
+    alucinacion: Alucinacion, sesgos: Sesgos, sistema: Sistema, memoria: Memoria, proyectos: Proyectos, tareas: Tareas,
+    amplifica: Amplifica, soberania: Soberania, herramientas: Herramientas, lenguajeclaro: LenguajeClaro,
   };
   return <>{D[id]()}</>;
 }
@@ -651,6 +655,337 @@ function Rag() {
       <text x="318" y="160" fill={TEAL} fontSize="10" fontWeight="700" fontFamily="monospace">[D1 · cl. 4]</text>
       <text x="382" y="228" textAnchor="middle" fill={FAINT} fontSize="10">responder con fuente</text>
       <Pie y={252}>le damos contexto al modelo; no lo reentrenamos</Pie>
+    </svg>
+  );
+}
+
+// Alucinación: el escrito con precedentes que no existían (Mata v. Avianca, 2023).
+function Alucinacion() {
+  const citas = [
+    { t: "Varghese v. China Southern Airlines", falsa: true },
+    { t: "Shaboon v. EgyptAir", falsa: true },
+    { t: "Petersen v. Iran Air", falsa: true },
+    { t: "Martinez v. Delta Air Lines", falsa: true },
+    { t: "Estate of Durden v. KLM", falsa: true },
+    { t: "Miller v. United Airlines", falsa: true },
+  ];
+  return (
+    <svg viewBox="0 0 480 280" className="w-full" role="img" aria-label="Escrito con seis precedentes inexistentes">
+      <rect x="70" y="20" width="250" height="236" rx="10" fill={PANEL} stroke={LINE} strokeWidth="1.6" />
+      <text x="90" y="46" fill={TEXT} fontSize="11" fontWeight="700" fontFamily="monospace">ESCRITO · PRECEDENTES CITADOS</text>
+      {citas.map((c, i) => (
+        <g key={c.t}>
+          <text x="90" y={80 + i * 28} fill={TEXT} fontSize="11" fontStyle="italic">
+            {c.t}
+          </text>
+          <line x1="88" y1={76 + i * 28} x2="88" y2={76 + i * 28} stroke={ROSA} strokeWidth="2">
+            <animate
+              attributeName="x2"
+              values={`88;88;${88 + c.t.length * 5.6};${88 + c.t.length * 5.6}`}
+              keyTimes={`0;${0.1 + i * 0.12};${0.18 + i * 0.12};1`}
+              dur="7s"
+              repeatCount="indefinite"
+            />
+          </line>
+        </g>
+      ))}
+      <g opacity="0">
+        <rect x="336" y="96" width="126" height="84" rx="12" fill={ROSA} opacity="0.15" stroke={ROSA} strokeWidth="2.4" transform="rotate(-5 399 138)" />
+        <text x="399" y="130" textAnchor="middle" fill={ROSA} fontSize="15" fontWeight="700" transform="rotate(-5 399 138)">
+          NO EXISTEN
+        </text>
+        <text x="399" y="150" textAnchor="middle" fill={ROSA} fontSize="10" transform="rotate(-5 399 138)">
+          6 de 6
+        </text>
+        <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.82;0.88;1" dur="7s" repeatCount="indefinite" />
+      </g>
+      <text x="240" y="274" textAnchor="middle" fill={FAINT} fontSize="11.5">
+        el texto era convincente, con formato y citas verosímiles
+      </text>
+    </svg>
+  );
+}
+
+// Sesgos: el modelo aprende de lo que ve y lo repite.
+function Sesgos() {
+  const puntos: Array<[number, number, boolean]> = [];
+  for (let i = 0; i < 24; i++) puntos.push([46 + (i % 6) * 18, 62 + Math.floor(i / 6) * 22, i % 5 !== 0]);
+  return (
+    <svg viewBox={VB} className="w-full" role="img" aria-label="Datos históricos sesgados producen decisiones sesgadas">
+      <rect x="30" y="44" width="130" height="118" rx="12" fill="none" stroke={CYAN} strokeWidth="1.8" />
+      {puntos.map(([x, y, a], i) => (
+        <circle key={i} cx={x} cy={y} r="6" fill={a ? CYAN : AMBER} opacity={a ? 0.7 : 0.9} />
+      ))}
+      <text x="95" y="184" textAnchor="middle" fill={TEXT} fontSize="11.5" fontWeight="600">datos del pasado</text>
+      <text x="95" y="200" textAnchor="middle" fill={FAINT} fontSize="9.5">un grupo sobrerrepresentado</text>
+      <line x1="166" y1="103" x2="206" y2="103" stroke={LINE} strokeWidth="2" />
+      <circle cx="240" cy="103" r="32" fill={PANEL} stroke={VIOLET} strokeWidth="2.2" />
+      <text x="240" y="108" textAnchor="middle" fill={VIOLET} fontSize="11" fontWeight="700" fontFamily="monospace">modelo</text>
+      <text x="240" y="184" textAnchor="middle" fill={TEXT} fontSize="11.5" fontWeight="600">aprende el patrón</text>
+      <line x1="274" y1="103" x2="314" y2="103" stroke={LINE} strokeWidth="2" />
+      <circle r="4" fill={AMBER}>
+        <animateMotion dur="2.6s" repeatCount="indefinite" path="M166,103 L206,103 M274,103 L314,103" />
+      </circle>
+      <rect x="320" y="44" width="130" height="118" rx="12" fill={ROSA} opacity="0.08" stroke={ROSA} strokeWidth="2">
+        <animate attributeName="opacity" values="0.04;0.16;0.04" dur="3s" repeatCount="indefinite" />
+      </rect>
+      <text x="385" y="86" textAnchor="middle" fill={ROSA} fontSize="12" fontWeight="700">decisión nueva</text>
+      <text x="385" y="108" textAnchor="middle" fill={TEXT} fontSize="11">repite la</text>
+      <text x="385" y="126" textAnchor="middle" fill={TEXT} fontSize="11">desigualdad</text>
+      <text x="385" y="184" textAnchor="middle" fill={TEXT} fontSize="11.5" fontWeight="600">sin intención de nadie</text>
+      <Pie y={236}>el sesgo no se ve en el texto de la respuesta: se ve en los resultados</Pie>
+    </svg>
+  );
+}
+
+// Prompt de sistema y prompt de usuario.
+function Sistema() {
+  return (
+    <svg viewBox="0 0 480 280" className="w-full" role="img" aria-label="Instrucciones de sistema y consulta de usuario">
+      <rect x="30" y="22" width="420" height="104" rx="14" fill={VIOLET} opacity="0.1" stroke={VIOLET} strokeWidth="2" />
+      <text x="48" y="46" fill={VIOLET} fontSize="10.5" fontWeight="700" fontFamily="monospace">PROMPT DE SISTEMA · lo define quien construye la herramienta</text>
+      <text x="48" y="72" fill={TEXT} fontSize="11.5">“Usted asiste al personal de la PGR. Responda solo con base</text>
+      <text x="48" y="90" fill={TEXT} fontSize="11.5">en los documentos cargados. Si falta información, indíquelo.</text>
+      <text x="48" y="108" fill={TEXT} fontSize="11.5">Use lenguaje claro y cite la fuente de cada afirmación.”</text>
+      <rect x="30" y="142" width="420" height="58" rx="14" fill={TEAL} opacity="0.1" stroke={TEAL} strokeWidth="2" />
+      <text x="48" y="164" fill={TEAL} fontSize="10.5" fontWeight="700" fontFamily="monospace">PROMPT DE USUARIO · lo que se pide en cada consulta</text>
+      <text x="48" y="186" fill={TEXT} fontSize="11.5">“¿Cuándo vence el plazo para contestar la demanda?”</text>
+      <line x1="240" y1="200" x2="240" y2="226" stroke={LINE} strokeWidth="2" />
+      <circle r="4.5" fill={AMBER}>
+        <animateMotion dur="2s" repeatCount="indefinite" path="M240,126 L240,142 M240,200 L240,226" />
+      </circle>
+      <rect x="150" y="226" width="180" height="34" rx="10" fill={PANEL} stroke={CYAN} strokeWidth="1.8" />
+      <text x="240" y="248" textAnchor="middle" fill={TEXT} fontSize="11.5" fontWeight="600">respuesta</text>
+      <text x="340" y="248" fill={FAINT} fontSize="10">reglas estables + pedido del momento</text>
+    </svg>
+  );
+}
+
+// Memoria persistente.
+function Memoria() {
+  const recuerdos = ["cargo y oficina", "estilo de redacción", "formato preferido", "datos de un caso ⚠"];
+  return (
+    <svg viewBox={VB} className="w-full" role="img" aria-label="Lo que la herramienta recuerda entre conversaciones">
+      {[0, 1, 2].map((i) => (
+        <g key={i}>
+          <rect x={30 + i * 22} y={60 + i * 26} width="120" height="70" rx="10" fill={PANEL} stroke={LINE} strokeWidth="1.4" />
+          <text x={48 + i * 22} y={82 + i * 26} fill={FAINT} fontSize="9.5">conversación {i + 1}</text>
+        </g>
+      ))}
+      <path d="M200,115 C230,80 250,80 270,110" fill="none" stroke={LINE} strokeWidth="1.8" strokeDasharray="4 5" />
+      <circle r="4.5" fill={AMBER}>
+        <animateMotion dur="2.4s" repeatCount="indefinite" path="M200,115 C230,80 250,80 270,110" />
+      </circle>
+      <rect x="276" y="44" width="176" height="150" rx="14" fill={VIOLET} opacity="0.1" stroke={VIOLET} strokeWidth="2" />
+      <text x="364" y="68" textAnchor="middle" fill={VIOLET} fontSize="11" fontWeight="700" fontFamily="monospace">MEMORIA</text>
+      {recuerdos.map((r, i) => {
+        const riesgo = r.includes("⚠");
+        return (
+          <g key={r}>
+            <rect x="292" y={82 + i * 26} width="144" height="20" rx="10" fill={riesgo ? ROSA : TEAL} opacity="0.15" stroke={riesgo ? ROSA : TEAL} strokeWidth="1.2">
+              <animate attributeName="opacity" values="0.08;0.3;0.08" dur="5s" begin={`${i * 1.2}s`} repeatCount="indefinite" />
+            </rect>
+            <text x="364" y={96 + i * 26} textAnchor="middle" fill={riesgo ? ROSA : TEXT} fontSize="10.5">
+              {r}
+            </text>
+          </g>
+        );
+      })}
+      <Pie y={232}>útil para no repetir el contexto · revisar, editar y borrar lo que guarda</Pie>
+    </svg>
+  );
+}
+
+// Proyectos y skills: dónde se trabaja vs. cómo se hace una tarea.
+function Proyectos() {
+  return (
+    <svg viewBox={VB} className="w-full" role="img" aria-label="Diferencia entre proyectos y skills">
+      <rect x="24" y="30" width="206" height="176" rx="14" fill={TEAL} opacity="0.08" stroke={TEAL} strokeWidth="2" />
+      <text x="127" y="56" textAnchor="middle" fill={TEAL} fontSize="12.5" fontWeight="700" fontFamily="monospace">PROYECTO</text>
+      <text x="127" y="74" textAnchor="middle" fill={FAINT} fontSize="10">¿dónde trabajo este asunto?</text>
+      {["instrucciones del asunto", "documentos del caso", "conversaciones del tema"].map((t, i) => (
+        <g key={t}>
+          <rect x="44" y={90 + i * 32} width="166" height="24" rx="7" fill={PANEL} stroke={TEAL} strokeWidth="1.3" />
+          <text x="127" y={106 + i * 32} textAnchor="middle" fill={TEXT} fontSize="10.5">{t}</text>
+        </g>
+      ))}
+      <rect x="250" y="30" width="206" height="176" rx="14" fill={VIOLET} opacity="0.08" stroke={VIOLET} strokeWidth="2" />
+      <text x="353" y="56" textAnchor="middle" fill={VIOLET} fontSize="12.5" fontWeight="700" fontFamily="monospace">SKILL</text>
+      <text x="353" y="74" textAnchor="middle" fill={FAINT} fontSize="10">¿cómo se hace esta tarea?</text>
+      {["procedimiento paso a paso", "plantillas y criterios", "se usa en cualquier asunto"].map((t, i) => (
+        <g key={t}>
+          <rect x="270" y={90 + i * 32} width="166" height="24" rx="7" fill={PANEL} stroke={VIOLET} strokeWidth="1.3">
+            <animate attributeName="stroke-opacity" values="0.4;1;0.4" dur="4.5s" begin={`${i * 1.5}s`} repeatCount="indefinite" />
+          </rect>
+          <text x="353" y={106 + i * 32} textAnchor="middle" fill={TEXT} fontSize="10.5">{t}</text>
+        </g>
+      ))}
+      <Pie y={236}>el proyecto aporta el contexto · la skill aporta el método</Pie>
+    </svg>
+  );
+}
+
+// Tareas programadas: la herramienta trabaja sola, a una hora.
+function Tareas() {
+  const pasos = ["buscar novedades", "filtrar por materia", "resumir", "enviar"];
+  return (
+    <svg viewBox={VB} className="w-full" role="img" aria-label="Una tarea programada que se ejecuta sola cada mañana">
+      <circle cx="62" cy="112" r="34" fill={PANEL} stroke={AMBER} strokeWidth="2.4" />
+      <line x1="62" y1="112" x2="62" y2="90" stroke={AMBER} strokeWidth="2.4" strokeLinecap="round" />
+      <line x1="62" y1="112" x2="78" y2="112" stroke={AMBER} strokeWidth="2.4" strokeLinecap="round">
+        <animateTransform attributeName="transform" type="rotate" from="0 62 112" to="360 62 112" dur="6s" repeatCount="indefinite" />
+      </line>
+      <text x="62" y="166" textAnchor="middle" fill={AMBER} fontSize="11" fontWeight="700">cada día · 7:00</text>
+      {pasos.map((p, i) => (
+        <g key={p}>
+          <rect x={112 + i * 88} y="92" width="80" height="40" rx="10" fill={PANEL} stroke={TEAL} strokeWidth="1.8">
+            <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="6s" begin={`${i * 1.5}s`} repeatCount="indefinite" />
+          </rect>
+          <text x={152 + i * 88} y="116" textAnchor="middle" fill={TEXT} fontSize="10">{p}</text>
+        </g>
+      ))}
+      <circle r="4" fill={AMBER}>
+        <animateMotion dur="6s" repeatCount="indefinite" path="M96,112 L464,112" />
+      </circle>
+      <text x="290" y="170" textAnchor="middle" fill={FAINT} fontSize="11">nadie la dispara: se ejecuta sola y deja el resultado</text>
+      <Pie y={226}>de responder cuando se le pregunta, a trabajar por su cuenta</Pie>
+    </svg>
+  );
+}
+
+// La tecnología amplifica capacidades (y también los errores).
+function Amplifica() {
+  return (
+    <svg viewBox={VB} className="w-full" role="img" aria-label="La tecnología amplifica lo que ya hacemos">
+      <Muneco x={90} y={130} color={TEAL} escala={1.8} />
+      <text x="90" y="186" textAnchor="middle" fill={TEXT} fontSize="11.5" fontWeight="600">criterio</text>
+      <path d="M130,122 L200,96 L200,150 Z" fill={VIOLET} opacity="0.2" stroke={VIOLET} strokeWidth="2" />
+      <text x="170" y="178" textAnchor="middle" fill={VIOLET} fontSize="10.5" fontWeight="700">tecnología</text>
+      {[0, 1, 2].map((i) => (
+        <path
+          key={i}
+          d={`M${214 + i * 34},${92 - i * 16} Q${240 + i * 34},123 ${214 + i * 34},${154 + i * 16}`}
+          fill="none"
+          stroke={TEAL}
+          strokeWidth="2.4"
+          opacity="0.3"
+        >
+          <animate attributeName="opacity" values="0.1;0.9;0.1" dur="2.4s" begin={`${i * 0.4}s`} repeatCount="indefinite" />
+        </path>
+      ))}
+      <rect x="322" y="70" width="136" height="44" rx="11" fill={TEAL} opacity="0.12" stroke={TEAL} strokeWidth="1.8" />
+      <text x="390" y="97" textAnchor="middle" fill={TEXT} fontSize="11.5">más alcance, más rápido</text>
+      <rect x="322" y="130" width="136" height="44" rx="11" fill={ROSA} opacity="0.1" stroke={ROSA} strokeWidth="1.8" />
+      <text x="390" y="157" textAnchor="middle" fill={ROSA} fontSize="11.5">y el error, también</text>
+      <Pie y={228}>amplifica lo que ya hacemos: por eso importa quién la diseña</Pie>
+    </svg>
+  );
+}
+
+// Soberanía: herramienta externa vs. herramienta propia.
+function Soberania() {
+  return (
+    <svg viewBox={VB} className="w-full" role="img" aria-label="Herramienta externa frente a herramienta propia de la justicia">
+      <rect x="24" y="36" width="196" height="166" rx="14" fill="none" stroke={LINE} strokeWidth="1.8" strokeDasharray="5 5" />
+      <text x="122" y="60" textAnchor="middle" fill={FAINT} fontSize="11.5" fontWeight="700" fontFamily="monospace">HERRAMIENTA AJENA</text>
+      <rect x="82" y="76" width="80" height="54" rx="8" fill="#0b0c1c" stroke={LINE} strokeWidth="1.6" />
+      <text x="122" y="108" textAnchor="middle" fill={FAINT} fontSize="18">?</text>
+      {["los datos salen", "las reglas cambian", "no se puede auditar"].map((t, i) => (
+        <text key={t} x="122" y={152 + i * 17} textAnchor="middle" fill={ROSA} fontSize="10.5">
+          {t}
+        </text>
+      ))}
+      <rect x="260" y="36" width="196" height="166" rx="14" fill={TEAL} opacity="0.08" stroke={TEAL} strokeWidth="2.4">
+        <animate attributeName="opacity" values="0.05;0.15;0.05" dur="3s" repeatCount="indefinite" />
+      </rect>
+      <text x="358" y="60" textAnchor="middle" fill={TEAL} fontSize="11.5" fontWeight="700" fontFamily="monospace">HERRAMIENTA PROPIA</text>
+      <text x="358" y="98" textAnchor="middle" fontSize="24">🏛️</text>
+      {["los datos quedan adentro", "las reglas las fija la justicia", "cada uso queda registrado"].map((t, i) => (
+        <text key={t} x="358" y={134 + i * 20} textAnchor="middle" fill={TEXT} fontSize="10.5">
+          ✓ {t}
+        </text>
+      ))}
+      <Pie y={236}>la institución que usa la herramienta también debería poder gobernarla</Pie>
+    </svg>
+  );
+}
+
+// Herramientas que la justicia puede construir.
+function Herramientas() {
+  const items = [
+    { a: -90, e: "🔎", l: "búsqueda de jurisprudencia" },
+    { a: -18, e: "📝", l: "asistencia en redacción" },
+    { a: 54, e: "🤖", l: "agentes por temática" },
+    { a: 126, e: "📊", l: "jurimetría y estadística" },
+    { a: 198, e: "💬", l: "lenguaje claro" },
+  ];
+  const cx = 240, cy = 122;
+  return (
+    <svg viewBox={VB} className="w-full" role="img" aria-label="Herramientas de IA que la justicia puede construir">
+      {items.map((it, i) => {
+        const x = cx + 168 * Math.cos((it.a * Math.PI) / 180);
+        const y = cy + 88 * Math.sin((it.a * Math.PI) / 180);
+        return (
+          <g key={it.l}>
+            <line x1={cx} y1={cy} x2={x} y2={y} stroke={LINE} strokeWidth="1.3" />
+            <circle r="3.5" fill={AMBER}>
+              <animateMotion dur="3s" begin={`${i * 0.6}s`} repeatCount="indefinite" path={`M${cx},${cy} L${x},${y}`} />
+            </circle>
+            <rect x={x - 76} y={y - 16} width="152" height="32" rx="16" fill={PANEL} stroke={TEAL} strokeWidth="1.8" />
+            <text x={x - 60} y={y + 5} fontSize="13">{it.e}</text>
+            <text x={x - 42} y={y + 4} fill={TEXT} fontSize="10.5">{it.l}</text>
+          </g>
+        );
+      })}
+      <circle cx={cx} cy={cy} r="34" fill={PANEL} stroke={VIOLET} strokeWidth="2.6">
+        <animate attributeName="stroke-opacity" values="0.5;1;0.5" dur="2.6s" repeatCount="indefinite" />
+      </circle>
+      <text x={cx} y={cy - 2} textAnchor="middle" fontSize="16">⚖️</text>
+      <text x={cx} y={cy + 16} textAnchor="middle" fill={VIOLET} fontSize="9" fontWeight="700" fontFamily="monospace">JUSTICIA</text>
+      <Pie y={250}>al servicio del justiciable, no solo del despacho</Pie>
+    </svg>
+  );
+}
+
+// Lenguaje claro: la misma comunicación, entendible.
+function LenguajeClaro() {
+  return (
+    <svg viewBox="0 0 480 280" className="w-full" role="img" aria-label="Una notificación reescrita en lenguaje claro">
+      <rect x="20" y="24" width="214" height="200" rx="14" fill={PANEL} stroke={LINE} strokeWidth="1.8" />
+      <text x="36" y="48" fill={FAINT} fontSize="10" fontWeight="700" fontFamily="monospace">ANTES</text>
+      {[
+        "“Hágase saber a las partes que,",
+        "atento al estado de autos y",
+        "conforme lo dispuesto, se fija",
+        "audiencia a los fines previstos",
+        "para el día de la fecha ut supra,",
+        "bajo apercibimiento de ley.”",
+      ].map((l, i) => (
+        <text key={l} x="36" y={76 + i * 21} fill={FAINT} fontSize="11">
+          {l}
+        </text>
+      ))}
+      <line x1="238" y1="124" x2="246" y2="124" stroke={LINE} strokeWidth="2" />
+      <circle r="4.5" fill={AMBER}>
+        <animateMotion dur="2s" repeatCount="indefinite" path="M234,124 L250,124" />
+      </circle>
+      <rect x="250" y="24" width="210" height="200" rx="14" fill={TEAL} opacity="0.1" stroke={TEAL} strokeWidth="2.2" />
+      <text x="266" y="48" fill={TEAL} fontSize="10" fontWeight="700" fontFamily="monospace">DESPUÉS</text>
+      {[
+        "“Su audiencia es el martes",
+        "22 de septiembre a las 9:00,",
+        "en la sala 3.",
+        "",
+        "Si no puede asistir, avise",
+        "antes del viernes.”",
+      ].map((l, i) => (
+        <text key={`${l}${i}`} x="266" y={76 + i * 21} fill={TEXT} fontSize="11.5" fontWeight={i < 3 ? 600 : 400}>
+          {l}
+        </text>
+      ))}
+      <text x="240" y="256" textAnchor="middle" fill={FAINT} fontSize="11.5">
+        la IA propone la versión clara · la persona verifica que diga lo mismo
+      </text>
     </svg>
   );
 }

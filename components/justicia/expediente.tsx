@@ -63,14 +63,14 @@ export function DemoExpediente({
 
   return (
     <div className="mt-5 grid gap-5 lg:grid-cols-[1.15fr_1fr]">
-      <div className="glass flex max-h-[58vh] flex-col overflow-auto rounded-2xl p-5">
+      <div className="glass flex max-h-[45vh] flex-col overflow-auto rounded-2xl p-4 sm:p-5 lg:max-h-[58vh]">
         {modo === "documentos" && <VistaDocumentos estado={estado} ver={ver} />}
         {modo === "recorrido" && <VistaRecorrido estado={estado} setEstado={setEstado} ver={ver} ganador={ganador} />}
         {modo === "fuentes" && <VistaFuentes estado={estado} ver={ver} />}
         {modo === "nuevo" && <VistaNuevo estado={estado} setEstado={setEstado} ver={ver} />}
         {modo === "revision" && <VistaRevision estado={estado} setEstado={setEstado} />}
       </div>
-      <div className="glass flex max-h-[58vh] flex-col overflow-auto rounded-2xl p-5">
+      <div className="glass flex max-h-[45vh] flex-col overflow-auto rounded-2xl p-4 sm:p-5 lg:max-h-[58vh]">
         {modo === "revision" ? (
           <Salida estado={estado} setEstado={setEstado} />
         ) : modo === "nuevo" ? (
