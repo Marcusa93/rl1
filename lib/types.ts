@@ -30,13 +30,10 @@ export type ActivityKey =
   // Masterclass "Justicia aumentada" (/justicia) — prefijo jus_
   | "jus_encuesta"
   | "jus_tarea"
-  | "jus_camino"
-  | "jus_ias"
   | "jus_x_alucina"
-  | "jus_x_sesgo"
   | "jus_x_principio"
   | "jus_x_delegar"
-  | "jus_oficina"
+  | "jus_sim"
   | "jus_nube";
 
 export type SessionStatus = "lobby" | "live" | "ended";

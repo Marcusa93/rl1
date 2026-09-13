@@ -16,7 +16,8 @@ import { Button, Spinner } from "@/components/ui";
 import { ChipResponda, Constelacion, PlacaIngreso, ResultadosVivo } from "@/components/clase/vivo";
 import { DiagramaJus } from "@/components/justicia/diagramas";
 import { BuscadorExpediente } from "@/components/justicia/buscador";
-import { Captura, Leyenda, LEYENDAS } from "@/components/justicia/capturas";
+import { Captura, Leyenda, LEYENDAS, type CapturaId } from "@/components/justicia/capturas";
+import { SimuladorConflicto } from "@/components/justicia/simulador";
 import { Explorables } from "@/components/clase/explorables";
 import { LluviaReacciones } from "@/components/clase/reacciones";
 import {
@@ -34,6 +35,7 @@ import {
   JUS_SLUG,
   JUS_SUBTITLE,
   JUS_TITLE,
+  type JusPlaca,
   type JusSlide,
 } from "@/lib/justicia-clase";
 import { COM_INSTAGRAM_URL, COM_QR_SRC } from "@/lib/comercial";
@@ -363,18 +365,104 @@ function Slide({ slide, revelada, onRevelar }: { slide: JusSlide; revelada: bool
       return <PlacaIngreso slug={JUS_SLUG} qr={JUS_QR_PLATAFORMA} link={JUS_LINK} />;
 
     case "placa":
+      return <PlacaVista slide={slide} />;
+
+    case "actividad": {
+      const act = getJusActividad(slide.activa);
+      if (!act) return null;
+      return <SlideActividad act={act} escena={slide.escena} revelada={revelada} onRevelar={onRevelar} />;
+    }
+
+    case "simulador":
       return (
         <div>
-          {slide.parte && (
-            <p className="mb-4 flex items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-violet">
-              <span className="size-1.5 rounded-full bg-current" />
-              {slide.parte}
-            </p>
-          )}
-          <h1 className="max-w-4xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">{slide.titulo}</h1>
-          <p className="rise mt-3 max-w-3xl text-lg leading-snug text-muted sm:text-2xl" style={{ animationDelay: "0.12s" }}>
-            {slide.bajada}
+          {slide.parte && <Parte texto={slide.parte} />}
+          <SimuladorConflicto slug={JUS_SLUG} activity={slide.activa} intervalo={JUS_CONFIG.poll.deck} />
+        </div>
+      );
+
+    case "final":
+      return (
+        <div className="flex flex-col items-center text-center">
+          <Logos alto={54} />
+          <h1 className="text-gradient mt-8 font-mono text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">Gracias</h1>
+          <p className="rise mt-5 rounded-full border border-teal/40 bg-teal/10 px-5 py-2 text-lg text-foreground sm:text-xl" style={{ animationDelay: "0.2s" }}>
+            👏 Mande su aplauso desde el celular
           </p>
+          <p className="mt-4 text-lg text-muted">{JUS_EVENTO}</p>
+          <p className="mt-5 text-lg font-medium">{JUS_AUTOR}</p>
+          <p className="text-sm text-muted">{JUS_CARGO}</p>
+          <a href={COM_INSTAGRAM_URL} target="_blank" rel="noreferrer" className="mt-8 flex flex-col items-center gap-3">
+            <img src={COM_QR_SRC} alt="Código QR a Instagram" width={190} height={190} className="rounded-2xl border border-line bg-white p-3" />
+            <span className="font-mono text-lg text-teal">@marquitorossi</span>
+          </a>
+        </div>
+      );
+  }
+}
+
+function Parte({ texto }: { texto: string }) {
+  return (
+    <p className="mb-4 flex items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-violet">
+      <span className="size-1.5 rounded-full bg-current" />
+      {texto}
+    </p>
+  );
+}
+
+const NOMBRE_CAPTURA: Record<CapturaId, string> = {
+  memoria: "Memoria",
+  proyecto: "Proyecto",
+  skill: "Skill",
+  tarea: "Tarea programada",
+};
+
+/**
+ * Placa de contenido. Si trae capturas, un botón las muestra en el lugar del
+ * diagrama (respaldo ilustrativo por si no se puede abrir la herramienta en vivo).
+ */
+function PlacaVista({ slide }: { slide: JusPlaca & { parte?: string } }) {
+  const [captura, setCaptura] = useState<CapturaId | null>(null);
+  return (
+    <div>
+      {slide.parte && <Parte texto={slide.parte} />}
+      <h1 className="max-w-4xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">{slide.titulo}</h1>
+      <p className="rise mt-3 max-w-3xl text-lg leading-snug text-muted sm:text-2xl" style={{ animationDelay: "0.12s" }}>
+        {slide.bajada}
+      </p>
+      {slide.capturas && (
+        <div className="rise mt-4 flex flex-wrap gap-2" style={{ animationDelay: "0.18s" }}>
+          {slide.capturas.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCaptura(captura === c ? null : c)}
+              className={cn(
+                "rounded-xl border px-3 py-1.5 text-sm font-medium transition",
+                captura === c ? "border-teal/60 bg-teal/15 text-teal" : "border-line bg-panel/60 text-muted hover:border-teal/60 hover:text-teal",
+              )}
+            >
+              📸 {captura === c ? "Volver a la placa" : `Así se ve: ${NOMBRE_CAPTURA[c]}`}
+            </button>
+          ))}
+        </div>
+      )}
+      {captura ? (
+        <div className="rise mt-6 grid items-start gap-6 lg:grid-cols-[1.6fr_1fr] lg:gap-8">
+          <div className="pl-3">
+            <Captura id={captura} />
+          </div>
+          <Leyenda items={LEYENDAS[captura]} />
+        </div>
+      ) : (
+        <PlacaCuerpo slide={slide} />
+      )}
+    </div>
+  );
+}
+
+function PlacaCuerpo({ slide }: { slide: JusPlaca }) {
+  return (
+    <>
           {slide.diagrama && slide.explora ? (
             // Diagrama y tarjetas explorables lado a lado; apilados en pantallas angostas.
             <div className="mt-6 grid items-start gap-5 lg:grid-cols-[1.1fr_1fr] lg:gap-6">
@@ -414,49 +502,8 @@ function Slide({ slide, revelada, onRevelar }: { slide: JusSlide; revelada: bool
               {slide.lede}
             </p>
           )}
-        </div>
-      );
-
-    case "actividad": {
-      const act = getJusActividad(slide.activa);
-      if (!act) return null;
-      return <SlideActividad act={act} escena={slide.escena} revelada={revelada} onRevelar={onRevelar} />;
-    }
-
-    case "captura":
-      return (
-        <div>
-          <h1 className="max-w-4xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">{slide.titulo}</h1>
-          <p className="rise mt-3 max-w-3xl text-lg leading-snug text-muted sm:text-2xl" style={{ animationDelay: "0.12s" }}>
-            {slide.bajada}
-          </p>
-          <div className="mt-6 grid items-start gap-6 lg:grid-cols-[1.6fr_1fr] lg:gap-8">
-            <div className="rise pl-3" style={{ animationDelay: "0.2s" }}>
-              <Captura id={slide.captura} />
-            </div>
-            <Leyenda items={LEYENDAS[slide.captura]} />
-          </div>
-        </div>
-      );
-
-    case "final":
-      return (
-        <div className="flex flex-col items-center text-center">
-          <Logos alto={54} />
-          <h1 className="text-gradient mt-8 font-mono text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">Gracias</h1>
-          <p className="rise mt-5 rounded-full border border-teal/40 bg-teal/10 px-5 py-2 text-lg text-foreground sm:text-xl" style={{ animationDelay: "0.2s" }}>
-            👏 Mande su aplauso desde el celular
-          </p>
-          <p className="mt-4 text-lg text-muted">{JUS_EVENTO}</p>
-          <p className="mt-5 text-lg font-medium">{JUS_AUTOR}</p>
-          <p className="text-sm text-muted">{JUS_CARGO}</p>
-          <a href={COM_INSTAGRAM_URL} target="_blank" rel="noreferrer" className="mt-8 flex flex-col items-center gap-3">
-            <img src={COM_QR_SRC} alt="Código QR a Instagram" width={190} height={190} className="rounded-2xl border border-line bg-white p-3" />
-            <span className="font-mono text-lg text-teal">@marquitorossi</span>
-          </a>
-        </div>
-      );
-  }
+    </>
+  );
 }
 
 /** "Veámoslo en vivo": tarjetas grandes que abren cada herramienta en otra pestaña. */

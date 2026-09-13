@@ -33,13 +33,10 @@ const VALID: ActivityKey[] = [
   // Justicia aumentada (/justicia)
   "jus_encuesta",
   "jus_tarea",
-  "jus_camino",
-  "jus_ias",
   "jus_x_alucina",
-  "jus_x_sesgo",
   "jus_x_principio",
   "jus_x_delegar",
-  "jus_oficina",
+  "jus_sim",
   "jus_nube",
 ];
 

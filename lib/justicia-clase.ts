@@ -2,6 +2,7 @@
 // Masterclass "Justicia aumentada" — Semana de la Mediación,
 // El Salvador (lunes 14/09/2026). Público: Corte Suprema de
 // Justicia, PGR, docentes y estudiantes de la UEES.
+// Duración objetivo: 40 a 60 minutos (≈28 placas + simulador de 5 min).
 //
 // /justicia        → app del participante (celular)
 // /justicia/clase  → presentación del docente (comparte pantalla)
@@ -30,6 +31,12 @@ export const JUS_LOGOS = [
 ];
 
 // --- Actividades en vivo --------------------------------------------------
+
+const SEMAFORO = [
+  { id: "si", emoji: "🟢", label: "Sí" },
+  { id: "revision", emoji: "🟡", label: "Con revisión" },
+  { id: "no", emoji: "🔴", label: "No" },
+];
 
 export const JUS_ACTIVIDADES: ActividadVivo[] = [
   {
@@ -75,34 +82,6 @@ export const JUS_ACTIVIDADES: ActividadVivo[] = [
       { id: "notificar", emoji: "📨", label: "Notificar y comunicar" },
     ],
   },
-  {
-    key: "jus_camino",
-    kind: "opciones",
-    titulo: "¿Qué camino elegirían?",
-    bajada: "Un proveedor y su cliente discuten un saldo, pero necesitan seguir trabajando juntos un año más.",
-    opciones: [
-      { id: "negociar", emoji: "🤝", label: "Negociar" },
-      { id: "mediar", emoji: "🗣️", label: "Mediar" },
-      { id: "arbitrar", emoji: "📜", label: "Arbitrar" },
-      { id: "juzgar", emoji: "⚖️", label: "Juzgar" },
-    ],
-  },
-  {
-    key: "jus_ias",
-    kind: "chips",
-    titulo: "¿Qué herramientas de IA usa?",
-    bajada: "Marque todas las que haya usado alguna vez.",
-    opciones: [
-      { id: "chatgpt", emoji: "🟢", label: "ChatGPT" },
-      { id: "claude", emoji: "🟠", label: "Claude" },
-      { id: "gemini", emoji: "🔵", label: "Gemini" },
-      { id: "notebooklm", emoji: "📓", label: "NotebookLM" },
-      { id: "copilot", emoji: "🪟", label: "Copilot" },
-      { id: "otra", emoji: "✨", label: "Otra" },
-      { id: "ninguna", emoji: "🚫", label: "Ninguna" },
-    ],
-    exclusiva: "ninguna",
-  },
   // --- Exprés: un toque y listo --------------------------------------------
   {
     key: "jus_x_alucina",
@@ -116,18 +95,6 @@ export const JUS_ACTIVIDADES: ActividadVivo[] = [
     ],
     correcta: "predice",
     revela: "Predice. Sin búsqueda ni documentos, arma la respuesta que suena más probable, aunque el fallo no exista.",
-  },
-  {
-    key: "jus_x_sesgo",
-    kind: "opciones",
-    titulo: "Exprés: si la herramienta discrimina…",
-    bajada: "¿De quién es la responsabilidad?",
-    opciones: [
-      { id: "disena", emoji: "🛠️", label: "De quien la diseña" },
-      { id: "usa", emoji: "🧑‍⚖️", label: "De quien la usa" },
-      { id: "adopta", emoji: "🏛️", label: "De la institución que la adopta" },
-      { id: "todos", emoji: "🤝", label: "De todos ellos" },
-    ],
   },
   {
     key: "jus_x_principio",
@@ -148,42 +115,21 @@ export const JUS_ACTIVIDADES: ActividadVivo[] = [
     titulo: "Exprés: ¿se lo delegaría a una IA?",
     bajada: "Semáforo: verde, amarillo (con revisión) o rojo.",
     preguntas: [
-      {
-        id: "transcribir",
-        q: "Transcribir una audiencia",
-        opciones: [
-          { id: "si", emoji: "🟢", label: "Sí" },
-          { id: "revision", emoji: "🟡", label: "Con revisión" },
-          { id: "no", emoji: "🔴", label: "No" },
-        ],
-      },
-      {
-        id: "notificar",
-        q: "Redactar una notificación en lenguaje claro",
-        opciones: [
-          { id: "si", emoji: "🟢", label: "Sí" },
-          { id: "revision", emoji: "🟡", label: "Con revisión" },
-          { id: "no", emoji: "🔴", label: "No" },
-        ],
-      },
-      {
-        id: "decidir",
-        q: "Decidir una medida cautelar",
-        opciones: [
-          { id: "si", emoji: "🟢", label: "Sí" },
-          { id: "revision", emoji: "🟡", label: "Con revisión" },
-          { id: "no", emoji: "🔴", label: "No" },
-        ],
-      },
+      { id: "transcribir", q: "Transcribir una audiencia", opciones: SEMAFORO },
+      { id: "notificar", q: "Redactar una notificación en lenguaje claro", opciones: SEMAFORO },
+      { id: "decidir", q: "Decidir una medida cautelar", opciones: SEMAFORO },
     ],
   },
+  // --- Simulador final: "Un conflicto. Un clic. Dos formas de resolverlo" ----
   {
-    key: "jus_oficina",
-    kind: "texto",
-    titulo: "¿Qué construiríamos para su oficina?",
-    bajada: "Una tarea concreta con la que empezaría. Sobre esa tarea se arma un primer prototipo.",
-    placeholder: "Empezaría por…",
-    maxChars: 160,
+    key: "jus_sim",
+    kind: "opciones",
+    titulo: "¿Qué miramos primero?",
+    bajada: "Si tuviera que empezar a trabajar este caso, ¿por dónde empezaría?",
+    opciones: [
+      { id: "mensajes", emoji: "💬", label: "Ver los mensajes" },
+      { id: "contrato", emoji: "📄", label: "Ver el contrato" },
+    ],
   },
   {
     key: "jus_nube",
@@ -250,23 +196,23 @@ export interface JusPlaca {
   explora?: Explorable[];
   /** Componente interactivo propio que reemplaza al diagrama. */
   interactivo?: "pdfs";
+  /** Capturas ilustrativas a un clic (respaldo si no se puede mostrar en vivo). */
+  capturas?: CapturaId[];
 }
 export interface JusActividad {
   t: "actividad";
   activa: ActivityKey;
   escena: string;
 }
-/** Recreación ilustrativa de una interfaz (respaldo si no se puede mostrar en vivo). */
-export interface JusCaptura {
-  t: "captura";
-  titulo: string;
-  bajada: string;
-  captura: CapturaId;
+/** Simulador de la actividad final: caso, votación, documentos e IA a un clic. */
+export interface JusSimulador {
+  t: "simulador";
+  activa: ActivityKey;
 }
 export interface JusFinal {
   t: "final";
 }
-export type JusSlide = (JusPortada | JusIngreso | JusPlaca | JusActividad | JusCaptura | JusFinal) & {
+export type JusSlide = (JusPortada | JusIngreso | JusPlaca | JusActividad | JusSimulador | JusFinal) & {
   parte?: string;
   /** Abre el kit de herramientas al llegar a esta placa. */
   kit?: boolean;
@@ -283,35 +229,11 @@ export const JUS_SLIDES: JusSlide[] = [
   },
   { t: "actividad", activa: "jus_encuesta", escena: "Para empezar" },
   { t: "actividad", activa: "jus_tarea", escena: "Una tarea. Todos los días." },
-  {
-    t: "placa",
-    titulo: "El tiempo también importa",
-    bajada: "Buscar. Copiar. Revisar. Volver a empezar.",
-    diagrama: "tiempo",
-    explora: [
-      { emoji: "🔎", label: "Buscar", texto: "Encontrar un dato entre decenas de documentos. Una búsqueda por contenido lo resuelve en segundos." },
-      { emoji: "📋", label: "Copiar y ordenar", texto: "Pasar nombres, fechas y montos de un escrito a otro. Se puede extraer y ordenar automáticamente, con revisión." },
-      { emoji: "✅", label: "Revisar", texto: "Controlar plazos, referencias y coherencia. Una herramienta puede alertar; la persona confirma." },
-      { emoji: "⚖️", label: "Comprender y decidir", texto: "Valorar la prueba, interpretar y resolver. Acá está el criterio: esto no se delega." },
-    ],
-  },
 
   // --- 1 · Del conflicto al diálogo ---------------------------------------
   {
     t: "placa",
     parte: "1 · Del conflicto al diálogo",
-    titulo: "Antes del expediente, el conflicto",
-    bajada: "Convivir también es aprender a resolver.",
-    diagrama: "conflicto",
-    explora: [
-      { emoji: "💧", label: "Recursos", texto: "Dos vecinos y un solo pozo de agua; dos hermanos y una herencia. Lo que alcanza para uno no alcanza para dos." },
-      { emoji: "🚧", label: "Límites", texto: "Hasta dónde llega lo mío: un muro medianero, el ruido de madrugada, el uso de un espacio común." },
-      { emoji: "🧺", label: "Responsabilidades", texto: "Quién hace qué: el cuidado de un familiar, el mantenimiento de un bien compartido." },
-      { emoji: "🤝", label: "Compromisos", texto: "Lo que se prometió y cómo se entiende: un contrato, una palabra dada, un plazo." },
-    ],
-  },
-  {
-    t: "placa",
     titulo: "Inventamos formas de resolver",
     bajada: "Acuerdos, terceros, reglas e instituciones.",
     diagrama: "formas",
@@ -339,25 +261,10 @@ export const JUS_SLIDES: JusSlide[] = [
       },
     ],
   },
-
-  // --- 2 · Tecnologías sociales --------------------------------------------
   {
     t: "placa",
-    parte: "2 · Juicio, arbitraje y mediación",
     titulo: "El juicio es una tecnología",
-    bajada: "Personas y reglas organizadas para decidir.",
-    diagrama: "juicio",
-    explora: [
-      { emoji: "📣", label: "Pretensión", texto: "Quien reclama dice qué pide y por qué. Desde el inicio organiza de qué se va a discutir." },
-      { emoji: "🛡️", label: "Respuesta", texto: "La otra parte contesta: reconoce, niega u opone defensas. Nadie es juzgado sin ser oído." },
-      { emoji: "🔍", label: "Prueba y debate", texto: "Se aportan documentos, testigos y peritajes, y se discute qué demuestran." },
-      { emoji: "⚖️", label: "Decisión", texto: "Una autoridad resuelve con fundamentos. La tecnología puede ordenar antecedentes; la decisión es humana." },
-    ],
-  },
-  {
-    t: "placa",
-    titulo: "Un conflicto, distintos caminos",
-    bajada: "Negociar. Mediar. Arbitrar. Juzgar.",
+    bajada: "Y no es el único camino: negociar, mediar, arbitrar, juzgar.",
     diagrama: "caminos",
     explora: [
       { emoji: "🤝", label: "Negociar", texto: "Deciden las partes, sin tercero. Sirve cuando hay confianza y el vínculo importa. La IA puede ayudar a preparar opciones." },
@@ -370,33 +277,20 @@ export const JUS_SLIDES: JusSlide[] = [
       { emoji: "⚖️", label: "Juzgar", texto: "Decide la autoridad judicial, con fuerza obligatoria. La asistencia ordena el expediente; la decisión y su fundamento son del juez." },
     ],
   },
-  { t: "actividad", activa: "jus_camino", escena: "La herramienta depende del problema" },
 
-  // --- 3 · Del procedimiento al entorno digital ----------------------------
+  // --- 2 · Qué transforma lo digital -----------------------------------------
   {
     t: "placa",
-    parte: "3 · Qué transforma lo digital",
+    parte: "2 · Qué transforma lo digital",
     titulo: "Del papel a la pantalla",
-    bajada: "El expediente cambió de soporte.",
-    diagrama: "papel",
-    explora: [
-      { emoji: "📄", label: "Documentos digitales", texto: "Se acabó el papel, pero no siempre su lógica: muchos PDF se leen igual que antes, página por página." },
-      { emoji: "📤", label: "Presentaciones electrónicas", texto: "Se presenta a cualquier hora y sin trasladarse. Cambia el acceso, sobre todo para quien vive lejos del tribunal." },
-      { emoji: "🔔", label: "Notificaciones", texto: "Llegan al instante y dejan constancia. El desafío es que la persona las entienda." },
-      { emoji: "🎥", label: "Audiencias remotas", texto: "Menos traslados y más participación, con preguntas nuevas: conectividad, privacidad, cómo se toma la palabra." },
-    ],
-  },
-  {
-    t: "placa",
-    titulo: "¿Y cuánto cambió el trabajo?",
     bajada: "Tener el PDF es apenas el comienzo.",
     interactivo: "pdfs",
   },
 
-  // --- 4 · IA: capacidades y riesgos conocidos ------------------------------
+  // --- 3 · IA: capacidades y riesgos conocidos ------------------------------
   {
     t: "placa",
-    parte: "4 · IA: capacidades y riesgos",
+    parte: "3 · IA: capacidades y riesgos",
     titulo: "IA: trabajar con lenguaje",
     bajada: "Preguntar, resumir, comparar y generar.",
     diagrama: "verbos",
@@ -440,22 +334,11 @@ export const JUS_SLIDES: JusSlide[] = [
       },
     ],
   },
-  {
-    t: "placa",
-    titulo: "Hablar con seguridad no alcanza",
-    bajada: "Una respuesta convincente puede equivocarse.",
-    diagrama: "seguridad",
-    explora: [
-      { emoji: "📄", label: "Lo que surge de los documentos", texto: "Está escrito y se puede señalar: «la audiencia se celebró el 14 de febrero»." },
-      { emoji: "💭", label: "Lo que infiere el modelo", texto: "Una conclusión razonable, pero no escrita: «la parte no tenía interés en conciliar». Hay que confirmarla." },
-      { emoji: "💡", label: "Lo que propone", texto: "Una idea para discutir: «ofrecer una nueva audiencia de conciliación». No es un hecho: es una opción." },
-    ],
-  },
   { t: "actividad", activa: "jus_x_alucina", escena: "Exprés · un toque" },
   {
     t: "placa",
     titulo: "Alucinación: seis precedentes que no existían",
-    bajada: "Mata v. Avianca, Nueva York, 2023.",
+    bajada: "Mata v. Avianca, Nueva York, 2023. Hablar con seguridad no alcanza.",
     diagrama: "alucinacion",
     kit: true,
     explora: [
@@ -468,6 +351,11 @@ export const JUS_SLIDES: JusSlide[] = [
         emoji: "⚙️",
         label: "Por qué ocurre",
         texto: "El modelo predice el texto más probable; no consulta una base de fallos. Si no sabe, puede completar con algo que suena correcto.",
+      },
+      {
+        emoji: "💭",
+        label: "Dicho, inferido, propuesto",
+        texto: "Distinga lo que surge de un documento, lo que el modelo infiere y lo que propone. Solo lo primero es un dato; lo demás hay que confirmarlo.",
       },
       {
         emoji: "🛡️",
@@ -500,40 +388,23 @@ export const JUS_SLIDES: JusSlide[] = [
       },
     ],
   },
-  { t: "actividad", activa: "jus_x_sesgo", escena: "Exprés · un toque" },
 
-  // --- 5 · Cómo se instruye un modelo ----------------------------------------
+  // --- 4 · Cómo se instruye un modelo ----------------------------------------
   {
     t: "placa",
-    parte: "5 · Cómo se instruye un modelo",
-    titulo: "Prompt de sistema y prompt de usuario",
-    bajada: "Reglas estables de la herramienta y el pedido de cada consulta.",
+    parte: "4 · Cómo se instruye un modelo",
+    titulo: "Sistema, usuario y contexto",
+    bajada: "Reglas estables, el pedido de cada consulta y los documentos que lo sostienen.",
     diagrama: "sistema",
     kit: true,
     explora: [
       {
         emoji: "⚙️",
         label: "Prompt de sistema",
-        texto: "Las reglas permanentes: rol, límites, formato, qué hacer si falta información. Lo define quien configura la herramienta.",
+        texto: "Las reglas permanentes: rol, límites, formato, qué hacer si falta información. En Claude, las instrucciones de un proyecto; en ChatGPT, un GPT; en Gemini, un Gem.",
       },
       { emoji: "💬", label: "Prompt de usuario", texto: "Lo que se pide en cada consulta. Cambia todo el tiempo; las reglas de sistema se mantienen." },
-      {
-        emoji: "🧭",
-        label: "Dónde se configura",
-        texto: "En Claude, en las instrucciones de un proyecto; en ChatGPT, en las instrucciones personalizadas o en un GPT; en Gemini, en un Gem.",
-      },
-    ],
-  },
-  {
-    t: "placa",
-    titulo: "Responder bien requiere contexto",
-    bajada: "Documentos, instrucciones y una tarea clara.",
-    diagrama: "contexto",
-    kit: true,
-    explora: [
-      { emoji: "🗂️", label: "Fuentes", texto: "Qué documentos usar y cuáles no. Sin esto, el modelo completa con lo que «sabe» en general." },
-      { emoji: "🎯", label: "Tarea", texto: "Qué se necesita exactamente: una cronología, un resumen, una lista de puntos en discusión." },
-      { emoji: "🧾", label: "Formato", texto: "Cómo presentar el resultado: tabla, viñetas, extensión máxima, con la fuente de cada dato." },
+      { emoji: "🗂️", label: "Contexto", texto: "Qué documentos usar y cuáles no. Sin esto, el modelo completa con lo que «sabe» en general." },
       {
         emoji: "✅",
         label: "Un pedido completo",
@@ -551,6 +422,7 @@ export const JUS_SLIDES: JusSlide[] = [
     bajada: "La herramienta recuerda de una conversación a otra.",
     diagrama: "memoria",
     kit: true,
+    capturas: ["memoria"],
     explora: [
       { emoji: "🧠", label: "Qué recuerda", texto: "Lo que usted le cuenta o le pide guardar: su cargo, su estilo, sus formatos habituales." },
       { emoji: "🗑️", label: "Cómo se controla", texto: "Se puede ver, editar y borrar desde la configuración, o desactivar. Conviene revisarla cada tanto." },
@@ -558,25 +430,18 @@ export const JUS_SLIDES: JusSlide[] = [
     ],
   },
   {
-    t: "captura",
-    titulo: "Así se ve la memoria",
-    bajada: "Qué recuerda la herramienta y cómo se controla.",
-    captura: "memoria",
-    kit: true,
-  },
-  {
     t: "placa",
     titulo: "Proyectos y skills",
     bajada: "Dónde se trabaja un asunto y cómo se hace una tarea.",
     diagrama: "proyectos",
     kit: true,
+    capturas: ["proyecto", "skill"],
     explora: [
       {
         emoji: "📁",
         label: "Proyecto",
-        texto: "Un espacio para un asunto o una materia: instrucciones propias, documentos y conversaciones juntas. Existe en Claude y en ChatGPT.",
+        texto: "Un espacio para un asunto o una materia: instrucciones propias, documentos y conversaciones juntas. Existe en Claude y en ChatGPT; en Gemini se parece a un Gem.",
       },
-      { emoji: "💎", label: "Gem (Gemini)", texto: "Un asistente con instrucciones fijas para una tarea que se repite." },
       {
         emoji: "🧩",
         label: "Skill",
@@ -586,39 +451,18 @@ export const JUS_SLIDES: JusSlide[] = [
     ],
   },
   {
-    t: "captura",
-    titulo: "Así se ve un proyecto",
-    bajada: "Instrucciones, archivos y conversaciones de un mismo asunto.",
-    captura: "proyecto",
-    kit: true,
-  },
-  {
-    t: "captura",
-    titulo: "Qué es una skill y cómo se hace",
-    bajada: "Un procedimiento que la herramienta aprende a aplicar.",
-    captura: "skill",
-    kit: true,
-  },
-  {
     t: "placa",
     titulo: "Tareas programadas y agentes",
     bajada: "La herramienta ya no solo responde: también trabaja sola.",
     diagrama: "tareas",
     kit: true,
+    capturas: ["tarea"],
     explora: [
       { emoji: "⏰", label: "Tarea programada", texto: "Una consulta que se ejecuta sola a una hora fija: «cada lunes, resumir las resoluciones nuevas sobre familia»." },
       { emoji: "🤖", label: "Agente", texto: "Encadena pasos para cumplir un objetivo: buscar, leer, resumir y enviar, sin que alguien intervenga entre paso y paso." },
       { emoji: "✋", label: "El límite", texto: "Cuanto más actúa sola, más importa definir qué puede hacer, revisar lo que hizo y poder detenerla." },
     ],
   },
-  {
-    t: "captura",
-    titulo: "Así se ve una tarea programada",
-    bajada: "Se pide una vez y se ejecuta sola.",
-    captura: "tarea",
-    kit: true,
-  },
-  { t: "actividad", activa: "jus_ias", escena: "Antes de mostrarlo en vivo" },
   {
     t: "placa",
     titulo: "Veámoslo en vivo",
@@ -643,58 +487,23 @@ export const JUS_SLIDES: JusSlide[] = [
       { emoji: "🧠", label: "RAG no es reentrenar", texto: "El modelo no aprende el expediente: lo consulta en el momento. Por eso se puede actualizar o borrar." },
     ],
   },
-  {
-    t: "placa",
-    titulo: "Una herramienta combina capacidades",
-    bajada: "IA, búsquedas, cálculos y reglas.",
-    diagrama: "combina",
-    explora: [
-      { emoji: "🔎", label: "Buscador", texto: "Encuentra dónde está un dato o un fallo." },
-      { emoji: "🧮", label: "Cálculo", texto: "Calcula intereses, plazos o montos sin errores de cuenta. Un modelo de lenguaje no es una calculadora." },
-      { emoji: "📏", label: "Reglas", texto: "Aplica criterios fijos: vencimientos, días inhábiles, requisitos formales." },
-      { emoji: "✨", label: "Modelo de lenguaje", texto: "Lee, resume y redacta. Combinado con los otros tres, forma una herramienta confiable." },
-    ],
-  },
 
-  // --- 6 · Lo que dijo la Sala de lo Constitucional ------------------------------
+  // --- 5 · Lo que dijo la Sala de lo Constitucional ------------------------------
   // Inconstitucionalidad 57-2025 (resolución del 13/03/2026, comunicado del
   // 16/03/2026) y seminario-taller de la Sala de lo Penal con GIZ (04/09/2026).
   {
     t: "placa",
-    parte: "6 · Lo que dijo la Sala",
+    parte: "5 · Lo que dijo la Sala",
     titulo: "La Sala de lo Constitucional ya se pronunció",
     bajada: "Estándares éticos y legales para usar IA en el Estado y en los tribunales.",
-    diagrama: "sala",
+    diagrama: "ambitos",
     pills: ["Inconstitucionalidad 57-2025", "Resolución del 13 de marzo de 2026"],
     explora: [
       {
         emoji: "📝",
         label: "Cómo empezó",
-        texto: "Unos ciudadanos usaron inteligencia artificial para redactar su demanda. La Sala vio la necesidad de aclarar qué es la IA, qué tipos hay y cómo funciona.",
+        texto: "Unos ciudadanos usaron IA para redactar su demanda. La Sala aclaró qué es la IA, qué tipos hay y cómo funciona, revisó las reglas nacionales e internacionales y analizó sus beneficios y riesgos para los derechos fundamentales.",
       },
-      {
-        emoji: "🌎",
-        label: "Qué revisó",
-        texto: "Las reglas nacionales e internacionales sobre su desarrollo y uso, y cómo la IA interactúa con los derechos fundamentales: reconoció sus beneficios y también sus riesgos.",
-      },
-      {
-        emoji: "🏛️",
-        label: "A quiénes alcanza",
-        texto: "El uso de IA generativa en las instituciones públicas y en los tribunales de justicia.",
-      },
-      {
-        emoji: "🎓",
-        label: "Y siguió",
-        texto: "El 4 de septiembre, la Sala de lo Penal (con la cooperación alemana, GIZ) hizo un seminario-taller con el mismo eje: que la IA no sustituya el razonamiento judicial ni la valoración humana.",
-      },
-    ],
-  },
-  {
-    t: "placa",
-    titulo: "Dos ámbitos, un mismo límite",
-    bajada: "Eficiencia, sí. Una persona que decide, siempre.",
-    diagrama: "ambitos",
-    explora: [
       {
         emoji: "🏢",
         label: "Administración pública",
@@ -703,17 +512,12 @@ export const JUS_SLIDES: JusSlide[] = [
       {
         emoji: "⚖️",
         label: "Administración de justicia",
-        texto: "Toda persona tiene derecho a un juez humano y a un procurador humano. Por eso, la IA en labores judiciales va bajo estrictos controles éticos y legales, con supervisión humana obligatoria.",
+        texto: "Toda persona tiene derecho a un juez humano y a un procurador humano: la PGR también está alcanzada. La IA en labores judiciales va bajo estrictos controles éticos y legales, con supervisión humana obligatoria.",
       },
       {
-        emoji: "🏛️",
-        label: "«Procurador humano»",
-        texto: "La Sala no habla solo de jueces: también de quienes representan y defienden. La PGR está alcanzada por el mismo estándar.",
-      },
-      {
-        emoji: "🔗",
-        label: "Por qué",
-        texto: "Por lo que ya vimos: la alucinación y los sesgos no se resuelven solo con mejor tecnología, sino con una persona que revisa y responde por el resultado.",
+        emoji: "🎓",
+        label: "Y siguió",
+        texto: "El 4 de septiembre, la Sala de lo Penal (con la cooperación alemana, GIZ) hizo un seminario-taller con el mismo eje: que la IA no sustituya el razonamiento judicial ni la valoración humana.",
       },
     ],
   },
@@ -737,35 +541,11 @@ export const JUS_SLIDES: JusSlide[] = [
   },
   { t: "actividad", activa: "jus_x_principio", escena: "Exprés · un toque" },
 
-  // --- 7 · Human in the loop -------------------------------------------------
+  // --- 6 · Human in the loop -------------------------------------------------
   {
     t: "placa",
-    parte: "7 · Human in the loop",
+    parte: "6 · Human in the loop",
     titulo: "Human in the loop",
-    bajada: "Dirigir, contrastar y corregir.",
-    diagrama: "hitl",
-    explora: [
-      { emoji: "🎯", label: "Definir", texto: "¿Qué problema quiero resolver y qué necesito saber? Esto se piensa antes de abrir la herramienta." },
-      { emoji: "📨", label: "Encargar", texto: "Pedir tareas acotadas, con fuentes y formato definidos." },
-      { emoji: "🔍", label: "Contrastar", texto: "Comparar el resultado con los documentos. ¿Omite algo? ¿Hay otra interpretación posible?" },
-      { emoji: "✍️", label: "Decidir", texto: "Aceptar, corregir o descartar, y poder explicar por qué." },
-    ],
-  },
-  {
-    t: "placa",
-    titulo: "Delegar tareas, conservar el criterio",
-    bajada: "La responsabilidad exige participación.",
-    diagrama: "delegacion",
-    explora: [
-      { emoji: "🧑‍⚖️", label: "Asistencia", texto: "La persona define qué importa y decide; la IA organiza y propone." },
-      { emoji: "⚠️", label: "Delegación total", texto: "La IA elige qué importa, arma las hipótesis y redacta; la persona solo firma." },
-      { emoji: "🚩", label: "Señales de alarma", texto: "Aprobar sin leer las fuentes, no poder explicar una conclusión, quedarse con el primer borrador." },
-    ],
-  },
-  { t: "actividad", activa: "jus_x_delegar", escena: "Exprés · semáforo" },
-  {
-    t: "placa",
-    titulo: "Una forma concreta de trabajar",
     bajada: "Pedir. Verificar. Corregir. Aprobar.",
     diagrama: "metodo",
     lede: "Vale para cualquier herramienta, propia o ajena.",
@@ -774,28 +554,20 @@ export const JUS_SLIDES: JusSlide[] = [
       { emoji: "🔍", label: "Verificar", texto: "Cada afirmación relevante, contra su fuente." },
       { emoji: "✏️", label: "Corregir", texto: "Ajustar lo que no coincide y pedir aclaraciones." },
       { emoji: "✅", label: "Aprobar", texto: "Solo la versión que usted puede explicar y defender." },
+      { emoji: "🚩", label: "Señales de alarma", texto: "Aprobar sin leer las fuentes, no poder explicar una conclusión, quedarse con el primer borrador." },
     ],
   },
+  { t: "actividad", activa: "jus_x_delegar", escena: "Exprés · semáforo" },
 
-  // --- 8 · Que la justicia construya sus herramientas -----------------------
+  // --- 7 · Que la justicia construya sus herramientas -----------------------
   {
     t: "placa",
-    parte: "8 · Soberanía tecnológica",
-    titulo: "La tecnología amplifica capacidades",
-    bajada: "Lo que hacemos bien… y también lo que hacemos mal.",
-    diagrama: "amplifica",
-    explora: [
-      { emoji: "🚀", label: "Más alcance", texto: "Una oficina puede atender más consultas, más rápido y con respuestas más claras." },
-      { emoji: "⚠️", label: "El error también", texto: "Si la herramienta reproduce un sesgo, lo reproduce en miles de casos." },
-      { emoji: "🧭", label: "Por eso", texto: "Importa quién la diseña, con qué datos y bajo qué reglas." },
-    ],
-  },
-  {
-    t: "placa",
+    parte: "7 · Soberanía tecnológica",
     titulo: "Que la justicia sea dueña de sus herramientas",
-    bajada: "Datos propios, reglas propias, control propio.",
+    bajada: "La tecnología amplifica lo que hacemos bien… y también lo que hacemos mal.",
     diagrama: "soberania",
     explora: [
+      { emoji: "⚠️", label: "Amplifica", texto: "Una oficina puede atender más consultas y más rápido. Pero si la herramienta reproduce un sesgo, lo reproduce en miles de casos." },
       { emoji: "🔐", label: "Datos", texto: "Los datos de las personas y de los expedientes no salen de la institución." },
       { emoji: "📏", label: "Reglas", texto: "La justicia decide qué puede hacer la herramienta y qué no." },
       { emoji: "🧾", label: "Registro", texto: "Cada uso queda registrado y puede auditarse." },
@@ -813,29 +585,13 @@ export const JUS_SLIDES: JusSlide[] = [
       { emoji: "📝", label: "Asistencia en redacción", texto: "Borradores de providencias y oficios a partir de plantillas propias, con revisión humana." },
       { emoji: "🤖", label: "Agentes por temática", texto: "Asistentes especializados en familia, laboral o consumo, que responden desde normas y criterios de la institución." },
       { emoji: "📊", label: "Jurimetría y estadística", texto: "Tiempos de resolución, carga de trabajo, patrones de litigio: datos para gestionar mejor y rendir cuentas." },
-      { emoji: "💬", label: "Lenguaje claro", texto: "Explicarle a cada persona, en palabras simples, qué pasa con su caso." },
+      { emoji: "💬", label: "Lenguaje claro", texto: "Explicarle a cada persona, en palabras simples, qué pasa con su caso. La IA propone la versión clara; la persona revisa que diga exactamente lo mismo." },
+      { emoji: "🇦🇷", label: "Un antecedente", texto: "Prometea, en el Ministerio Público Fiscal de la Ciudad de Buenos Aires: automatización documental y asistencia en tareas repetitivas." },
     ],
   },
-  {
-    t: "placa",
-    titulo: "Lenguaje claro",
-    bajada: "Que la persona entienda su propio caso.",
-    diagrama: "lenguajeclaro",
-    kit: true,
-    explora: [
-      { emoji: "💬", label: "Qué es", texto: "Comunicar para que la persona destinataria entienda a la primera, sin perder precisión jurídica." },
-      { emoji: "✨", label: "Cómo ayuda la IA", texto: "Propone en segundos una versión clara de una notificación o una resolución." },
-      { emoji: "🔍", label: "Qué revisa la persona", texto: "Que la versión clara diga exactamente lo mismo: fechas, plazos y consecuencias." },
-    ],
-  },
-  {
-    t: "placa",
-    titulo: "En Argentina ya hay experiencias",
-    bajada: "Tecnología aplicada al trabajo judicial.",
-    pills: ["Prometea · Ministerio Público Fiscal de la Ciudad de Buenos Aires", "automatización documental", "asistencia en tareas repetitivas"],
-    diagrama: "antecedente",
-  },
-  { t: "actividad", activa: "jus_oficina", escena: "Una tarea concreta. Un primer prototipo." },
+
+  // --- 8 · Actividad final: un conflicto, un clic ---------------------------------
+  { t: "simulador", parte: "8 · Un conflicto, un clic", activa: "jus_sim" },
   { t: "actividad", activa: "jus_nube", escena: "Para cerrar" },
   { t: "final" },
 ];
