@@ -14,6 +14,7 @@ import { Button, Spinner } from "@/components/ui";
 import { ChipResponda, Constelacion, PlacaIngreso, ResultadosVivo } from "@/components/clase/vivo";
 import { DiagramaJus } from "@/components/justicia/diagramas";
 import { BuscadorExpediente } from "@/components/justicia/buscador";
+import { Captura, Leyenda, LEYENDAS } from "@/components/justicia/capturas";
 import { Explorables } from "@/components/clase/explorables";
 import { DEMO_INICIAL, DemoExpediente, EtiquetaDemo, type DemoEstado } from "@/components/justicia/expediente";
 import {
@@ -427,6 +428,22 @@ function Slide({
 
     case "demo":
       return <SlideDemo slide={slide} demo={demo} setDemo={setDemo} />;
+
+    case "captura":
+      return (
+        <div>
+          <h1 className="max-w-4xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">{slide.titulo}</h1>
+          <p className="rise mt-3 max-w-3xl text-lg leading-snug text-muted sm:text-2xl" style={{ animationDelay: "0.12s" }}>
+            {slide.bajada}
+          </p>
+          <div className="mt-6 grid items-start gap-6 lg:grid-cols-[1.6fr_1fr] lg:gap-8">
+            <div className="rise pl-3" style={{ animationDelay: "0.2s" }}>
+              <Captura id={slide.captura} />
+            </div>
+            <Leyenda items={LEYENDAS[slide.captura]} />
+          </div>
+        </div>
+      );
 
     case "final":
       return (

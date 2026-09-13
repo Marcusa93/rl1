@@ -11,6 +11,7 @@
 import type { ActividadVivo, ClaseVivoConfig, Explorable } from "./clase-vivo";
 import type { ActivityKey } from "./types";
 import type { DiagramaJusId } from "@/components/justicia/diagramas";
+import type { CapturaId } from "@/components/justicia/capturas";
 
 export const JUS_SLUG = "justicia";
 export const JUS_TITLE = "Justicia aumentada";
@@ -195,10 +196,17 @@ export interface JusDemo {
   bajada: string;
   modo: ModoDemo;
 }
+/** Recreación ilustrativa de una interfaz (respaldo si no se puede mostrar en vivo). */
+export interface JusCaptura {
+  t: "captura";
+  titulo: string;
+  bajada: string;
+  captura: CapturaId;
+}
 export interface JusFinal {
   t: "final";
 }
-export type JusSlide = (JusPortada | JusIngreso | JusPlaca | JusActividad | JusDemo | JusFinal) & {
+export type JusSlide = (JusPortada | JusIngreso | JusPlaca | JusActividad | JusDemo | JusCaptura | JusFinal) & {
   parte?: string;
   /** Abre el kit de herramientas al llegar a esta placa. */
   kit?: boolean;
@@ -495,6 +503,13 @@ export const JUS_SLIDES: JusSlide[] = [
     ],
   },
   {
+    t: "captura",
+    titulo: "Así se ve la memoria",
+    bajada: "Qué recuerda la herramienta y cómo se controla.",
+    captura: "memoria",
+    kit: true,
+  },
+  {
     t: "placa",
     titulo: "Proyectos y skills",
     bajada: "Dónde se trabaja un asunto y cómo se hace una tarea.",
@@ -516,6 +531,20 @@ export const JUS_SLIDES: JusSlide[] = [
     ],
   },
   {
+    t: "captura",
+    titulo: "Así se ve un proyecto",
+    bajada: "Instrucciones, archivos y conversaciones de un mismo asunto.",
+    captura: "proyecto",
+    kit: true,
+  },
+  {
+    t: "captura",
+    titulo: "Qué es una skill y cómo se hace",
+    bajada: "Un procedimiento que la herramienta aprende a aplicar.",
+    captura: "skill",
+    kit: true,
+  },
+  {
     t: "placa",
     titulo: "Tareas programadas y agentes",
     bajada: "La herramienta ya no solo responde: también trabaja sola.",
@@ -526,6 +555,13 @@ export const JUS_SLIDES: JusSlide[] = [
       { emoji: "🤖", label: "Agente", texto: "Encadena pasos para cumplir un objetivo: buscar, leer, resumir y enviar, sin que alguien intervenga entre paso y paso." },
       { emoji: "✋", label: "El límite", texto: "Cuanto más actúa sola, más importa definir qué puede hacer, revisar lo que hizo y poder detenerla." },
     ],
+  },
+  {
+    t: "captura",
+    titulo: "Así se ve una tarea programada",
+    bajada: "Se pide una vez y se ejecuta sola.",
+    captura: "tarea",
+    kit: true,
   },
   { t: "actividad", activa: "jus_ias", escena: "Antes de mostrarlo en vivo" },
   {
