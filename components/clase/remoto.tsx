@@ -27,6 +27,7 @@ export function useRemotoDeck({
   total,
   titulo,
   parte,
+  nota,
   go,
 }: {
   slug: string;
@@ -34,10 +35,11 @@ export function useRemotoDeck({
   total: number;
   titulo: string;
   parte?: string;
+  nota?: string;
   go: (n: number) => void;
 }) {
-  const ref = useRef({ idx, total, titulo, parte, go });
-  ref.current = { idx, total, titulo, parte, go };
+  const ref = useRef({ idx, total, titulo, parte, nota, go });
+  ref.current = { idx, total, titulo, parte, nota, go };
 
   // Publicar el estado cuando cambia (y un latido cada tanto).
   useEffect(() => {
@@ -46,11 +48,11 @@ export function useRemotoDeck({
     let enviando = false;
     const id = setInterval(() => {
       if (enviando) return;
-      const { idx, total, titulo, parte } = ref.current;
+      const { idx, total, titulo, parte, nota } = ref.current;
       const botones = botonesEnPantalla().map((b) => b.boton);
-      const firma = JSON.stringify({ idx, total, titulo, parte, botones });
+      const firma = JSON.stringify({ idx, total, titulo, parte, nota, botones });
       if (firma === ultimo && Date.now() - ultimoEnvio < LATIDO) return;
-      const estado: EstadoRemoto = { idx, total, titulo, parte, botones, vivo: Date.now() };
+      const estado: EstadoRemoto = { idx, total, titulo, parte, nota, botones, vivo: Date.now() };
       enviando = true;
       fetch(`/api/remoto/${slug}`, {
         method: "POST",
@@ -216,6 +218,12 @@ export function ControlRemoto({ slug, titulos, nombre }: { slug: string; titulos
       )}
 
       <main className="flex-1 space-y-2 px-3 py-3 pb-36">
+        {estado?.nota && (
+          <div className="mb-3 rounded-2xl border border-amber-400/50 bg-amber-400/10 p-4">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-amber-300">📝 Ayuda memoria · solo en su celular</p>
+            <p className="mt-2 whitespace-pre-line text-lg leading-relaxed">{estado.nota}</p>
+          </div>
+        )}
         {estado?.botones.length ? (
           <>
             <p className="px-1 text-[11px] uppercase tracking-widest text-faint">En pantalla · toque para mostrar u ocultar</p>

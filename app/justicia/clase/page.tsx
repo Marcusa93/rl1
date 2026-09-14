@@ -20,6 +20,7 @@ import { Captura, Leyenda, LEYENDAS, type CapturaId } from "@/components/justici
 import { SimuladorConflicto } from "@/components/justicia/simulador";
 import { ConstructorCotio } from "@/components/justicia/cotio";
 import { DemoSistema, type DemoId } from "@/components/justicia/demos";
+import { DemoDictado } from "@/components/justicia/dictado";
 import { Explorables } from "@/components/clase/explorables";
 import { LluviaReacciones } from "@/components/clase/reacciones";
 import { useRemotoDeck } from "@/components/clase/remoto";
@@ -201,7 +202,15 @@ function Deck() {
     .find((s) => s.parte)?.parte;
 
   // Control desde el celular del docente (justicia.rossi-ia.com/control).
-  useRemotoDeck({ slug: JUS_SLUG, idx, total: JUS_SLIDES.length, titulo: tituloPlaca(slide), parte: parteActual, go });
+  useRemotoDeck({
+    slug: JUS_SLUG,
+    idx,
+    total: JUS_SLIDES.length,
+    titulo: tituloPlaca(slide),
+    parte: parteActual,
+    nota: slide.t === "placa" ? slide.nota : undefined,
+    go,
+  });
 
   const estadoNombre = estado ? (getJusActividad(estado.key)?.titulo ?? "Ingreso") : "";
   // El kit se despliega solo en las placas marcadas; en el resto, a un clic.
@@ -496,6 +505,7 @@ function PlacaCuerpo({ slide }: { slide: JusPlaca }) {
           ) : null}
           {slide.interactivo === "pdfs" && <BuscadorExpediente />}
           {slide.interactivo === "cotio" && <ConstructorCotio />}
+          {slide.interactivo === "dictado" && <DemoDictado />}
           {slide.herramientas && <TarjetasHerramientas ids={slide.herramientas} />}
           {slide.pills && (
             <div className="mt-5 flex flex-wrap justify-center gap-2">

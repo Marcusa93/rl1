@@ -154,6 +154,14 @@ export const JUS_CONFIG: ClaseVivoConfig = {
   reacciones: true,
 };
 
+/**
+ * Lo que dice el docente como Carlos en "Del dictado a la cronología". Tiene
+ * un error de un año a propósito ("casi tres años" contra un ingreso en 2024)
+ * para que la herramienta lo detecte, y el nombre completo para que lo anonimice.
+ */
+export const GUION_CARLOS =
+  "Soy Carlos González. Me despidieron el 3 de marzo, sin ningún aviso, después de casi tres años. Yo había entrado el 4 de mayo de 2024, como vendedor. Al principio ganaba 300 dólares; hace un mes me habían aumentado a 600. Trabajaba de lunes a sábado. Me ofrecieron 800 dólares y me parece poco. Ah, y nunca me pagaron las vacaciones del año pasado. Quiero cerrar esto sin ir a juicio.";
+
 // --- Kit de herramientas (barra inferior del deck) -------------------------
 
 export interface HerramientaKit {
@@ -195,7 +203,9 @@ export interface JusPlaca {
   /** Tarjetas que el docente toca para desplegar una explicación o un ejemplo. */
   explora?: Explorable[];
   /** Componente interactivo propio que reemplaza al diagrama. */
-  interactivo?: "pdfs" | "cotio";
+  interactivo?: "pdfs" | "cotio" | "dictado";
+  /** Ayuda memoria que solo ve el docente en el control remoto. */
+  nota?: string;
   /** Capturas ilustrativas a un clic (respaldo si no se puede mostrar en vivo). */
   capturas?: CapturaId[];
 }
@@ -415,6 +425,13 @@ export const JUS_SLIDES: JusSlide[] = [
     bajada: "Una instrucción con cinco piezas: Contexto, Objetivo, Tareas, Input y Output.",
     interactivo: "cotio",
     kit: true,
+  },
+  {
+    t: "placa",
+    titulo: "Del dictado a la cronología",
+    bajada: "Un prompt de sistema convertido en herramienta: escucha la audiencia y ordena los hechos.",
+    interactivo: "dictado",
+    nota: `Usted es Carlos, el trabajador, en una mediación laboral. Diga:\n\n«${GUION_CARLOS}»\n\nGrabar → hablar → Detener → Procesar.`,
   },
   {
     t: "placa",

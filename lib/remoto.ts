@@ -18,6 +18,8 @@ export interface EstadoRemoto {
   total: number;
   titulo: string;
   parte?: string;
+  /** Ayuda memoria para el docente (ej.: el guion que tiene que decir). Solo se ve en el celular. */
+  nota?: string;
   botones: BotonRemoto[];
   /** Marca de tiempo del último latido del deck (ms). */
   vivo: number;
