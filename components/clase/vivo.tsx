@@ -5,6 +5,7 @@
 
 import { useLive } from "@/components/use-live";
 import type { ActividadVivo, ActOpcion } from "@/lib/clase-vivo";
+import { altoNubeRem, NUBE_MAX, tamanosNube } from "@/lib/nube";
 import { cn } from "@/lib/utils";
 
 type VivoResp = {
@@ -210,12 +211,13 @@ function VivoPalabras({ palabras }: { palabras: Array<{ palabra: string; n: numb
   if (!palabras.length) return <p className="text-sm text-faint">Esperando las primeras palabras…</p>;
   const max = Math.max(1, ...palabras.map((p) => p.n));
   // Ordenadas de mayor a menor y repartidas a los costados: la más votada queda en el medio.
-  const orden = [...palabras].sort((a, b) => b.n - a.n || a.palabra.localeCompare(b.palabra));
+  const orden = [...palabras].sort((a, b) => b.n - a.n || a.palabra.localeCompare(b.palabra)).slice(0, NUBE_MAX);
   const nube: typeof orden = [];
   orden.forEach((p, i) => (i % 2 ? nube.push(p) : nube.unshift(p)));
+  const tamanos = tamanosNube(nube, altoNubeRem());
   return (
     <div className="flex flex-1 flex-wrap items-center justify-center gap-x-7 gap-y-2 py-6">
-      {nube.map((p) => {
+      {nube.map((p, i) => {
         const peso = p.n / max;
         const h = hashPalabra(p.palabra);
         return (
@@ -223,7 +225,7 @@ function VivoPalabras({ palabras }: { palabras: Array<{ palabra: string; n: numb
             key={p.palabra}
             className="rise inline-block font-bold leading-none transition-all duration-700"
             style={{
-              fontSize: `clamp(1rem, ${1.1 + peso * 3.4}vw, ${1.2 + peso * 3.6}rem)`,
+              fontSize: `${tamanos[i]}rem`,
               color: COLORES_NUBE[h % COLORES_NUBE.length],
               opacity: 0.6 + peso * 0.4,
               transform: `translateY(${(h % 5) - 2}px) rotate(${peso > 0.6 ? 0 : (h % 7) - 3}deg)`,

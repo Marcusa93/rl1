@@ -71,7 +71,7 @@ export async function GET(
     .eq("activity", REACCION_ACTIVITY)
     .gt("created_at", desde)
     .order("created_at", { ascending: true })
-    .limit(80);
+    .limit(250); // con 100+ celulares aplaudiendo, que el deck no quede atrasado
   if (error) return fail(error.message, 500);
 
   const items = (data ?? []).map((r) => ({ id: r.id as string, emoji: String(r.payload?.emoji ?? "") }));
