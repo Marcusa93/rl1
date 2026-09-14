@@ -176,7 +176,7 @@ export const JUS_KIT: HerramientaKit[] = [
   { id: "claude", label: "Claude", emoji: "🟠", url: "https://claude.ai" },
   { id: "chatgpt", label: "ChatGPT", emoji: "🟢", url: "https://chatgpt.com" },
   { id: "gemini", label: "Gemini", emoji: "🔵", url: "https://gemini.google.com" },
-  { id: "notebooklm", label: "NotebookLM", emoji: "📓", url: "https://notebooklm.google.com" },
+  { id: "notebooklm", label: "Notebook Gemini", emoji: "📓", url: "https://notebooklm.google.com" },
   { id: "pinpoint", label: "Pinpoint", emoji: "📌", url: "https://journaliststudio.google.com/pinpoint" },
   { id: "tareas", label: "Tareas programadas", emoji: "⏰", url: "https://chatgpt.com/tasks" },
 ];
@@ -523,7 +523,7 @@ export const JUS_SLIDES: JusSlide[] = [
       {
         emoji: "📌",
         label: "Responder con fuente",
-        texto: "El modelo responde con esos fragmentos y señala de dónde salió cada dato. Si no está en los documentos, debería decirlo. Así trabaja NotebookLM.",
+        texto: "El modelo responde con esos fragmentos y señala de dónde salió cada dato. Si no está en los documentos, debería decirlo. Así trabaja Notebook Gemini.",
       },
       { emoji: "🧠", label: "RAG no es reentrenar", texto: "El modelo no aprende el expediente: lo consulta en el momento. Por eso se puede actualizar o borrar." },
     ],

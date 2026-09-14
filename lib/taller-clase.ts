@@ -230,7 +230,7 @@ export const TAL_KIT: HerramientaKit[] = [
   { id: "chatgpt", label: "ChatGPT", emoji: "🟢", url: "https://chatgpt.com" },
   { id: "claude", label: "Claude", emoji: "🟠", url: "https://claude.ai" },
   { id: "gemini", label: "Gemini", emoji: "🔵", url: "https://gemini.google.com" },
-  { id: "notebooklm", label: "NotebookLM", emoji: "📓", url: "https://notebooklm.google.com" },
+  { id: "notebooklm", label: "Notebook Gemini", emoji: "📓", url: "https://notebooklm.google.com" },
 ];
 
 // --- Placas ------------------------------------------------------------------------
@@ -342,7 +342,7 @@ export const TAL_SLIDES: TalSlide[] = [
     explora: [
       { emoji: "🎬", label: "El simulador del caso", texto: "Administra los hechos, los documentos, las decisiones y los caminos posibles. La información llega de a poco, según lo que elijan." },
       { emoji: "🧭", label: "El tutor de trabajo", texto: "En su dispositivo: los documentos liberados, los prompts guiados para copiar y lo que hay que verificar en cada paso." },
-      { emoji: "🧰", label: "Las herramientas", texto: "ChatGPT, Claude, Gemini o NotebookLM: la que tengan a mano. Copian el documento y el prompt, y revisan la respuesta." },
+      { emoji: "🧰", label: "Las herramientas", texto: "ChatGPT, Claude, Gemini o Notebook Gemini: la que tengan a mano. Copian el documento y el prompt, y revisan la respuesta." },
       { emoji: "🎁", label: "Lo que se llevan", texto: "Un producto jurídico concreto y un método: ordenar, investigar, contrastar, producir y revisar con IA." },
     ],
   },

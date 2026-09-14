@@ -501,7 +501,7 @@ function PromptVista({ slide, saltos }: { slide: TalPrompt & { parte?: string };
     ? slide.con.map((d) => `${TAL_DOCS[d].numero ? `Documento ${TAL_DOCS[d].numero}` : TAL_DOCS[d].titulo}`).join(" y ")
     : "todos los documentos que tienen";
   const pasos = [
-    { e: "🧰", t: "Abran su herramienta: ChatGPT, Claude, Gemini o NotebookLM." },
+    { e: "🧰", t: "Abran su herramienta: ChatGPT, Claude, Gemini o Notebook Gemini." },
     { e: "📂", t: `Peguen ${conDocs} (botón «Copiar» en su dispositivo).` },
     { e: "✍️", t: "Peguen la instrucción." },
     { e: "🔍", t: slide.despues },
