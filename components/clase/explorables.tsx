@@ -13,11 +13,14 @@ export function Explorables({
   items,
   columnas = 2,
   renderDemo,
+  lado,
 }: {
   items: Explorable[];
   columnas?: 1 | 2;
   /** Dibuja la mini demostración de una tarjeta que trae `demo`. */
   renderDemo?: (demo: string) => React.ReactNode;
+  /** Tarjetas en una columna a la izquierda y el detalle a la derecha (para demos altas). */
+  lado?: boolean;
 }) {
   const [sel, setSel] = useState<number | null>(null);
 
@@ -35,8 +38,8 @@ export function Explorables({
   const actual = sel === null ? null : items[sel];
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className={cn("grid gap-2", columnas === 2 && "sm:grid-cols-2")}>
+    <div className={cn("gap-3", lado ? "grid items-start lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.7fr)] lg:gap-4" : "flex flex-col")}>
+      <div className={cn("grid gap-2", columnas === 2 && !lado && "sm:grid-cols-2")}>
         {items.map((it, i) => {
           const on = sel === i;
           return (
@@ -79,6 +82,10 @@ export function Explorables({
               </div>
             </div>
           )}
+        </div>
+      ) : lado ? (
+        <div className="hidden min-h-[16rem] items-center justify-center rounded-2xl border border-dashed border-line text-sm text-faint lg:flex">
+          Toque una tarjeta para verla funcionar
         </div>
       ) : (
         <p className="text-center text-xs text-faint">Toque una tarjeta para ver más</p>

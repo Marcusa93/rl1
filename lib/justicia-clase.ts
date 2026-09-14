@@ -424,7 +424,6 @@ export const JUS_SLIDES: JusSlide[] = [
     titulo: "¿Qué es un prompt?",
     bajada: "Una instrucción con cinco piezas: Contexto, Objetivo, Tareas, Input y Output.",
     interactivo: "cotio",
-    kit: true,
   },
   {
     t: "placa",

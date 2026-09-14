@@ -60,7 +60,7 @@ export function ConstructorCotio() {
   const alternar = (id: Pieza) => setElegidas((e) => (e.includes(id) ? e.filter((x) => x !== id) : [...e, id]));
 
   return (
-    <div className="mt-6 grid items-start gap-5 lg:grid-cols-[1fr_1.25fr]">
+    <div className="mt-5 grid items-start gap-5 lg:grid-cols-[1fr_1.25fr]">
       <div className="flex flex-col gap-3">
         <div className="grid grid-cols-2 gap-2">
           {(Object.keys(MODOS) as Modo[]).map((m) => (
@@ -88,17 +88,17 @@ export function ConstructorCotio() {
                 onClick={() => alternar(p.id)}
                 {...rem(`${p.letra} · ${p.nombre}`, on)}
                 className={cn(
-                  "rise flex items-center gap-3 rounded-xl border px-3.5 py-2.5 text-left transition active:scale-[0.98]",
+                  "rise flex items-center gap-3 rounded-xl border px-3 py-1.5 text-left transition active:scale-[0.98]",
                   on ? `${p.borde} bg-panel` : "border-line bg-panel/50 hover:border-teal/50",
                 )}
                 style={{ animationDelay: `${0.2 + i * 0.07}s` }}
               >
-                <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-lg border-2 font-mono text-xl font-bold", p.borde, p.color)}>
+                <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-lg border-2 font-mono text-lg font-bold", p.borde, p.color)}>
                   {p.letra}
                 </span>
                 <span className="min-w-0">
                   <span className={cn("block text-base font-semibold", on && p.color)}>{p.nombre}</span>
-                  <span className="block text-xs leading-snug text-faint sm:text-sm">{p.que}</span>
+                  <span className="block text-xs leading-snug text-faint">{p.que}</span>
                 </span>
                 {on && <span className={cn("ml-auto text-sm", p.color)}>✓</span>}
               </button>
@@ -124,7 +124,7 @@ export function ConstructorCotio() {
         </div>
       </div>
 
-      <div className="glass flex min-h-[22rem] flex-col rounded-2xl p-5">
+      <div className="glass flex min-h-[20rem] flex-col rounded-2xl p-5">
         <div className="flex items-center justify-between gap-3">
           <p className="text-xs font-bold uppercase tracking-wider text-faint">
             {MODOS[modo].emoji} {MODOS[modo].label} · en construcción
@@ -144,7 +144,7 @@ export function ConstructorCotio() {
                 <p className={cn("font-mono text-[11px] font-bold uppercase tracking-wider", p.color)}>
                   {p.letra} · {p.nombre}
                 </p>
-                <p className="text-base leading-snug sm:text-lg">{TEXTOS[modo][p.id]}</p>
+                <p className="text-[15px] leading-snug xl:text-base">{TEXTOS[modo][p.id]}</p>
               </div>
             ))}
             {orden.length === PIEZAS.length && (

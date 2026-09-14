@@ -117,49 +117,51 @@ export function DemoDictado() {
             ↺ nueva grabación
           </button>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[760px] border-separate border-spacing-y-1 text-left text-sm sm:text-base">
-            <thead>
-              <tr className="text-[11px] uppercase tracking-wider text-faint">
-                <th className="px-3">Fecha</th>
-                <th className="px-3">Lo que dijo</th>
-                <th className="px-3">Hecho jurídicamente relevante</th>
-                <th className="px-3">Control</th>
-              </tr>
-            </thead>
-            <tbody>
-              {FILAS.map((f, i) => (
-                <tr key={f.fecha + i} className="rise glass" style={{ animationDelay: `${i * 0.08}s` }}>
-                  <td className="whitespace-nowrap rounded-l-xl px-3 py-2 font-mono text-sm text-teal">{f.fecha}</td>
-                  <td className="px-3 py-2 text-sm italic text-muted">{f.dicho}</td>
-                  <td className="px-3 py-2 font-semibold">{f.hecho}</td>
-                  <td className={cn("rounded-r-xl px-3 py-2 text-sm", f.alerta ? "text-amber-300" : "text-muted")}>{f.control}</td>
+        {/* Tabla a la izquierda; inconsistencia, preguntas y límite a la derecha: todo entra en una pantalla. */}
+        <div className="grid items-start gap-4 lg:grid-cols-[1.55fr_1fr]">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[560px] border-separate border-spacing-y-1 text-left text-sm">
+              <thead>
+                <tr className="text-[10px] uppercase tracking-wider text-faint">
+                  <th className="px-2.5">Fecha</th>
+                  <th className="px-2.5">Hecho jurídicamente relevante · lo que dijo</th>
+                  <th className="px-2.5">Control</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="grid gap-4 lg:grid-cols-[1fr_1.4fr]">
-          <div className="rise flex flex-col gap-3" style={{ animationDelay: "0.6s" }}>
-            <p className="rounded-xl border border-rose-400/50 bg-rose-400/10 p-3 text-base leading-snug">
+              </thead>
+              <tbody>
+                {FILAS.map((f, i) => (
+                  <tr key={f.fecha + i} className="rise glass" style={{ animationDelay: `${i * 0.07}s` }}>
+                    <td className="whitespace-nowrap rounded-l-xl px-2.5 py-1.5 align-top font-mono text-xs text-teal">{f.fecha}</td>
+                    <td className="px-2.5 py-1.5">
+                      <span className="block font-semibold leading-snug">{f.hecho}</span>
+                      <span className="block text-xs italic leading-snug text-muted">{f.dicho}</span>
+                    </td>
+                    <td className={cn("rounded-r-xl px-2.5 py-1.5 align-top text-xs leading-snug", f.alerta ? "text-amber-300" : "text-muted")}>{f.control}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="flex flex-col gap-3">
+            <p className="rise rounded-xl border border-rose-400/50 bg-rose-400/10 p-3 text-sm leading-snug sm:text-base" style={{ animationDelay: "0.5s" }}>
               <b className="text-rose-300">⚠ Inconsistencia:</b> dijo «casi tres años», pero según las fechas trabajó <b>1 año y 10 meses</b> (04/05/2024 →
               03/03/2026).
             </p>
-            <p className="rounded-xl border border-line bg-panel/60 p-3 text-sm leading-snug text-muted">
+            <div className="rise glass rounded-2xl p-3.5" style={{ animationDelay: "0.65s" }}>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-teal">Preguntas para T1 (la persona trabajadora)</p>
+              <ol className="mt-2 space-y-1.5 text-sm leading-snug sm:text-base">
+                {PREGUNTAS.map((p, i) => (
+                  <li key={i} className="flex gap-2">
+                    <b className="font-mono text-teal">{i + 1}.</b>
+                    {p}
+                  </li>
+                ))}
+              </ol>
+            </div>
+            <p className="rise rounded-xl border border-line bg-panel/60 p-3 text-xs leading-snug text-muted sm:text-sm" style={{ animationDelay: "0.8s" }}>
               <b className="text-foreground">Límite:</b> no calcula la indemnización ni dice si la oferta es justa. Eso lo determina la persona profesional con la
               norma.
             </p>
-          </div>
-          <div className="rise glass rounded-2xl p-4" style={{ animationDelay: "0.75s" }}>
-            <p className="text-xs font-bold uppercase tracking-wider text-teal">Preguntas para T1 (la persona trabajadora)</p>
-            <ol className="mt-2 space-y-2 text-base leading-snug sm:text-lg">
-              {PREGUNTAS.map((p, i) => (
-                <li key={i} className="flex gap-2">
-                  <b className="font-mono text-teal">{i + 1}.</b>
-                  {p}
-                </li>
-              ))}
-            </ol>
           </div>
         </div>
       </div>

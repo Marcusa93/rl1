@@ -57,9 +57,15 @@ export function DocumentoCaso({
   doc,
   grande,
   marcas,
+  medio,
+  sinPdf,
 }: {
   doc: DocTaller;
   grande?: boolean;
+  /** Con `grande`: burbujas de chat un poco más chicas, para conversaciones largas. */
+  medio?: boolean;
+  /** Oculta la aclaración de "PDF de imagen" (en la masterclass no hay PDF). */
+  sinPdf?: boolean;
   /** Resalta mensajes de un chat por índice: la frase clave o el contexto que la aclara. */
   marcas?: Record<number, "clave" | "contexto">;
 }) {
@@ -69,7 +75,7 @@ export function DocumentoCaso({
         <span className="mr-1.5 rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-white">{doc.codigo}</span>
         {doc.origen}
       </p>
-      <p className={cn("font-mono text-zinc-400", grande ? "text-[11px]" : "text-[10px]")}>{doc.imagen ? "📷 PDF de imagen · ficticio" : "ficticio"}</p>
+      <p className={cn("font-mono text-zinc-400", grande ? "text-[11px]" : "text-[10px]")}>{doc.imagen && !sinPdf ? "📷 PDF de imagen · ficticio" : "ficticio"}</p>
     </div>
   );
   const chico = grande ? "text-sm" : "text-[11px]";
@@ -79,7 +85,7 @@ export function DocumentoCaso({
       <div className={cn("rounded-2xl bg-[#e9e4dc] text-zinc-900", grande ? "p-4 sm:p-5" : "p-3")}>
         {cab}
         <p className={cn("mt-1 font-semibold", grande ? "text-lg" : "text-sm")}>{doc.titulo}</p>
-        <div className="mt-3 flex flex-col gap-2">
+        <div className={cn("flex flex-col", medio ? "mt-2 gap-1.5" : "mt-3 gap-2")}>
           {(doc.mensajes ?? []).map((m, i) => (
             <div key={i} className={cn("flex", m.quien === "LUCÍA" ? "justify-start" : "justify-end")}>
               <div
@@ -93,7 +99,7 @@ export function DocumentoCaso({
                 <p className={cn("font-semibold", grande ? "text-xs" : "text-[10px]", m.quien === "LUCÍA" ? "text-rose-700" : "text-emerald-800")}>
                   {m.quien} · {m.hora}
                 </p>
-                <p className={cn("leading-snug", grande ? "text-lg sm:text-xl" : "text-sm")}>{m.texto}</p>
+                <p className={cn("leading-snug", grande ? (medio ? "text-base" : "text-lg sm:text-xl") : "text-sm")}>{m.texto}</p>
               </div>
             </div>
           ))}

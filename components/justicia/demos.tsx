@@ -26,27 +26,32 @@ export function DemoSistema({ id }: { id: DemoId }) {
   );
 }
 
-/** Revela pasos de a uno: devuelve cuántos ya se mostraron. */
-function usePasos(total: number, ms: number, clave: unknown = 0) {
-  const [n, setN] = useState(0);
+/**
+ * Milisegundos desde que cambió `clave` (se reinicia con "repetir"). Las
+ * animaciones se calculan con el tiempo real y no contando ticks: aunque el
+ * navegador frene los temporizadores, llegan al final a tiempo.
+ */
+function useTiempo(clave: unknown, hasta = 12000) {
+  const [t, setT] = useState(0);
   useEffect(() => {
-    setN(0);
-    const id = setInterval(() => setN((x) => (x >= total ? x : x + 1)), ms);
+    const inicio = Date.now();
+    setT(0);
+    const id = setInterval(() => {
+      const d = Date.now() - inicio;
+      setT(d);
+      if (d > hasta) clearInterval(id);
+    }, 40);
     return () => clearInterval(id);
-  }, [total, ms, clave]);
-  return n;
+  }, [clave, hasta]);
+  return t;
 }
 
-/** Escribe un texto letra por letra. */
-function useTipeo(texto: string, ms = 22, clave: unknown = 0) {
-  const [n, setN] = useState(0);
-  useEffect(() => {
-    setN(0);
-    const id = setInterval(() => setN((x) => (x >= texto.length ? x : x + 2)), ms);
-    return () => clearInterval(id);
-  }, [texto, ms, clave]);
-  return texto.slice(0, n);
-}
+/** Cuántos pasos se revelaron, uno cada `ms`, a partir de `desde` ms. */
+const pasosEn = (t: number, total: number, ms: number, desde = 0) => (t < desde ? 0 : Math.min(total, Math.floor((t - desde) / ms) + 1));
+
+/** Texto escrito letra por letra: dos letras cada `ms`. */
+const tipeoEn = (t: number, texto: string, ms: number) => texto.slice(0, Math.floor(t / ms) * 2);
+const finTipeo = (texto: string, ms: number) => Math.ceil(texto.length / 2) * ms;
 
 function Repetir({ onClick }: { onClick: () => void }) {
   return (
@@ -79,11 +84,15 @@ const FALLOS = [
   },
 ];
 
+const CONSULTA = "padre sin salario fijo que no paga la cuota alimenticia";
+
 function DemoJurisprudencia() {
   const [vuelta, setVuelta] = useState(0);
-  const consulta = useTipeo("padre sin salario fijo que no paga la cuota alimenticia", 28, vuelta);
-  const listo = consulta.length > 50;
-  const n = usePasos(listo ? FALLOS.length : 0, 450, `${vuelta}-${listo}`);
+  const t = useTiempo(vuelta);
+  const consulta = tipeoEn(t, CONSULTA, 28);
+  const fin = finTipeo(CONSULTA, 28);
+  const listo = t >= fin;
+  const n = pasosEn(t, FALLOS.length, 450, fin + 200);
   return (
     <div>
       <div className="flex items-center gap-2 rounded-xl border border-teal/50 bg-panel px-3 py-2">
@@ -142,8 +151,9 @@ const BORRADOR: { t: string; campo?: boolean }[] = [
 
 function DemoRedaccion() {
   const [vuelta, setVuelta] = useState(0);
-  const campos = usePasos(CAMPOS.length, 350, vuelta);
-  const partes = usePasos(campos >= CAMPOS.length ? BORRADOR.length : 0, 500, `${vuelta}-${campos >= CAMPOS.length}`);
+  const t = useTiempo(vuelta);
+  const campos = pasosEn(t, CAMPOS.length, 350, 200);
+  const partes = pasosEn(t, BORRADOR.length, 500, 200 + CAMPOS.length * 350);
   return (
     <div className="grid gap-3 md:grid-cols-[0.8fr_1.2fr]">
       <div>
@@ -210,7 +220,7 @@ type Agente = keyof typeof AGENTES;
 function DemoAgentes() {
   const [agente, setAgente] = useState<Agente>("familia");
   const a = AGENTES[agente];
-  const respuesta = useTipeo(a.respuesta, 18, agente);
+  const respuesta = tipeoEn(useTiempo(agente), a.respuesta, 18);
   return (
     <div>
       <div className="flex flex-wrap gap-2">
@@ -256,12 +266,7 @@ const RESULTADOS = [
 
 function DemoJurimetria() {
   const [vuelta, setVuelta] = useState(0);
-  const [pct, setPct] = useState(0);
-  useEffect(() => {
-    setPct(0);
-    const id = setInterval(() => setPct((p) => (p >= 68 ? 68 : p + 2)), 30);
-    return () => clearInterval(id);
-  }, [vuelta]);
+  const pct = Math.min(68, Math.floor(useTiempo(vuelta, 3000) / 30) * 2);
   return (
     <div>
       <div className="flex flex-wrap items-center gap-1.5">
@@ -302,13 +307,8 @@ function DemoJurimetria() {
 // --- Lenguaje claro ------------------------------------------------------------------------------
 
 function DemoLenguaje() {
-  const [claro, setClaro] = useState(false);
   const [vuelta, setVuelta] = useState(0);
-  useEffect(() => {
-    setClaro(false);
-    const t = setTimeout(() => setClaro(true), 1400);
-    return () => clearTimeout(t);
-  }, [vuelta]);
+  const claro = useTiempo(vuelta, 2000) >= 1400;
   return (
     <div>
       <div className="grid gap-3 md:grid-cols-2">

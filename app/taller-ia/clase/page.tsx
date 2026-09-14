@@ -217,10 +217,7 @@ function Deck() {
 
       <main
         key={idx}
-        className={cn(
-          "rise mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 py-10 sm:px-10 sm:py-14",
-          kitVisible && "pb-32 sm:pb-32",
-        )}
+        className="rise mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-20 pt-10 sm:px-10 sm:pt-14"
       >
         {conBarra && (
           <div className="mb-5">
@@ -232,28 +229,9 @@ function Deck() {
 
       <LluviaReacciones slug={TAL_SLUG} contador={slide.t === "final"} />
 
-      {kitVisible && (
-        <div className="fixed inset-x-0 bottom-14 z-40 flex justify-center px-4">
-          <div className="rise glass flex max-w-full flex-wrap items-center justify-center gap-2 rounded-2xl px-3 py-2">
-            <span className="px-1 text-[11px] uppercase tracking-widest text-faint">Kit</span>
-            {TAL_KIT.map((h) => (
-              <a
-                key={h.id}
-                href={h.url}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-1.5 whitespace-nowrap rounded-xl border border-line bg-panel/60 px-3 py-1.5 text-sm text-foreground transition hover:border-teal/60 hover:text-teal"
-              >
-                <span>{h.emoji}</span>
-                {h.label}
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <footer className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 px-5 py-3 text-xs text-faint">
-        <div className="flex min-w-0 items-center gap-3">
+      {/* El kit vive en el pie: nunca tapa el contenido de la placa. */}
+      <footer className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 bg-gradient-to-t from-ink via-ink/90 to-transparent px-5 pb-3 pt-6 text-xs text-faint">
+        <div className="flex min-w-0 items-center gap-2">
           <button
             onClick={() => setKitManual(!kitVisible)}
             className={cn(
@@ -262,13 +240,37 @@ function Deck() {
             )}
             aria-expanded={kitVisible}
           >
-            🧰 Herramientas
+            🧰 {kitVisible ? "Kit" : "Herramientas"}
           </button>
-          <span className="hidden min-w-0 truncate lg:block">{TAL_AUTOR} · Laboratorio de IA · Facultad de Derecho y Ciencias Sociales, UNT</span>
+          {kitVisible ? (
+            <div className="rise flex min-w-0 items-center gap-1.5 overflow-x-auto">
+              {TAL_KIT.map((h) => (
+                <a
+                  key={h.id}
+                  href={h.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded-lg border border-line bg-panel/70 px-2.5 py-1.5 text-xs text-foreground transition hover:border-teal/60 hover:text-teal"
+                >
+                  <span>{h.emoji}</span>
+                  {h.label}
+                </a>
+              ))}
+            </div>
+          ) : (
+            <span className="hidden min-w-0 truncate lg:block">{TAL_AUTOR} · Laboratorio de IA · Facultad de Derecho y Ciencias Sociales, UNT</span>
+          )}
         </div>
         <div className="ml-auto flex shrink-0 items-center gap-3">
           {parteActual && (
-            <span className="hidden rounded-full border border-line bg-panel/60 px-2.5 py-1 font-mono text-[11px] text-muted md:block">{parteActual}</span>
+            <span
+              className={cn(
+                "hidden rounded-full border border-line bg-panel/60 px-2.5 py-1 font-mono text-[11px] text-muted",
+                kitVisible ? "2xl:block" : "md:block",
+              )}
+            >
+              {parteActual}
+            </span>
           )}
           <button onClick={() => go(idx - 1)} className="rounded-lg border border-line bg-panel/60 px-3 py-1.5 text-muted transition hover:text-teal" aria-label="Anterior">
             ◀

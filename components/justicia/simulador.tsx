@@ -377,7 +377,7 @@ function DocMensajes({ contexto, onContexto, ia, onIA }: { contexto: boolean; on
       {!contexto ? (
         <div className="grid gap-4 lg:grid-cols-[1fr_1.2fr]">
           {/* La misma captura que usa el taller (Documento 1). */}
-          <DocumentoCaso doc={TAL_DOCS.D1} grande marcas={{ 0: "clave" }} />
+          <DocumentoCaso doc={TAL_DOCS.D1} grande sinPdf marcas={{ 0: "clave" }} />
           <div className="flex flex-col justify-center gap-3">
             <p className="rounded-xl border border-rose-400/40 bg-rose-400/10 p-4 text-lg">
               <b className="text-rose-300">Diego interpreta:</b> «La cliente confirmó que recibió la prestación. Corresponde pagar el saldo.»
@@ -391,7 +391,7 @@ function DocMensajes({ contexto, onContexto, ia, onIA }: { contexto: boolean; on
       ) : (
         <div className="grid gap-4 lg:grid-cols-[1.1fr_1fr]">
           {/* La misma conversación completa que usa el taller (Documento 2). */}
-          <DocumentoCaso doc={TAL_DOCS.D2} grande marcas={{ 1: "clave", 2: "contexto", 4: "contexto" }} />
+          <DocumentoCaso doc={TAL_DOCS.D2} grande medio sinPdf marcas={{ 1: "clave", 2: "contexto", 4: "contexto" }} />
           <div className="flex flex-col gap-3">
             <p className="text-lg leading-snug text-muted">
               Lucía hablaba de <b className="text-foreground">las cajas</b>. Faltaban la revisión, la instalación y la prueba de funcionamiento.
@@ -455,7 +455,7 @@ function Usos({ uso, onUso }: { uso: Uso | null; onUso: (u: Uso) => void }) {
                 <b className="text-cyan">Posiciones:</b> Diego reclama el saldo por la entrega; Lucía sostiene que falta instalar y probar.
               </li>
               <li>
-                <b className="text-cyan">Documentos:</b> contrato (cláusula 3), conversación de lunes y martes, remito de entrega.
+                <b className="text-cyan">Documentos:</b> contrato (cláusula 3), conversación del martes, remito de entrega.
               </li>
               <li>
                 <b className="text-cyan">Controvertido:</b> si «recibimos todo» fue aceptación; quién debía el módulo.

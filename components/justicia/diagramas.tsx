@@ -876,7 +876,8 @@ function Proyectos() {
 
 // Tareas programadas: la herramienta trabaja sola, a una hora.
 function Tareas() {
-  const pasos = ["buscar novedades", "filtrar por materia", "resumir", "enviar"];
+  // Rótulos en una o dos líneas: las cajas miden 80 de ancho.
+  const pasos = [["buscar", "novedades"], ["filtrar por", "materia"], ["resumir"], ["enviar"]];
   return (
     <svg viewBox={VB} className="w-full" role="img" aria-label="Una tarea programada que se ejecuta sola cada mañana">
       <circle cx="62" cy="112" r="34" fill={PANEL} stroke={AMBER} strokeWidth="2.4" />
@@ -886,11 +887,15 @@ function Tareas() {
       </line>
       <text x="62" y="166" textAnchor="middle" fill={AMBER} fontSize="11" fontWeight="700">cada día · 7:00</text>
       {pasos.map((p, i) => (
-        <g key={p}>
+        <g key={p.join(" ")}>
           <rect x={112 + i * 88} y="92" width="80" height="40" rx="10" fill={PANEL} stroke={TEAL} strokeWidth="1.8">
             <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="6s" begin={`${i * 1.5}s`} repeatCount="indefinite" />
           </rect>
-          <text x={152 + i * 88} y="116" textAnchor="middle" fill={TEXT} fontSize="10">{p}</text>
+          {p.map((linea, j) => (
+            <text key={linea} x={152 + i * 88} y={p.length === 1 ? 116 : 109 + j * 13} textAnchor="middle" fill={TEXT} fontSize="10.5">
+              {linea}
+            </text>
+          ))}
         </g>
       ))}
       <circle r="4" fill={AMBER}>
