@@ -104,7 +104,7 @@ export function SimuladorConflicto({ slug, activity, intervalo }: { slug: string
       {paso === "voto" && <Votacion slug={slug} activity={activity} intervalo={intervalo} onElegir={elegir} />}
 
       {paso === "doc" && (
-        <div className="rise flex flex-col gap-4">
+        <div className="rise flex flex-col gap-3">
           {alternativa && (
             <p className="rounded-xl border border-amber-400/40 bg-amber-400/10 px-4 py-2 text-base text-amber-200">
               ↺ Lo que habría pasado si miraban primero {NOMBRE[camino]}

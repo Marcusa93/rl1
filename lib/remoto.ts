@@ -29,7 +29,8 @@ export type CmdRemoto =
   | { tipo: "sig" }
   | { tipo: "ant" }
   | { tipo: "ir"; idx: number }
-  | { tipo: "click"; i: number; label: string };
+  | { tipo: "click"; i: number; label: string }
+  | { tipo: "zoom"; delta: number };
 
 export type CmdConSeq = CmdRemoto & { seq: number };
 

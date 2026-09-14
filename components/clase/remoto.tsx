@@ -82,6 +82,7 @@ export function useRemotoDeck({
       if (c.tipo === "sig") go(idx + 1);
       else if (c.tipo === "ant") go(idx - 1);
       else if (c.tipo === "ir") go(c.idx);
+      else if (c.tipo === "zoom") window.dispatchEvent(new KeyboardEvent("keydown", { key: c.delta > 0 ? "+" : "-" }));
       else if (c.tipo === "click") {
         const lista = botonesEnPantalla();
         const blanco = lista[c.i]?.boton.label === c.label ? lista[c.i] : lista.find((b) => b.boton.label === c.label);
@@ -177,7 +178,15 @@ export function ControlRemoto({ slug, titulos, nombre }: { slug: string; titulos
     <div className="bg-grid flex min-h-dvh flex-col">
       <header className="sticky top-0 z-10 border-b border-line/60 bg-ink/90 px-4 py-3 backdrop-blur">
         <div className="flex items-center justify-between gap-3">
-          <p className="truncate text-xs text-faint">📱 Control · {nombre}</p>
+          <p className="min-w-0 flex-1 truncate text-xs text-faint">📱 Control · {nombre}</p>
+          <span className="flex shrink-0 items-center gap-1">
+            <button onClick={() => enviar({ tipo: "zoom", delta: -1 }, "a-")} className="rounded-lg border border-line bg-panel/70 px-2 py-1 text-xs font-bold" aria-label="Letra más chica">
+              A−
+            </button>
+            <button onClick={() => enviar({ tipo: "zoom", delta: 1 }, "a+")} className="rounded-lg border border-line bg-panel/70 px-2 py-1 text-sm font-bold" aria-label="Letra más grande">
+              A+
+            </button>
+          </span>
           <span className={cn("flex shrink-0 items-center gap-1.5 text-xs", conectado ? "text-teal" : "text-magenta")}>
             <span className={cn("size-2 rounded-full", conectado ? "animate-pulse bg-teal" : "bg-magenta")} />
             {conectado ? "presentación conectada" : "abra la presentación en la compu"}

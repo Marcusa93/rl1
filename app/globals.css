@@ -95,6 +95,15 @@ body {
 }
 .rise { animation: rise 0.4s ease both; }
 
+/*
+ * Decks de clase: la raíz escala con la pantalla, como una diapositiva
+ * (diseño base 1440×900 = 16px; a 1920×1080 ≈ 19px). El docente ajusta con
+ * + y − (--zoom-deck). Solo aplica a las páginas con .deck-escala.
+ */
+html:has(.deck-escala) {
+  font-size: clamp(12px, calc(min(1.111vw, 1.778vh) * var(--zoom-deck, 1)), 36px);
+}
+
 /* Reacciones en vivo: el emoji sube, deriva un poco y se desvanece. */
 @keyframes flotar {
   0% { opacity: 0; transform: translate(0, 10vh) scale(0.5); }

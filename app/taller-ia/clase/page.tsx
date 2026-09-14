@@ -15,6 +15,7 @@ import { ChipResponda, Constelacion, PlacaIngreso, ResultadosVivo } from "@/comp
 import { Explorables } from "@/components/clase/explorables";
 import { LluviaReacciones } from "@/components/clase/reacciones";
 import { useRemotoDeck } from "@/components/clase/remoto";
+import { AvisoZoom, useZoomDeck } from "@/components/clase/zoom";
 import {
   BarraRecorridos,
   DocumentoCaso,
@@ -191,9 +192,11 @@ function Deck() {
 
   const estadoNombre = estado ? (getTalActividad(estado.key)?.titulo ?? "Ingreso") : "";
   const kitVisible = kitManual ?? Boolean(slide.kit);
+  const { zoom, aviso: avisoZoom } = useZoomDeck();
 
   return (
-    <div className="bg-grid relative flex min-h-dvh flex-col overflow-hidden">
+    <div className="deck-escala bg-grid relative flex min-h-dvh flex-col overflow-hidden">
+      <AvisoZoom zoom={zoom} visible={avisoZoom} />
       <div className="fixed inset-x-0 top-0 z-40 h-1 bg-ink-2/60">
         <div
           className="h-full bg-gradient-to-r from-teal via-cyan to-violet transition-all duration-300"

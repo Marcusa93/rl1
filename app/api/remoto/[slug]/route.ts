@@ -59,7 +59,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
 
   if (body.cmd) {
     const cmd = body.cmd as CmdRemoto;
-    if (!["sig", "ant", "ir", "click"].includes(cmd.tipo)) return fail("Comando inválido");
+    if (!["sig", "ant", "ir", "click", "zoom"].includes(cmd.tipo)) return fail("Comando inválido");
     const fila = await leerFila(filaCmd(slug));
     const cmds = (fila.activity_config?.cmds as CmdConSeq[] | undefined) ?? [];
     const seq = (cmds.length ? cmds[cmds.length - 1].seq : 0) + 1;

@@ -84,13 +84,13 @@ export function DocumentoCaso({
     return (
       <div className={cn("rounded-2xl bg-[#e9e4dc] text-zinc-900", grande ? "p-4 sm:p-5" : "p-3")}>
         {cab}
-        <p className={cn("mt-1 font-semibold", grande ? "text-lg" : "text-sm")}>{doc.titulo}</p>
-        <div className={cn("flex flex-col", medio ? "mt-2 gap-1.5" : "mt-3 gap-2")}>
+        {!medio && <p className={cn("mt-1 font-semibold", grande ? "text-lg" : "text-sm")}>{doc.titulo}</p>}
+        <div className={cn("flex flex-col", medio ? "mt-2 gap-1" : "mt-3 gap-2")}>
           {(doc.mensajes ?? []).map((m, i) => (
             <div key={i} className={cn("flex", m.quien === "LUCÍA" ? "justify-start" : "justify-end")}>
               <div
                 className={cn(
-                  "max-w-[88%] rounded-2xl px-3.5 py-2 shadow-sm",
+                  medio ? "max-w-[94%] rounded-2xl px-3 py-1 shadow-sm" : "max-w-[88%] rounded-2xl px-3.5 py-2 shadow-sm",
                   m.quien === "LUCÍA" ? "rounded-tl-sm bg-white" : "rounded-tr-sm bg-[#d9fdd3]",
                   marcas?.[i] === "clave" && "ring-4 ring-amber-400",
                   marcas?.[i] === "contexto" && "ring-4 ring-teal-500",
@@ -99,7 +99,7 @@ export function DocumentoCaso({
                 <p className={cn("font-semibold", grande ? "text-xs" : "text-[10px]", m.quien === "LUCÍA" ? "text-rose-700" : "text-emerald-800")}>
                   {m.quien} · {m.hora}
                 </p>
-                <p className={cn("leading-snug", grande ? (medio ? "text-base" : "text-lg sm:text-xl") : "text-sm")}>{m.texto}</p>
+                <p className={cn("leading-snug", grande ? (medio ? "text-[15px]" : "text-lg sm:text-xl") : "text-sm")}>{m.texto}</p>
               </div>
             </div>
           ))}

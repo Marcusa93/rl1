@@ -24,6 +24,7 @@ import { DemoDictado } from "@/components/justicia/dictado";
 import { Explorables } from "@/components/clase/explorables";
 import { LluviaReacciones } from "@/components/clase/reacciones";
 import { useRemotoDeck } from "@/components/clase/remoto";
+import { AvisoZoom, useZoomDeck } from "@/components/clase/zoom";
 import { rem } from "@/lib/remoto";
 import {
   getJusActividad,
@@ -215,9 +216,11 @@ function Deck() {
   const estadoNombre = estado ? (getJusActividad(estado.key)?.titulo ?? "Ingreso") : "";
   // El kit se despliega solo en las placas marcadas; en el resto, a un clic.
   const kitVisible = kitManual ?? Boolean(slide.kit);
+  const { zoom, aviso: avisoZoom } = useZoomDeck();
 
   return (
-    <div className="bg-grid relative flex min-h-dvh flex-col overflow-hidden">
+    <div className="deck-escala bg-grid relative flex min-h-dvh flex-col overflow-hidden">
+      <AvisoZoom zoom={zoom} visible={avisoZoom} />
       <div className="fixed inset-x-0 top-0 z-40 h-1 bg-ink-2/60">
         <div
           className="h-full bg-gradient-to-r from-teal via-cyan to-violet transition-all duration-300"
@@ -408,6 +411,9 @@ function Slide({ slide, revelada, onRevelar }: { slide: JusSlide; revelada: bool
           <h1 className="text-gradient mt-8 font-mono text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">Gracias</h1>
           <p className="rise mt-5 rounded-full border border-teal/40 bg-teal/10 px-5 py-2 text-lg text-foreground sm:text-xl" style={{ animationDelay: "0.2s" }}>
             👏 Mande su aplauso desde el celular
+          </p>
+          <p className="rise mt-3 text-lg text-foreground sm:text-xl" style={{ animationDelay: "0.3s" }}>
+            📘 La guía de la clase ya está en su celular: <span className="text-gradient font-mono font-bold">{JUS_LINK}/guia</span>
           </p>
           <p className="mt-4 text-lg text-muted">{JUS_EVENTO}</p>
           <p className="mt-5 text-lg font-medium">{JUS_AUTOR}</p>
