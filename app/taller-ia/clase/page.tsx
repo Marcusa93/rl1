@@ -380,7 +380,7 @@ function Slide({
           <div className="rise mt-8 flex flex-wrap items-center justify-center gap-5" style={{ animationDelay: "0.6s" }}>
             <img src={TAL_QR_PLATAFORMA} alt="Código QR para ingresar" width={150} height={150} className="rounded-xl border border-line bg-white p-2" />
             <div className="pulse-ring rounded-2xl border-gradient px-5 py-4 text-left sm:px-7 sm:py-5">
-              <p className="text-xs uppercase tracking-widest text-faint">Un dispositivo por grupo</p>
+              <p className="text-xs uppercase tracking-widest text-faint">Una computadora por persona o por dupla</p>
               <p className="text-gradient mt-1 break-all font-mono text-xl font-bold sm:text-2xl">{TAL_LINK}</p>
               <p className="mt-1 text-xs text-faint">escaneen el código o escriban la dirección</p>
             </div>
@@ -392,7 +392,7 @@ function Slide({
       return (
         <div>
           <PlacaIngreso slug={TAL_SLUG} qr={TAL_QR_PLATAFORMA} link={TAL_LINK} />
-          <p className="mt-4 text-center text-lg text-muted">Ingresen con el nombre del grupo: ahí van a recibir los documentos y los prompts.</p>
+          <p className="mt-4 text-center text-lg text-muted">Ingresen con su nombre: en su computadora los espera el itinerario del taller, con MessIAs de asistente.</p>
         </div>
       );
 
