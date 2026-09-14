@@ -126,6 +126,21 @@ html:has(.deck-escala) {
 .onda { height: 6px; animation: onda 0.9s ease-in-out infinite; }
 .flotar-corto { animation: flotar-corto var(--dur, 1.6s) ease-out forwards; }
 
+/* Vaivén suave en bucle, para diagramas vivos (delay con animation-delay). */
+@keyframes vaiven {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+.vaiven { animation: vaiven var(--dur, 4.5s) ease-in-out infinite; }
+
+/* Punto que viaja por una línea (flujo de datos de los diagramas). */
+@keyframes viaja {
+  0% { offset-distance: 0%; opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--color-line); border-radius: 999px; }
 ::selection { background: rgba(94, 234, 212, 0.3); }

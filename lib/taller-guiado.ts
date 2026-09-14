@@ -196,10 +196,10 @@ export const TAL_ETAPAS: EtapaTaller[] = [
         id: "e0-gem",
         titulo: "Cree su asistente (su primer prompt de sistema)",
         prompt: "P0",
-        herramienta: { label: "Gemini", url: "https://gemini.google.com" },
+        herramienta: { label: "Crear Gem (directo)", url: "https://gemini.google.com/gems/create" },
         hacer: [
           "Abra gemini.google.com e inicie sesión con una cuenta de Google.",
-          "En el menú de la izquierda toque «Explorar Gems» (o «Gems») y luego «Crear Gem» (o «+ Nuevo Gem»).",
+          "En el menú de la izquierda toque «Explorar Gems» (o «Gems») y luego «Crear Gem». ¿No lo encuentra? Use el botón «Crear Gem (directo)» de acá abajo: lo lleva derecho.",
           "Nombre: «Asistente de mediación». En «Instrucciones», pegue el prompt P0 (botón Copiar de acá abajo). Guarde.",
           "Abra su Gem y escríbale: «presentate en dos líneas». Ya tiene un asistente que conoce su rol.",
           "TODO el taller se trabaja DENTRO de este Gem: cada audio y documento que suba queda en la misma conversación, y el asistente acumula el caso completo.",

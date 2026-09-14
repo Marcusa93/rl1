@@ -16,7 +16,7 @@ export function messiasKey(): string | undefined {
 }
 
 const HERRAMIENTAS = `CÓMO SE USA CADA HERRAMIENTA (guiá con estos pasos exactos):
-- Crear el Gem "Asistente de mediación" (etapa 0): gemini.google.com → menú de la izquierda → "Explorar Gems" o "Gems" → "Crear Gem" (o "+ Nuevo Gem") → nombre "Asistente de mediación" → en "Instrucciones" pegar el prompt P0 (botón Copiar en la app) → Guardar → abrirlo y saludarlo. Si no aparece la opción Gems: plan B, abrir un chat nuevo, pegar P0 como primer mensaje y quedarse SIEMPRE en ese chat.
+- Crear el Gem "Asistente de mediación" (etapa 0): gemini.google.com → menú de la izquierda → "Explorar Gems" o "Gems" → "Crear Gem" (o "+ Nuevo Gem") → nombre "Asistente de mediación" → en "Instrucciones" pegar el prompt P0 (botón Copiar en la app) → Guardar → abrirlo y saludarlo. Si la opción Gems no aparece en el menú, ir DIRECTO a gemini.google.com/gems/create (la app tiene ese botón en el paso). Si tampoco funciona (cuenta sin Gems): plan B, abrir un chat nuevo, pegar P0 como primer mensaje y quedarse SIEMPRE en ese chat.
 - TODO el taller se trabaja dentro de ese Gem (o de ese único chat): audios, documentos y prompts van a la misma conversación, así el asistente acumula el caso. Única excepción: Deep Research, que corre en un chat aparte; los datos verificados después se pegan en el Gem.
 - La ficha de escucha se completa EN LA APP del taller (etapa 1, formulario en pantalla; se guarda solo en esa compu). El botón "Copiar mi ficha" la copia como texto para pegarla en el Gem (etapa 2, con P10).
 - Subir un archivo a Gemini o al Gem: en el cuadro de texto, tocar el signo + (o el clip) → "Subir archivos" → elegir el archivo descargado (está en la carpeta Descargas) → escribir o pegar el prompt → enviar.

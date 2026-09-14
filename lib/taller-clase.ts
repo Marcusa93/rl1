@@ -281,7 +281,7 @@ export interface TalPlaca {
   lede?: string;
   explora?: Explorable[];
   /** Pieza visual propia en lugar de un diagrama. */
-  visual?: "recorridos" | "matriz" | "recorrido-final" | "roles";
+  visual?: "recorridos" | "matriz" | "recorrido-final" | "roles" | "gem" | "caucus" | "vs" | "research" | "mapa";
 }
 export interface TalActividad {
   t: "actividad";
@@ -337,7 +337,6 @@ export const TAL_SLIDES: TalSlide[] = [
     titulo: "Hoy ustedes son el equipo de mediación",
     bajada: "Un caso real por resolver, un itinerario guiado en cada computadora y la IA como asistente.",
     etapa: 0,
-    libera: ["P0"],
     kit: true,
     explora: [
       {
@@ -359,6 +358,36 @@ export const TAL_SLIDES: TalSlide[] = [
         emoji: "✓",
         label: "Marcar «Listo»",
         texto: "Cada paso termina con un botón «Listo». Acá en pantalla se ve cuántos van terminando: nadie tiene que levantar la mano para avisar.",
+      },
+    ],
+  },
+  {
+    t: "placa",
+    titulo: "Su asistente se llama Gem",
+    bajada: "Un chat con instrucciones fijas: el prompt de sistema hecho herramienta. Se arma una vez y trabaja todo el taller.",
+    libera: ["P0"],
+    visual: "gem",
+    kit: true,
+    explora: [
+      {
+        emoji: "🛠️",
+        label: "Se crea en cuatro toques",
+        texto: "1) gemini.google.com con cuenta de Google · 2) «Explorar Gems» → «Crear Gem» (si no aparece, entren directo a gemini.google.com/gems/create) · 3) pegar P0 en «Instrucciones» · 4) Guardar. El paso a paso, con el botón de copiar, está en su computadora.",
+      },
+      {
+        emoji: "📐",
+        label: "P0 es un COTIO",
+        texto: "Contexto: asistís al equipo de mediación. Objetivo: preparar la mediación. Tareas: ordenar, extraer, comparar. Input: solo lo que yo suba (CN y EA). Output: con citas y las hipótesis marcadas. La misma estructura que sirve para cualquier prompt, usada como instrucciones permanentes.",
+      },
+      {
+        emoji: "🔁",
+        label: "Plan B, mismo efecto",
+        texto: "¿En su cuenta no está Gems? Abran un chat nuevo, peguen P0 como PRIMER mensaje y no se muevan de ese chat en todo el taller. La habilidad es la misma: darle a la herramienta un contexto estable.",
+      },
+      {
+        emoji: "🧠",
+        label: "Por qué conviene",
+        texto: "El asistente acumula el caso: cuando llegue la hora del acuerdo, ya escuchó a las partes, leyó la carpeta entera y tiene los criterios verificados. Nadie repite el contexto en cada pedido.",
       },
     ],
   },
@@ -385,6 +414,7 @@ export const TAL_SLIDES: TalSlide[] = [
     bajada: "Cada parte pidió hablar a solas. Eso, en mediación, tiene nombre y reglas.",
     etapa: 1,
     libera: ["PLD"],
+    visual: "caucus",
     explora: [
       { emoji: "🚪", label: "Caucus: la sesión privada", texto: "Una reunión a solas del mediador con una parte. Sirve para que diga lo que no diría frente a la otra. Lo que se escucha ahí es confidencial." },
       { emoji: "👂", label: "Escucha activa", texto: "Escuchar para entender, no para contestar: parafrasear («si entiendo bien, usted necesita…»), preguntar abierto, tolerar el silencio." },
@@ -405,6 +435,7 @@ export const TAL_SLIDES: TalSlide[] = [
     bajada: "Suban la entrevista a su Gem y comparen con su ficha. ¿Quién escuchó mejor?",
     etapa: 2,
     libera: ["P9", "P10"],
+    visual: "vs",
     kit: true,
     explora: [
       { emoji: "⚡", label: "Lo que hace bien", texto: "Transcribe en segundos, ordena fechas y montos, arma la ficha completa sin cansarse. Para eso es imbatible." },
@@ -456,6 +487,7 @@ export const TAL_SLIDES: TalSlide[] = [
     bajada: "Un agente que planifica, busca, lee y cita. Lo lanzan ahora y sigue solo mientras trabajamos.",
     etapa: 5,
     kit: true,
+    visual: "research",
     explora: [
       { emoji: "🤖", label: "Qué es", texto: "No es un chat: es un agente. Arma un plan de búsqueda, visita fuentes, las lee, las cruza y entrega un informe con citas. Tarda 5 a 15 minutos." },
       { emoji: "⚖️", label: "Para qué, en mediación", texto: "Criterios objetivos: precios de mercado, lo que exige la ley, lo que costaría un juicio. Datos de afuera que ninguna parte pueda discutir (método Harvard)." },
@@ -506,6 +538,7 @@ export const TAL_SLIDES: TalSlide[] = [
     t: "placa",
     titulo: "El método que se llevan",
     bajada: "Sirve para cualquier conflicto y cualquier herramienta.",
+    visual: "mapa",
     explora: [
       { emoji: "👂", label: "Escuchar primero", texto: "La ficha del mediador se completa con las personas delante. La IA ordena después." },
       { emoji: "🤖", label: "IA con control", texto: "Subir, pedir con límites, exigir citas y revisar fila por fila. La corrección humana es el trabajo, no un trámite." },

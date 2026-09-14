@@ -12,6 +12,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AccesoDocente } from "@/components/clase/acceso-docente";
 import { ChipResponda, Constelacion, PlacaIngreso, ResultadosVivo, useResultados } from "@/components/clase/vivo";
+import { DiagramaCaucus, DiagramaGem, DiagramaResearch, DiagramaVs, MapaTaller } from "@/components/taller/diagramas";
 import { TarjetaAudio } from "@/components/taller/guiado";
 import { PREGUNTAS_ENTREVISTA, TAL_AUDIOS, TAL_ETAPAS } from "@/lib/taller-guiado";
 import { Explorables } from "@/components/clase/explorables";
@@ -513,6 +514,11 @@ function PlacaVista({ slide, saltos }: { slide: TalPlaca & { parte?: string }; s
       {slide.visual === "matriz" && <MatrizTrabajo />}
       {slide.visual === "recorrido-final" && <RecorridoFinal />}
       {slide.visual === "roles" && <RolesGrupo />}
+      {slide.visual === "gem" && <DiagramaGem />}
+      {slide.visual === "caucus" && <DiagramaCaucus />}
+      {slide.visual === "vs" && <DiagramaVs />}
+      {slide.visual === "research" && <DiagramaResearch />}
+      {slide.visual === "mapa" && <MapaTaller hechas />}
       {slide.explora && (
         <div className="mt-6">
           <Explorables items={slide.explora} />
