@@ -94,6 +94,13 @@ export async function GET(
       .slice(-40);
     return ok({ ...base, summary: { total: list.length, respuestas } });
   }
+  // --- Tablero del taller guiado: cuántas compus marcaron "Listo" en cada paso
+  if (activity === "tal_paso") {
+    const counts: Record<string, number> = {};
+    for (const r of list) if (r.payload?.done) counts[String(r.item_key)] = (counts[String(r.item_key)] ?? 0) + 1;
+    return ok({ activity, participants: participants ?? 0, responded: responders.length, responders: [], summary: { total: list.length, counts }, config: session.activity_config ?? {} });
+  }
+
   // --- Clases en vivo (/web3, /justicia, /taller-ia) — agregación por tipo de actividad
   const w3 = getW3Actividad(activity) ?? getJusActividad(activity) ?? getTalActividad(activity);
   if (w3) {
