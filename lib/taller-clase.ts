@@ -18,6 +18,7 @@
 import type { ActividadVivo, ActOpcion, ClaseVivoConfig, Explorable } from "./clase-vivo";
 import type { ActivityKey } from "./types";
 import type { DocId, LiberadoId, PromptId } from "./taller-caso";
+import type { AudioId } from "./taller-guiado";
 
 export const TAL_SLUG = "taller-ia";
 export const TAL_TITLE = "IA aplicada a la resolución de conflictos";
@@ -194,6 +195,14 @@ export const TAL_ACTIVIDADES: ActividadVivo[] = [
     maxChars: 280,
   },
   {
+    key: "tal_research",
+    kind: "texto",
+    titulo: "El mejor dato de su investigación",
+    bajada: "Péguelo con su fuente: ¿cómo ayuda a la mediación?",
+    placeholder: "El dato… (fuente: …)",
+    maxChars: 280,
+  },
+  {
     key: "tal_nube",
     kind: "palabra",
     titulo: "Una palabra para llevarse",
@@ -214,7 +223,7 @@ export const TAL_CONFIG: ClaseVivoConfig = {
   poll: { alumno: 4000, alumnoMe: 20000, deck: 2500 },
   getActividad: getTalActividad,
   reacciones: true,
-  nombre: { etiqueta: "Nombre del grupo", placeholder: "Ej.: Grupo 3 · Ana, Luis, Carla y Pedro" },
+  nombre: { etiqueta: "Nombre (o los nombres, si comparten compu)", placeholder: "Ej.: Compu 12 · Ana y Luis" },
 };
 
 // --- Kit de herramientas externas ---------------------------------------------------
@@ -252,6 +261,8 @@ interface Comun {
   trabajo?: number;
   /** Documentos y prompts que se liberan a los grupos al llegar. */
   libera?: LiberadoId[];
+  /** Abre esta etapa del itinerario guiado en las computadoras al llegar. */
+  etapa?: number;
   saltos?: Salto[];
 }
 
@@ -299,84 +310,55 @@ export interface TalPrompt {
   /** Qué hace el grupo con la respuesta. */
   despues: string;
 }
+/** Una entrevista privada sonando por los parlantes de la sala. */
+export interface TalAudioSlide {
+  t: "audio";
+  audio: AudioId;
+}
+/** Tablero de sala: cuántas compus terminaron cada paso de la etapa. */
+export interface TalTablero {
+  t: "tablero";
+  /** Etapa cuyos pasos se muestran. */
+  n: number;
+}
 export interface TalFinal {
   t: "final";
 }
-export type TalSlide = (TalPortada | TalIngreso | TalPlaca | TalActividad | TalDocumento | TalPrompt | TalFinal) & Comun;
-
-/** "Cómo formular un buen prompt": se ve en los dos caminos iniciales. */
-const PLACA_PROMPT: TalSlide = {
-  t: "placa",
-  parte: "5 · Cómo formular un buen prompt",
-  titulo: "Una instrucción útil tiene límites",
-  bajada: "Qué documento, qué tarea, qué límites, qué no concluir y cómo mostrar la fuente.",
-  trabajo: 3,
-  libera: ["P2"],
-  kit: true,
-  explora: [
-    { emoji: "📄", label: "Qué documento", texto: "Diga sobre qué trabaja: «esta conversación», «el contrato y su anexo». Sin fuente, la IA completa con lo que supone." },
-    { emoji: "🎯", label: "Qué tarea", texto: "Un verbo concreto: identificar, separar, extraer, comparar. «Analizá» solo es demasiado amplio." },
-    { emoji: "🚧", label: "Qué límites", texto: "Hasta dónde llega: «usá solo estos documentos», «si falta un dato, indicalo»." },
-    { emoji: "🚫", label: "Qué no debe concluir", texto: "«No determines quién tiene razón», «no concluyas que hubo aceptación». Evita que decida por usted." },
-    { emoji: "📌", label: "Cómo mostrar la fuente", texto: "«Citá el fragmento en que apoyás cada respuesta». Así se puede verificar." },
-    {
-      emoji: "⚖️",
-      label: "Vaga o controlada",
-      texto: "Vaga: «Analizá este caso». Controlada: «Identificá qué afirma cada parte en esta conversación, separá hechos e inferencias y citá el fragmento en que apoyás cada respuesta».",
-    },
-  ],
-};
+export type TalSlide = (TalPortada | TalIngreso | TalPlaca | TalActividad | TalDocumento | TalPrompt | TalAudioSlide | TalTablero | TalFinal) & Comun;
 
 export const TAL_SLIDES: TalSlide[] = [
   { t: "portada", activa: "lobby" },
-  { t: "ingreso", activa: "lobby" },
+  { t: "ingreso", activa: "lobby", etapa: 0 },
 
-  // --- 1 · Presentación (10 min) --------------------------------------------------
+  // --- 0 · Ustedes median (10 min) --------------------------------------------------
   {
     t: "placa",
-    parte: "1 · Presentación",
-    titulo: "Un laboratorio, no una clase",
-    bajada: "No vamos a preguntarle a la IA quién tiene razón.",
-    lede: "Cada decisión abrirá información diferente. La IA los va a asistir, pero ustedes deberán definir qué necesitan saber y controlar cada resultado.",
+    parte: "0 · Ustedes median",
+    titulo: "Hoy ustedes son el equipo de mediación",
+    bajada: "Un caso real por resolver, un itinerario guiado en cada computadora y la IA como asistente.",
+    etapa: 0,
     kit: true,
     explora: [
-      { emoji: "🎬", label: "El simulador del caso", texto: "Administra los hechos, los documentos, las decisiones y los caminos posibles. La información llega de a poco, según lo que elijan." },
-      { emoji: "🧭", label: "El tutor de trabajo", texto: "En su dispositivo: la carpeta del caso en PDF para descargar y subir, los prompts guiados para copiar y lo que hay que verificar en cada paso." },
-      { emoji: "🧰", label: "Las herramientas", texto: "ChatGPT, Claude, Gemini o Notebook Gemini: la que tengan a mano. Suben el PDF, pegan el prompt y revisan la respuesta." },
-      { emoji: "🎁", label: "Lo que se llevan", texto: "Un producto jurídico concreto y un método: ordenar, investigar, contrastar, producir y revisar con IA." },
-    ],
-  },
-  {
-    t: "placa",
-    titulo: "Dos recorridos al mismo tiempo",
-    bajada: "El caso avanza y el grupo aprende a trabajar con IA.",
-    visual: "recorridos",
-    lede: "La IA puede asistir distintas tareas jurídicas; el profesional define el problema, selecciona las fuentes, controla la respuesta y decide qué hacer con ella.",
-  },
-  {
-    t: "placa",
-    titulo: "El juicio y la mediación son tecnologías",
-    bajada: "Formas de organizar un conflicto. La IA entra como una herramienta dentro de ellas.",
-    explora: [
-      { emoji: "⚖️", label: "Juicio", texto: "Un tercero decide con reglas: pretensiones, prueba y una resolución fundada. La IA puede ordenar el expediente; la decisión es humana." },
-      { emoji: "🤝", label: "Mediación", texto: "Las partes deciden con alguien que facilita. La IA puede ayudar a preparar preguntas y opciones; los intereses se confirman con las personas." },
-      { emoji: "🗣️", label: "Negociación", texto: "Sin tercero. Sirve cuando el vínculo importa, como entre Lucía y Diego, que probablemente vuelvan a trabajar juntos." },
-      { emoji: "🧩", label: "Dónde entra la IA", texto: "En tareas: ordenar, investigar, comparar, redactar un borrador. Nunca en lugar de la persona que decide." },
-    ],
-  },
-
-  // --- 2 · El caso y los grupos (10 min) ------------------------------------------------
-  {
-    t: "placa",
-    parte: "2 · El caso y los grupos",
-    titulo: "Armen grupos de cuatro o cinco",
-    bajada: "Un dispositivo por grupo: ingresen con el nombre del grupo.",
-    visual: "roles",
-    explora: [
-      { emoji: "🧭", label: "Coordinación", texto: "Ordena los tiempos, lleva la decisión del grupo y registra las respuestas en la app." },
-      { emoji: "🤖", label: "Trabajo con la IA", texto: "Copia los documentos y los prompts en la herramienta y trae la respuesta al grupo." },
-      { emoji: "🔍", label: "Control de fuentes", texto: "Verifica cada afirmación contra el documento: ¿está respaldada, es una inferencia o no está demostrada?" },
-      { emoji: "🎤", label: "Presentación final", texto: "Prepara la puesta en común: camino, prompt más útil, una corrección y lo que quedó pendiente." },
+      {
+        emoji: "🧭",
+        label: "El itinerario",
+        texto: "En su computadora: 8 etapas con pasos tipo receta. Cada paso trae lo que necesita: el audio, el PDF, el prompt para copiar, el enlace. Avanza a su ritmo; las etapas se abren desde esta pantalla.",
+      },
+      {
+        emoji: "⚽",
+        label: "MessIAs, su asistente",
+        texto: "El botón con cara de crack, abajo a la derecha. Sabe el caso, las herramientas y el método. Guía paso a paso, pero no resuelve: las decisiones del mediador son suyas.",
+      },
+      {
+        emoji: "🧰",
+        label: "Las herramientas",
+        texto: "Gemini y Notebook Gemini con una cuenta de Google (y ChatGPT o Claude si los prefieren). Los prompts se copian con un botón y se pegan allá.",
+      },
+      {
+        emoji: "✓",
+        label: "Marcar «Listo»",
+        texto: "Cada paso termina con un botón «Listo». Acá en pantalla se ve cuántos van terminando: nadie tiene que levantar la mano para avisar.",
+      },
     ],
   },
   {
@@ -385,8 +367,6 @@ export const TAL_SLIDES: TalSlide[] = [
     bajada: "Los hechos iniciales (CN-00). Nada más, por ahora.",
     docs: ["D0"],
     libera: ["D0"],
-    caso: 0,
-    trabajo: 0,
     explora: [
       { emoji: "☕", label: "Lucía", texto: "Administra Café Nube. Debe abrir el viernes. Sostiene que no puede abrir en condiciones normales." },
       { emoji: "🔧", label: "Diego", texto: "Titular de TecnoFrío Servicios. Entregó las cajas; necesita cobrar para comprar el módulo faltante." },
@@ -394,339 +374,143 @@ export const TAL_SLIDES: TalSlide[] = [
       { emoji: "⏳", label: "La tensión", texto: "Ella necesita abrir; él necesita cobrar. Y falta una pieza." },
     ],
   },
-  { t: "actividad", activa: "tal_ficha", escena: "Sin IA todavía", caso: 0, trabajo: 1 },
+  { t: "actividad", activa: "tal_ficha", escena: "Sin IA todavía" },
 
-  // --- 3 · Cómo se organiza un caso (8 min) ---------------------------------------------
+  // --- 1 · Escuchar (15 min) ---------------------------------------------------------
   {
     t: "placa",
-    parte: "3 · Cómo se organiza un caso",
-    titulo: "Antes de preguntarle a una herramienta",
-    bajada: "Distinguir qué sabemos, quién lo dice y qué falta.",
-    lede: "Una afirmación repetida en un documento no se convierte automáticamente en un hecho probado.",
-    trabajo: 1,
+    parte: "1 · Escuchar",
+    titulo: "Escuchar es el primer oficio del mediador",
+    bajada: "Cada parte pidió hablar a solas. Eso, en mediación, tiene nombre y reglas.",
+    etapa: 1,
+    libera: ["PLD"],
     explora: [
-      { emoji: "📌", label: "Hechos documentados", texto: "Lo que surge de un documento y se puede señalar: «Diego entregó las cajas»." },
-      { emoji: "🗣️", label: "Afirmaciones de las partes", texto: "Lo que cada una sostiene: «la entrega principal ya fue realizada» (Diego)." },
-      { emoji: "💭", label: "Inferencias", texto: "Conclusiones razonables pero no escritas: «Lucía aceptó el trabajo». Hay que confirmarlas." },
-      { emoji: "❓", label: "Cuestiones pendientes", texto: "Lo que todavía no sabemos: quién debía conseguir el módulo, si el local tiene las conexiones." },
-      { emoji: "🗂️", label: "Documentos para verificar", texto: "Qué habría que buscar: la conversación completa, el contrato, un informe técnico." },
-      { emoji: "🔁", label: "Sirve para todo", texto: "Esta distinción sirve para una demanda, una audiencia de mediación, un informe técnico o una resolución." },
+      { emoji: "🚪", label: "Caucus: la sesión privada", texto: "Una reunión a solas del mediador con una parte. Sirve para que diga lo que no diría frente a la otra. Lo que se escucha ahí es confidencial." },
+      { emoji: "👂", label: "Escucha activa", texto: "Escuchar para entender, no para contestar: parafrasear («si entiendo bien, usted necesita…»), preguntar abierto, tolerar el silencio." },
+      { emoji: "🎯", label: "Posición e interés", texto: "La posición es lo que se pide («que me pague los mil»). El interés es lo que se necesita (retirar el módulo hoy). Los acuerdos se construyen sobre intereses." },
+      { emoji: "📝", label: "La ficha PL-D", texto: "Ya está en su compu: posiciones, intereses, emociones, datos a confirmar y una fila especial: lo CONFIDENCIAL. Se completa a mano, mientras escuchan." },
+      { emoji: "🤫", label: "La regla de oro", texto: "Lo confidencial de un caucus solo se usa con autorización de quien lo dijo. Romper esa regla rompe la mediación." },
     ],
   },
+  { t: "audio", audio: "EA1" },
+  { t: "audio", audio: "EA2" },
+  { t: "tablero", n: 1 },
+
+  // --- 2 · La IA escucha (15 min) ------------------------------------------------------
   {
     t: "placa",
-    titulo: "La carpeta del caso",
-    bajada: "Cada documento llega como PDF: lo descargan y lo suben a su herramienta. Cada uno tiene un código para citarlo.",
+    parte: "2 · La IA escucha",
+    titulo: "El mismo audio, ahora lo procesa la IA",
+    bajada: "Suban la entrevista a Gemini y comparen con su ficha de papel. ¿Quién escuchó mejor?",
+    etapa: 2,
+    libera: ["P9", "P10"],
     kit: true,
     explora: [
-      { emoji: "🟢", label: "ChatGPT", texto: "Botón + (o el clip) y «Subir archivo». Pueden subir varios PDF a la vez y hacer la pregunta sobre todos." },
-      { emoji: "🟠", label: "Claude", texto: "El clip para adjuntar. Si trabajan en un proyecto, súbanlos como archivos del proyecto y quedan para todas las consultas." },
-      { emoji: "🔵", label: "Gemini", texto: "Botón + y «Subir archivos». Después escriben el prompt en el mismo mensaje." },
-      { emoji: "📓", label: "Notebook Gemini", texto: "Creen un cuaderno y usen «Agregar fuente». Responde solo desde esas fuentes y muestra de dónde sale cada dato." },
-      { emoji: "🏷️", label: "Citar con el código", texto: "Cada PDF tiene un código (CN-03, pág. 1). Pidan que cada respuesta cite así, y verifiquen la cita en el documento." },
-      { emoji: "📷", label: "Un documento es una imagen", texto: "La captura de WhatsApp (CN-01) es una imagen. Si la herramienta no la puede leer, debe decirlo. Si «lee» algo que no está, es una alucinación." },
+      { emoji: "⚡", label: "Lo que hace bien", texto: "Transcribe en segundos, ordena fechas y montos, arma la ficha completa sin cansarse. Para eso es imbatible." },
+      { emoji: "🌫️", label: "Lo que se le escapa", texto: "El tono, las pausas, el miedo de Lucía, el orgullo de Diego. La emoción es información de mediador, y no viaja en el archivo." },
+      { emoji: "🔓", label: "La prueba clave", texto: "Cada parte terminó con un secreto. Fíjense qué hizo la herramienta con eso: ¿lo marcó como confidencial o lo mezcló con todo? El prompt P10 se lo pregunta de frente." },
+      { emoji: "🛡️", label: "La lección", texto: "La confidencialidad la custodia el mediador, no la herramienta. Antes de subir un audio real: ¿puedo? ¿está anonimizado? ¿dónde queda guardado?" },
     ],
   },
+  { t: "tablero", n: 2 },
 
-  // --- 4 · Primera decisión (7 min) ------------------------------------------------------
-  {
-    t: "actividad",
-    activa: "tal_camino1",
-    escena: "Primera decisión",
-    caso: 2,
-    trabajo: 2,
-    saltos: [
-      { label: "💬 Seguir por los mensajes", a: "mensajes" },
-      { label: "📄 Seguir por el contrato", a: "contrato" },
-    ],
-  },
-
-  // Camino de los mensajes
-  {
-    t: "documento",
-    id: "mensajes",
-    parte: "4 · Camino de los mensajes",
-    titulo: "CN-01 · Una captura aislada",
-    bajada: "Es lo que Diego muestra para reclamar.",
-    docs: ["D1"],
-    libera: ["D1"],
-    pregunta: "¿Qué podemos afirmar con seguridad a partir de esta captura?",
-    caso: 1,
-    trabajo: 2,
-  },
-  { t: "actividad", activa: "tal_captura", escena: "Decidan y justifiquen", caso: 1, trabajo: 2 },
-  {
-    t: "prompt",
-    titulo: "Pedirle a la IA, con límites",
-    bajada: "Copien la instrucción desde su dispositivo y úsenla en su herramienta.",
-    prompt: "P1",
-    con: ["D1"],
-    despues: "Revisen la respuesta: ¿qué está respaldado por la captura y qué no?",
-    libera: ["P1"],
-    kit: true,
-    caso: 1,
-    trabajo: 2,
-  },
-  { t: "actividad", activa: "tal_marcar", escena: "Controlar la respuesta", caso: 1, trabajo: 3 },
-  PLACA_PROMPT,
-  {
-    t: "documento",
-    titulo: "CN-02 · La conversación completa",
-    bajada: "Lo que la captura no mostraba.",
-    docs: ["D2"],
-    libera: ["D2"],
-    caso: 3,
-    trabajo: 3,
-    puntos: [
-      "Se recibieron las cajas.",
-      "Falta un módulo.",
-      "La instalación no está terminada.",
-      "Lucía no afirmó expresamente que todo funcionara.",
-      "Diego interpreta la entrega de manera más amplia.",
-    ],
-    saltos: [{ label: "Siguiente: segunda decisión →", a: "decision2" }],
-  },
-
-  // Camino del contrato
-  {
-    t: "documento",
-    id: "contrato",
-    parte: "4 · Camino del contrato",
-    titulo: "CN-03 · El contrato",
-    bajada: "Lo que las partes firmaron.",
-    docs: ["D3"],
-    libera: ["D3"],
-    pregunta: "¿Qué obligaciones parecen relevantes?",
-    caso: 1,
-    trabajo: 2,
-  },
-  { t: "actividad", activa: "tal_obligaciones", escena: "Leer el contrato completo", caso: 1, trabajo: 2 },
-  {
-    t: "prompt",
-    titulo: "Extraer las obligaciones",
-    bajada: "Copien la instrucción desde su dispositivo y úsenla en su herramienta.",
-    prompt: "P3",
-    con: ["D3"],
-    despues: "Contrasten cada obligación con el texto del contrato: ¿la IA agregó algo que no dice?",
-    libera: ["P3"],
-    kit: true,
-    caso: 1,
-    trabajo: 2,
-  },
-  PLACA_PROMPT,
-  {
-    t: "documento",
-    titulo: "CN-04 · El anexo técnico",
-    bajada: "Un contrato no se lee como una frase aislada.",
-    docs: ["D3", "D4"],
-    libera: ["D4"],
-    caso: 3,
-    trabajo: 3,
-    puntos: [
-      "La instalación termina cuando el equipo fue probado y está operativo.",
-      "Se necesita una conexión eléctrica independiente.",
-      "La IA puede relacionar cláusulas; el profesional revisa el texto y busca documentos complementarios.",
-    ],
-    saltos: [{ label: "Siguiente: segunda decisión →", a: "decision2" }],
-  },
-
-  // --- Segunda decisión y organización (15 min) --------------------------------------------
-  { t: "actividad", id: "decision2", activa: "tal_camino2", escena: "Segunda decisión", caso: 2, trabajo: 1 },
-  {
-    t: "documento",
-    parte: "6 · Organizar la información",
-    titulo: "CN-05 a CN-07 · Tres documentos más, para todos",
-    bajada: "El presupuesto, el remito y la transferencia. Súmenlos a la carpeta antes de ordenar.",
-    docs: ["D11", "D12", "D13"],
-    libera: ["D11", "D12", "D13"],
-    caso: 3,
-    trabajo: 2,
-  },
+  // --- 3 · La carpeta (15 min) ----------------------------------------------------------
   {
     t: "placa",
-    titulo: "La matriz de trabajo",
-    bajada: "Cualquiera sea el camino, primero se ordena. La plantilla PL-B está en su dispositivo.",
+    parte: "3 · La carpeta",
+    titulo: "La carpeta del caso, con control",
+    bajada: "Ahora los documentos: cada PDF se descarga, se sube y se cita por su código.",
+    etapa: 3,
+    libera: ["D1", "D2", "D3", "D4", "D11", "D12", "D13", "P1", "P2", "P3"],
+    kit: true,
+    explora: [
+      { emoji: "📷", label: "Una captura aislada", texto: "CN-01 es la prueba de Diego: una imagen. Primero, ¿la herramienta la lee? Si «lee» algo que no está, eso es una alucinación." },
+      { emoji: "💬", label: "El contexto la cambia", texto: "CN-02 es el mismo chat, completo. El «sí, recibimos todo» significa otra cosa dos mensajes después. Una captura no es la conversación." },
+      { emoji: "📜", label: "El contrato entero", texto: "CN-03 y su anexo CN-04. La cláusula CUARTA tiene una condición que casi nadie lee: «siempre que el local cuente con las conexiones necesarias»." },
+      { emoji: "🏷️", label: "Citar para verificar", texto: "Cada respuesta de la IA debe citar el código (CN-03, pág. 1). Lo que no se puede verificar, no se usa." },
+    ],
+  },
+  { t: "actividad", activa: "tal_captura", escena: "Decidan y justifiquen" },
+  { t: "actividad", activa: "tal_marcar", escena: "Controlar la respuesta" },
+
+  // --- 4 · La matriz (10 min) -----------------------------------------------------------
+  {
+    t: "placa",
+    parte: "4 · La matriz",
+    titulo: "Todo el caso en una tabla",
+    bajada: "Hechos, quién lo afirma, qué documento lo respalda y qué falta. La IA arma; ustedes revisan.",
+    etapa: 4,
+    libera: ["D5", "D6", "D7", "PLB", "P4", "P5"],
     visual: "matriz",
-    libera: ["PLB"],
-    caso: 1,
-    trabajo: 1,
-  },
-  {
-    t: "prompt",
-    titulo: "La IA arma una primera versión",
-    bajada: "Péguenle todos los documentos que tienen y esta instrucción.",
-    prompt: "P4",
-    con: [],
-    despues: "Acepten, corrijan o descarten cada afirmación. Lo que cambien, regístrenlo.",
-    libera: ["P4"],
     kit: true,
-    caso: 1,
-    trabajo: 1,
   },
-  { t: "actividad", activa: "tal_correccion", escena: "La intervención humana queda registrada", caso: 1, trabajo: 3 },
+  { t: "actividad", activa: "tal_correccion", escena: "La intervención humana queda registrada" },
+  { t: "tablero", n: 4 },
+
+  // --- 5 · Investigar (10 min + corre solo) ------------------------------------------------
   {
     t: "placa",
-    parte: "7 · Asistente, no sustituto",
-    titulo: "La IA asiste; no decide",
-    bajada: "Puede ordenar, comparar y proponer. No puede convertir una afirmación en un hecho probado.",
-    trabajo: 3,
+    parte: "5 · Investigar",
+    titulo: "Deep Research: traer datos que nadie pueda discutir",
+    bajada: "Un agente que planifica, busca, lee y cita. Lo lanzan ahora y sigue solo mientras trabajamos.",
+    etapa: 5,
+    kit: true,
     explora: [
-      { emoji: "🗂️", label: "Ordenar documentos", texto: "Cronologías, índices, quién dijo qué y cuándo." },
-      { emoji: "🔀", label: "Comparar versiones", texto: "La captura contra la conversación completa; el reclamo contra el contrato." },
-      { emoji: "⚡", label: "Identificar contradicciones", texto: "«Recibimos todo» contra «recibimos todas las cajas»." },
-      { emoji: "❓", label: "Proponer preguntas", texto: "Para una audiencia, para un perito, para la otra parte." },
-      { emoji: "🧱", label: "Estructurar un texto", texto: "El esqueleto de un escrito o de una agenda de mediación." },
-      { emoji: "💡", label: "Explorar alternativas", texto: "Opciones de acuerdo con sus costos y riesgos." },
-      { emoji: "🚫", label: "Lo que no puede", texto: "Transformar por sí sola una afirmación en un hecho probado, ni decidir qué interpretación adopta el profesional." },
-    ],
-  },
-  {
-    t: "actividad",
-    activa: "tal_camino2",
-    escena: "Cada grupo sigue su camino",
-    caso: 2,
-    saltos: [
-      { label: "⚖️ Que decida un tercero", a: "tercero" },
-      { label: "🤝 Explorar una mediación", a: "mediacion" },
+      { emoji: "🤖", label: "Qué es", texto: "No es un chat: es un agente. Arma un plan de búsqueda, visita fuentes, las lee, las cruza y entrega un informe con citas. Tarda 5 a 15 minutos." },
+      { emoji: "⚖️", label: "Para qué, en mediación", texto: "Criterios objetivos: precios de mercado, lo que exige la ley, lo que costaría un juicio. Datos de afuera que ninguna parte pueda discutir (método Harvard)." },
+      { emoji: "🎯", label: "Tres misiones", texto: "A: ¿los montos que se discuten son de mercado? · B: ¿qué necesita el acuerdo para ser exigible en El Salvador? · C: si no acuerdan, ¿qué les espera en un juicio? Cada compu elige una." },
+      { emoji: "🔗", label: "La regla de siempre", texto: "Del informe se usan solo los datos cuya fuente abrieron y verificaron. Un enlace que no existe es la misma alucinación de siempre, con mejor prosa." },
+      { emoji: "⏱️", label: "Lancen y sigan", texto: "Peguen la misión, toquen «Iniciar investigación» y NO esperen: pasamos a la etapa 6 y volvemos cuando el informe esté listo." },
     ],
   },
 
-  // --- 8a · Rama adjudicativa ------------------------------------------------------------------
+  // --- 6 · El acuerdo (15 min) ----------------------------------------------------------
   {
-    t: "documento",
-    id: "tercero",
-    parte: "8 · Que decida un tercero",
-    titulo: "CN-08 y CN-09 · El reclamo y la respuesta",
-    bajada: "Dos versiones del mismo hecho.",
-    docs: ["D5", "D6"],
-    libera: ["D5", "D6"],
-    caso: 1,
-    trabajo: 2,
-  },
-  { t: "actividad", activa: "tal_inconsistencia", escena: "¿Qué no cierra?", caso: 1, trabajo: 3 },
-  {
-    t: "prompt",
-    titulo: "Revisar como la contraparte",
-    bajada: "Poner a prueba la propia interpretación.",
-    prompt: "P5",
-    con: ["D5", "D6"],
-    despues: "Usen el resultado para completar la matriz: ¿qué prueba falta?",
-    libera: ["P5"],
+    t: "placa",
+    parte: "6 · El acuerdo",
+    titulo: "De las posiciones a las cláusulas",
+    bajada: "Lo que cada uno pide ya lo sabemos. El acuerdo se escribe sobre lo que cada uno necesita.",
+    etapa: 6,
+    libera: ["P6", "P7", "PLE"],
     kit: true,
-    caso: 1,
-    trabajo: 3,
+    explora: [
+      { emoji: "🎯", label: "Los intereses del caso", texto: "Lucía: abrir el viernes, saber quién responde, no pelearse con su técnico. Diego: cobrar para retirar el módulo, cuidar su nombre, conservar el mantenimiento." },
+      { emoji: "🧭", label: "La MAAN", texto: "La mejor alternativa si no acuerdan: un juicio por mil dólares. La misión C le pone números; suele ser el mejor argumento para acordar." },
+      { emoji: "💡", label: "Opciones sin decidir", texto: "El prompt P7 compara alternativas con costos y riesgos. La IA compara; elegir es de las partes, con ayuda del mediador." },
+      { emoji: "📝", label: "El borrador PL-E", texto: "Ocho cláusulas con espacios: quién, qué, cuándo, quién paga, qué pasa si falla. Un acuerdo vago es un conflicto nuevo con fecha posterior." },
+    ],
   },
-  {
-    t: "documento",
-    titulo: "CN-10 · El informe técnico",
-    bajada: "Lo que el técnico puede y no puede afirmar.",
-    docs: ["D7"],
-    libera: ["D7"],
-    caso: 3,
-    trabajo: 4,
-    puntos: ["Producto de esta rama: una matriz de hechos y prueba, una teoría del caso o un esquema de cuestiones a resolver."],
-    saltos: [{ label: "Siguiente: nueva información →", a: "giro" }],
-  },
+  { t: "actividad", activa: "tal_intereses", escena: "Separar para entender" },
+  { t: "tablero", n: 6 },
 
-  // --- 8b · Rama de mediación ------------------------------------------------------------------
+  // --- 7 · El giro y el cierre (20 min) -----------------------------------------------------
   {
     t: "documento",
-    id: "mediacion",
-    parte: "8 · Explorar una mediación",
-    titulo: "CN-11 y CN-12 · Lo que cada parte necesita",
-    bajada: "Detrás de cada posición hay un interés.",
-    docs: ["D8", "D9"],
-    libera: ["D8", "D9"],
-    caso: 1,
-    trabajo: 2,
-  },
-  { t: "actividad", activa: "tal_intereses", escena: "Separar para entender", caso: 1, trabajo: 1 },
-  {
-    t: "prompt",
-    titulo: "Preparar la mediación",
-    bajada: "De las posiciones a las necesidades.",
-    prompt: "P6",
-    con: ["D8", "D9"],
-    despues: "Elijan las dos mejores preguntas abiertas y descarten las que suponen algo no confirmado.",
-    libera: ["P6"],
-    kit: true,
-    caso: 1,
-    trabajo: 4,
-  },
-  { t: "actividad", activa: "tal_alternativa", escena: "¿Qué alternativa exploramos?", caso: 2, trabajo: 4 },
-  {
-    t: "prompt",
-    titulo: "Comparar alternativas",
-    bajada: "Explorar opciones sin elegir por las partes.",
-    prompt: "P7",
-    con: ["D8", "D9"],
-    despues: "Producto de esta rama: una agenda de mediación, un mapa de intereses y una propuesta de acuerdo sujeta a revisión.",
-    libera: ["P7"],
-    kit: true,
-    caso: 2,
-    trabajo: 4,
-    saltos: [{ label: "Siguiente: nueva información →", a: "giro" }],
-  },
-
-  // --- 9 · Nueva información ---------------------------------------------------------------------
-  {
-    t: "documento",
-    id: "giro",
-    parte: "9 · Nueva información",
+    parte: "7 · El giro",
     titulo: "CN-13 · La constancia del electricista",
-    bajada: "La falla no depende solo del módulo.",
+    bajada: "Llega un documento nuevo. La falla no depende solo del módulo.",
     docs: ["D10"],
-    libera: ["D10"],
-    caso: 3,
-    trabajo: 5,
-    pregunta: "¿La nueva información cambia la solución que estaban construyendo?",
-  },
-  { t: "actividad", activa: "tal_giro", escena: "Revisar lo construido", caso: 3, trabajo: 5 },
-  {
-    t: "prompt",
-    titulo: "Actualizar sin borrar",
-    bajada: "La IA ayuda a ver qué conclusiones cambian.",
-    prompt: "P8",
-    con: ["D10"],
-    despues: "Revisen su matriz, su estrategia o su propuesta: qué se mantiene y qué cambia.",
-    libera: ["P8"],
-    kit: true,
-    caso: 3,
-    trabajo: 5,
-  },
-
-  // --- 10 · Producto final y cierre (15 min) -----------------------------------------------------
-  {
-    t: "placa",
-    parte: "10 · Producto final",
-    titulo: "Cada grupo presenta",
-    bajada: "Dos minutos por grupo. La hoja de ruta PL-C está en su dispositivo.",
-    libera: ["PLC"],
-    caso: 4,
-    trabajo: 4,
-    explora: [
-      { emoji: "🧭", label: "El camino elegido", texto: "¿Mensajes o contrato? ¿Tercero o mediación? ¿Por qué?" },
-      { emoji: "🗂️", label: "Los documentos consultados", texto: "Cuáles usaron y cuál fue decisivo." },
-      { emoji: "✍️", label: "El prompt más útil", texto: "El que mejor funcionó, y por qué." },
-      { emoji: "🤖", label: "Un resultado de IA", texto: "Algo que la herramienta hizo bien." },
-      { emoji: "✏️", label: "Una corrección", texto: "Algo que el grupo tuvo que corregir o descartar." },
-      { emoji: "❓", label: "Lo pendiente", texto: "La cuestión que todavía quedó abierta." },
+    libera: ["D10", "P8"],
+    etapa: 7,
+    pregunta: "¿El acuerdo que estaban escribiendo resiste esta información?",
+    puntos: [
+      "La máquina de hielo necesita una línea eléctrica independiente.",
+      "Esa línea no está instalada: 4 horas y USD 180.",
+      "El contrato no dice quién la paga.",
     ],
   },
-  { t: "actividad", activa: "tal_prompt_util", escena: "Puesta en común", caso: 4, trabajo: 5 },
+  { t: "actividad", activa: "tal_giro", escena: "Revisar lo construido" },
+  { t: "actividad", activa: "tal_research", escena: "Puesta en común · el dato" },
   {
     t: "placa",
-    titulo: "El recorrido completo",
-    bajada: "La herramienta cambió porque cambió la tarea jurídica.",
-    visual: "recorrido-final",
-    lede: "«La IA no se utilizó del mismo modo en todas las etapas. Primero ayudó a ordenar, después a investigar, luego a poner a prueba una interpretación y finalmente a construir un producto.»",
-    caso: 4,
-    trabajo: 5,
-    saltos: [
-      { label: "↺ Camino alternativo: los mensajes", a: "mensajes" },
-      { label: "↺ Camino alternativo: el contrato", a: "contrato" },
-      { label: "↺ Rama: que decida un tercero", a: "tercero" },
-      { label: "↺ Rama: mediación", a: "mediacion" },
+    titulo: "El método que se llevan",
+    bajada: "Sirve para cualquier conflicto y cualquier herramienta.",
+    explora: [
+      { emoji: "👂", label: "Escuchar primero", texto: "La ficha del mediador se completa con las personas delante. La IA ordena después." },
+      { emoji: "🤖", label: "IA con control", texto: "Subir, pedir con límites, exigir citas y revisar fila por fila. La corrección humana es el trabajo, no un trámite." },
+      { emoji: "🔎", label: "Datos verificados", texto: "Los criterios objetivos se investigan y se verifican en la fuente antes de llevarlos a la mesa." },
+      { emoji: "🤫", label: "Lo confidencial se custodia", texto: "Lo que una parte dijo en privado no entra a una herramienta externa ni a la sesión conjunta sin su permiso." },
+      { emoji: "📝", label: "Acuerdos que se cumplen", texto: "Concretos: quién, qué, cuándo, quién paga y qué pasa si falla. Y que resistan la información que llegue mañana." },
     ],
   },
   { t: "actividad", activa: "tal_nube", escena: "Para cerrar" },
@@ -747,6 +531,10 @@ export function tituloPlacaTaller(s: TalSlide): string {
       return `✍️ ${s.titulo}`;
     case "actividad":
       return `🗳️ ${getTalActividad(s.activa)?.titulo ?? "Actividad"}`;
+    case "audio":
+      return s.audio === "EA1" ? "🎙️ Entrevista a Lucía" : "🎙️ Entrevista a Diego";
+    case "tablero":
+      return `📊 Tablero · etapa ${s.n}`;
     case "final":
       return "Gracias";
   }

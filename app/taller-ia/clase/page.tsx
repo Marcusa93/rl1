@@ -11,7 +11,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AccesoDocente } from "@/components/clase/acceso-docente";
-import { ChipResponda, Constelacion, PlacaIngreso, ResultadosVivo } from "@/components/clase/vivo";
+import { ChipResponda, Constelacion, PlacaIngreso, ResultadosVivo, useResultados } from "@/components/clase/vivo";
+import { TarjetaAudio } from "@/components/taller/guiado";
+import { PREGUNTAS_ENTREVISTA, TAL_AUDIOS, TAL_ETAPAS } from "@/lib/taller-guiado";
 import { Explorables } from "@/components/clase/explorables";
 import { LluviaReacciones } from "@/components/clase/reacciones";
 import { useRemotoDeck } from "@/components/clase/remoto";
@@ -46,6 +48,7 @@ import {
   TAL_SUBTITLE,
   TAL_TITLE,
   tituloPlacaTaller,
+  type TalAudioSlide,
   type TalDocumento,
   type TalPlaca,
   type TalPrompt,
@@ -85,7 +88,13 @@ function calcularConfig(vistas: number[], idx: number): ConfigTaller {
   const previas = TAL_SLIDES.slice(0, idx + 1).reverse();
   const caso = previas.find((s) => s.caso !== undefined)?.caso;
   const trabajo = previas.find((s) => s.trabajo !== undefined)?.trabajo;
-  return { liberados, caso, trabajo };
+  // La etapa abierta nunca retrocede: el máximo entre las placas ya visitadas.
+  let etapa = 0;
+  for (const v of [...vistas, idx]) {
+    const e = TAL_SLIDES[v]?.etapa;
+    if (e !== undefined && e > etapa) etapa = e;
+  }
+  return { liberados, caso, trabajo, etapa };
 }
 
 type EstadoActivacion = { key: string; status: "enviando" | "ok" | "error" } | null;
@@ -408,6 +417,12 @@ function Slide({
     case "prompt":
       return <PromptVista slide={slide} saltos={saltos} />;
 
+    case "audio":
+      return <AudioVista slide={slide} />;
+
+    case "tablero":
+      return <TableroVista n={slide.n} />;
+
     case "final":
       return (
         <div className="flex flex-col items-center text-center">
@@ -426,6 +441,67 @@ function Slide({
         </div>
       );
   }
+}
+
+/** Entrevista privada por los parlantes: reproductor grande y las cuatro preguntas. */
+function AudioVista({ slide }: { slide: TalAudioSlide & { parte?: string } }) {
+  const a = TAL_AUDIOS[slide.audio];
+  return (
+    <div>
+      {slide.parte && <Parte texto={slide.parte} />}
+      <Titulo titulo={`${a.emoji} ${a.titulo}`} bajada={`Sesión privada con el equipo de mediación · ${a.dur} · escuchen con la ficha PL-D a mano`} />
+      <div className="mx-auto mt-8 w-full max-w-3xl" {...rem(`▶ Audio ${a.codigo}`)}>
+        <TarjetaAudio audio={a} />
+      </div>
+      <div className="mx-auto mt-6 flex max-w-3xl flex-wrap justify-center gap-2">
+        {PREGUNTAS_ENTREVISTA.map((q) => (
+          <span key={q} className="rounded-full border border-line bg-panel/60 px-3.5 py-1.5 text-sm text-muted">
+            «{q}»
+          </span>
+        ))}
+      </div>
+      <p className="mt-6 text-center text-base text-faint">El audio también está en cada computadora (etapa 1), con su transcripción.</p>
+    </div>
+  );
+}
+
+/** Tablero de sala: cuántas computadoras marcaron "Listo" en cada paso de la etapa. */
+function TableroVista({ n }: { n: number }) {
+  const etapa = TAL_ETAPAS.find((e) => e.n === n) ?? TAL_ETAPAS[0];
+  const { data } = useResultados(TAL_SLUG, "tal_paso", TAL_CONFIG.poll.deck);
+  const counts = (data?.summary?.counts as Record<string, number>) ?? {};
+  const total = Math.max(1, data?.participants ?? 0);
+  return (
+    <div>
+      <Parte texto={`Tablero de sala · etapa ${etapa.n}`} />
+      <Titulo titulo={`${etapa.emoji} ¿Cómo vamos con «${etapa.titulo}»?`} bajada={`${data?.participants ?? 0} computadoras conectadas · cada barra es un paso marcado como listo`} />
+      <div className="mx-auto mt-8 w-full max-w-4xl space-y-3">
+        {etapa.pasos.map((p, i) => {
+          const c = counts[p.id] ?? 0;
+          const pct = Math.min(100, Math.round((c / total) * 100));
+          return (
+            <div key={p.id} className={cn("rounded-2xl border p-4", p.extra ? "border-dashed border-line/60" : "glass border-line")}>
+              <div className="flex items-baseline justify-between gap-3">
+                <p className="min-w-0 truncate text-lg font-semibold sm:text-xl">
+                  <span className="mr-2 font-mono text-teal">{i + 1}.</span>
+                  {p.titulo}
+                  {p.extra && <span className="ml-2 text-xs font-normal text-faint">extra</span>}
+                </p>
+                <p className="shrink-0 font-mono text-lg text-teal sm:text-xl">
+                  {c}
+                  <span className="text-faint"> / {data?.participants ?? 0}</span>
+                </p>
+              </div>
+              <div className="mt-2 h-3 overflow-hidden rounded-full bg-ink-2">
+                <div className="h-full rounded-full bg-gradient-to-r from-teal to-cyan transition-all duration-700" style={{ width: `${pct}%` }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <p className="mt-6 text-center text-base text-faint">Si un paso viene lento, es ahí donde hay que dar una mano (o mandar a MessIAs).</p>
+    </div>
+  );
 }
 
 function PlacaVista({ slide, saltos }: { slide: TalPlaca & { parte?: string }; saltos: React.ReactNode }) {

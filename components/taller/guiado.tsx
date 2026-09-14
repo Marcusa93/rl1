@@ -298,8 +298,8 @@ function DocPaso({ id }: { id: keyof typeof TAL_DOCS }) {
   );
 }
 
-/** Reproductor propio: onda, play/pausa, progreso y descarga. */
-function TarjetaAudio({ audio }: { audio: AudioCaso }) {
+/** Reproductor propio: onda, play/pausa, progreso y descarga. Lo usa también el deck. */
+export function TarjetaAudio({ audio }: { audio: AudioCaso }) {
   const ref = useRef<HTMLAudioElement>(null);
   const [sonando, setSonando] = useState(false);
   const [prog, setProg] = useState(0); // 0..1

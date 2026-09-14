@@ -45,6 +45,7 @@ export type ActivityKey =
   | "tal_correccion"
   | "tal_inconsistencia"
   | "tal_intereses"
+  | "tal_research"
   | "tal_alternativa"
   | "tal_giro"
   | "tal_prompt_util"
