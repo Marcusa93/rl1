@@ -12,8 +12,6 @@ import { GUION_CARLOS } from "@/lib/justicia-clase";
 import { rem } from "@/lib/remoto";
 import { cn } from "@/lib/utils";
 
-const PALABRAS = GUION_CARLOS.split(" ");
-const PALABRAS_POR_SEG = 2.6;
 
 const PROMPT_SISTEMA: { l: string; t: string; c: string }[] = [
   { l: "C", t: "Asiste a quien media en audiencias laborales, a partir del relato oral de las partes.", c: "text-teal" },
@@ -52,7 +50,8 @@ const PREGUNTAS = [
   "Los 800 dólares que le ofrecieron, ¿incluyen las vacaciones pendientes o son solo por el despido?",
 ];
 
-type Fase = "listo" | "grabando" | "detenido" | "procesando" | "resultado";
+// La desgrabación aparece recién al detener: el docente habla a su ritmo.
+type Fase = "listo" | "grabando" | "transcribiendo" | "detenido" | "procesando" | "resultado";
 
 export function DemoDictado() {
   const [fase, setFase] = useState<Fase>("listo");
@@ -68,6 +67,13 @@ export function DemoDictado() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fase]);
 
+  // Al detener: una pausa breve de "transcribiendo" y aparece el texto completo.
+  useEffect(() => {
+    if (fase !== "transcribiendo") return;
+    const t = setTimeout(() => setFase("detenido"), 1100);
+    return () => clearTimeout(t);
+  }, [fase]);
+
   // Procesamiento: pasos de a uno y después el resultado.
   useEffect(() => {
     if (fase !== "procesando") return;
@@ -80,7 +86,6 @@ export function DemoDictado() {
     };
   }, [fase]);
 
-  const visibles = fase === "grabando" ? Math.min(PALABRAS.length, Math.floor(segundos * PALABRAS_POR_SEG)) : PALABRAS.length;
   const reloj = `${Math.floor(segundos / 60)}:${String(Math.floor(segundos % 60)).padStart(2, "0")}`;
 
   function reiniciar() {
@@ -179,25 +184,41 @@ export function DemoDictado() {
           </div>
         )}
 
-        {(fase === "grabando" || fase === "detenido" || fase === "procesando") && (
+        {fase !== "listo" && (
           <>
             <div className="flex items-center gap-3">
               <span className={cn("size-3 rounded-full", fase === "grabando" ? "animate-pulse bg-rose-500" : "bg-faint")} />
               <span className="font-mono text-lg">{reloj}</span>
-              <span className="text-sm text-muted">{fase === "grabando" ? "Escuchando…" : fase === "detenido" ? "Grabación terminada" : "Procesando…"}</span>
+              <span className="text-sm text-muted">
+                {fase === "grabando"
+                  ? "Grabando…"
+                  : fase === "transcribiendo"
+                    ? "Transcribiendo el audio…"
+                    : fase === "detenido"
+                      ? "Grabación terminada"
+                      : "Procesando…"}
+              </span>
             </div>
             <Onda activa={fase === "grabando"} />
-            <div className="max-h-44 overflow-auto rounded-xl border border-line bg-ink-2/60 p-3 text-base leading-relaxed sm:text-lg">
-              <p className="mb-1 text-[11px] font-bold uppercase tracking-wider text-faint">Desgrabación</p>
-              {PALABRAS.slice(0, visibles).join(" ")}
-              {fase === "grabando" && <span className="animate-pulse text-teal"> ▍</span>}
-            </div>
+            {fase === "grabando" && <p className="text-center text-sm text-faint">Hable con naturalidad. La transcripción aparece al detener.</p>}
+            {fase === "transcribiendo" && (
+              <p className="flex items-center justify-center gap-2 text-base text-muted">
+                <span className="size-4 animate-spin rounded-full border-2 border-teal border-t-transparent" />
+                Transcribiendo…
+              </p>
+            )}
+            {(fase === "detenido" || fase === "procesando") && (
+              <div className="rise max-h-44 overflow-auto rounded-xl border border-line bg-ink-2/60 p-3 text-base leading-relaxed sm:text-lg">
+                <p className="mb-1 text-[11px] font-bold uppercase tracking-wider text-faint">Desgrabación</p>
+                {GUION_CARLOS}
+              </div>
+            )}
           </>
         )}
 
         {fase === "grabando" && (
           <button
-            onClick={() => setFase("detenido")}
+            onClick={() => setFase("transcribiendo")}
             {...rem("⏹ Detener")}
             className="self-center rounded-2xl border border-rose-400/60 bg-rose-400/15 px-6 py-3 text-lg font-semibold text-rose-200 transition active:scale-95"
           >
