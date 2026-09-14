@@ -25,6 +25,12 @@ export interface EstadoRemoto {
   vivo: number;
 }
 
+/** Lo que ven los celulares de los participantes: la placa y las tarjetas abiertas (sin la nota). */
+export interface PlacaVivo {
+  idx: number;
+  abiertas: string[];
+}
+
 export type CmdRemoto =
   | { tipo: "sig" }
   | { tipo: "ant" }

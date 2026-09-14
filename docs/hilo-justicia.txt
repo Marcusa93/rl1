@@ -1,0 +1,55 @@
+JUSTICIA AUMENTADA · hilo de placas
+Lunes 14/09 · 40 a 60 min · ← → o el control del celular
+
+INICIO
+1. Portada: saludo y gracias a CSJ, PGR y UEES.
+2. QR: que entren desde el celular. Esperar que suba el contador.
+3. Estuve de ese lado: trabajé en la justicia, hoy desarrollo tecnología.
+4. Encuesta "¿Quiénes estamos hoy?": comentar el resultado.
+5. Encuesta "¿Qué dejarían de hacer mañana?": tareas repetitivas. Volver a esto al final.
+
+1 · DEL CONFLICTO AL DIÁLOGO
+6. Inventamos formas de resolver: negociación, comunidad, costumbre, Estado. Conviven.
+7. El juicio es una tecnología: negociar, mediar, arbitrar, juzgar.
+
+2 · QUÉ TRANSFORMA LO DIGITAL
+8. Del papel a la pantalla: buscador de PDFs. Tener el PDF es apenas el comienzo.
+
+3 · IA: CAPACIDADES Y RIESGOS
+9. Trabajar con lenguaje: preguntar, resumir, comparar, generar. Tocar ejemplos.
+10. Exprés "¿De dónde sale la respuesta?": V revela, predice.
+11. Alucinación: Mata v. Avianca, seis precedentes inventados.
+12. Sesgos: COMPAS, Amazon, sesgo de automatización.
+
+4 · CÓMO SE INSTRUYE UN MODELO
+13. ¿Qué es un prompt?: COTIO. Armar uno de usuario y uno de sistema, pieza por pieza.
+14. Del dictado a la cronología: soy Carlos. Grabar, hablar, Detener, Procesar.
+    El guion está en el control.
+15. El contexto sostiene el pedido: fuentes y dónde vive el prompt de sistema.
+16. Memoria persistente: qué recuerda. Lo estable sí, lo sensible no.
+17. Proyectos y skills: dónde se trabaja un asunto y cómo se hace una tarea.
+18. Tareas programadas y agentes: trabaja sola. El límite.
+19. Veámoslo en vivo: Claude, ChatGPT, Gemini, Notebook Gemini, Pinpoint.
+20. RAG: responder desde sus fuentes. No es reentrenar.
+
+5 · LO QUE DIJO LA SALA
+21. La Sala ya se pronunció: Inc. 57-2025. Derecho a juez y procurador humano.
+22. Los principios: diez, con su porqué. Tocar 3 o 4.
+23. Exprés "¿Qué principio cuesta más?": comentar el más votado.
+
+6 · HUMAN IN THE LOOP
+24. Pedir, verificar, corregir, aprobar. Y las señales de alarma.
+25. Semáforo "¿Se lo delegaría?": transcribir, notificar, cautelar.
+
+7 · SOBERANÍA TECNOLÓGICA
+26. Que la justicia sea dueña de sus herramientas: amplifica lo bueno y lo malo.
+27. Lo que la justicia puede construir: tocar las demos. Cerrar con CuscatIA.
+
+8 · CIERRE
+28. Un conflicto, un clic (5 min): caso, votación, documento e IA, uso, comparación.
+29. Una palabra para llevarse: nube. En el celular les aparece la guía.
+30. Gracias: aplausos desde el celular. Guía en justicia.rossi-ia.com/guia.
+
+TECLAS
+← → avanzar · Home inicio · V revelar · + − letra
+Shift+R reinicia todo: antes de empezar
