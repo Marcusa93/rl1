@@ -454,7 +454,7 @@ function DocumentoVista({ slide, saltos }: { slide: TalDocumento & { parte?: str
     <div>
       {slide.parte && <Parte texto={slide.parte} />}
       <Titulo titulo={slide.titulo} bajada={slide.bajada} />
-      <div className={cn("mt-6 grid items-start gap-5", lateral ? "lg:grid-cols-[1.25fr_1fr]" : docs.length > 1 && "lg:grid-cols-2")}>
+      <div className={cn("mt-6 grid items-start gap-5", lateral ? "lg:grid-cols-[1.25fr_1fr]" : docs.length === 3 ? "lg:grid-cols-3" : docs.length > 1 && "lg:grid-cols-2")}>
         {lateral ? (
           <div className="rise flex flex-col gap-4" style={{ animationDelay: "0.2s" }}>
             {docs.map((d) => (
@@ -489,7 +489,7 @@ function DocumentoVista({ slide, saltos }: { slide: TalDocumento & { parte?: str
           </div>
         )}
       </div>
-      <p className="mt-3 text-sm text-faint">📲 Ya está en el dispositivo de cada grupo, con botón para copiarlo.</p>
+      <p className="mt-3 text-sm text-faint">📲 Ya está en el dispositivo de cada grupo: el PDF para descargar y subir a su herramienta, o el texto para copiar.</p>
       {saltos}
     </div>
   );
@@ -498,7 +498,7 @@ function DocumentoVista({ slide, saltos }: { slide: TalDocumento & { parte?: str
 function PromptVista({ slide, saltos }: { slide: TalPrompt & { parte?: string }; saltos: React.ReactNode }) {
   const prompt = TAL_PROMPTS[slide.prompt];
   const conDocs = slide.con.length
-    ? slide.con.map((d) => `${TAL_DOCS[d].numero ? `Documento ${TAL_DOCS[d].numero}` : TAL_DOCS[d].titulo}`).join(" y ")
+    ? slide.con.map((d) => TAL_DOCS[d].codigo).join(" y ")
     : "todos los documentos que tienen";
   const pasos = [
     { e: "🧰", t: "Abran su herramienta: ChatGPT, Claude, Gemini o Notebook Gemini." },

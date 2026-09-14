@@ -66,12 +66,13 @@ export function DocumentoCaso({
   const cab = (
     <div className="flex flex-wrap items-baseline justify-between gap-2">
       <p className={cn("font-bold uppercase tracking-wider text-zinc-500", grande ? "text-xs" : "text-[10px]")}>
-        {doc.numero ? `Documento ${doc.numero} · ` : ""}
+        <span className="mr-1.5 rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-white">{doc.codigo}</span>
         {doc.origen}
       </p>
-      <p className={cn("font-mono text-zinc-400", grande ? "text-[11px]" : "text-[10px]")}>ficticio</p>
+      <p className={cn("font-mono text-zinc-400", grande ? "text-[11px]" : "text-[10px]")}>{doc.imagen ? "📷 PDF de imagen · ficticio" : "ficticio"}</p>
     </div>
   );
+  const chico = grande ? "text-sm" : "text-[11px]";
 
   if (doc.tipo === "chat")
     return (
@@ -101,14 +102,90 @@ export function DocumentoCaso({
     );
 
   return (
-    <div className={cn("rounded-2xl bg-white text-zinc-800", grande ? "p-5 sm:p-6" : "p-3.5")}>
+    <div className={cn("relative rounded-2xl bg-white text-zinc-800", grande ? "p-5 sm:p-6" : "p-3.5")}>
       {cab}
       <p className={cn("mt-1 font-serif font-bold", grande ? "text-xl" : "text-sm")}>{doc.titulo}</p>
-      <div className={cn("mt-2 space-y-2 font-serif leading-relaxed", grande ? "text-base sm:text-lg" : "text-[13px]")}>
-        {(doc.parrafos ?? []).map((p, i) => (
-          <p key={i}>{p}</p>
-        ))}
-      </div>
+      {doc.encabezado && (
+        <div className={cn("mt-2 font-serif", chico)}>
+          <p className="text-right">{doc.encabezado[0]}</p>
+          {doc.encabezado.slice(1).map((l) => (
+            <p key={l} className="font-semibold">
+              {l}
+            </p>
+          ))}
+        </div>
+      )}
+      {doc.campos && (
+        <dl className={cn("mt-2 divide-y divide-zinc-200 border-y border-zinc-200", chico)}>
+          {doc.campos.map(([k, v]) => (
+            <div key={k} className="flex gap-3 py-1">
+              <dt className="w-28 shrink-0 font-semibold text-zinc-500">{k}</dt>
+              <dd className="min-w-0">{v}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {doc.tabla && (
+        <table className={cn("mt-2 w-full border border-zinc-200 text-left", chico)}>
+          <thead className="bg-zinc-100">
+            <tr>
+              {doc.tabla.cols.map((c) => (
+                <th key={c} className="px-2 py-1 font-semibold">
+                  {c}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {doc.tabla.filas.map((f, i) => (
+              <tr key={i} className="border-t border-zinc-200">
+                {f.map((c, j) => (
+                  <td key={j} className="px-2 py-1 align-top">
+                    {c}
+                  </td>
+                ))}
+              </tr>
+            ))}
+            {doc.tabla.total && (
+              <tr className="border-t-2 border-zinc-700 font-bold">
+                <td className="px-2 py-1" colSpan={doc.tabla.cols.length - 1}>
+                  {doc.tabla.total[0]}
+                </td>
+                <td className="px-2 py-1">{doc.tabla.total[1]}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      )}
+      {doc.parrafos && (
+        <div className={cn("mt-2 space-y-2 font-serif leading-relaxed", grande ? "text-base sm:text-lg" : "text-[13px]")}>
+          {doc.parrafos.map((p, i) => (
+            <p key={i}>{p}</p>
+          ))}
+        </div>
+      )}
+      {doc.checklist && (
+        <div className={cn("mt-2 rounded-lg bg-zinc-50 p-2", chico)}>
+          <p className="font-semibold">Acta de instalación</p>
+          {doc.checklist.map((c) => (
+            <p key={c.item}>
+              <span className={c.hecho ? "text-emerald-700" : "text-zinc-400"}>{c.hecho ? "☑" : "☐"}</span> {c.item}
+            </p>
+          ))}
+        </div>
+      )}
+      {doc.firmas && (
+        <div className={cn("mt-3 flex flex-wrap justify-around gap-3 text-center", chico)}>
+          {doc.firmas.map((f) => (
+            <p key={f} className="min-w-[10rem] border-t border-zinc-500 pt-1">
+              {f}
+            </p>
+          ))}
+        </div>
+      )}
+      {doc.sello && (
+        <p className="absolute bottom-6 right-6 -rotate-12 rounded border-2 border-red-700 px-2 py-0.5 text-xs font-bold text-red-700">{doc.sello}</p>
+      )}
     </div>
   );
 }
@@ -214,7 +291,7 @@ export function RecorridosGrande() {
 
 const MATRIZ: [string, string, string][] = [
   ["Hecho", "Qué ocurrió o qué se afirma", "Lucía recibió las cajas el martes."],
-  ["Fuente", "Documento que lo respalda", "Documento 2, mensaje de las 16:44."],
+  ["Fuente", "Documento y página que lo respaldan", "CN-02, mensaje de las 16:44."],
   ["Parte que lo sostiene", "Lucía, Diego o ambas", "Ambas."],
   ["Estado", "Confirmado, discutido o pendiente", "Confirmado."],
   ["Relevancia", "Por qué importa", "Separa la recepción de la instalación."],

@@ -1,21 +1,47 @@
 "use client";
 
-// Tutor de trabajo en el dispositivo del grupo: los documentos y prompts que
-// el deck ya liberó (session.activity_config.liberados), con botones para
-// copiarlos, y las herramientas externas para abrirlos.
+// Tutor de trabajo en el dispositivo del grupo: la carpeta del caso con los
+// documentos que el deck ya liberó (session.activity_config.liberados), cada
+// uno con su PDF para descargar y subir a la herramienta, y copia en texto
+// como respaldo; los prompts guiados para copiar; las plantillas del grupo; y
+// las herramientas externas.
 
 import { useState } from "react";
 import { BarraRecorridos, BotonCopiar, DocumentoCaso, PromptCaja } from "@/components/taller/piezas";
-import { docComoTexto, esDoc, esPrompt, TAL_DOCS, TAL_PROMPTS, type ConfigTaller } from "@/lib/taller-caso";
+import {
+  docComoTexto,
+  esDoc,
+  esPlantilla,
+  esPrompt,
+  TAL_DOCS,
+  TAL_PLANTILLAS,
+  TAL_PROMPTS,
+  urlPdf,
+  type ConfigTaller,
+} from "@/lib/taller-caso";
 import { TAL_KIT } from "@/lib/taller-clase";
 import type { SessionRow } from "@/lib/types";
-import { cn } from "@/lib/utils";
+
+function BotonPdf({ archivo, label = "PDF" }: { archivo: string; label?: string }) {
+  return (
+    <a
+      href={urlPdf(archivo)}
+      download
+      target="_blank"
+      rel="noreferrer"
+      className="shrink-0 rounded-lg border border-teal/60 bg-teal/10 px-3 py-1.5 text-sm font-semibold text-teal transition hover:bg-teal/20 active:scale-95"
+    >
+      ⬇️ {label}
+    </a>
+  );
+}
 
 export function TutorTaller({ session }: { session: SessionRow }) {
   const cfg = (session.activity_config ?? {}) as ConfigTaller;
   const liberados = cfg.liberados ?? [];
   const docs = liberados.filter(esDoc).map((id) => TAL_DOCS[id]);
   const prompts = liberados.filter(esPrompt).map((id) => TAL_PROMPTS[id]);
+  const plantillas = liberados.filter(esPlantilla).map((id) => TAL_PLANTILLAS[id]);
   const [abierto, setAbierto] = useState<string | null>(null);
 
   const ultimoPrompt = prompts[prompts.length - 1];
@@ -40,7 +66,9 @@ export function TutorTaller({ session }: { session: SessionRow }) {
             </a>
           ))}
         </div>
-        <p className="mt-2 text-xs text-faint">Copien el documento y el prompt, péguenlos en la herramienta y controlen la respuesta.</p>
+        <p className="mt-2 text-xs text-faint">
+          Descarguen el PDF y súbanlo a la herramienta (📎 o +; en Notebook Gemini, «Agregar fuente»). Si no pueden subirlo, usen «Copiar».
+        </p>
       </div>
 
       {ultimoPrompt && (
@@ -52,7 +80,7 @@ export function TutorTaller({ session }: { session: SessionRow }) {
 
       <div>
         <div className="mb-2 flex items-center justify-between gap-2">
-          <p className="text-xs font-bold uppercase tracking-widest text-teal">📂 Documentos del caso ({docs.length})</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-teal">📂 Carpeta del caso ({docs.length})</p>
           {docs.length > 1 && <BotonCopiar texto={todos} label="Copiar todos" />}
         </div>
         {docs.length === 0 ? (
@@ -66,15 +94,19 @@ export function TutorTaller({ session }: { session: SessionRow }) {
                   <div className="flex items-center justify-between gap-2">
                     <button onClick={() => setAbierto(on ? "" : d.id)} className="min-w-0 flex-1 text-left">
                       <p className="truncate text-sm font-semibold">
-                        {d.numero ? `${d.numero}. ` : ""}
+                        <span className="mr-1.5 font-mono text-teal">{d.codigo}</span>
                         {d.titulo}
                         {i === 0 && <span className="ml-2 rounded-full bg-teal/15 px-2 py-0.5 text-[10px] text-teal">nuevo</span>}
                       </p>
                       <p className="text-xs text-faint">
-                        {d.origen} · {on ? "ocultar ▲" : "ver ▼"}
+                        {d.origen}
+                        {d.imagen && " · 📷 es una imagen: prueben si la herramienta la lee"} · {on ? "ocultar ▲" : "ver ▼"}
                       </p>
                     </button>
-                    <BotonCopiar texto={docComoTexto(d)} />
+                    <div className="flex shrink-0 flex-col gap-1.5 sm:flex-row">
+                      <BotonPdf archivo={d.archivo} />
+                      <BotonCopiar texto={docComoTexto(d)} />
+                    </div>
                   </div>
                   {on && (
                     <div className="mt-3">
@@ -88,6 +120,26 @@ export function TutorTaller({ session }: { session: SessionRow }) {
         )}
       </div>
 
+      {plantillas.length > 0 && (
+        <div>
+          <p className="mb-2 text-xs font-bold uppercase tracking-widest text-amber-300">📋 Plantillas del grupo</p>
+          <div className="space-y-2">
+            {plantillas.map((p) => (
+              <div key={p.id} className="glass flex items-center justify-between gap-3 rounded-2xl p-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold">
+                    <span className="mr-1.5 font-mono text-amber-300">{p.codigo}</span>
+                    {p.titulo}
+                  </p>
+                  <p className="text-xs text-faint">{p.para}</p>
+                </div>
+                <BotonPdf archivo={p.archivo} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {prompts.length > 1 && (
         <div>
           <p className="mb-2 text-xs font-bold uppercase tracking-widest text-violet">Prompts anteriores</p>
@@ -97,7 +149,7 @@ export function TutorTaller({ session }: { session: SessionRow }) {
               .reverse()
               .map((p) => (
                 <details key={p.id} className="glass rounded-2xl p-3">
-                  <summary className={cn("cursor-pointer text-sm font-semibold")}>{p.titulo}</summary>
+                  <summary className="cursor-pointer text-sm font-semibold">{p.titulo}</summary>
                   <div className="mt-3">
                     <PromptCaja prompt={p} />
                   </div>
