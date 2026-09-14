@@ -43,6 +43,55 @@ export function SeguimientoJusticia({
   );
 }
 
+/** Para el control del docente: la placa tal como la ve el participante (solo lectura). */
+export function VistaParticipante({ idx, abiertas }: { idx: number; abiertas: string[] }) {
+  const slide = JUS_SLIDES[idx];
+  if (!slide) return null;
+  return (
+    <Blindaje fallback={null}>
+      {slide.t === "actividad" || slide.t === "simulador" ? (
+        <Marco>
+          <PreviaActividad activa={slide.activa} />
+          {slide.t === "simulador" && <CasoSimulador />}
+        </Marco>
+      ) : (
+        <VistaPlaca key={idx} slide={slide} abiertas={abiertas} />
+      )}
+    </Blindaje>
+  );
+}
+
+/** Lo que el participante tiene para responder, sin poder enviarlo. */
+function PreviaActividad({ activa }: { activa: string }) {
+  const act = getJusActividad(activa);
+  if (!act) return <p className="text-lg text-muted">En espera.</p>;
+  const Opcion = ({ emoji, label }: { emoji: string; label: string }) => (
+    <p className="rounded-xl border border-line bg-ink-2/60 px-3 py-2 text-base">
+      {emoji} {label}
+    </p>
+  );
+  return (
+    <>
+      <p className="text-xs font-bold uppercase tracking-widest text-teal">🗳️ Actividad en su celular</p>
+      <h2 className="mt-2 text-2xl font-bold leading-tight">{act.titulo}</h2>
+      <p className="mt-1 text-base text-muted">{act.bajada}</p>
+      <div className="mt-3 grid gap-2">
+        {act.opciones?.map((o) => <Opcion key={o.id} emoji={o.emoji} label={o.label} />)}
+        {act.preguntas?.map((p) => (
+          <div key={p.id} className="grid gap-1.5">
+            <p className="mt-1 text-base font-semibold">{p.q}</p>
+            {p.opciones.map((o) => (
+              <Opcion key={o.id} emoji={o.emoji} label={o.label} />
+            ))}
+          </div>
+        ))}
+        {act.kind === "palabra" && <p className="rounded-xl border border-line bg-ink-2/60 px-3 py-2 text-base text-faint">[ una palabra ]</p>}
+        {act.kind === "texto" && <p className="rounded-xl border border-line bg-ink-2/60 px-3 py-2 text-base text-faint">[ respuesta escrita ]</p>}
+      </div>
+    </>
+  );
+}
+
 const esActividad = (s: JusSlide) => s.t === "actividad" || s.t === "simulador";
 
 function Seguimiento({ placa, actividad }: { placa: PlacaVivo | null; actividad: ReactNode }) {

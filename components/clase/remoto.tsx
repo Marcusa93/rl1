@@ -125,11 +125,31 @@ export function useRemotoDeck({
   }, [slug]);
 }
 
+function mostrarVista(vista: (estado: EstadoRemoto) => React.ReactNode, estado: EstadoRemoto) {
+  try {
+    return vista(estado);
+  } catch {
+    return null;
+  }
+}
+
 /** Celular del docente: pasar placas y tocar las tarjetas de la pantalla. */
-export function ControlRemoto({ slug, titulos, nombre }: { slug: string; titulos: string[]; nombre: string }) {
+export function ControlRemoto({
+  slug,
+  titulos,
+  nombre,
+  vista,
+}: {
+  slug: string;
+  titulos: string[];
+  nombre: string;
+  /** Cómo ven la placa actual los participantes en su celular (panel plegable). */
+  vista?: (estado: EstadoRemoto) => React.ReactNode;
+}) {
   const [estado, setEstado] = useState<EstadoRemoto | null>(null);
   const [tocado, setTocado] = useState<string | null>(null);
   const [indice, setIndice] = useState(false);
+  const [verVista, setVerVista] = useState(true);
   const cola = useRef<Promise<unknown>>(Promise.resolve());
 
   useEffect(() => {
@@ -265,6 +285,18 @@ export function ControlRemoto({ slug, titulos, nombre }: { slug: string; titulos
           <p className="px-1 pt-6 text-center text-sm text-faint">
             {estado ? "Esta placa no tiene botones: explíquela y avance." : "Esperando la presentación…"}
           </p>
+        )}
+        {vista && estado && (
+          <div className="pt-4">
+            <button
+              onClick={() => setVerVista((v) => !v)}
+              className="flex w-full items-center rounded-2xl border border-violet/50 bg-violet/10 px-4 py-3 text-left text-base font-semibold text-violet"
+            >
+              <span className="flex-1">👀 Así lo ven en el celular</span>
+              <span className="text-sm">{verVista ? "▲" : "▼"}</span>
+            </button>
+            {verVista && <div className="pointer-events-none">{mostrarVista(vista, estado)}</div>}
+          </div>
         )}
       </main>
 
