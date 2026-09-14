@@ -6,6 +6,7 @@
 // y tiene todo a un toque: audios, PDFs, prompts, misiones y herramientas.
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { MessIAs } from "@/components/taller/messias";
 import { BotonCopiar, DocumentoCaso, PromptCaja } from "@/components/taller/piezas";
 import { TutorTaller } from "@/components/taller/tutor";
 import { docComoTexto, TAL_DOCS, TAL_PLANTILLAS, TAL_PROMPTS, urlPdf, type ConfigTaller } from "@/lib/taller-caso";
@@ -134,6 +135,8 @@ export function TallerGuiado({ session, actividad }: { session: SessionRow; acti
         <summary className="cursor-pointer text-sm font-semibold text-muted">📂 Toda la carpeta, los prompts y las herramientas</summary>
         <TutorTaller session={session} />
       </details>
+
+      <MessIAs etapa={etapa.n} />
     </div>
   );
 }
