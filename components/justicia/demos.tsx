@@ -108,25 +108,18 @@ function DemoJurisprudencia() {
       </p>
       <div className="mt-2 space-y-2">
         {FALLOS.slice(0, n).map((f) => (
-          <div key={f.ref} className="rise rounded-xl border border-line bg-panel/60 p-3">
+          <div key={f.ref} className="rise rounded-xl border border-line bg-panel/60 px-3 py-2">
             <div className="flex items-center justify-between gap-2">
               <p className="text-sm font-semibold text-teal">{f.ref}</p>
-              <span className="shrink-0 rounded-full bg-teal/15 px-2 py-0.5 font-mono text-xs text-teal">{f.rel}%</span>
+              <span className="text-xs text-violet-200">Ver fallo ↗</span>
+              <span className="ml-auto shrink-0 rounded-full bg-teal/15 px-2 py-0.5 font-mono text-xs text-teal">{f.rel}%</span>
             </div>
-            <p className="mt-1 text-sm leading-snug text-muted">{f.extracto}</p>
-            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-              {f.tags.map((t) => (
-                <span key={t} className="rounded-full border border-line px-2 py-0.5 text-[11px] text-faint">
-                  {t}
-                </span>
-              ))}
-              <span className="ml-auto text-xs text-violet-200">Ver fallo completo ↗</span>
-            </div>
+            <p className="mt-0.5 line-clamp-2 text-sm leading-snug text-muted">{f.extracto}</p>
           </div>
         ))}
       </div>
       {n === FALLOS.length && (
-        <p className="rise mt-2 text-sm text-muted">Encuentra por el contenido, aunque el fallo no use las mismas palabras que la consulta.</p>
+        <p className="rise mt-2 text-xs text-muted">Encuentra por el contenido, aunque el fallo no use las mismas palabras que la consulta.</p>
       )}
     </div>
   );

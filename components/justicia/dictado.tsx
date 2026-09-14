@@ -34,7 +34,6 @@ const PASOS_PROCESO = [
 ];
 
 const FILAS: { fecha: string; dicho: string; hecho: string; control: string; alerta?: boolean }[] = [
-  { fecha: "—", dicho: "«soy [nombre anonimizado]»", hecho: "Parte: persona trabajadora (T1)", control: "🔒 dato personal protegido" },
   { fecha: "04/05/2024", dicho: "«entré el 4 de mayo de 2024, como vendedor… de lunes a sábado»", hecho: "Inicio de la relación laboral · vendedor · seis días por semana", control: "📎 contrato o constancia de ingreso" },
   { fecha: "Desde el ingreso", dicho: "«al principio ganaba 300 dólares»", hecho: "Salario inicial: USD 300", control: "📎 boletas de pago" },
   { fecha: "≈ febrero 2026", dicho: "«hace un mes me habían aumentado a 600»", hecho: "Último salario: USD 600 — dato clave para el cálculo", control: "⚠ fecha relativa: confirmar", alerta: true },

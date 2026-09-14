@@ -618,7 +618,6 @@ export const JUS_SLIDES: JusSlide[] = [
     t: "placa",
     titulo: "Lo que la justicia puede construir",
     bajada: "Herramientas de IA al servicio del justiciable. Toque cada una para verla funcionar.",
-    lede: "CuscatIA investiga cómo diseñar asistencia para la redacción judicial, con control humano y trazabilidad. Es un proyecto en desarrollo.",
     explora: [
       {
         emoji: "🔎",
@@ -650,7 +649,11 @@ export const JUS_SLIDES: JusSlide[] = [
         texto: "Explicarle a cada persona, en palabras simples, qué pasa con su caso. La IA propone la versión clara; la persona revisa que diga exactamente lo mismo.",
         demo: "lenguaje",
       },
-      { emoji: "🇦🇷", label: "Un antecedente", texto: "Prometea, en el Ministerio Público Fiscal de la Ciudad de Buenos Aires: automatización documental y asistencia en tareas repetitivas." },
+      {
+        emoji: "🇦🇷",
+        label: "Antecedentes y CuscatIA",
+        texto: "Prometea, en el Ministerio Público Fiscal de la Ciudad de Buenos Aires: automatización documental y asistencia en tareas repetitivas. CuscatIA, en desarrollo, investiga cómo diseñar asistencia para la redacción judicial con control humano y trazabilidad.",
+      },
     ],
   },
 
