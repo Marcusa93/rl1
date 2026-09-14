@@ -53,7 +53,16 @@ export function BotonCopiar({ texto, label = "Copiar", className }: { texto: str
 
 // --- Documentos ----------------------------------------------------------------------
 
-export function DocumentoCaso({ doc, grande }: { doc: DocTaller; grande?: boolean }) {
+export function DocumentoCaso({
+  doc,
+  grande,
+  marcas,
+}: {
+  doc: DocTaller;
+  grande?: boolean;
+  /** Resalta mensajes de un chat por índice: la frase clave o el contexto que la aclara. */
+  marcas?: Record<number, "clave" | "contexto">;
+}) {
   const cab = (
     <div className="flex flex-wrap items-baseline justify-between gap-2">
       <p className={cn("font-bold uppercase tracking-wider text-zinc-500", grande ? "text-xs" : "text-[10px]")}>
@@ -76,6 +85,8 @@ export function DocumentoCaso({ doc, grande }: { doc: DocTaller; grande?: boolea
                 className={cn(
                   "max-w-[88%] rounded-2xl px-3.5 py-2 shadow-sm",
                   m.quien === "LUCÍA" ? "rounded-tl-sm bg-white" : "rounded-tr-sm bg-[#d9fdd3]",
+                  marcas?.[i] === "clave" && "ring-4 ring-amber-400",
+                  marcas?.[i] === "contexto" && "ring-4 ring-teal-500",
                 )}
               >
                 <p className={cn("font-semibold", grande ? "text-xs" : "text-[10px]", m.quien === "LUCÍA" ? "text-rose-700" : "text-emerald-800")}>

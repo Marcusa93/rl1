@@ -195,7 +195,7 @@ export interface JusPlaca {
   /** Tarjetas que el docente toca para desplegar una explicación o un ejemplo. */
   explora?: Explorable[];
   /** Componente interactivo propio que reemplaza al diagrama. */
-  interactivo?: "pdfs";
+  interactivo?: "pdfs" | "cotio";
   /** Capturas ilustrativas a un clic (respaldo si no se puede mostrar en vivo). */
   capturas?: CapturaId[];
 }
@@ -411,18 +411,24 @@ export const JUS_SLIDES: JusSlide[] = [
   {
     t: "placa",
     parte: "4 · Cómo se instruye un modelo",
-    titulo: "Sistema, usuario y contexto",
-    bajada: "Reglas estables, el pedido de cada consulta y los documentos que lo sostienen.",
-    diagrama: "sistema",
+    titulo: "¿Qué es un prompt?",
+    bajada: "Una instrucción con cinco piezas: Contexto, Objetivo, Tareas, Input y Output.",
+    interactivo: "cotio",
+    kit: true,
+  },
+  {
+    t: "placa",
+    titulo: "El contexto sostiene el pedido",
+    bajada: "Sin documentos ni reglas, el modelo completa con lo que «sabe» en general.",
+    diagrama: "contexto",
     kit: true,
     explora: [
+      { emoji: "🗂️", label: "Fuentes", texto: "Qué documentos usar y cuáles no. Con fuentes definidas, cada dato se puede verificar." },
       {
         emoji: "⚙️",
-        label: "Prompt de sistema",
-        texto: "Las reglas permanentes: rol, límites, formato, qué hacer si falta información. En Claude, las instrucciones de un proyecto; en ChatGPT, un GPT; en Gemini, un Gem.",
+        label: "Dónde vive el prompt de sistema",
+        texto: "En Claude, en las instrucciones de un proyecto; en ChatGPT, en un GPT o en las instrucciones personalizadas; en Gemini, en un Gem. Se escribe una vez.",
       },
-      { emoji: "💬", label: "Prompt de usuario", texto: "Lo que se pide en cada consulta. Cambia todo el tiempo; las reglas de sistema se mantienen." },
-      { emoji: "🗂️", label: "Contexto", texto: "Qué documentos usar y cuáles no. Sin esto, el modelo completa con lo que «sabe» en general." },
       {
         emoji: "✅",
         label: "Un pedido completo",

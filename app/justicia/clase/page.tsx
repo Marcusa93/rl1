@@ -18,6 +18,7 @@ import { DiagramaJus } from "@/components/justicia/diagramas";
 import { BuscadorExpediente } from "@/components/justicia/buscador";
 import { Captura, Leyenda, LEYENDAS, type CapturaId } from "@/components/justicia/capturas";
 import { SimuladorConflicto } from "@/components/justicia/simulador";
+import { ConstructorCotio } from "@/components/justicia/cotio";
 import { Explorables } from "@/components/clase/explorables";
 import { LluviaReacciones } from "@/components/clase/reacciones";
 import { useRemotoDeck } from "@/components/clase/remoto";
@@ -490,6 +491,7 @@ function PlacaCuerpo({ slide }: { slide: JusPlaca }) {
             </div>
           ) : null}
           {slide.interactivo === "pdfs" && <BuscadorExpediente />}
+          {slide.interactivo === "cotio" && <ConstructorCotio />}
           {slide.herramientas && <TarjetasHerramientas ids={slide.herramientas} />}
           {slide.pills && (
             <div className="mt-5 flex flex-wrap justify-center gap-2">

@@ -8,7 +8,9 @@
 
 import { useState } from "react";
 import { useResultados } from "@/components/clase/vivo";
+import { DocumentoCaso } from "@/components/taller/piezas";
 import { rem } from "@/lib/remoto";
+import { TAL_DOCS } from "@/lib/taller-caso";
 import { cn } from "@/lib/utils";
 
 type Camino = "mensajes" | "contrato";
@@ -50,14 +52,6 @@ const IA: Record<FuncionIA, { boton: string; instruccion: string; aviso: string 
     aviso: "Es una base de conversación: no es un acuerdo impuesto por la IA.",
   },
 };
-
-const CONVERSACION: { quien: "Diego" | "Lucía"; hora: string; texto: string; clave?: boolean; contexto?: boolean }[] = [
-  { quien: "Diego", hora: "lun 10:02", texto: "Llegó el camión con los equipos. ¿Los recibieron?" },
-  { quien: "Lucía", hora: "lun 10:05", texto: "Sí, recibimos todo.", clave: true },
-  { quien: "Lucía", hora: "lun 10:06", texto: "Son las cajas. Mañana las abrimos para revisar, instalar y probar que funcionen.", contexto: true },
-  { quien: "Diego", hora: "lun 10:08", texto: "Perfecto. Les paso la factura del saldo." },
-  { quien: "Lucía", hora: "mar 18:40", texto: "Abrimos todo: falta el accesorio de la cafetera y sin eso no funciona. ¡Abrimos el viernes!", contexto: true },
-];
 
 const COMPARACION: Record<Camino, { info: string; ia: string; juicio: string; acuerdo: string }> = {
   mensajes: {
@@ -271,7 +265,7 @@ function Inicio({ onComenzar }: { onComenzar: () => void }) {
           <p className="text-4xl">🔧</p>
           <p className="mt-2 text-2xl font-bold">Diego</p>
           <p className="mt-1 text-lg leading-snug text-muted">
-            Entregó los equipos. Falta <b className="text-foreground">un accesorio</b> para que uno funcione. Necesita cobrar para conseguirlo.
+            Entregó los equipos. Falta <b className="text-foreground">un módulo</b> para que la máquina de hielo funcione. Necesita cobrar para conseguirlo.
           </p>
           <p className="mt-3 rounded-xl border border-line bg-ink-2/60 px-4 py-2 text-lg italic">«Cumplí con la entrega. Corresponde el saldo.»</p>
         </div>
@@ -382,11 +376,8 @@ function DocMensajes({ contexto, onContexto, ia, onIA }: { contexto: boolean; on
     <>
       {!contexto ? (
         <div className="grid gap-4 lg:grid-cols-[1fr_1.2fr]">
-          <div className="glass flex flex-col items-start gap-2 rounded-2xl p-5">
-            <p className="text-xs font-bold uppercase tracking-wider text-faint">Captura de pantalla</p>
-            <p className="rounded-2xl rounded-tl-sm bg-emerald-500/20 px-5 py-3 text-3xl font-semibold sm:text-4xl">Sí, recibimos todo.</p>
-            <p className="text-sm text-faint">Lucía · lun 10:05</p>
-          </div>
+          {/* La misma captura que usa el taller (Documento 1). */}
+          <DocumentoCaso doc={TAL_DOCS.D1} grande marcas={{ 0: "clave" }} />
           <div className="flex flex-col justify-center gap-3">
             <p className="rounded-xl border border-rose-400/40 bg-rose-400/10 p-4 text-lg">
               <b className="text-rose-300">Diego interpreta:</b> «La cliente confirmó que recibió la prestación. Corresponde pagar el saldo.»
@@ -399,27 +390,8 @@ function DocMensajes({ contexto, onContexto, ia, onIA }: { contexto: boolean; on
         </div>
       ) : (
         <div className="grid gap-4 lg:grid-cols-[1.1fr_1fr]">
-          <div className="glass flex flex-col gap-2 rounded-2xl p-4">
-            <p className="text-xs font-bold uppercase tracking-wider text-faint">Conversación completa</p>
-            {CONVERSACION.map((m, i) => (
-              <div key={i} className={cn("flex", m.quien === "Lucía" ? "justify-start" : "justify-end")}>
-                <p
-                  className={cn(
-                    "max-w-[85%] rounded-2xl px-4 py-2 text-base leading-snug sm:text-lg",
-                    m.quien === "Lucía" ? "rounded-tl-sm bg-emerald-500/15" : "rounded-tr-sm bg-panel-2",
-                    m.clave && "ring-2 ring-amber-300/70",
-                    m.contexto && "ring-2 ring-teal/70",
-                  )}
-                >
-                  <span className="mr-2 text-xs text-faint">
-                    {m.quien} · {m.hora}
-                  </span>
-                  <br />
-                  {m.texto}
-                </p>
-              </div>
-            ))}
-          </div>
+          {/* La misma conversación completa que usa el taller (Documento 2). */}
+          <DocumentoCaso doc={TAL_DOCS.D2} grande marcas={{ 1: "clave", 2: "contexto", 4: "contexto" }} />
           <div className="flex flex-col gap-3">
             <p className="text-lg leading-snug text-muted">
               Lucía hablaba de <b className="text-foreground">las cajas</b>. Faltaban la revisión, la instalación y la prueba de funcionamiento.
@@ -462,7 +434,7 @@ function DocContrato({ ia, onIA }: { ia: boolean; onIA: () => void }) {
         <ul className="glass space-y-2 rounded-2xl p-4 text-lg leading-snug">
           <li>• La obligación comprende entrega, instalación y funcionamiento.</li>
           <li>• El contrato vincula el pago final con una verificación.</li>
-          <li>• Hay que determinar quién debía conseguir el accesorio faltante.</li>
+          <li>• Hay que determinar quién debía conseguir el módulo faltante.</li>
           <li>• Revisar si la conexión eléctrica del local estaba incluida o correspondía a Lucía.</li>
         </ul>
       </BloqueIA>
@@ -486,7 +458,7 @@ function Usos({ uso, onUso }: { uso: Uso | null; onUso: (u: Uso) => void }) {
                 <b className="text-cyan">Documentos:</b> contrato (cláusula 3), conversación de lunes y martes, remito de entrega.
               </li>
               <li>
-                <b className="text-cyan">Controvertido:</b> si «recibimos todo» fue aceptación; quién debía el accesorio.
+                <b className="text-cyan">Controvertido:</b> si «recibimos todo» fue aceptación; quién debía el módulo.
               </li>
               <li>
                 <b className="text-cyan">Prueba pendiente:</b> constatación del funcionamiento y detalle del pedido.
@@ -505,10 +477,10 @@ function Usos({ uso, onUso }: { uso: Uso | null; onUso: (u: Uso) => void }) {
                 <b className="text-emerald-300">Lucía necesita:</b> abrir el viernes.
               </li>
               <li>
-                <b className="text-emerald-300">Diego necesita:</b> cobrar para conseguir el accesorio.
+                <b className="text-emerald-300">Diego necesita:</b> cobrar para conseguir el módulo.
               </li>
               <li>
-                <b className="text-emerald-300">Opción 1:</b> pago parcial ahora, contra instalación del accesorio antes del viernes.
+                <b className="text-emerald-300">Opción 1:</b> pago parcial ahora, contra instalación del módulo antes del viernes.
               </li>
               <li>
                 <b className="text-emerald-300">Opción 2:</b> un equipo provisorio para la apertura.
