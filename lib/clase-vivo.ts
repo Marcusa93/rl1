@@ -56,6 +56,8 @@ export interface Explorable {
   label: string;
   texto: string;
   ejemplo?: { pedido: string; respuesta: string };
+  /** Mini demostración que el deck dibuja al abrir la tarjeta (ver renderDemo de Explorables). */
+  demo?: string;
 }
 
 /** Datos de una clase que necesitan la app del alumno y el deck. */

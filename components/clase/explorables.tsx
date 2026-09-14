@@ -9,7 +9,16 @@ import type { Explorable } from "@/lib/clase-vivo";
 import { rem } from "@/lib/remoto";
 import { cn } from "@/lib/utils";
 
-export function Explorables({ items, columnas = 2 }: { items: Explorable[]; columnas?: 1 | 2 }) {
+export function Explorables({
+  items,
+  columnas = 2,
+  renderDemo,
+}: {
+  items: Explorable[];
+  columnas?: 1 | 2;
+  /** Dibuja la mini demostración de una tarjeta que trae `demo`. */
+  renderDemo?: (demo: string) => React.ReactNode;
+}) {
   const [sel, setSel] = useState<number | null>(null);
 
   useEffect(() => {
@@ -57,6 +66,7 @@ export function Explorables({ items, columnas = 2 }: { items: Explorable[]; colu
             {actual.label}
           </p>
           <p className="mt-2 text-base leading-relaxed text-foreground sm:text-lg">{actual.texto}</p>
+          {actual.demo && renderDemo?.(actual.demo)}
           {actual.ejemplo && (
             <div className="mt-3 space-y-2">
               <div className="rounded-xl border border-violet/40 bg-violet/10 p-3">

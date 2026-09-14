@@ -19,6 +19,7 @@ import { BuscadorExpediente } from "@/components/justicia/buscador";
 import { Captura, Leyenda, LEYENDAS, type CapturaId } from "@/components/justicia/capturas";
 import { SimuladorConflicto } from "@/components/justicia/simulador";
 import { ConstructorCotio } from "@/components/justicia/cotio";
+import { DemoSistema, type DemoId } from "@/components/justicia/demos";
 import { Explorables } from "@/components/clase/explorables";
 import { LluviaReacciones } from "@/components/clase/reacciones";
 import { useRemotoDeck } from "@/components/clase/remoto";
@@ -47,6 +48,9 @@ import type { ActividadVivo } from "@/lib/clase-vivo";
 import { cn } from "@/lib/utils";
 
 const STORAGE_KEY = "justicia-clase-slide";
+
+/** Mini demostraciones de las tarjetas que traen `demo` (Lo que la justicia puede construir). */
+const verDemo = (d: string) => <DemoSistema id={d as DemoId} />;
 
 // --- Acceso docente -----------------------------------------------------------
 
@@ -477,7 +481,7 @@ function PlacaCuerpo({ slide }: { slide: JusPlaca }) {
               <div className="rise glass rounded-2xl p-3 sm:p-5" style={{ animationDelay: "0.25s" }}>
                 <DiagramaJus id={slide.diagrama} />
               </div>
-              <Explorables items={slide.explora} columnas={slide.explora.length > 4 ? 1 : 2} />
+              <Explorables items={slide.explora} columnas={slide.explora.length > 4 ? 1 : 2} renderDemo={verDemo} />
             </div>
           ) : slide.diagrama ? (
             <div className="rise mx-auto mt-7 w-full max-w-3xl" style={{ animationDelay: "0.25s" }}>
@@ -487,7 +491,7 @@ function PlacaCuerpo({ slide }: { slide: JusPlaca }) {
             </div>
           ) : slide.explora ? (
             <div className="mt-6">
-              <Explorables items={slide.explora} />
+              <Explorables items={slide.explora} renderDemo={verDemo} />
             </div>
           ) : null}
           {slide.interactivo === "pdfs" && <BuscadorExpediente />}
