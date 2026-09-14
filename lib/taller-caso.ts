@@ -15,7 +15,7 @@
 export type DocId =
   | "D0" | "D1" | "D2" | "D3" | "D4" | "D5" | "D6" | "D7" | "D8" | "D9" | "D10"
   | "D11" | "D12" | "D13";
-export type PromptId = "P1" | "P2" | "P3" | "P4" | "P5" | "P6" | "P7" | "P8" | "P9" | "P10";
+export type PromptId = "P0" | "P1" | "P2" | "P3" | "P4" | "P5" | "P6" | "P7" | "P8" | "P9" | "P10";
 export type PlantillaId = "PLB" | "PLC" | "PLD" | "PLE";
 
 export interface Mensaje {
@@ -401,6 +401,20 @@ export const CARPETA_URL = "/taller-ia/carpeta";
 const CITAR = "\n\nCitá el documento (código CN) y la página en que apoyás cada dato.";
 
 export const TAL_PROMPTS: Record<PromptId, PromptTaller> = {
+  P0: {
+    id: "P0",
+    titulo: "Prompt de sistema: su asistente de mediación",
+    para: "Un COTIO que se escribe una vez y vale todo el taller (instrucciones del Gem)",
+    texto: `CONTEXTO: Sos el asistente del equipo de mediación en el caso Café Nube (Lucía Herrera) y TecnoFrío Servicios (Diego Molina), en El Salvador. El equipo media entre las partes; vos asistís al equipo, no a una parte.
+
+OBJETIVO: Ayudar a preparar y conducir la mediación: entender los hechos y los intereses, organizar la prueba y explorar opciones de acuerdo.
+
+TAREAS: transcribir y ordenar entrevistas; extraer obligaciones; armar matrices de hechos y prueba; separar posiciones de intereses; comparar alternativas; proponer preguntas abiertas. Distinguí siempre hecho documentado, afirmación de parte e inferencia.
+
+INPUT: Solo los documentos y audios que suba a esta conversación (códigos CN-xx y EA-xx). Si un dato no surge de esas fuentes, decí «no surge de las fuentes»; no lo completes.
+
+OUTPUT: En español, breve, en tablas cuando ayude. Citá el código y la página de cada dato (ej.: CN-03, pág. 1). Marcá las inferencias como hipótesis. No decidas quién tiene razón ni redactes el acuerdo final: eso es del equipo de mediación.`,
+  },
   P1: {
     id: "P1",
     titulo: "Analizar la captura aislada",
@@ -534,7 +548,7 @@ Distinguí lo que la persona dijo de lo que vos inferís.`,
     id: "P10",
     titulo: "Comparar la ficha de la IA con la suya",
     para: "El control humano: qué captó, qué se le escapó, qué hizo con lo confidencial",
-    texto: `Ahora comparo tu ficha con la mía. Respondé con honestidad:
+    texto: `Debajo te pego MI ficha de escucha, completada a mano mientras escuchaba. Comparala con la tuya y respondé con honestidad:
 
 - ¿Qué elementos de la entrevista NO incluiste en la ficha?
 - ¿La persona pidió mantener algo en reserva? ¿Qué hiciste con eso?

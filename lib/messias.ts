@@ -16,7 +16,10 @@ export function messiasKey(): string | undefined {
 }
 
 const HERRAMIENTAS = `CÓMO SE USA CADA HERRAMIENTA (guiá con estos pasos exactos):
-- Subir un archivo a Gemini: entrar a gemini.google.com con cuenta de Google → en el cuadro de texto, tocar el signo + (o el clip) → "Subir archivos" → elegir el archivo descargado (está en la carpeta Descargas) → escribir o pegar el prompt → enviar.
+- Crear el Gem "Asistente de mediación" (etapa 0): gemini.google.com → menú de la izquierda → "Explorar Gems" o "Gems" → "Crear Gem" (o "+ Nuevo Gem") → nombre "Asistente de mediación" → en "Instrucciones" pegar el prompt P0 (botón Copiar en la app) → Guardar → abrirlo y saludarlo. Si no aparece la opción Gems: plan B, abrir un chat nuevo, pegar P0 como primer mensaje y quedarse SIEMPRE en ese chat.
+- TODO el taller se trabaja dentro de ese Gem (o de ese único chat): audios, documentos y prompts van a la misma conversación, así el asistente acumula el caso. Única excepción: Deep Research, que corre en un chat aparte; los datos verificados después se pegan en el Gem.
+- La ficha de escucha se completa EN LA APP del taller (etapa 1, formulario en pantalla; se guarda solo en esa compu). El botón "Copiar mi ficha" la copia como texto para pegarla en el Gem (etapa 2, con P10).
+- Subir un archivo a Gemini o al Gem: en el cuadro de texto, tocar el signo + (o el clip) → "Subir archivos" → elegir el archivo descargado (está en la carpeta Descargas) → escribir o pegar el prompt → enviar.
 - Notebook Gemini (notebooklm.google.com): "Crear" o "Nuevo cuaderno" → "Agregar fuente" → subir el PDF o el mp3 → esperar que lo procese → preguntar en el chat de la derecha.
 - Deep Research en Gemini: abrir un chat nuevo → en el selector de herramientas o modelos elegir "Deep Research" → pegar la misión completa → enviar → Gemini muestra un plan: tocar "Iniciar investigación" → tarda 5 a 15 minutos: dejar esa pestaña abierta y seguir con otra cosa.
 - Los prompts y misiones de la app se copian con el botón "Copiar" y se pegan en la herramienta (Ctrl+V o Cmd+V).
@@ -24,7 +27,7 @@ const HERRAMIENTAS = `CÓMO SE USA CADA HERRAMIENTA (guiá con estos pasos exact
 - Si no tiene cuenta de Google en esa compu: puede usar la de un compañero, o trabajar con el texto (botón "Copiar" de cada documento) en cualquier chat de IA.`;
 
 const CONCEPTOS = `CONCEPTOS DE MEDIACIÓN QUE PODÉS EXPLICAR (breve, con el ejemplo del caso):
-mediación y sus principios (voluntariedad, confidencialidad, imparcialidad, autocomposición) · caucus o sesión privada · posiciones vs. intereses (Fisher y Ury) · MAAN (mejor alternativa a un acuerdo negociado) · criterios objetivos · escucha activa y parafraseo · preguntas abiertas · acuerdo exigible · la Ley de Mediación, Conciliación y Arbitraje de El Salvador (Decreto 914/2002).`;
+mediación y sus principios (voluntariedad, confidencialidad, imparcialidad, autocomposición) · caucus o sesión privada · posiciones vs. intereses (Fisher y Ury) · MAAN (mejor alternativa a un acuerdo negociado) · criterios objetivos · escucha activa y parafraseo · preguntas abiertas · acuerdo exigible · la Ley de Mediación, Conciliación y Arbitraje de El Salvador (Decreto 914/2002) · prompt de sistema y COTIO (P0: el Gem es un prompt de sistema hecho herramienta) · por qué conviene un solo chat con todo el contexto.`;
 
 function itinerario(): string {
   return TAL_ETAPAS.map((e) => `${e.n}. ${e.emoji} ${e.titulo} — ${e.bajada} [pasos: ${e.pasos.map((p) => p.titulo).join(" · ")}]`).join("\n");

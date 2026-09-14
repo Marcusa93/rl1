@@ -6,6 +6,7 @@
 // y tiene todo a un toque: audios, PDFs, prompts, misiones y herramientas.
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { FichaEscucha } from "@/components/taller/ficha";
 import { MessIAs } from "@/components/taller/messias";
 import { BotonCopiar, DocumentoCaso, PromptCaja } from "@/components/taller/piezas";
 import { TutorTaller } from "@/components/taller/tutor";
@@ -202,6 +203,8 @@ function Paso({ paso, i, hecho, onMarcar }: { paso: PasoTaller; i: number; hecho
           </ol>
 
           {paso.audio && <TarjetaAudio audio={TAL_AUDIOS[paso.audio]} />}
+
+          {paso.ficha && <FichaEscucha compacta={paso.id !== "e1-ficha"} />}
 
           {docs.length > 0 && (
             <div className="space-y-2">

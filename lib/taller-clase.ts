@@ -337,6 +337,7 @@ export const TAL_SLIDES: TalSlide[] = [
     titulo: "Hoy ustedes son el equipo de mediación",
     bajada: "Un caso real por resolver, un itinerario guiado en cada computadora y la IA como asistente.",
     etapa: 0,
+    libera: ["P0"],
     kit: true,
     explora: [
       {
@@ -350,9 +351,9 @@ export const TAL_SLIDES: TalSlide[] = [
         texto: "El botón con cara de crack, abajo a la derecha. Sabe el caso, las herramientas y el método. Guía paso a paso, pero no resuelve: las decisiones del mediador son suyas.",
       },
       {
-        emoji: "🧰",
-        label: "Las herramientas",
-        texto: "Gemini y Notebook Gemini con una cuenta de Google (y ChatGPT o Claude si los prefieren). Los prompts se copian con un botón y se pegan allá.",
+        emoji: "💎",
+        label: "Su propio Gem",
+        texto: "Lo primero que hace cada uno: crear en Gemini su «Asistente de mediación» pegando un prompt de sistema COTIO (P0). Todo el taller pasa dentro de ese Gem: el asistente acumula el caso completo, audio por audio y documento por documento.",
       },
       {
         emoji: "✓",
@@ -401,7 +402,7 @@ export const TAL_SLIDES: TalSlide[] = [
     t: "placa",
     parte: "2 · La IA escucha",
     titulo: "El mismo audio, ahora lo procesa la IA",
-    bajada: "Suban la entrevista a Gemini y comparen con su ficha de papel. ¿Quién escuchó mejor?",
+    bajada: "Suban la entrevista a su Gem y comparen con su ficha. ¿Quién escuchó mejor?",
     etapa: 2,
     libera: ["P9", "P10"],
     kit: true,

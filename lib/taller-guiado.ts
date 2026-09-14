@@ -140,6 +140,8 @@ export interface PasoTaller {
   herramienta?: { label: string; url: string };
   /** Muestra las tres misiones de investigación. */
   misiones?: boolean;
+  /** Muestra la ficha de escucha digital (se completa en la app). */
+  ficha?: boolean;
   /** Paso opcional, para quienes terminan antes. */
   extra?: boolean;
   nota?: string;
@@ -190,6 +192,20 @@ export const TAL_ETAPAS: EtapaTaller[] = [
           "Úselo cada vez que se trabe: está para eso. No le va a resolver el caso: lo va a guiar.",
         ],
       },
+      {
+        id: "e0-gem",
+        titulo: "Cree su asistente (su primer prompt de sistema)",
+        prompt: "P0",
+        herramienta: { label: "Gemini", url: "https://gemini.google.com" },
+        hacer: [
+          "Abra gemini.google.com e inicie sesión con una cuenta de Google.",
+          "En el menú de la izquierda toque «Explorar Gems» (o «Gems») y luego «Crear Gem» (o «+ Nuevo Gem»).",
+          "Nombre: «Asistente de mediación». En «Instrucciones», pegue el prompt P0 (botón Copiar de acá abajo). Guarde.",
+          "Abra su Gem y escríbale: «presentate en dos líneas». Ya tiene un asistente que conoce su rol.",
+          "TODO el taller se trabaja DENTRO de este Gem: cada audio y documento que suba queda en la misma conversación, y el asistente acumula el caso completo.",
+          "¿No le aparece Gems? Plan B: abra un chat nuevo, pegue P0 como PRIMER mensaje y no cambie de chat en todo el taller. Es la misma idea: el contexto se construye una vez.",
+        ],
+      },
     ],
   },
   {
@@ -201,29 +217,33 @@ export const TAL_ETAPAS: EtapaTaller[] = [
       {
         id: "e1-ficha",
         titulo: "Prepare la ficha de escucha",
+        ficha: true,
         plantilla: "PLD",
         hacer: [
-          "Descargue la Ficha de escucha (PL-D) o tenga papel y lapicera a mano.",
-          "La va a completar MIENTRAS escucha: posiciones (qué pide), intereses (qué necesita), emociones, datos a confirmar y lo confidencial.",
+          "La ficha se completa ACÁ MISMO, abajo: queda guardada en esta compu.",
+          "La va a llenar MIENTRAS escucha: posiciones (qué pide), intereses (qué necesita), emociones, datos a confirmar y lo confidencial.",
+          "Si prefiere papel, el PDF PL-D es la misma ficha para tener de guía.",
         ],
       },
       {
         id: "e1-lucia",
         titulo: "Escuche a Lucía (2:32)",
         audio: "EA1",
+        ficha: true,
         hacer: [
           "Toque ▶ y escuche la entrevista completa, sin pausa, como en una sesión privada real.",
-          "Anote en la ficha, columna Lucía. No busque la frase perfecta: capte lo importante.",
-          "Al final, Lucía dice algo «que quede entre nosotros»: márquelo como CONFIDENCIAL.",
+          "Anote en la ficha (acá abajo), columna Lucía. No busque la frase perfecta: capte lo importante.",
+          "Al final, Lucía dice algo «que quede entre nosotros»: va a la fila CONFIDENCIAL.",
         ],
       },
       {
         id: "e1-diego",
         titulo: "Escuche a Diego (1:45)",
         audio: "EA2",
+        ficha: true,
         hacer: [
           "Lo mismo con Diego, columna Diego.",
-          "Diego también termina con un «no se lo diga todavía»: CONFIDENCIAL.",
+          "Diego también termina con un «no se lo diga todavía»: a la fila CONFIDENCIAL.",
         ],
       },
       {
@@ -243,22 +263,15 @@ export const TAL_ETAPAS: EtapaTaller[] = [
     bajada: "El mismo audio, procesado por la herramienta. ¿Quién escuchó mejor?",
     pasos: [
       {
-        id: "e2-abrir",
-        titulo: "Abra Gemini con su cuenta de Google",
-        herramienta: GEMINI,
-        hacer: [
-          "Abra gemini.google.com (botón de acá abajo) e inicie sesión con una cuenta de Google.",
-          "Si no tiene cuenta en esta compu, use Notebook Gemini con la cuenta de un compañero, o pida ayuda a MessIAs.",
-        ],
-      },
-      {
         id: "e2-subir",
-        titulo: "Suba el audio de Lucía con este prompt",
+        titulo: "Suba el audio de Lucía a su Gem",
         audio: "EA1",
         prompt: "P9",
+        herramienta: GEMINI,
         hacer: [
           "Descargue el audio de Lucía con ⬇️ (queda en su carpeta de Descargas).",
-          "En Gemini, toque el signo + (o el clip 📎) → «Subir archivos» → elija EA-01-lucia.mp3.",
+          "Abra su Gem «Asistente de mediación» (en Gemini → Gems). Si usó el plan B, vuelva a SU chat.",
+          "Toque el signo + (o el clip 📎) → «Subir archivos» → elija EA-01-lucia.mp3.",
           "Copie el prompt P9 con el botón «Copiar», péguelo y envíe.",
           "Repita con el audio de Diego si le queda tiempo.",
         ],
@@ -267,10 +280,11 @@ export const TAL_ETAPAS: EtapaTaller[] = [
         id: "e2-comparar",
         titulo: "Compare: usted contra la IA",
         prompt: "P10",
+        ficha: true,
         hacer: [
-          "Ponga su ficha de papel al lado de la respuesta de Gemini.",
-          "Envíe el prompt P10 en el mismo chat y lea con atención.",
-          "Fíjese especialmente: ¿qué hizo la IA con lo que Lucía pidió mantener en reserva? ¿Lo marcó como confidencial o lo mezcló con todo?",
+          "En el mismo chat del Gem, pegue el prompt P10 y, debajo, SU ficha: botón «Copiar mi ficha» (acá abajo) y pegar. Envíe.",
+          "Lea con atención: ¿qué captó cada uno? ¿Qué solo captó usted (el tono, el miedo, el orgullo)?",
+          "Y lo central: ¿qué hizo la IA con lo que cada parte pidió mantener en reserva? ¿Lo marcó como confidencial o lo mezcló con todo?",
           "Esa es la lección de esta etapa: la confidencialidad la custodia el mediador, no la herramienta.",
         ],
       },
@@ -288,7 +302,7 @@ export const TAL_ETAPAS: EtapaTaller[] = [
         docs: ["D1"],
         prompt: "P1",
         hacer: [
-          "Descargue CN-01 (la captura de WhatsApp que aporta Diego) y súbala a Gemini.",
+          "Descargue CN-01 (la captura de WhatsApp que aporta Diego) y súbala a su Gem, en la misma conversación de siempre.",
           "Es una imagen: primero pruebe si la herramienta la lee.",
           "Envíe el prompt P1. Fíjese que la IA no dé por probado lo que la captura no dice.",
         ],
@@ -382,7 +396,7 @@ export const TAL_ETAPAS: EtapaTaller[] = [
         titulo: "Lance la investigación y NO espere",
         herramienta: GEMINI,
         hacer: [
-          "En Gemini, abra un chat nuevo y elija «Deep Research» (en el selector de herramientas o modelos).",
+          "Deep Research corre FUERA del Gem: en Gemini, abra un chat nuevo y elija «Deep Research» (en el selector de herramientas o modelos).",
           "Copie el prompt de su misión, péguelo y envíe. Gemini propone un plan: toque «Iniciar investigación».",
           "IMPORTANTE: tarda entre 5 y 15 minutos. Déjelo trabajando en esa pestaña y siga con la etapa siguiente. Vuelva después.",
         ],
@@ -394,6 +408,7 @@ export const TAL_ETAPAS: EtapaTaller[] = [
           "Vuelva a la pestaña de Deep Research y lea el informe.",
           "Elija los 3 datos más útiles para la mediación y ABRA el enlace de la fuente de cada uno: ¿existe? ¿dice eso?",
           "Un dato sin fuente verificada no entra a la mediación. Igual que un precedente sin verificar no entra a un escrito.",
+          "Pegue los 3 datos verificados en su Gem: «Criterios objetivos verificados: …». Así su asistente los tiene para el acuerdo.",
         ],
       },
     ],
@@ -409,7 +424,7 @@ export const TAL_ETAPAS: EtapaTaller[] = [
         titulo: "Separe posiciones de intereses",
         prompt: "P6",
         hacer: [
-          "Envíe el prompt P6 con todo lo cargado.",
+          "Envíe el prompt P6 en su Gem: a esta altura, el asistente ya tiene los audios, los documentos y sus criterios verificados.",
           "Compare con su ficha de escucha: ¿la IA encontró los mismos intereses que usted? ¿Le faltó alguno que solo estaba en el tono de voz?",
         ],
       },
