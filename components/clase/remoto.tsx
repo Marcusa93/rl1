@@ -13,6 +13,13 @@ const POLL_DECK = 450;
 const POLL_CEL = 800;
 const LATIDO = 8000;
 
+/** fetch con tiempo máximo: si la red se cuelga, el control no queda trabado esperando. */
+function fetchCorto(url: string, init: RequestInit = {}, ms = 5000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { ...init, signal: ctrl.signal }).finally(() => clearTimeout(t));
+}
+
 function botonesEnPantalla(): { el: HTMLElement; boton: BotonRemoto }[] {
   return [...document.querySelectorAll<HTMLElement>("main [data-remoto]")].map((el) => ({
     el,
@@ -54,7 +61,7 @@ export function useRemotoDeck({
       if (firma === ultimo && Date.now() - ultimoEnvio < LATIDO) return;
       const estado: EstadoRemoto = { idx, total, titulo, parte, nota, botones, vivo: Date.now() };
       enviando = true;
-      fetch(`/api/remoto/${slug}`, {
+      fetchCorto(`/api/remoto/${slug}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ estado }),
@@ -93,7 +100,7 @@ export function useRemotoDeck({
     async function tick() {
       try {
         const q = seq === null ? "" : `&desde=${seq}`;
-        const res = await fetch(`/api/remoto/${slug}?que=cmd${q}`, { cache: "no-store" });
+        const res = await fetchCorto(`/api/remoto/${slug}?que=cmd${q}`, { cache: "no-store" });
         if (res.ok) {
           const d = (await res.json()) as { seq: number; cmds: CmdConSeq[] };
           if (vivo) {
@@ -130,7 +137,7 @@ export function ControlRemoto({ slug, titulos, nombre }: { slug: string; titulos
     let timer: ReturnType<typeof setTimeout>;
     async function tick() {
       try {
-        const res = await fetch(`/api/remoto/${slug}?que=estado`, { cache: "no-store" });
+        const res = await fetchCorto(`/api/remoto/${slug}?que=estado`, { cache: "no-store" });
         if (res.ok && vivo) setEstado(((await res.json()) as { estado: EstadoRemoto | null }).estado);
       } catch {}
       if (vivo) timer = setTimeout(tick, POLL_CEL);
@@ -161,9 +168,9 @@ export function ControlRemoto({ slug, titulos, nombre }: { slug: string; titulos
   function enviar(cmd: CmdRemoto, marca?: string) {
     if (marca) setTocado(marca);
     if ("vibrate" in navigator) navigator.vibrate?.(10);
-    // En orden: un comando no sale hasta que el anterior quedó guardado.
+    // En orden: un comando no sale hasta que el anterior quedó guardado (o venció su tiempo).
     cola.current = cola.current.then(() =>
-      fetch(`/api/remoto/${slug}`, {
+      fetchCorto(`/api/remoto/${slug}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cmd }),
