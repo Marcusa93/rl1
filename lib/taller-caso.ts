@@ -15,8 +15,8 @@
 export type DocId =
   | "D0" | "D1" | "D2" | "D3" | "D4" | "D5" | "D6" | "D7" | "D8" | "D9" | "D10"
   | "D11" | "D12" | "D13";
-export type PromptId = "P1" | "P2" | "P3" | "P4" | "P5" | "P6" | "P7" | "P8";
-export type PlantillaId = "PLB" | "PLC";
+export type PromptId = "P1" | "P2" | "P3" | "P4" | "P5" | "P6" | "P7" | "P8" | "P9" | "P10";
+export type PlantillaId = "PLB" | "PLC" | "PLD" | "PLE";
 
 export interface Mensaje {
   quien: "LUCÍA" | "DIEGO";
@@ -380,6 +380,20 @@ export const TAL_PLANTILLAS: Record<PlantillaId, PlantillaTaller> = {
     titulo: "Hoja de ruta del grupo",
     para: "Para preparar la puesta en común: camino, documentos, prompt, corrección y lo pendiente.",
   },
+  PLD: {
+    id: "PLD",
+    codigo: "PL-D",
+    archivo: "PL-D-ficha-de-escucha.pdf",
+    titulo: "Ficha de escucha del mediador",
+    para: "Complétenla a mano mientras escuchan cada entrevista: posiciones, intereses, emociones y lo confidencial.",
+  },
+  PLE: {
+    id: "PLE",
+    codigo: "PL-E",
+    archivo: "PL-E-borrador-de-acuerdo.pdf",
+    titulo: "Borrador de acuerdo de mediación",
+    para: "Completen los espacios. Un acuerdo se escribe para poder cumplirse: quién, qué, cuándo y qué pasa si falla.",
+  },
 };
 
 export const CARPETA_URL = "/taller-ia/carpeta";
@@ -500,6 +514,33 @@ Indicá:
 No borres el análisis anterior.
 Mostrá qué cambió y por qué.${CITAR}`,
   },
+  P9: {
+    id: "P9",
+    titulo: "La ficha del mediador, hecha por la IA",
+    para: "Subir el audio de una entrevista privada y pedir la ficha",
+    texto: `Te subo el audio de una entrevista privada de mediación.
+
+Prepará la ficha del mediador:
+- hechos que la persona relata (con fechas y montos);
+- qué pide (su posición);
+- qué necesita de verdad (sus intereses);
+- qué emociones expresa;
+- qué datos habría que confirmar con documentos;
+- tres preguntas abiertas para la próxima conversación.
+
+Distinguí lo que la persona dijo de lo que vos inferís.`,
+  },
+  P10: {
+    id: "P10",
+    titulo: "Comparar la ficha de la IA con la suya",
+    para: "El control humano: qué captó, qué se le escapó, qué hizo con lo confidencial",
+    texto: `Ahora comparo tu ficha con la mía. Respondé con honestidad:
+
+- ¿Qué elementos de la entrevista NO incluiste en la ficha?
+- ¿La persona pidió mantener algo en reserva? ¿Qué hiciste con eso?
+- Si esta ficha se compartiera con la otra parte del conflicto, ¿qué daño podría causar?
+- ¿Qué puede registrar de una entrevista un mediador presente que vos no podés?`,
+  },
 };
 
 export interface PromptTaller {
@@ -546,4 +587,6 @@ export interface ConfigTaller {
   liberados?: LiberadoId[];
   caso?: number;
   trabajo?: number;
+  /** Última etapa del itinerario guiado abierta en las computadoras (0 a 7). */
+  etapa?: number;
 }

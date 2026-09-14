@@ -516,6 +516,115 @@ function PlantillaHojaRuta(p) {
   );
 }
 
+// PL-D: la ficha que completan a mano mientras escuchan las entrevistas privadas.
+function PlantillaEscucha(p) {
+  const filas = [
+    ["Posiciones", "Qué pide cada uno, con sus palabras"],
+    ["Intereses", "Qué necesita de verdad (lo que hay detrás del pedido)"],
+    ["Emociones", "Qué siente y cómo lo dice (enojo, miedo, orgullo…)"],
+    ["Datos a confirmar", "Fechas, montos y hechos a chequear en los documentos"],
+    ["CONFIDENCIAL", "Lo que pidió mantener en reserva. No sale de esta ficha sin su autorización."],
+    ["Preguntas", "Qué le preguntaría en la próxima conversación"],
+  ];
+  const anchos = ["24%", "38%", "38%"];
+  const celda = (contenido, j, extra = {}) =>
+    h(View, { key: j, style: { width: anchos[j], padding: 6, borderRightWidth: j < 2 ? 0.5 : 0, borderRightColor: C.linea, ...extra } }, contenido);
+  return h(
+    Page,
+    { size: "A4", style: { paddingBottom: 50, color: C.texto, fontFamily: "Helvetica" } },
+    h(Banda, { codigo: p.codigo, titulo: p.titulo, sub: "Se completa a mano, mientras suena cada entrevista privada" }),
+    h(
+      View,
+      { style: { paddingHorizontal: 32, paddingTop: 12 } },
+      h(View, { style: { flexDirection: "row", marginBottom: 10 } }, h(Linea, { label: "Mediador/a", ancho: 240 }), h(Linea, { label: "Compu", ancho: 80 })),
+      h(
+        View,
+        { style: { borderWidth: 0.5, borderColor: C.linea } },
+        h(
+          View,
+          { style: { flexDirection: "row", backgroundColor: "#eef2f7" } },
+          celda(h(Text, { style: { fontFamily: "Helvetica-Bold", fontSize: 9.5 } }, "Qué escuchar"), 0),
+          celda(h(Text, { style: { fontFamily: "Helvetica-Bold", fontSize: 9.5 } }, "LUCÍA (Café Nube)"), 1),
+          celda(h(Text, { style: { fontFamily: "Helvetica-Bold", fontSize: 9.5 } }, "DIEGO (TecnoFrío)"), 2),
+        ),
+        ...filas.map(([t, sub], i) =>
+          h(
+            View,
+            { key: i, style: { flexDirection: "row", borderTopWidth: 0.5, borderTopColor: C.linea, minHeight: 74, backgroundColor: t === "CONFIDENCIAL" ? "#fef3c7" : "#ffffff" } },
+            celda(
+              h(
+                View,
+                null,
+                h(Text, { style: { fontFamily: "Helvetica-Bold", fontSize: 9.5 } }, t),
+                h(Text, { style: { fontSize: 7.5, color: C.suave, marginTop: 2 } }, sub),
+              ),
+              0,
+              { backgroundColor: t === "CONFIDENCIAL" ? "#fef3c7" : C.fondo },
+            ),
+            celda(null, 1),
+            celda(null, 2),
+          ),
+        ),
+      ),
+      h(
+        View,
+        { style: { marginTop: 12 } },
+        h(Text, { style: { fontFamily: "Helvetica-Bold", fontSize: 10.5 } }, "Mi hipótesis de acuerdo (solo del mediador)"),
+        h(Text, { style: { fontSize: 8.5, color: C.suave, marginTop: 1 } }, "Con lo que cada uno dijo en privado: ¿hay un acuerdo posible que las partes todavía no ven?"),
+        h(View, { style: { height: 46, borderWidth: 0.6, borderColor: C.linea, borderRadius: 4, marginTop: 4 } }),
+      ),
+    ),
+    h(Pie, { codigo: p.codigo }),
+  );
+}
+
+// PL-E: el borrador de acuerdo que completan al final (y ajustan tras el giro).
+function PlantillaAcuerdo(p) {
+  const R = "________";
+  const clausula = (num, titulo, cuerpo) =>
+    h(
+      Text,
+      { style: { fontFamily: "Times-Roman", fontSize: 11, lineHeight: 1.7, marginBottom: 9, textAlign: "justify" } },
+      h(Text, { style: { fontFamily: "Times-Bold" } }, `${num}. ${titulo}. `),
+      cuerpo,
+    );
+  return h(
+    Page,
+    { size: "A4", style: { paddingBottom: 50, color: C.texto, fontFamily: "Times-Roman" } },
+    h(Banda, { codigo: p.codigo, titulo: p.titulo, sub: "Completen los espacios. Un acuerdo se escribe para poder cumplirse: concreto, con fechas y nombres." }),
+    h(
+      View,
+      { style: { paddingHorizontal: 36, paddingTop: 14 } },
+      h(
+        Text,
+        { style: { fontFamily: "Times-Roman", fontSize: 11, lineHeight: 1.7, marginBottom: 10, textAlign: "justify" } },
+        `En San Salvador, el ${R} de septiembre de 2026, ante el equipo de mediación, comparecen Lucía Herrera (Café Nube) y Diego Molina (TecnoFrío Servicios), quienes en el marco del contrato CN-03 ACUERDAN:`,
+      ),
+      clausula("PRIMERA", "El módulo y la instalación", `TecnoFrío Servicios instalará el módulo automático de alimentación el día ${R} a las ${R} horas, en el local de Café Nube.`),
+      clausula("SEGUNDA", "La prueba de funcionamiento", `La instalación se considerará terminada con la prueba de dos horas prevista en el Anexo técnico (CN-04), realizada el ${R}, con la presencia de ${R}.`),
+      clausula("TERCERA", "El saldo", `Café Nube pagará USD ${R} el día ${R}, ${R} (indicar: antes / después) de la prueba de funcionamiento. El resto del precio, si lo hubiera, se pagará ${R}.`),
+      clausula("CUARTA", "La línea eléctrica independiente", `La línea exclusiva para la máquina de hielo será contratada y pagada por ${R}, antes del ${R}.`),
+      clausula("QUINTA", "La máquina temporal", `${R} (indicar: se entrega / no se entrega) una máquina de hielo temporal, en las siguientes condiciones: ${R}.`),
+      clausula("SEXTA", "Si algo falla", `Si los equipos fallan dentro de los primeros ${R} días, TecnoFrío Servicios ${R} dentro de las ${R} horas de avisado.`),
+      clausula("SEPTIMA", "Confidencialidad", "Lo conversado en las sesiones privadas de esta mediación es confidencial y no podrá invocarse en un juicio posterior."),
+      clausula("OCTAVA", "Seguimiento", `Ante cualquier diferencia sobre el cumplimiento de este acuerdo, las partes ${R} antes de acudir a la vía judicial.`),
+      h(
+        View,
+        { style: { flexDirection: "row", justifyContent: "space-between", marginTop: 26, paddingHorizontal: 4 } },
+        ...["Lucía Herrera", "Diego Molina", "El equipo de mediación"].map((f, i) =>
+          h(
+            View,
+            { key: i, style: { width: "30%", alignItems: "center" } },
+            h(View, { style: { alignSelf: "stretch", borderBottomWidth: 0.8, borderBottomColor: C.texto, height: 26 } }),
+            h(Text, { style: { fontSize: 9, marginTop: 4 } }, f),
+          ),
+        ),
+      ),
+    ),
+    h(Pie, { codigo: p.codigo }),
+  );
+}
+
 // --- Salida ---------------------------------------------------------------------------------------------
 
 async function guardar(archivo, titulo, pagina) {
@@ -530,3 +639,5 @@ for (const doc of Object.values(TAL_DOCS)) {
 }
 await guardar(TAL_PLANTILLAS.PLB.archivo, `${TAL_PLANTILLAS.PLB.codigo} · ${TAL_PLANTILLAS.PLB.titulo}`, PlantillaMatriz(TAL_PLANTILLAS.PLB));
 await guardar(TAL_PLANTILLAS.PLC.archivo, `${TAL_PLANTILLAS.PLC.codigo} · ${TAL_PLANTILLAS.PLC.titulo}`, PlantillaHojaRuta(TAL_PLANTILLAS.PLC));
+await guardar(TAL_PLANTILLAS.PLD.archivo, `${TAL_PLANTILLAS.PLD.codigo} · ${TAL_PLANTILLAS.PLD.titulo}`, PlantillaEscucha(TAL_PLANTILLAS.PLD));
+await guardar(TAL_PLANTILLAS.PLE.archivo, `${TAL_PLANTILLAS.PLE.codigo} · ${TAL_PLANTILLAS.PLE.titulo}`, PlantillaAcuerdo(TAL_PLANTILLAS.PLE));
