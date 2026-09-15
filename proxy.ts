@@ -16,6 +16,7 @@ const REWRITES: Record<string, Record<string, string>> = {
     "/": "/taller-ia",
     "/clase": "/taller-ia/clase",
     "/control": "/taller-ia/control",
+    "/guia": "/taller-ia/guia",
   },
 };
 

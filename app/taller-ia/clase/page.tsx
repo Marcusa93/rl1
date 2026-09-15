@@ -430,7 +430,10 @@ function Slide({
           <Logos alto={54} />
           <h1 className="text-gradient mt-8 font-mono text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">Gracias</h1>
           <p className="rise mt-5 rounded-full border border-teal/40 bg-teal/10 px-5 py-2 text-lg text-foreground sm:text-xl" style={{ animationDelay: "0.2s" }}>
-            👏 Manden su aplauso desde el celular
+            👏 Manden su aplauso desde su compu o celular
+          </p>
+          <p className="rise mt-3 text-lg text-muted sm:text-xl" style={{ animationDelay: "0.3s" }}>
+            📘 La guía del taller ya está en su pantalla: <span className="font-mono text-teal">taller.rossi-ia.com/guia</span>
           </p>
           <p className="mt-4 text-lg text-muted">{TAL_EVENTO}</p>
           <p className="mt-5 text-lg font-medium">{TAL_AUTOR}</p>

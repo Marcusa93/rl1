@@ -103,6 +103,9 @@ export function TallerGuiado({ session, actividad }: { session: SessionRow; acti
         </button>
       )}
 
+      {/* Al cierre (nube de palabras): la guía del taller para llevarse */}
+      {session.current_activity === "tal_nube" && <GuiaTallerCard />}
+
       {/* Aviso de etapa nueva */}
       {vista !== null && vista < abierta && (
         <button
@@ -194,6 +197,38 @@ export function TallerGuiado({ session, actividad }: { session: SessionRow; acti
       <MessIAs etapa={etapa.n} />
       <Festejo activo={pct === 100} />
     </div>
+  );
+}
+
+/** Al cierre: la guía del taller para ver, descargar y compartir. */
+function GuiaTallerCard() {
+  return (
+    <section className="rise rounded-3xl border-gradient p-5">
+      <p className="text-xs font-bold uppercase tracking-widest text-teal">📘 La guía del taller</p>
+      <p className="mt-2 text-xl font-bold leading-snug">El mediador aumentado: el método, los conceptos y las herramientas, para llevarse.</p>
+      <div className="mt-4 grid gap-2">
+        <a href="/taller-ia/guia" className="rounded-2xl bg-gradient-to-r from-teal to-cyan px-4 py-3 text-center text-lg font-bold text-ink">
+          Ver la guía
+        </a>
+        <div className="grid grid-cols-2 gap-2">
+          <a
+            href="/taller-ia/guia-mediador-aumentado.pdf"
+            download
+            className="rounded-2xl border border-teal/60 bg-teal/10 px-3 py-3 text-center text-base font-semibold text-teal"
+          >
+            ⬇️ PDF
+          </a>
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent("Guía del taller «El mediador aumentado» (Dr. Marco Rossi, Semana de la Mediación, El Salvador): https://taller.rossi-ia.com/guia")}`}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-2xl border border-emerald-400/60 bg-emerald-500/15 px-3 py-3 text-center text-base font-semibold text-emerald-200"
+          >
+            💬 WhatsApp
+          </a>
+        </div>
+      </div>
+    </section>
   );
 }
 
