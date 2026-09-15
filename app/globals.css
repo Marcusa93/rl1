@@ -149,6 +149,28 @@ html:has(.deck-escala) {
 }
 .confeti { animation: confeti var(--dur, 3s) ease-in both; }
 
+/* Taller en escritorio: la letra crece con el monitor (se lee a 60 cm). */
+@media (min-width: 1280px) { html:has(.taller-escritorio) { font-size: 17px; } }
+@media (min-width: 1680px) { html:has(.taller-escritorio) { font-size: 18px; } }
+
+/* Check que salta al marcar un paso. */
+@keyframes pop {
+  0% { transform: scale(0.4); }
+  60% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+.pop { animation: pop 0.45s ease both; }
+
+/* Etapa nueva: una franja de color que barre y se va. */
+@keyframes barrido {
+  0% { clip-path: inset(0 100% 0 0); opacity: 0; }
+  12% { opacity: 1; }
+  30% { clip-path: inset(0 0 0 0); }
+  85% { opacity: 1; }
+  100% { clip-path: inset(0 0 0 0); opacity: 0; }
+}
+.barrido { animation: barrido 3.2s ease both; }
+
 /* El acta de mediación del taller: se redacta en pantalla y se imprime sola. */
 .acta-imprimible { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 .acta-imprimible .acta-texto,

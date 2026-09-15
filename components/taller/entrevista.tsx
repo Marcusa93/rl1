@@ -38,10 +38,14 @@ export function SalaEntrevistas() {
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
-  const endRef = useRef<HTMLDivElement>(null);
+  const listaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => setHistorias(leer()), []);
-  useEffect(() => endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }), [historias, busy]);
+  // Baja al último mensaje moviendo solo la conversación (nunca la página).
+  useEffect(() => {
+    const el = listaRef.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  }, [historias, busy, parte]);
 
   function guardar(next: Historias) {
     setHistorias(next);
@@ -126,7 +130,7 @@ export function SalaEntrevistas() {
       </div>
 
       {/* Conversación */}
-      <div className="max-h-80 space-y-2.5 overflow-y-auto p-3">
+      <div ref={listaRef} className="max-h-80 space-y-2.5 overflow-y-auto p-3 xl:max-h-[26rem]">
         <div className={cn("rounded-2xl border px-3.5 py-2.5 text-sm leading-relaxed", esLucia ? "border-amber-300/40 bg-amber-400/5" : "border-cyan/40 bg-cyan/5")}>
           <b>
             {info.emoji} {info.nombre}
@@ -165,7 +169,6 @@ export function SalaEntrevistas() {
             ))}
           </div>
         )}
-        <div ref={endRef} />
       </div>
 
       {err && <p className="px-3 pb-1 text-xs text-magenta">{err}</p>}

@@ -98,6 +98,13 @@ function calcularConfig(vistas: number[], idx: number): ConfigTaller {
   return { liberados, caso, trabajo, etapa };
 }
 
+/** Etapa abierta hasta esta placa: la más alta de las placas anteriores. */
+function etapaHasta(idx: number): number {
+  let e = 0;
+  for (const sl of TAL_SLIDES.slice(0, idx + 1)) if (sl.etapa !== undefined && sl.etapa > e) e = sl.etapa;
+  return e;
+}
+
 type EstadoActivacion = { key: string; status: "enviando" | "ok" | "error" } | null;
 
 function Deck() {
@@ -195,6 +202,7 @@ function Deck() {
   const parteActual = TAL_SLIDES.slice(0, idx + 1)
     .reverse()
     .find((s) => s.parte)?.parte;
+  const colorEtapa = TAL_ETAPAS[etapaHasta(idx)]?.color ?? "#5eead4";
   const etapa = calcularConfig([], idx);
   const conBarra = slide.t !== "portada" && slide.t !== "ingreso" && slide.t !== "final" && (etapa.caso !== undefined || etapa.trabajo !== undefined);
 
@@ -209,8 +217,8 @@ function Deck() {
       <AvisoZoom zoom={zoom} visible={avisoZoom} />
       <div className="fixed inset-x-0 top-0 z-40 h-1 bg-ink-2/60">
         <div
-          className="h-full bg-gradient-to-r from-teal via-cyan to-violet transition-all duration-300"
-          style={{ width: `${((idx + 1) / TAL_SLIDES.length) * 100}%` }}
+          className="h-full transition-all duration-300"
+          style={{ width: `${((idx + 1) / TAL_SLIDES.length) * 100}%`, background: `linear-gradient(90deg, ${colorEtapa}, ${colorEtapa}aa)` }}
         />
       </div>
 
@@ -277,10 +285,8 @@ function Deck() {
         <div className="ml-auto flex shrink-0 items-center gap-3">
           {parteActual && (
             <span
-              className={cn(
-                "hidden rounded-full border border-line bg-panel/60 px-2.5 py-1 font-mono text-[11px] text-muted",
-                kitVisible ? "2xl:block" : "md:block",
-              )}
+              className={cn("hidden rounded-full border px-2.5 py-1 font-mono text-[11px]", kitVisible ? "2xl:block" : "md:block")}
+              style={{ borderColor: `${colorEtapa}66`, color: colorEtapa, background: `${colorEtapa}14` }}
             >
               {parteActual}
             </span>
@@ -318,9 +324,9 @@ function Logos({ alto = 64 }: { alto?: number }) {
   );
 }
 
-function Parte({ texto }: { texto: string }) {
+function Parte({ texto, color }: { texto: string; color?: string }) {
   return (
-    <p className="mb-3 flex items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-violet">
+    <p className="mb-3 flex items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-violet" style={color ? { color } : undefined}>
       <span className="size-1.5 rounded-full bg-current" />
       {texto}
     </p>
@@ -477,7 +483,7 @@ function TableroVista({ n }: { n: number }) {
   const total = Math.max(1, data?.participants ?? 0);
   return (
     <div>
-      <Parte texto={`Tablero de sala · etapa ${etapa.n}`} />
+      <Parte texto={`Tablero de sala · etapa ${etapa.n}`} color={etapa.color} />
       <Titulo titulo={`${etapa.emoji} ¿Cómo vamos con «${etapa.titulo}»?`} bajada={`${data?.participants ?? 0} computadoras conectadas · cada barra es un paso marcado como listo`} />
       <div className="mx-auto mt-8 w-full max-w-4xl space-y-3">
         {etapa.pasos.map((p, i) => {
@@ -487,17 +493,24 @@ function TableroVista({ n }: { n: number }) {
             <div key={p.id} className={cn("rounded-2xl border p-4", p.extra ? "border-dashed border-line/60" : "glass border-line")}>
               <div className="flex items-baseline justify-between gap-3">
                 <p className="min-w-0 truncate text-lg font-semibold sm:text-xl">
-                  <span className="mr-2 font-mono text-teal">{i + 1}.</span>
+                  <span className="mr-2 font-mono" style={{ color: etapa.color }}>
+                    {i + 1}.
+                  </span>
                   {p.titulo}
                   {p.extra && <span className="ml-2 text-xs font-normal text-faint">extra</span>}
                 </p>
-                <p className="shrink-0 font-mono text-lg text-teal sm:text-xl">
-                  {c}
-                  <span className="text-faint"> / {data?.participants ?? 0}</span>
+                <p className="shrink-0 font-mono">
+                  <span key={c} className="pop inline-block text-3xl font-bold sm:text-4xl" style={{ color: etapa.color }}>
+                    {c}
+                  </span>
+                  <span className="text-lg text-faint"> / {data?.participants ?? 0}</span>
                 </p>
               </div>
-              <div className="mt-2 h-3 overflow-hidden rounded-full bg-ink-2">
-                <div className="h-full rounded-full bg-gradient-to-r from-teal to-cyan transition-all duration-700" style={{ width: `${pct}%` }} />
+              <div className="mt-2 h-3.5 overflow-hidden rounded-full bg-ink-2">
+                <div
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${etapa.color}, ${etapa.color}bb)`, boxShadow: `0 0 16px ${etapa.color}66` }}
+                />
               </div>
             </div>
           );
@@ -585,10 +598,10 @@ function PreguntasMessias() {
   );
 }
 
-function PlacaVista({ slide, saltos }: { slide: TalPlaca & { parte?: string }; saltos: React.ReactNode }) {
+function PlacaVista({ slide, saltos }: { slide: TalPlaca & { parte?: string; etapa?: number }; saltos: React.ReactNode }) {
   return (
     <div>
-      {slide.parte && <Parte texto={slide.parte} />}
+      {slide.parte && <Parte texto={slide.parte} color={slide.etapa !== undefined ? TAL_ETAPAS[slide.etapa]?.color : undefined} />}
       <Titulo titulo={slide.titulo} bajada={slide.bajada} />
       {slide.visual === "recorridos" && <RecorridosGrande />}
       {slide.visual === "matriz" && <MatrizTrabajo />}

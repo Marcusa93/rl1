@@ -47,16 +47,18 @@ async function streamMessias(messages: ChatMessage[], onChunk: (t: string) => vo
   }
 }
 
-export function MessIAs({ etapa }: { etapa: number }) {
+export function MessIAs({ etapa, acoplado }: { etapa: number; /** Panel fijo en la columna derecha (escritorio). */ acoplado?: boolean }) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
-  const endRef = useRef<HTMLDivElement>(null);
+  const listaRef = useRef<HTMLDivElement>(null);
 
+  // Baja al último mensaje moviendo solo la lista (nunca la página).
   useEffect(() => {
-    if (open) endRef.current?.scrollIntoView({ behavior: "smooth" });
+    const el = listaRef.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   }, [messages, busy, open]);
 
   async function send(text: string) {
@@ -85,6 +87,71 @@ export function MessIAs({ etapa }: { etapa: number }) {
 
   const atajos = ATAJOS[etapa] ?? ATAJOS[0];
 
+  const panel = (
+    <>
+      <div className="flex items-center gap-3 border-b border-line/60 bg-gradient-to-r from-teal/15 to-violet/15 px-4 py-3">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={AVATAR} alt="MessIAs" className="size-10 rounded-full border border-teal/50 object-cover" />
+        <div className="min-w-0">
+          <p className="text-sm font-bold">MessIAs · el 10 de la mediación</p>
+          <p className="truncate text-[11px] text-faint">Le guía el paso a paso · no resuelve el caso por usted</p>
+        </div>
+        {acoplado && <span className="ml-auto size-2 shrink-0 animate-pulse rounded-full bg-teal" />}
+      </div>
+
+      <div ref={listaRef} className="flex-1 space-y-3 overflow-y-auto p-3">
+        <Burbuja rol="assistant">{SALUDO}</Burbuja>
+        {messages.map((m, i) => (
+          <Burbuja key={i} rol={m.role}>
+            {m.content || (busy && i === messages.length - 1 ? <Spinner /> : null)}
+          </Burbuja>
+        ))}
+        {messages.length === 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {atajos.map((a) => (
+              <button
+                key={a}
+                onClick={() => send(a)}
+                className="rounded-full border border-line bg-panel/40 px-2.5 py-1.5 text-xs text-muted transition hover:border-teal/60 hover:text-teal"
+              >
+                {a}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {err && <p className="px-3 pb-1 text-xs text-magenta">{err}</p>}
+
+      <div className="flex items-end gap-2 border-t border-line/60 p-3">
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              send(input);
+            }
+          }}
+          rows={1}
+          placeholder="Su duda… (Enter envía)"
+          className="max-h-24 flex-1 resize-none rounded-xl border border-line bg-ink-2/70 p-2.5 text-sm outline-none placeholder:text-faint focus:border-teal/60"
+        />
+        <button
+          onClick={() => send(input)}
+          disabled={busy || !input.trim()}
+          className="rounded-xl bg-gradient-to-r from-teal to-cyan px-3.5 py-2.5 text-sm font-semibold text-ink disabled:opacity-40"
+        >
+          {busy ? <Spinner /> : "➤"}
+        </button>
+      </div>
+    </>
+  );
+
+  if (acoplado) {
+    return <div className="flex h-full flex-col overflow-hidden rounded-3xl border border-teal/40 bg-ink/70 shadow-2xl backdrop-blur">{panel}</div>;
+  }
+
   return (
     <>
       {/* Botón flotante con la cara (arriba de la barra de reacciones) */}
@@ -109,62 +176,7 @@ export function MessIAs({ etapa }: { etapa: number }) {
 
       {open && (
         <div className="fixed bottom-40 right-4 z-40 flex max-h-[64vh] w-[min(92vw,23rem)] flex-col overflow-hidden rounded-3xl border border-teal/40 bg-ink/95 shadow-2xl backdrop-blur rise">
-          <div className="flex items-center gap-3 border-b border-line/60 bg-gradient-to-r from-teal/15 to-violet/15 px-4 py-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={AVATAR} alt="MessIAs" className="size-10 rounded-full border border-teal/50 object-cover" />
-            <div className="min-w-0">
-              <p className="text-sm font-bold">MessIAs · el 10 de la mediación</p>
-              <p className="truncate text-[11px] text-faint">Le guía el paso a paso · no resuelve el caso por usted</p>
-            </div>
-          </div>
-
-          <div className="flex-1 space-y-3 overflow-y-auto p-3">
-            <Burbuja rol="assistant">{SALUDO}</Burbuja>
-            {messages.map((m, i) => (
-              <Burbuja key={i} rol={m.role}>
-                {m.content || (busy && i === messages.length - 1 ? <Spinner /> : null)}
-              </Burbuja>
-            ))}
-            {messages.length === 0 && (
-              <div className="flex flex-wrap gap-1.5">
-                {atajos.map((a) => (
-                  <button
-                    key={a}
-                    onClick={() => send(a)}
-                    className="rounded-full border border-line bg-panel/40 px-2.5 py-1.5 text-xs text-muted transition hover:border-teal/60 hover:text-teal"
-                  >
-                    {a}
-                  </button>
-                ))}
-              </div>
-            )}
-            <div ref={endRef} />
-          </div>
-
-          {err && <p className="px-3 pb-1 text-xs text-magenta">{err}</p>}
-
-          <div className="flex items-end gap-2 border-t border-line/60 p-3">
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  send(input);
-                }
-              }}
-              rows={1}
-              placeholder="Su duda… (Enter envía)"
-              className="max-h-24 flex-1 resize-none rounded-xl border border-line bg-ink-2/70 p-2.5 text-sm outline-none placeholder:text-faint focus:border-teal/60"
-            />
-            <button
-              onClick={() => send(input)}
-              disabled={busy || !input.trim()}
-              className="rounded-xl bg-gradient-to-r from-teal to-cyan px-3.5 py-2.5 text-sm font-semibold text-ink disabled:opacity-40"
-            >
-              {busy ? <Spinner /> : "➤"}
-            </button>
-          </div>
+          {panel}
         </div>
       )}
     </>

@@ -9,7 +9,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ActaAcuerdo } from "@/components/taller/acta";
 import { SalaEntrevistas } from "@/components/taller/entrevista";
 import { EntregaActa } from "@/components/taller/entrega";
-import { ExpedienteVisual } from "@/components/taller/expediente";
+import { ExpedienteMini, ExpedienteVisual } from "@/components/taller/expediente";
 import { FichaEscucha } from "@/components/taller/ficha";
 import { MessIAs } from "@/components/taller/messias";
 import { BotonCopiar, DocumentoCaso, PromptCaja } from "@/components/taller/piezas";
@@ -39,7 +39,17 @@ function leerHechos(): Record<string, boolean> {
   }
 }
 
-export function TallerGuiado({ session, actividad, nombre }: { session: SessionRow; actividad: ReactNode; nombre?: string }) {
+export function TallerGuiado({
+  session,
+  actividad,
+  nombre,
+  participantes,
+}: {
+  session: SessionRow;
+  actividad: ReactNode;
+  nombre?: string;
+  participantes?: number;
+}) {
   const cfg = (session.activity_config ?? {}) as ConfigTaller;
   const abierta = Math.max(0, Math.min(cfg.etapa ?? 0, TAL_ETAPAS.length - 1));
   const [vista, setVista] = useState<number | null>(null);
@@ -49,6 +59,19 @@ export function TallerGuiado({ session, actividad, nombre }: { session: SessionR
   const [vivoVisible, setVivoVisible] = useState(true);
 
   useEffect(() => setHechos(leerHechos()), []);
+
+  // Cuando la pantalla abre una etapa nueva: franja de color que barre.
+  const [desbloqueo, setDesbloqueo] = useState<number | null>(null);
+  const abiertaPrevia = useRef<number | null>(null);
+  useEffect(() => {
+    const previa = abiertaPrevia.current;
+    abiertaPrevia.current = abierta;
+    if (previa !== null && abierta > previa) {
+      setDesbloqueo(abierta);
+      const t = setTimeout(() => setDesbloqueo(null), 3300);
+      return () => clearTimeout(t);
+    }
+  }, [abierta]);
 
   // Aviso cuando el deck activa una actividad y la sección no está a la vista.
   useEffect(() => {
@@ -86,118 +109,296 @@ export function TallerGuiado({ session, actividad, nombre }: { session: SessionR
     }).catch(() => {});
   }
 
+  const pctEtapa = deEtapa.length ? Math.round((hechosEtapa / deEtapa.length) * 100) : 0;
+  // Modo foco: el primer paso obligatorio sin hacer; si están todos, el primer extra.
+  const foco = deEtapa.find((p) => !hechos[p.id])?.id ?? etapa.pasos.find((p) => p.extra && !hechos[p.id])?.id ?? null;
+
   return (
-    <div className="space-y-5">
-      {enVivo && (
-        <section ref={vivoRef} className="rise rounded-3xl border-gradient p-4">
-          <p className="mb-2 text-xs font-bold uppercase tracking-widest text-teal">🗳️ Actividad en vivo · responda ahora</p>
-          {actividad}
-        </section>
-      )}
+    <div className="taller-escritorio">
+      <Encabezado nombre={nombre} participantes={participantes} abierta={abierta} pct={pct} />
 
-      {/* Si la actividad quedó fuera de la vista, una burbuja la trae de vuelta */}
-      {enVivo && !vivoVisible && (
-        <button
-          onClick={() => vivoRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
-          className="pulse-ring fixed bottom-24 left-1/2 z-40 -translate-x-1/2 rounded-full bg-gradient-to-r from-teal to-cyan px-5 py-3 text-base font-bold text-ink shadow-xl"
-        >
-          🗳️ Actividad en vivo — responder
-        </button>
-      )}
+      <div className="mt-5 xl:grid xl:grid-cols-[17rem_minmax(0,1fr)_22rem] xl:items-start xl:gap-7">
+        {/* Izquierda: el mapa del taller y el expediente de bolsillo */}
+        <aside className="hidden space-y-4 xl:sticky xl:top-24 xl:block xl:max-h-[calc(100dvh-8.5rem)] xl:overflow-y-auto xl:pb-2">
+          <Mapa abierta={abierta} actual={etapa.n} hechos={hechos} onIr={(x) => setVista(x === abierta ? null : x)} />
+          <ExpedienteMini session={session} />
+        </aside>
 
-      {/* Al cierre (nube de palabras): la guía del taller para llevarse */}
-      {session.current_activity === "tal_nube" && <GuiaTallerCard />}
+        {/* Centro: lo que hay que hacer ahora */}
+        <div className="min-w-0 space-y-5">
+          {enVivo && (
+            <section ref={vivoRef} className="rise scroll-mt-24 rounded-3xl border-gradient p-4">
+              <p className="mb-2 text-xs font-bold uppercase tracking-widest text-teal">🗳️ Actividad en vivo · responda ahora</p>
+              {actividad}
+            </section>
+          )}
 
-      {/* Aviso de etapa nueva */}
-      {vista !== null && vista < abierta && (
-        <button
-          onClick={() => setVista(null)}
-          className="w-full rounded-2xl bg-gradient-to-r from-teal to-cyan px-4 py-3 text-base font-bold text-ink"
-        >
-          🔓 Se abrió la etapa {abierta}: {TAL_ETAPAS[abierta].titulo} — ir ahora
-        </button>
-      )}
+          {/* Si la actividad quedó fuera de la vista, una burbuja la trae de vuelta */}
+          {enVivo && !vivoVisible && (
+            <button
+              onClick={() => vivoRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+              className="pulse-ring fixed bottom-24 left-1/2 z-40 -translate-x-1/2 rounded-full bg-gradient-to-r from-teal to-cyan px-5 py-3 text-base font-bold text-ink shadow-xl"
+            >
+              🗳️ Actividad en vivo — responder
+            </button>
+          )}
 
-      {/* Avance personal */}
-      <div className="rounded-2xl border border-line bg-panel/40 px-4 py-3">
-        <div className="flex items-baseline justify-between gap-3">
-          <p className="text-xs font-bold uppercase tracking-widest text-teal">Su avance</p>
-          <p className="font-mono text-sm">
-            <b className="text-teal">{hechosTotal}</b>
-            <span className="text-faint"> de {obligatorios.length} pasos</span>
-            {pct === 100 && <span className="ml-2">🏆</span>}
-          </p>
+          {/* Al cierre (nube de palabras): la guía del taller para llevarse */}
+          {session.current_activity === "tal_nube" && <GuiaTallerCard />}
+
+          {/* Aviso de etapa nueva */}
+          {vista !== null && vista < abierta && (
+            <button
+              onClick={() => setVista(null)}
+              className="w-full rounded-2xl px-4 py-3 text-base font-bold text-ink"
+              style={{ background: `linear-gradient(90deg, ${TAL_ETAPAS[abierta].color}, ${TAL_ETAPAS[abierta].color}bb)` }}
+            >
+              🔓 Se abrió la etapa {abierta}: {TAL_ETAPAS[abierta].titulo} — ir ahora
+            </button>
+          )}
+
+          {/* Avance personal (en escritorio lo cuentan el anillo y el mapa) */}
+          <div className="rounded-2xl border border-line bg-panel/40 px-4 py-3 xl:hidden">
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="text-xs font-bold uppercase tracking-widest text-teal">Su avance</p>
+              <p className="font-mono text-sm">
+                <b key={hechosTotal} className="pop inline-block text-teal">
+                  {hechosTotal}
+                </b>
+                <span className="text-faint"> de {obligatorios.length} pasos</span>
+                {pct === 100 && <span className="ml-2">🏆</span>}
+              </p>
+            </div>
+            <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-ink-2">
+              <div className="h-full rounded-full bg-gradient-to-r from-teal via-cyan to-violet transition-all duration-700" style={{ width: `${pct}%` }} />
+            </div>
+          </div>
+
+          {/* Chips de etapas (en escritorio, el mapa de la izquierda) */}
+          <nav className="flex gap-1.5 overflow-x-auto pb-1 xl:hidden">
+            {TAL_ETAPAS.map((e) => {
+              const bloqueada = e.n > abierta;
+              const activa = e.n === etapa.n;
+              const completos = e.pasos.filter((p) => !p.extra).every((p) => hechos[p.id]);
+              return (
+                <button
+                  key={e.n}
+                  disabled={bloqueada}
+                  onClick={() => setVista(e.n === abierta ? null : e.n)}
+                  className={cn(
+                    "flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-semibold transition",
+                    bloqueada ? "border-line/60 text-faint opacity-50" : "border-line bg-panel/60 text-muted",
+                  )}
+                  style={activa ? { borderColor: e.color, color: e.color, background: `${e.color}1f` } : completos && !bloqueada ? { color: e.color } : undefined}
+                >
+                  <span>{bloqueada ? "🔒" : completos && !activa ? "✓" : e.emoji}</span>
+                  <span>
+                    {e.n} · {e.titulo}
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Etapa actual */}
+          <section key={etapa.n} className="rise space-y-4">
+            <CabeceraEtapa etapa={etapa} enCurso={etapa.n === abierta} hechos={hechosEtapa} total={deEtapa.length} pct={pctEtapa} />
+            <div className="space-y-3">
+              {etapa.pasos.map((paso, i) => (
+                <Paso
+                  key={paso.id}
+                  paso={paso}
+                  i={i}
+                  hecho={!!hechos[paso.id]}
+                  enFoco={paso.id === foco}
+                  color={etapa.color}
+                  onMarcar={(v) => marcar(paso, v)}
+                  nombre={nombre}
+                />
+              ))}
+            </div>
+            <NavEtapas n={etapa.n} abierta={abierta} onIr={(x) => setVista(x === abierta ? null : x)} />
+          </section>
+
+          {/* La ficha del expediente, completa */}
+          <ExpedienteVisual session={session} />
+
+          {/* Archivo completo, por si algo del itinerario no alcanza */}
+          <details className="rounded-2xl border border-line/60 bg-panel/30 p-4">
+            <summary className="cursor-pointer text-sm font-semibold text-muted">✍️ Todos los prompts, plantillas y herramientas liberados</summary>
+            <TutorTaller session={session} />
+          </details>
         </div>
-        <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-ink-2">
-          <div className="h-full rounded-full bg-gradient-to-r from-teal via-cyan to-violet transition-all duration-700" style={{ width: `${pct}%` }} />
-        </div>
+
+        {/* Derecha: MessIAs acoplado, siempre a mano */}
+        <aside className="hidden xl:sticky xl:top-24 xl:block xl:h-[calc(100dvh-8.5rem)]">
+          <MessIAs etapa={etapa.n} acoplado />
+        </aside>
       </div>
 
-      {/* Chips de etapas */}
-      <nav className="flex gap-1.5 overflow-x-auto pb-1">
-        {TAL_ETAPAS.map((e) => {
+      <div className="xl:hidden">
+        <MessIAs etapa={etapa.n} />
+      </div>
+      <Festejo activo={pct === 100} />
+      {desbloqueo !== null && <Desbloqueo n={desbloqueo} />}
+    </div>
+  );
+}
+
+/** Encabezado propio del taller: instituciones, nombre, la etapa en pantalla y el anillo de avance. */
+function Encabezado({ nombre, participantes, abierta, pct }: { nombre?: string; participantes?: number; abierta: number; pct: number }) {
+  const e = TAL_ETAPAS[abierta];
+  return (
+    <header className="sticky top-0 z-30 -mx-4 -mt-6 border-b border-line/60 bg-ink/85 px-4 py-2.5 backdrop-blur xl:-mx-8 xl:px-8">
+      <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/justicia/logo-pgr.png" alt="PGR" className="h-7 w-auto" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/justicia/logo-uees.png" alt="UEES" className="h-7 w-auto rounded bg-white p-0.5" />
+        </div>
+        <div className="hidden h-8 w-px bg-line sm:block" />
+        <div className="min-w-0">
+          <p className="text-gradient truncate text-sm font-bold leading-tight sm:text-base">El mediador aumentado</p>
+          <p className="hidden truncate text-[11px] text-faint sm:block">Taller · IA aplicada a la resolución de conflictos</p>
+        </div>
+        <span
+          className="mx-auto hidden items-center gap-2 rounded-full border px-3 py-1 text-sm font-semibold md:flex"
+          style={{ borderColor: `${e.color}66`, color: e.color, background: `${e.color}14` }}
+        >
+          <span className="size-2 animate-pulse rounded-full" style={{ background: e.color }} />
+          En pantalla: etapa {e.n} · {e.titulo}
+        </span>
+        <div className="ml-auto flex shrink-0 items-center gap-3">
+          <span className="hidden items-center gap-1.5 rounded-full bg-teal/10 px-2.5 py-1 text-xs text-teal lg:flex">
+            <span className="size-1.5 animate-pulse rounded-full bg-teal" />
+            {participantes ?? 0} conectados
+          </span>
+          {nombre && <span className="hidden max-w-[11rem] truncate text-xs text-muted sm:block">{nombre}</span>}
+          <Anillo pct={pct} color={e.color} />
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function Anillo({ pct, color }: { pct: number; color: string }) {
+  const r = 16;
+  const c = 2 * Math.PI * r;
+  return (
+    <div className="relative size-11 shrink-0" title={`Su avance: ${pct}%`}>
+      <svg viewBox="0 0 40 40" className="size-11 -rotate-90">
+        <circle cx="20" cy="20" r={r} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" />
+        <circle
+          cx="20"
+          cy="20"
+          r={r}
+          fill="none"
+          stroke={color}
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeDasharray={c}
+          strokeDashoffset={c * (1 - pct / 100)}
+          style={{ transition: "stroke-dashoffset 0.7s ease, stroke 0.7s ease" }}
+        />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center font-mono text-[10px] font-bold">{pct}%</span>
+    </div>
+  );
+}
+
+/** El mapa de las 8 etapas (columna izquierda en escritorio). */
+function Mapa({ abierta, actual, hechos, onIr }: { abierta: number; actual: number; hechos: Record<string, boolean>; onIr: (n: number) => void }) {
+  return (
+    <nav className="rounded-2xl border border-line bg-panel/40 p-3">
+      <p className="px-2 pb-2 text-xs font-bold uppercase tracking-widest text-faint">🧭 Las 8 etapas</p>
+      <ol>
+        {TAL_ETAPAS.map((e, i) => {
           const bloqueada = e.n > abierta;
-          const activa = e.n === etapa.n;
-          const completos = e.pasos.filter((p) => !p.extra).every((p) => hechos[p.id]);
+          const activa = e.n === actual;
+          const obl = e.pasos.filter((p) => !p.extra);
+          const h = obl.filter((p) => hechos[p.id]).length;
+          const completa = h === obl.length;
           return (
-            <button
-              key={e.n}
-              disabled={bloqueada}
-              onClick={() => setVista(e.n === abierta ? null : e.n)}
-              className={cn(
-                "flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-semibold transition",
-                activa
-                  ? "border-teal bg-teal/15 text-teal"
-                  : bloqueada
-                    ? "border-line/60 text-faint opacity-50"
-                    : completos
-                      ? "border-teal/40 text-teal/80"
-                      : "border-line bg-panel/60 text-muted",
+            <li key={e.n} className="relative">
+              {i < TAL_ETAPAS.length - 1 && (
+                <span
+                  aria-hidden
+                  className="absolute left-[1.45rem] top-10 h-[calc(100%-1.9rem)] w-0.5 rounded-full"
+                  style={{ background: completa ? e.color : "rgba(255,255,255,0.08)" }}
+                />
               )}
-            >
-              <span>{bloqueada ? "🔒" : completos && !activa ? "✓" : e.emoji}</span>
-              <span>
-                {e.n} · {e.titulo}
-              </span>
-            </button>
+              <button
+                disabled={bloqueada}
+                onClick={() => onIr(e.n)}
+                className={cn("flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition", activa ? "bg-white/5" : "hover:bg-white/5", bloqueada && "cursor-not-allowed opacity-45")}
+              >
+                <span
+                  className="flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-bold transition"
+                  style={
+                    activa
+                      ? { background: e.color, color: "#0d0826", boxShadow: `0 0 0 4px ${e.color}33` }
+                      : completa && !bloqueada
+                        ? { border: `2px solid ${e.color}`, color: e.color }
+                        : { border: "1px solid rgba(255,255,255,0.15)", color: "#b9aee8" }
+                  }
+                >
+                  {bloqueada ? "🔒" : completa && !activa ? "✓" : e.n}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold" style={activa ? { color: e.color } : undefined}>
+                    {e.emoji} {e.titulo}
+                  </span>
+                  <span className="block text-[11px] text-faint">{bloqueada ? "se abre desde la pantalla" : `${h}/${obl.length} pasos`}</span>
+                </span>
+              </button>
+            </li>
           );
         })}
-      </nav>
+      </ol>
+    </nav>
+  );
+}
 
-      {/* Etapa actual */}
-      <section key={etapa.n} className="rise">
-        <div className="mb-4">
-          <p className="text-xs font-bold uppercase tracking-widest text-teal">
-            Etapa {etapa.n} de {TAL_ETAPAS.length - 1}
-            {etapa.n === abierta ? " · en curso" : " · repaso"}
-            <span className="ml-2 font-mono normal-case tracking-normal text-faint">
-              {hechosEtapa}/{deEtapa.length} ✓
-            </span>
-          </p>
-          <h2 className="mt-1 text-2xl font-bold leading-tight">
-            {etapa.emoji} {etapa.titulo}
-          </h2>
-          <p className="mt-1 text-base text-muted">{etapa.bajada}</p>
+/** La cabecera de la etapa, teñida con su color. */
+function CabeceraEtapa({ etapa, enCurso, hechos, total, pct }: { etapa: EtapaTaller; enCurso: boolean; hechos: number; total: number; pct: number }) {
+  const c = etapa.color;
+  return (
+    <div className="relative overflow-hidden rounded-3xl border p-5 sm:p-6" style={{ borderColor: `${c}55`, background: `linear-gradient(135deg, ${c}24, transparent 62%)` }}>
+      <span aria-hidden className="pointer-events-none absolute -right-3 -top-7 select-none text-[7.5rem] leading-none opacity-[0.12]">
+        {etapa.emoji}
+      </span>
+      <p className="text-xs font-bold uppercase tracking-widest" style={{ color: c }}>
+        Etapa {etapa.n} de {TAL_ETAPAS.length - 1} · {enCurso ? "en curso" : "repaso"}
+      </p>
+      <h2 className="mt-1 text-2xl font-bold leading-tight sm:text-3xl">
+        {etapa.emoji} {etapa.titulo}
+      </h2>
+      <p className="mt-1 max-w-2xl text-base text-muted sm:text-lg">{etapa.bajada}</p>
+      <div className="mt-4 flex items-center gap-3">
+        <div className="h-2 flex-1 overflow-hidden rounded-full bg-ink-2/80">
+          <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, background: c }} />
         </div>
-        <div className="space-y-3">
-          {etapa.pasos.map((paso, i) => (
-            <Paso key={paso.id} paso={paso} i={i} hecho={!!hechos[paso.id]} onMarcar={(v) => marcar(paso, v)} nombre={nombre} />
-          ))}
-        </div>
-        <NavEtapas n={etapa.n} abierta={abierta} onIr={(x) => setVista(x === abierta ? null : x)} />
-      </section>
+        <p className="shrink-0 font-mono text-sm" style={{ color: c }}>
+          {hechos}/{total} ✓
+        </p>
+      </div>
+    </div>
+  );
+}
 
-      {/* La ficha del expediente, siempre a la vista */}
-      <ExpedienteVisual session={session} />
-
-      {/* Archivo completo, por si algo del itinerario no alcanza */}
-      <details className="rounded-2xl border border-line/60 bg-panel/30 p-4">
-        <summary className="cursor-pointer text-sm font-semibold text-muted">✍️ Todos los prompts, plantillas y herramientas liberados</summary>
-        <TutorTaller session={session} />
-      </details>
-
-      <MessIAs etapa={etapa.n} />
-      <Festejo activo={pct === 100} />
+/** Se abrió una etapa: una franja de su color que barre la pantalla y se va. */
+function Desbloqueo({ n }: { n: number }) {
+  const e = TAL_ETAPAS[n];
+  return (
+    <div className="pointer-events-none fixed inset-x-0 top-20 z-50 flex justify-center px-4">
+      <div
+        className="barrido flex items-center gap-3 rounded-2xl px-6 py-3.5 text-lg font-bold text-ink shadow-2xl"
+        style={{ background: `linear-gradient(90deg, ${e.color}, ${e.color}cc)` }}
+      >
+        <span className="text-2xl">🔓</span>
+        Se abrió la etapa {e.n} · {e.emoji} {e.titulo}
+      </div>
     </div>
   );
 }
@@ -307,29 +508,79 @@ function NavEtapas({ n, abierta, onIr }: { n: number; abierta: number; onIr: (x:
   );
 }
 
-function Paso({ paso, i, hecho, onMarcar, nombre }: { paso: PasoTaller; i: number; hecho: boolean; onMarcar: (v: boolean) => void; nombre?: string }) {
-  const [abierto, setAbierto] = useState(!hecho);
+function Paso({
+  paso,
+  i,
+  hecho,
+  enFoco,
+  color,
+  onMarcar,
+  nombre,
+}: {
+  paso: PasoTaller;
+  i: number;
+  hecho: boolean;
+  enFoco: boolean;
+  color: string;
+  onMarcar: (v: boolean) => void;
+  nombre?: string;
+}) {
+  const [abierto, setAbierto] = useState(enFoco);
+  const ref = useRef<HTMLDivElement>(null);
+  const montado = useRef(false);
   const docs = paso.docs?.map((id) => TAL_DOCS[id]) ?? [];
+
+  // Cuando este paso pasa a ser el siguiente, se abre solo y se acerca.
+  useEffect(() => {
+    if (!montado.current) {
+      montado.current = true;
+      return;
+    }
+    if (enFoco) {
+      setAbierto(true);
+      const t = setTimeout(() => ref.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 160);
+      return () => clearTimeout(t);
+    }
+  }, [enFoco]);
+
+  function alternar() {
+    const v = !hecho;
+    onMarcar(v);
+    if (v) setAbierto(false);
+  }
+
   return (
     <div
+      ref={ref}
       className={cn(
-        "rounded-2xl border transition",
-        hecho ? "border-teal/50 bg-teal/5" : paso.extra ? "border-dashed border-line bg-panel/30" : "glass border-line",
+        "scroll-mt-24 rounded-2xl border transition-all duration-300",
+        hecho ? "border-line/60 bg-panel/20" : enFoco ? "bg-panel/70" : paso.extra ? "border-dashed border-line bg-panel/20" : "glass border-line",
       )}
+      style={enFoco && !hecho ? { borderColor: color, borderWidth: 2, boxShadow: `0 0 0 4px ${color}14, 0 22px 50px -26px ${color}88` } : undefined}
     >
-      <button onClick={() => setAbierto((v) => !v)} className="flex w-full items-center gap-3 p-4 text-left">
+      <button onClick={() => setAbierto((v) => !v)} className={cn("flex w-full items-center gap-3 text-left", hecho ? "px-4 py-3" : "p-4")}>
         <span
-          className={cn(
-            "flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-bold",
-            hecho ? "bg-teal text-ink" : "border border-line bg-ink-2 text-muted",
-          )}
+          key={hecho ? "hecho" : "pendiente"}
+          className={cn("flex shrink-0 items-center justify-center rounded-full font-bold", hecho ? "pop size-7 text-sm" : enFoco ? "size-10 text-base" : "size-8 text-sm")}
+          style={
+            hecho
+              ? { background: color, color: "#0d0826" }
+              : enFoco
+                ? { background: `${color}26`, color, border: `2px solid ${color}` }
+                : { border: "1px solid rgba(255,255,255,0.15)", color: "#b9aee8" }
+          }
         >
           {hecho ? "✓" : i + 1}
         </span>
         <span className="min-w-0 flex-1">
-          <span className={cn("block text-lg font-semibold leading-snug", hecho && "text-teal")}>
+          {enFoco && !hecho && (
+            <span className="block text-[11px] font-bold uppercase tracking-widest" style={{ color }}>
+              ▶ Ahora
+            </span>
+          )}
+          <span className={cn("block font-semibold leading-snug", hecho ? "text-base text-muted line-through decoration-1 opacity-80" : enFoco ? "text-xl" : "text-lg")}>
             {paso.titulo}
-            {paso.extra && <span className="ml-2 rounded-full border border-line px-2 py-0.5 text-[10px] font-normal text-faint">extra · si va rápido</span>}
+            {paso.extra && <span className="ml-2 rounded-full border border-line px-2 py-0.5 text-[10px] font-normal text-faint no-underline">extra · si va rápido</span>}
           </span>
         </span>
         <span className="shrink-0 text-xl text-faint">{abierto ? "−" : "+"}</span>
@@ -401,13 +652,11 @@ function Paso({ paso, i, hecho, onMarcar, nombre }: { paso: PasoTaller; i: numbe
           {paso.nota && <p className="rounded-xl border border-line bg-ink-2/60 px-3 py-2 text-sm text-muted">💡 {paso.nota}</p>}
 
           <button
-            onClick={() => onMarcar(!hecho)}
-            className={cn(
-              "w-full rounded-2xl px-4 py-3 text-base font-bold transition active:scale-[0.99]",
-              hecho ? "border border-teal/50 bg-teal/10 text-teal" : "bg-gradient-to-r from-teal to-cyan text-ink",
-            )}
+            onClick={alternar}
+            className="w-full rounded-2xl px-4 py-3.5 text-base font-bold transition hover:brightness-110 active:scale-[0.99]"
+            style={hecho ? { border: `1px solid ${color}80`, background: `${color}14`, color } : { background: `linear-gradient(90deg, ${color}, ${color}c4)`, color: "#0d0826" }}
           >
-            {hecho ? "✓ Listo (tocar para desmarcar)" : "Marcar como listo ✓"}
+            {hecho ? "✓ Listo (tocar para desmarcar)" : "Marcar como listo ✓ y seguir"}
           </button>
         </div>
       )}

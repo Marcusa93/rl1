@@ -121,7 +121,7 @@ export function LluviaReacciones({
 }
 
 /** Celular: barra fija con los emojis; cada toque viaja a la pantalla. */
-export function BarraReacciones({ slug }: { slug: string }) {
+export function BarraReacciones({ slug, flotanteEnEscritorio }: { slug: string; flotanteEnEscritorio?: boolean }) {
   const [items, setItems] = useState<Flotante[]>([]);
   const [aviso, setAviso] = useState("");
   const ultimo = useRef(0);
@@ -148,8 +148,14 @@ export function BarraReacciones({ slug }: { slug: string }) {
   return (
     <>
       <Capa items={items} corto />
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line/60 bg-ink/85 px-3 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur">
-        <p className="mb-1.5 text-center text-[11px] uppercase tracking-widest text-faint">
+      <div
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-40 border-t border-line/60 bg-ink/85 px-3 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur",
+          flotanteEnEscritorio &&
+            "xl:inset-x-auto xl:bottom-4 xl:left-1/2 xl:-translate-x-1/2 xl:rounded-2xl xl:border xl:px-2 xl:py-2 xl:shadow-2xl",
+        )}
+      >
+        <p className={cn("mb-1.5 text-center text-[11px] uppercase tracking-widest text-faint", flotanteEnEscritorio && "xl:hidden")}>
           {aviso || "Envíe una reacción a la pantalla"}
         </p>
         <div className="mx-auto flex max-w-md items-center justify-between gap-1.5">
@@ -157,7 +163,10 @@ export function BarraReacciones({ slug }: { slug: string }) {
             <button
               key={e}
               onClick={() => enviar(e)}
-              className="flex h-12 flex-1 items-center justify-center rounded-xl border border-line bg-panel/60 text-2xl transition active:scale-90 active:border-teal/60"
+              className={cn(
+                "flex h-12 flex-1 items-center justify-center rounded-xl border border-line bg-panel/60 text-2xl transition active:scale-90 active:border-teal/60",
+                flotanteEnEscritorio && "xl:h-10 xl:w-11 xl:flex-none xl:text-xl",
+              )}
               aria-label={`Enviar ${e}`}
             >
               {e}

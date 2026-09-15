@@ -156,6 +156,8 @@ export interface PasoTaller {
 export interface EtapaTaller {
   n: number;
   emoji: string;
+  /** Color propio de la etapa (hex): tiñe la app y el deck. */
+  color: string;
   titulo: string;
   bajada: string;
   pasos: PasoTaller[];
@@ -168,6 +170,7 @@ export const TAL_ETAPAS: EtapaTaller[] = [
   {
     n: 0,
     emoji: "🤝",
+    color: "#5eead4",
     titulo: "Ustedes median",
     bajada: "El caso, su rol y su asistente.",
     pasos: [
@@ -219,6 +222,7 @@ export const TAL_ETAPAS: EtapaTaller[] = [
   {
     n: 1,
     emoji: "👂",
+    color: "#fbbf24",
     titulo: "Escuchar",
     bajada: "Las entrevistas privadas, primero sin IA.",
     pasos: [
@@ -278,6 +282,7 @@ export const TAL_ETAPAS: EtapaTaller[] = [
   {
     n: 2,
     emoji: "🎙️",
+    color: "#a78bfa",
     titulo: "La IA escucha",
     bajada: "El mismo audio, procesado por la herramienta. ¿Quién escuchó mejor?",
     pasos: [
@@ -312,6 +317,7 @@ export const TAL_ETAPAS: EtapaTaller[] = [
   {
     n: 3,
     emoji: "📂",
+    color: "#22d3ee",
     titulo: "La carpeta",
     bajada: "Leer los documentos con la IA, sin soltarle el control.",
     pasos: [
@@ -363,6 +369,7 @@ export const TAL_ETAPAS: EtapaTaller[] = [
   {
     n: 4,
     emoji: "🗺️",
+    color: "#60a5fa",
     titulo: "La matriz",
     bajada: "Todo el caso en una tabla: hechos, pruebas, contradicciones.",
     pasos: [
@@ -398,6 +405,7 @@ export const TAL_ETAPAS: EtapaTaller[] = [
   {
     n: 5,
     emoji: "🔎",
+    color: "#34d399",
     titulo: "Investigar",
     bajada: "Deep Research: datos externos que ninguna parte pueda discutir.",
     pasos: [
@@ -435,6 +443,7 @@ export const TAL_ETAPAS: EtapaTaller[] = [
   {
     n: 6,
     emoji: "📝",
+    color: "#f0abfc",
     titulo: "El acuerdo",
     bajada: "De las posiciones a los intereses; de los intereses a las cláusulas.",
     pasos: [
@@ -482,6 +491,7 @@ export const TAL_ETAPAS: EtapaTaller[] = [
   {
     n: 7,
     emoji: "⚡",
+    color: "#fb923c",
     titulo: "El giro",
     bajada: "Llega un documento nuevo. ¿Su acuerdo resiste?",
     pasos: [

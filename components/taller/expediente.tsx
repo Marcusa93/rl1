@@ -28,7 +28,7 @@ export function ExpedienteVisual({ session }: { session: SessionRow }) {
   const nLiberados = liberados.size + (etapa >= 1 ? 2 : 0);
 
   return (
-    <section className="overflow-hidden rounded-3xl border border-line bg-panel/30">
+    <section id="expediente" className="scroll-mt-24 overflow-hidden rounded-3xl border border-line bg-panel/30">
       {/* Carátula */}
       <div className="border-b border-line/60 bg-gradient-to-r from-teal/10 via-transparent to-violet/10 px-5 py-4">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -161,5 +161,46 @@ function Pieza({
     </a>
   ) : (
     <div className={clases}>{cuerpo}</div>
+  );
+}
+
+/** Versión de bolsillo para la columna lateral: partes, montos y piezas incorporadas. */
+export function ExpedienteMini({ session }: { session: SessionRow }) {
+  const cfg = (session.activity_config ?? {}) as ConfigTaller;
+  const liberados = new Set((cfg.liberados ?? []).filter(esDoc));
+  const etapa = cfg.etapa ?? 0;
+  const piezas = [
+    ...(["EA1", "EA2"] as const).map((id) => ({ codigo: TAL_AUDIOS[id].codigo, abierta: etapa >= 1 })),
+    ...ORDEN_DOCS.map((id) => ({ codigo: TAL_DOCS[id].codigo, abierta: liberados.has(id) })),
+  ];
+  const n = piezas.filter((p) => p.abierta).length;
+  return (
+    <a
+      href="#expediente"
+      className="block rounded-2xl border border-line bg-panel/40 p-3.5 transition hover:border-teal/50"
+    >
+      <div className="flex items-baseline justify-between gap-2">
+        <p className="text-xs font-bold uppercase tracking-widest text-teal">📁 Expediente</p>
+        <p className="font-mono text-[11px] text-faint">
+          {n}/{piezas.length}
+        </p>
+      </div>
+      <p className="mt-1.5 text-sm font-semibold leading-snug">☕ Lucía c/ 🔧 Diego</p>
+      <p className="font-mono text-[11px] text-muted">USD 3.000 · 2.000 pagos · 1.000 en juego</p>
+      <div className="mt-2.5 grid grid-cols-4 gap-1">
+        {piezas.map((p) => (
+          <span
+            key={p.codigo}
+            className={cn(
+              "rounded-md py-0.5 text-center font-mono text-[9.5px]",
+              p.abierta ? "bg-teal/15 text-teal" : "border border-dashed border-line/60 text-faint/60",
+            )}
+          >
+            {p.codigo}
+          </span>
+        ))}
+      </div>
+      <p className="mt-2 text-[11px] text-faint">Ver el expediente completo ↓</p>
+    </a>
   );
 }

@@ -21,13 +21,25 @@ export function AlumnoApp({
   logos,
   tutor: Tutor,
   seguimiento: Seguimiento,
+  ancho = "normal",
+  sinEncabezado = false,
 }: {
   config: ClaseVivoConfig;
   logos?: { src: string; alt: string; fondo?: boolean }[];
   /** Panel propio de la clase debajo de la actividad (ej.: documentos y prompts del taller). */
   tutor?: React.ComponentType<{ session: SessionRow }>;
   /** El celular sigue la placa que se proyecta; decide dónde va la actividad. */
-  seguimiento?: React.ComponentType<{ session: SessionRow; placa: PlacaVivo | null; actividad: React.ReactNode; me?: ParticipantRow }>;
+  seguimiento?: React.ComponentType<{
+    session: SessionRow;
+    placa: PlacaVivo | null;
+    actividad: React.ReactNode;
+    me?: ParticipantRow;
+    participantes?: number;
+  }>;
+  /** "amplio": la app ocupa el monitor (taller en computadoras). */
+  ancho?: "normal" | "amplio";
+  /** La clase dibuja su propio encabezado. */
+  sinEncabezado?: boolean;
 }) {
   const [me, setMe] = useState<ParticipantRow | null | undefined>(undefined);
   const [name, setName] = useState("");
@@ -121,6 +133,7 @@ export function AlumnoApp({
 
   return (
     <div className="bg-grid min-h-dvh">
+      {!sinEncabezado && (
       <header className="sticky top-0 z-10 border-b border-line/60 bg-ink/80 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
           <LogoRL1 size={24} className="shrink-0" />
@@ -136,11 +149,19 @@ export function AlumnoApp({
           </div>
         </div>
       </header>
-      <main className={cn("mx-auto max-w-3xl px-4 py-6", config.reacciones && "pb-32")}>
+      )}
+      <main
+        className={cn(
+          "mx-auto px-4 py-6",
+          ancho === "amplio" ? "max-w-[100rem] xl:px-8" : "max-w-3xl",
+          config.reacciones && (ancho === "amplio" ? "pb-32 xl:pb-24" : "pb-32"),
+        )}
+      >
         {Seguimiento ? (
           <Seguimiento
             session={data.session}
             me={me}
+            participantes={data.participants}
             placa={data.placa ?? null}
             actividad={<ActividadParticipante config={config} session={data.session} me={me} />}
           />
@@ -151,7 +172,7 @@ export function AlumnoApp({
           </>
         )}
       </main>
-      {config.reacciones && <BarraReacciones slug={config.slug} />}
+      {config.reacciones && <BarraReacciones slug={config.slug} flotanteEnEscritorio={ancho === "amplio"} />}
     </div>
   );
 }
