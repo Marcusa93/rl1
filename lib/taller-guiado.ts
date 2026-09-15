@@ -142,6 +142,8 @@ export interface PasoTaller {
   misiones?: boolean;
   /** Muestra la ficha de escucha digital (se completa en la app). */
   ficha?: boolean;
+  /** Muestra el acta de acuerdo para redactar en la app. */
+  acta?: boolean;
   /** Paso opcional, para quienes terminan antes. */
   extra?: boolean;
   nota?: string;
@@ -439,12 +441,13 @@ export const TAL_ETAPAS: EtapaTaller[] = [
       },
       {
         id: "e6-borrador",
-        titulo: "Redacte el acuerdo",
-        plantilla: "PLE",
+        titulo: "Redacte el acta de acuerdo",
+        acta: true,
         hacer: [
-          "Descargue el Borrador de acuerdo (PL-E) y complételo con su mejor propuesta.",
-          "Puede pedirle a la IA un borrador de cláusulas, pero las decisiones (montos, fechas, quién paga qué) son suyas.",
-          "No se olvide de la preocupación de Lucía: ¿quién responde si la máquina falla la primera semana?",
+          "El acta se redacta ACÁ MISMO, sobre el documento: complete los espacios punteados y corrija el texto de cada cláusula como le parezca. Se guarda sola.",
+          "Puede pedirle un borrador de cláusula a su Gem y pegarlo, pero las decisiones (montos, fechas, quién paga qué) son suyas.",
+          "¿Necesita pactar algo más? «+ Agregar una cláusula». No se olvide de la preocupación de Lucía: ¿quién responde si la máquina falla la primera semana?",
+          "Cuando esté conforme: «Descargar en PDF» (elija destino «Guardar como PDF»). Es su producto del taller.",
         ],
       },
     ],
@@ -468,10 +471,12 @@ export const TAL_ETAPAS: EtapaTaller[] = [
       },
       {
         id: "e7-ajuste",
-        titulo: "Ajuste su acuerdo",
+        titulo: "Ajuste su acta",
+        acta: true,
         hacer: [
-          "Vuelva a su PL-E y ajuste lo que haga falta: ¿quién contrata al electricista? ¿quién paga los 180? ¿cambia la fecha de la prueba?",
+          "Su acta sigue acá, tal como la dejó. Ajuste lo que haga falta: ¿quién contrata al electricista? ¿quién paga los 180? ¿cambia la fecha de la prueba? (La cláusula CUARTA lo espera.)",
           "Así funciona una mediación real: el acuerdo se construye, se tensiona y se vuelve a construir.",
+          "Cuando cierre la versión final: «Descargar en PDF».",
         ],
       },
       {

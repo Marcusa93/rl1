@@ -141,6 +141,26 @@ html:has(.deck-escala) {
   100% { offset-distance: 100%; opacity: 0; }
 }
 
+/* El acta de mediación del taller: se redacta en pantalla y se imprime sola. */
+.acta-imprimible { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+.acta-imprimible .acta-texto,
+.acta-imprimible input { field-sizing: content; }
+@media print {
+  body * { visibility: hidden; }
+  .acta-imprimible, .acta-imprimible * { visibility: visible; }
+  .acta-imprimible {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+  .no-imprimir { display: none !important; }
+}
+
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--color-line); border-radius: 999px; }
 ::selection { background: rgba(94, 234, 212, 0.3); }
