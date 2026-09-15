@@ -7,6 +7,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ActaAcuerdo } from "@/components/taller/acta";
+import { ExpedienteVisual } from "@/components/taller/expediente";
 import { FichaEscucha } from "@/components/taller/ficha";
 import { MessIAs } from "@/components/taller/messias";
 import { BotonCopiar, DocumentoCaso, PromptCaja } from "@/components/taller/piezas";
@@ -48,6 +49,13 @@ export function TallerGuiado({ session, actividad }: { session: SessionRow; acti
   const n = vista ?? abierta;
   const etapa = TAL_ETAPAS[Math.min(n, abierta)];
 
+  // Avance personal: pasos obligatorios hechos, en total y en la etapa a la vista.
+  const obligatorios = TAL_ETAPAS.flatMap((e) => e.pasos.filter((p) => !p.extra));
+  const hechosTotal = obligatorios.filter((p) => hechos[p.id]).length;
+  const pct = Math.round((hechosTotal / obligatorios.length) * 100);
+  const deEtapa = etapa.pasos.filter((p) => !p.extra);
+  const hechosEtapa = deEtapa.filter((p) => hechos[p.id]).length;
+
   function marcar(paso: PasoTaller, valor: boolean) {
     const next = { ...hechos, [paso.id]: valor };
     setHechos(next);
@@ -80,6 +88,21 @@ export function TallerGuiado({ session, actividad }: { session: SessionRow; acti
           🔓 Se abrió la etapa {abierta}: {TAL_ETAPAS[abierta].titulo} — ir ahora
         </button>
       )}
+
+      {/* Avance personal */}
+      <div className="rounded-2xl border border-line bg-panel/40 px-4 py-3">
+        <div className="flex items-baseline justify-between gap-3">
+          <p className="text-xs font-bold uppercase tracking-widest text-teal">Su avance</p>
+          <p className="font-mono text-sm">
+            <b className="text-teal">{hechosTotal}</b>
+            <span className="text-faint"> de {obligatorios.length} pasos</span>
+            {pct === 100 && <span className="ml-2">🏆</span>}
+          </p>
+        </div>
+        <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-ink-2">
+          <div className="h-full rounded-full bg-gradient-to-r from-teal via-cyan to-violet transition-all duration-700" style={{ width: `${pct}%` }} />
+        </div>
+      </div>
 
       {/* Chips de etapas */}
       <nav className="flex gap-1.5 overflow-x-auto pb-1">
@@ -118,6 +141,9 @@ export function TallerGuiado({ session, actividad }: { session: SessionRow; acti
           <p className="text-xs font-bold uppercase tracking-widest text-teal">
             Etapa {etapa.n} de {TAL_ETAPAS.length - 1}
             {etapa.n === abierta ? " · en curso" : " · repaso"}
+            <span className="ml-2 font-mono normal-case tracking-normal text-faint">
+              {hechosEtapa}/{deEtapa.length} ✓
+            </span>
           </p>
           <h2 className="mt-1 text-2xl font-bold leading-tight">
             {etapa.emoji} {etapa.titulo}
@@ -132,9 +158,12 @@ export function TallerGuiado({ session, actividad }: { session: SessionRow; acti
         <NavEtapas n={etapa.n} abierta={abierta} onIr={(x) => setVista(x === abierta ? null : x)} />
       </section>
 
+      {/* La ficha del expediente, siempre a la vista */}
+      <ExpedienteVisual session={session} />
+
       {/* Archivo completo, por si algo del itinerario no alcanza */}
       <details className="rounded-2xl border border-line/60 bg-panel/30 p-4">
-        <summary className="cursor-pointer text-sm font-semibold text-muted">📂 Toda la carpeta, los prompts y las herramientas</summary>
+        <summary className="cursor-pointer text-sm font-semibold text-muted">✍️ Todos los prompts, plantillas y herramientas liberados</summary>
         <TutorTaller session={session} />
       </details>
 

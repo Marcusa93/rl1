@@ -337,6 +337,7 @@ export const TAL_SLIDES: TalSlide[] = [
     titulo: "Hoy ustedes son el equipo de mediación",
     bajada: "Un caso real por resolver, un itinerario guiado en cada computadora y la IA como asistente.",
     etapa: 0,
+    libera: ["PLA"],
     kit: true,
     explora: [
       {

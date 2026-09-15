@@ -170,10 +170,12 @@ export const TAL_ETAPAS: EtapaTaller[] = [
       {
         id: "e0-rol",
         titulo: "Su rol en este taller",
+        plantilla: "PLA",
         hacer: [
           "Hoy ustedes NO son abogados de Lucía ni de Diego: son el equipo de mediación.",
           "Su trabajo: entender el conflicto, ayudar a las partes a conversar y construir un acuerdo posible.",
           "Las herramientas de IA son sus asistentes. Las decisiones son suyas.",
+          "Descargue la Guía de bolsillo (PL-A) y déjela abierta o a mano: tiene el mapa completo, las reglas de oro y todos los códigos del caso.",
         ],
       },
       {

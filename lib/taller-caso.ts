@@ -16,7 +16,7 @@ export type DocId =
   | "D0" | "D1" | "D2" | "D3" | "D4" | "D5" | "D6" | "D7" | "D8" | "D9" | "D10"
   | "D11" | "D12" | "D13";
 export type PromptId = "P0" | "P1" | "P2" | "P3" | "P4" | "P5" | "P6" | "P7" | "P8" | "P9" | "P10";
-export type PlantillaId = "PLB" | "PLC" | "PLD" | "PLE";
+export type PlantillaId = "PLA" | "PLB" | "PLC" | "PLD" | "PLE";
 
 export interface Mensaje {
   quien: "LUCÍA" | "DIEGO";
@@ -366,6 +366,13 @@ export interface PlantillaTaller {
 
 /** Plantillas del grupo (solo PDF). */
 export const TAL_PLANTILLAS: Record<PlantillaId, PlantillaTaller> = {
+  PLA: {
+    id: "PLA",
+    codigo: "PL-A",
+    archivo: "PL-A-guia-de-bolsillo.pdf",
+    titulo: "Guía de bolsillo del taller",
+    para: "Para tener a mano todo el taller: el mapa de las 8 etapas, las reglas de oro, el caso de un vistazo y los códigos.",
+  },
   PLB: {
     id: "PLB",
     codigo: "PL-B",

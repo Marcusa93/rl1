@@ -18,6 +18,7 @@ import { mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { TAL_DOCS, TAL_PLANTILLAS } from "../lib/taller-caso.ts";
+import { TAL_AUDIOS, TAL_ETAPAS } from "../lib/taller-guiado.ts";
 
 const h = React.createElement;
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "public", "taller-ia", "carpeta");
@@ -625,6 +626,163 @@ function PlantillaAcuerdo(p) {
   );
 }
 
+// PL-A: la guía de bolsillo — el mapa del taller para tener a mano todo el tiempo.
+function PlantillaGuia(p) {
+  const REGLAS = [
+    "Todo el trabajo con IA pasa dentro de SU Gem (o de su único chat con P0): así el asistente acumula el caso.",
+    "Ningún dato entra a la mediación sin abrir su fuente y verificarla. Citen por código: «según CN-03, pág. 1».",
+    "Lo que una parte dijo a solas es CONFIDENCIAL: no viaja a la otra sala ni a herramientas externas sin permiso.",
+    "Cada paso termina con «Marcar como listo»: asi el docente ve el avance de la sala sin interrumpir.",
+    "Si se traban: MessIAs (el botón con cara de crack, abajo a la derecha). Guía paso a paso; no resuelve por ustedes.",
+  ];
+  const HERR = [
+    ["Gemini y su Gem", "gemini.google.com  ·  crear Gem: gemini.google.com/gems/create"],
+    ["Notebook Gemini", "notebooklm.google.com"],
+    ["La app del taller", "taller.rossi-ia.com  (itinerario, audios, documentos, acta y MessIAs)"],
+  ];
+  const numero = (n, color) =>
+    h(
+      Svg,
+      { width: 22, height: 22, viewBox: "0 0 22 22" },
+      h(Circle, { cx: 11, cy: 11, r: 10, fill: color }),
+      h(Text, { x: 11, y: 15, textAnchor: "middle", style: { fontFamily: "Helvetica-Bold", fontSize: 11, fill: "#ffffff" } }, String(n)),
+    );
+  const pagina1 = h(
+    Page,
+    { size: "A4", style: { paddingBottom: 50, color: C.texto, fontFamily: "Helvetica" } },
+    h(Banda, { codigo: p.codigo, titulo: p.titulo, sub: "Taller PGR–UEES 2026 · déjenla abierta o a mano durante todo el taller" }),
+    h(
+      View,
+      { style: { paddingHorizontal: 32, paddingTop: 14 } },
+      h(Text, { style: { fontFamily: "Helvetica-Bold", fontSize: 12, marginBottom: 8 } }, "El mapa: 8 etapas. La pantalla las abre; ustedes avanzan a su ritmo."),
+      h(
+        View,
+        { style: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" } },
+        ...TAL_ETAPAS.map((e, i) =>
+          h(
+            View,
+            { key: e.n, style: { width: "49%", flexDirection: "row", borderWidth: 0.5, borderColor: C.linea, borderRadius: 6, padding: 8, marginBottom: 6, backgroundColor: i % 2 ? "#ffffff" : C.fondo } },
+            numero(e.n, i % 2 ? "#7c6cf0" : "#0d9488"),
+            h(
+              View,
+              { style: { marginLeft: 7, flex: 1 } },
+              h(Text, { style: { fontFamily: "Helvetica-Bold", fontSize: 10.5 } }, e.titulo),
+              h(Text, { style: { fontSize: 8.5, color: C.suave, marginTop: 1.5 } }, e.bajada),
+            ),
+          ),
+        ),
+      ),
+      h(
+        View,
+        { style: { marginTop: 10, borderWidth: 1, borderColor: "#0d9488", borderRadius: 8, padding: 12, backgroundColor: "#f0fdfa" } },
+        h(Text, { style: { fontFamily: "Helvetica-Bold", fontSize: 11.5, color: "#0f766e", marginBottom: 7 } }, "Las cinco reglas de oro"),
+        ...REGLAS.map((r, i) =>
+          h(
+            View,
+            { key: i, style: { flexDirection: "row", marginBottom: 5 } },
+            h(Text, { style: { width: 16, fontFamily: "Helvetica-Bold", fontSize: 10, color: "#0f766e" } }, `${i + 1}.`),
+            h(Text, { style: { flex: 1, fontSize: 9.5, lineHeight: 1.45 } }, r),
+          ),
+        ),
+      ),
+      h(
+        View,
+        { style: { marginTop: 10 } },
+        h(Text, { style: { fontFamily: "Helvetica-Bold", fontSize: 11.5, marginBottom: 5 } }, "Las herramientas"),
+        ...HERR.map(([nombre, dir], i) =>
+          h(
+            View,
+            { key: i, style: { flexDirection: "row", borderBottomWidth: 0.5, borderBottomColor: C.linea, paddingVertical: 4 } },
+            h(Text, { style: { width: 120, fontFamily: "Helvetica-Bold", fontSize: 9.5 } }, nombre),
+            h(Text, { style: { flex: 1, fontFamily: "Courier", fontSize: 9 } }, dir),
+          ),
+        ),
+      ),
+    ),
+    h(Pie, { codigo: p.codigo }),
+  );
+
+  const filaCod = (codigo, titulo, extra = {}) =>
+    h(
+      View,
+      { style: { flexDirection: "row", borderBottomWidth: 0.5, borderBottomColor: C.linea, paddingVertical: 3.5, ...extra } },
+      h(Text, { style: { width: 52, fontFamily: "Courier-Bold", fontSize: 8.5, color: "#0f766e" } }, codigo),
+      h(Text, { style: { flex: 1, fontSize: 8.8 } }, titulo),
+    );
+  const pagina2 = h(
+    Page,
+    { size: "A4", style: { paddingBottom: 50, color: C.texto, fontFamily: "Helvetica" } },
+    h(Banda, { codigo: p.codigo, titulo: "El caso, de un vistazo", sub: "Café Nube (Lucía Herrera) c/ TecnoFrío Servicios (Diego Molina) · todo es ficticio" }),
+    h(
+      View,
+      { style: { paddingHorizontal: 32, paddingTop: 14 } },
+      h(
+        View,
+        { style: { flexDirection: "row", justifyContent: "space-between", marginBottom: 10 } },
+        ...[
+          ["USD 3.000", "el contrato (CN-03)"],
+          ["USD 2.000", "ya pagados (CN-07)"],
+          ["USD 1.000", "en discusión"],
+          ["USD 180", "la línea eléctrica (CN-13)"],
+        ].map(([n, t], i) =>
+          h(
+            View,
+            { key: i, style: { width: "24%", borderWidth: 0.5, borderColor: C.linea, borderRadius: 6, padding: 8, alignItems: "center", backgroundColor: C.fondo } },
+            h(Text, { style: { fontFamily: "Helvetica-Bold", fontSize: 12, color: "#0f766e" } }, n),
+            h(Text, { style: { fontSize: 7.5, color: C.suave, marginTop: 2, textAlign: "center" } }, t),
+          ),
+        ),
+      ),
+      h(Text, { style: { fontFamily: "Helvetica-Bold", fontSize: 11, marginBottom: 4 } }, "La línea de tiempo"),
+      ...[
+        ["25/08", "Presupuesto N° 0187 (CN-05)"],
+        ["01/09", "Firma del contrato y su anexo técnico (CN-03 y CN-04)"],
+        ["08/09", "Entrega de tres bultos cerrados y transferencia de USD 2.000 (CN-06 y CN-07)"],
+        ["09/09", "Carta de reclamo de Diego; Lucía pide la mediación (CN-08 y CN-11)"],
+        ["10/09", "Respuesta de Lucía e informe técnico independiente (CN-09 y CN-10)"],
+        ["11/09", "18:00: apertura anunciada de Café Nube"],
+      ].map(([f, q], i) =>
+        h(
+          View,
+          { key: i, style: { flexDirection: "row", paddingVertical: 3 } },
+          h(Text, { style: { width: 44, fontFamily: "Helvetica-Bold", fontSize: 9, color: "#7c6cf0" } }, f),
+          h(Text, { style: { flex: 1, fontSize: 9 } }, q),
+        ),
+      ),
+      h(Text, { style: { fontFamily: "Helvetica-Bold", fontSize: 11, marginTop: 10, marginBottom: 4 } }, "Los códigos del expediente"),
+      h(
+        View,
+        { style: { flexDirection: "row" } },
+        h(
+          View,
+          { style: { flex: 1, marginRight: 8 } },
+          filaCod(TAL_AUDIOS.EA1.codigo, `${TAL_AUDIOS.EA1.titulo} (${TAL_AUDIOS.EA1.dur})`),
+          filaCod(TAL_AUDIOS.EA2.codigo, `${TAL_AUDIOS.EA2.titulo} (${TAL_AUDIOS.EA2.dur})`),
+          ...Object.values(TAL_DOCS)
+            .slice(0, 6)
+            .map((d) => filaCod(d.codigo, d.titulo)),
+        ),
+        h(
+          View,
+          { style: { flex: 1 } },
+          ...Object.values(TAL_DOCS)
+            .slice(6)
+            .map((d) => filaCod(d.codigo, d.titulo)),
+          ...Object.values(TAL_PLANTILLAS).map((pl) => filaCod(pl.codigo, pl.titulo)),
+        ),
+      ),
+      h(
+        Text,
+        { style: { marginTop: 10, fontSize: 8.5, color: C.suave, textAlign: "center" } },
+        "Los documentos aparecen en la app a medida que avanza el caso. El acta de acuerdo se redacta en la app y se descarga en PDF.",
+      ),
+    ),
+    h(Pie, { codigo: p.codigo }),
+  );
+
+  return [pagina1, pagina2];
+}
+
 // --- Salida ---------------------------------------------------------------------------------------------
 
 async function guardar(archivo, titulo, pagina) {
@@ -639,5 +797,6 @@ for (const doc of Object.values(TAL_DOCS)) {
 }
 await guardar(TAL_PLANTILLAS.PLB.archivo, `${TAL_PLANTILLAS.PLB.codigo} · ${TAL_PLANTILLAS.PLB.titulo}`, PlantillaMatriz(TAL_PLANTILLAS.PLB));
 await guardar(TAL_PLANTILLAS.PLC.archivo, `${TAL_PLANTILLAS.PLC.codigo} · ${TAL_PLANTILLAS.PLC.titulo}`, PlantillaHojaRuta(TAL_PLANTILLAS.PLC));
+await guardar(TAL_PLANTILLAS.PLA.archivo, `${TAL_PLANTILLAS.PLA.codigo} · ${TAL_PLANTILLAS.PLA.titulo}`, PlantillaGuia(TAL_PLANTILLAS.PLA));
 await guardar(TAL_PLANTILLAS.PLD.archivo, `${TAL_PLANTILLAS.PLD.codigo} · ${TAL_PLANTILLAS.PLD.titulo}`, PlantillaEscucha(TAL_PLANTILLAS.PLD));
 await guardar(TAL_PLANTILLAS.PLE.archivo, `${TAL_PLANTILLAS.PLE.codigo} · ${TAL_PLANTILLAS.PLE.titulo}`, PlantillaAcuerdo(TAL_PLANTILLAS.PLE));
