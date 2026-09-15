@@ -152,7 +152,7 @@ export function BarraReacciones({ slug, flotanteEnEscritorio }: { slug: string; 
         className={cn(
           "fixed inset-x-0 bottom-0 z-40 border-t border-line/60 bg-ink/85 px-3 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur",
           flotanteEnEscritorio &&
-            "xl:inset-x-auto xl:bottom-4 xl:left-1/2 xl:-translate-x-1/2 xl:rounded-2xl xl:border xl:px-2 xl:py-2 xl:shadow-2xl",
+            "xl:inset-x-auto xl:bottom-4 xl:left-8 xl:w-[16rem] xl:rounded-2xl xl:border xl:px-2 xl:py-2 xl:shadow-2xl",
         )}
       >
         <p className={cn("mb-1.5 text-center text-[11px] uppercase tracking-widest text-faint", flotanteEnEscritorio && "xl:hidden")}>
@@ -165,7 +165,7 @@ export function BarraReacciones({ slug, flotanteEnEscritorio }: { slug: string; 
               onClick={() => enviar(e)}
               className={cn(
                 "flex h-12 flex-1 items-center justify-center rounded-xl border border-line bg-panel/60 text-2xl transition active:scale-90 active:border-teal/60",
-                flotanteEnEscritorio && "xl:h-10 xl:w-11 xl:flex-none xl:text-xl",
+                flotanteEnEscritorio && "xl:h-10 xl:text-xl",
               )}
               aria-label={`Enviar ${e}`}
             >

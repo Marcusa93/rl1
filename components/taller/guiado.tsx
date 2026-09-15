@@ -117,9 +117,9 @@ export function TallerGuiado({
     <div className="taller-escritorio">
       <Encabezado nombre={nombre} participantes={participantes} abierta={abierta} pct={pct} />
 
-      <div className="mt-5 xl:grid xl:grid-cols-[17rem_minmax(0,1fr)_22rem] xl:items-start xl:gap-7">
+      <div className="mt-5 xl:grid xl:grid-cols-[16rem_minmax(0,1fr)_20rem] xl:items-start xl:gap-7">
         {/* Izquierda: el mapa del taller y el expediente de bolsillo */}
-        <aside className="hidden space-y-4 xl:sticky xl:top-24 xl:block xl:max-h-[calc(100dvh-8.5rem)] xl:overflow-y-auto xl:pb-2">
+        <aside className="hidden space-y-4 xl:sticky xl:top-24 xl:block xl:max-h-[calc(100dvh-11.5rem)] xl:overflow-y-auto xl:pb-2">
           <Mapa abierta={abierta} actual={etapa.n} hechos={hechos} onIr={(x) => setVista(x === abierta ? null : x)} />
           <ExpedienteMini session={session} />
         </aside>
@@ -365,7 +365,7 @@ function CabeceraEtapa({ etapa, enCurso, hechos, total, pct }: { etapa: EtapaTal
   const c = etapa.color;
   return (
     <div className="relative overflow-hidden rounded-3xl border p-5 sm:p-6" style={{ borderColor: `${c}55`, background: `linear-gradient(135deg, ${c}24, transparent 62%)` }}>
-      <span aria-hidden className="pointer-events-none absolute -right-3 -top-7 select-none text-[7.5rem] leading-none opacity-[0.12]">
+      <span aria-hidden className="pointer-events-none absolute -right-3 -top-7 select-none text-[7.5rem] leading-none opacity-[0.06] grayscale">
         {etapa.emoji}
       </span>
       <p className="text-xs font-bold uppercase tracking-widest" style={{ color: c }}>

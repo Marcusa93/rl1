@@ -154,7 +154,7 @@ export function AlumnoApp({
         className={cn(
           "mx-auto px-4 py-6",
           ancho === "amplio" ? "max-w-[100rem] xl:px-8" : "max-w-3xl",
-          config.reacciones && (ancho === "amplio" ? "pb-32 xl:pb-24" : "pb-32"),
+          config.reacciones && (ancho === "amplio" ? "pb-32 xl:pb-10" : "pb-32"),
         )}
       >
         {Seguimiento ? (
