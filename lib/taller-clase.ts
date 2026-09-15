@@ -528,7 +528,7 @@ export const TAL_SLIDES: TalSlide[] = [
     titulo: "CN-13 · La constancia del electricista",
     bajada: "Llega un documento nuevo. La falla no depende solo del módulo.",
     docs: ["D10"],
-    libera: ["D10", "P8"],
+    libera: ["D10", "P8", "P11"],
     etapa: 7,
     pregunta: "¿El acuerdo que estaban escribiendo resiste esta información?",
     puntos: [

@@ -482,6 +482,17 @@ export const TAL_ETAPAS: EtapaTaller[] = [
         ],
       },
       {
+        id: "e7-control",
+        titulo: "El abogado hostil (control final)",
+        prompt: "P11",
+        hacer: [
+          "Antes de dar el acta por cerrada, hágala atacar: en el paso anterior toque «Copiar el acta».",
+          "En su Gem, pegue el prompt P11 y debajo el acta. Envíe.",
+          "Corrija en el acta lo que el ataque haya encontrado de verdad (no todo lo que diga: usted decide).",
+          "Este es el método completo: la IA también sirve para encontrar los huecos del propio trabajo antes de firmarlo.",
+        ],
+      },
+      {
         id: "e7-cierre",
         titulo: "Puesta en común",
         hacer: [

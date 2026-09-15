@@ -141,6 +141,14 @@ html:has(.deck-escala) {
   100% { offset-distance: 100%; opacity: 0; }
 }
 
+/* Festejo al completar el taller: papelitos que caen. */
+@keyframes confeti {
+  0% { transform: translateY(-12vh) rotate(0deg); opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(var(--giro, 720deg)); opacity: 0; }
+}
+.confeti { animation: confeti var(--dur, 3s) ease-in both; }
+
 /* El acta de mediación del taller: se redacta en pantalla y se imprime sola. */
 .acta-imprimible { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 .acta-imprimible .acta-texto,

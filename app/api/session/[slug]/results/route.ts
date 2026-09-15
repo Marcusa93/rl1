@@ -94,6 +94,16 @@ export async function GET(
       .slice(-40);
     return ok({ ...base, summary: { total: list.length, respuestas } });
   }
+  // --- Tablero del taller: las últimas preguntas a MessIAs (anónimas), para el docente
+  if (activity === "tal_messias") {
+    const preguntas = list
+      .filter((r) => String(r.payload?.q ?? "").trim())
+      .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))
+      .slice(0, 10)
+      .map((r) => String(r.payload?.q).slice(0, 160));
+    return ok({ activity, participants: participants ?? 0, responded: responders.length, responders: [], summary: { total: list.length, preguntas }, config: session.activity_config ?? {} });
+  }
+
   // --- Tablero del taller guiado: cuántas compus marcaron "Listo" en cada paso
   if (activity === "tal_paso") {
     const counts: Record<string, number> = {};

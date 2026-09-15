@@ -15,7 +15,7 @@
 export type DocId =
   | "D0" | "D1" | "D2" | "D3" | "D4" | "D5" | "D6" | "D7" | "D8" | "D9" | "D10"
   | "D11" | "D12" | "D13";
-export type PromptId = "P0" | "P1" | "P2" | "P3" | "P4" | "P5" | "P6" | "P7" | "P8" | "P9" | "P10";
+export type PromptId = "P0" | "P1" | "P2" | "P3" | "P4" | "P5" | "P6" | "P7" | "P8" | "P9" | "P10" | "P11";
 export type PlantillaId = "PLA" | "PLB" | "PLC" | "PLD" | "PLE";
 
 export interface Mensaje {
@@ -561,6 +561,19 @@ Distinguí lo que la persona dijo de lo que vos inferís.`,
 - ¿La persona pidió mantener algo en reserva? ¿Qué hiciste con eso?
 - Si esta ficha se compartiera con la otra parte del conflicto, ¿qué daño podría causar?
 - ¿Qué puede registrar de una entrevista un mediador presente que vos no podés?`,
+  },
+  P11: {
+    id: "P11",
+    titulo: "El abogado hostil: atacar el acta antes de firmarla",
+    para: "El último control de calidad: la IA busca los huecos del propio acuerdo",
+    texto: `Debajo te pego el acta de acuerdo que redactamos en esta mediación. Revisala como si fueras un abogado hostil contratado para atacarla:
+
+- ¿qué cláusulas quedaron ambiguas o incompletas (fechas, montos, responsables sin definir)?
+- ¿qué pasa si una parte incumple? ¿el acta lo prevé?
+- ¿hay contradicciones con los documentos del caso? (citá el código CN)
+- ¿qué interés de alguna de las partes quedó sin resolver?
+
+Para cada problema, proponé la corrección concreta. No reescribas el acta completa.`,
   },
 };
 

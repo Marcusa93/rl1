@@ -500,7 +500,31 @@ function TableroVista({ n }: { n: number }) {
           );
         })}
       </div>
-      <p className="mt-6 text-center text-base text-faint">Si un paso viene lento, es ahí donde hay que dar una mano (o mandar a MessIAs).</p>
+      <PreguntasMessias />
+    </div>
+  );
+}
+
+/** Las últimas preguntas a MessIAs, anónimas: dónde se está trabando la sala. */
+function PreguntasMessias() {
+  const { data } = useResultados(TAL_SLUG, "tal_messias", 4000);
+  const preguntas = (data?.summary?.preguntas as string[]) ?? [];
+  const total = (data?.summary?.total as number) ?? 0;
+  if (!total) {
+    return <p className="mt-6 text-center text-base text-faint">Si un paso viene lento, es ahí donde hay que dar una mano (o mandar a MessIAs).</p>;
+  }
+  return (
+    <div className="mx-auto mt-6 w-full max-w-4xl rounded-2xl border border-violet/40 bg-violet/5 p-4">
+      <p className="text-xs font-bold uppercase tracking-widest text-violet">
+        🗨️ Lo que le están preguntando a MessIAs <span className="ml-2 font-mono normal-case text-faint">{total} preguntas</span>
+      </p>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {preguntas.map((q, i) => (
+          <span key={`${i}-${q.slice(0, 12)}`} className={cn("rounded-xl border border-line bg-ink-2/60 px-3 py-1.5 text-sm text-muted", i === 0 && "border-violet/50 text-foreground")}>
+            «{q}»
+          </span>
+        ))}
+      </div>
     </div>
   );
 }

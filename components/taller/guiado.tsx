@@ -43,8 +43,22 @@ export function TallerGuiado({ session, actividad }: { session: SessionRow; acti
   const [vista, setVista] = useState<number | null>(null);
   const [hechos, setHechos] = useState<Record<string, boolean>>({});
   const enVivo = getTalActividad(session.current_activity);
+  const vivoRef = useRef<HTMLElement>(null);
+  const [vivoVisible, setVivoVisible] = useState(true);
 
   useEffect(() => setHechos(leerHechos()), []);
+
+  // Aviso cuando el deck activa una actividad y la sección no está a la vista.
+  useEffect(() => {
+    if (enVivo && "vibrate" in navigator) navigator.vibrate?.(80);
+  }, [session.current_activity, enVivo]);
+  useEffect(() => {
+    const el = vivoRef.current;
+    if (!el || !enVivo) return;
+    const obs = new IntersectionObserver(([e]) => setVivoVisible(e.isIntersecting), { threshold: 0.1 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [enVivo]);
 
   const n = vista ?? abierta;
   const etapa = TAL_ETAPAS[Math.min(n, abierta)];
@@ -73,10 +87,20 @@ export function TallerGuiado({ session, actividad }: { session: SessionRow; acti
   return (
     <div className="space-y-5">
       {enVivo && (
-        <section className="rise rounded-3xl border-gradient p-4">
+        <section ref={vivoRef} className="rise rounded-3xl border-gradient p-4">
           <p className="mb-2 text-xs font-bold uppercase tracking-widest text-teal">🗳️ Actividad en vivo · responda ahora</p>
           {actividad}
         </section>
+      )}
+
+      {/* Si la actividad quedó fuera de la vista, una burbuja la trae de vuelta */}
+      {enVivo && !vivoVisible && (
+        <button
+          onClick={() => vivoRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+          className="pulse-ring fixed bottom-24 left-1/2 z-40 -translate-x-1/2 rounded-full bg-gradient-to-r from-teal to-cyan px-5 py-3 text-base font-bold text-ink shadow-xl"
+        >
+          🗳️ Actividad en vivo — responder
+        </button>
       )}
 
       {/* Aviso de etapa nueva */}
@@ -168,8 +192,61 @@ export function TallerGuiado({ session, actividad }: { session: SessionRow; acti
       </details>
 
       <MessIAs etapa={etapa.n} />
+      <Festejo activo={pct === 100} />
     </div>
   );
+}
+
+/** Al marcar el último paso: papelitos y trofeo, una sola vez por compu. */
+function Festejo({ activo }: { activo: boolean }) {
+  const [mostrar, setMostrar] = useState(false);
+  const previo = useRef(false);
+  useEffect(() => {
+    if (activo && !previo.current) {
+      let visto = false;
+      try {
+        visto = localStorage.getItem("tal-festejo") === "1";
+        localStorage.setItem("tal-festejo", "1");
+      } catch {}
+      if (!visto) {
+        setMostrar(true);
+        if ("vibrate" in navigator) navigator.vibrate?.([60, 40, 60]);
+        setTimeout(() => setMostrar(false), 4200);
+      }
+    }
+    previo.current = activo;
+  }, [activo]);
+  if (!mostrar) return null;
+  const colores = ["#5eead4", "#22d3ee", "#a78bfa", "#f0abfc", "#fbbf24"];
+  return (
+    <div aria-hidden className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
+      {Array.from({ length: 48 }, (_, i) => (
+        <span
+          key={i}
+          className="confeti absolute top-0 rounded-sm"
+          style={{
+            left: `${(i * dispersion(i)) % 100}%`,
+            width: i % 3 ? 8 : 12,
+            height: i % 2 ? 14 : 8,
+            backgroundColor: colores[i % colores.length],
+            animationDelay: `${(i % 12) * 0.12}s`,
+            ["--dur" as string]: `${2.4 + (i % 5) * 0.35}s`,
+            ["--giro" as string]: `${360 + ((i * 97) % 540)}deg`,
+          }}
+        />
+      ))}
+      <div className="rise absolute left-1/2 top-1/3 -translate-x-1/2 rounded-3xl border-gradient bg-ink/95 px-8 py-6 text-center shadow-2xl">
+        <p className="text-5xl">🏆</p>
+        <p className="mt-2 text-2xl font-bold text-gradient">¡Taller completo!</p>
+        <p className="mt-1 text-sm text-muted">Todos los pasos del mediador aumentado.</p>
+      </div>
+    </div>
+  );
+}
+
+/** Pseudoazar estable para repartir el confeti. */
+function dispersion(i: number) {
+  return ((i * 37 + 11) % 89) + 7;
 }
 
 function NavEtapas({ n, abierta, onIr }: { n: number; abierta: number; onIr: (x: number) => void }) {
