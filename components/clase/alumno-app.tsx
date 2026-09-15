@@ -27,7 +27,7 @@ export function AlumnoApp({
   /** Panel propio de la clase debajo de la actividad (ej.: documentos y prompts del taller). */
   tutor?: React.ComponentType<{ session: SessionRow }>;
   /** El celular sigue la placa que se proyecta; decide dónde va la actividad. */
-  seguimiento?: React.ComponentType<{ session: SessionRow; placa: PlacaVivo | null; actividad: React.ReactNode }>;
+  seguimiento?: React.ComponentType<{ session: SessionRow; placa: PlacaVivo | null; actividad: React.ReactNode; me?: ParticipantRow }>;
 }) {
   const [me, setMe] = useState<ParticipantRow | null | undefined>(undefined);
   const [name, setName] = useState("");
@@ -140,6 +140,7 @@ export function AlumnoApp({
         {Seguimiento ? (
           <Seguimiento
             session={data.session}
+            me={me}
             placa={data.placa ?? null}
             actividad={<ActividadParticipante config={config} session={data.session} me={me} />}
           />

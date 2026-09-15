@@ -195,6 +195,17 @@ export const TAL_ACTIVIDADES: ActividadVivo[] = [
     maxChars: 280,
   },
   {
+    key: "tal_careo",
+    kind: "opciones",
+    titulo: "El veredicto: ¿quién escuchó mejor?",
+    bajada: "Su ficha contra la de la IA. Sea honesto.",
+    opciones: [
+      { id: "yo", emoji: "👂", label: "Yo: capté lo que la IA no puede" },
+      { id: "ia", emoji: "🤖", label: "La IA: más completa y ordenada" },
+      { id: "empate", emoji: "🤝", label: "Empate: cada uno lo suyo" },
+    ],
+  },
+  {
     key: "tal_research",
     kind: "texto",
     titulo: "El mejor dato de su investigación",
@@ -263,6 +274,8 @@ interface Comun {
   libera?: LiberadoId[];
   /** Abre esta etapa del itinerario guiado en las computadoras al llegar. */
   etapa?: number;
+  /** Ayuda memoria de ritmo que solo ve el docente en el control remoto. */
+  nota?: string;
   saltos?: Salto[];
 }
 
@@ -337,6 +350,7 @@ export const TAL_SLIDES: TalSlide[] = [
     titulo: "Hoy ustedes son el equipo de mediación",
     bajada: "Un caso real por resolver, un itinerario guiado en cada computadora y la IA como asistente.",
     etapa: 0,
+    nota: "0–10' · Que ingresen y bajen la PL-A. En la placa siguiente, el Gem (si no aparece: gemini.google.com/gems/create o plan B). No esperar a todos.",
     libera: ["PLA"],
     kit: true,
     explora: [
@@ -414,6 +428,7 @@ export const TAL_SLIDES: TalSlide[] = [
     titulo: "Escuchar es el primer oficio del mediador",
     bajada: "Cada parte pidió hablar a solas. Eso, en mediación, tiene nombre y reglas.",
     etapa: 1,
+    nota: "10–25' · Pasar los dos audios por parlantes (4'). Después ficha + «Ahora pregunte usted» (sala de entrevistas). Mirar el tablero y cortar a los 25'.",
     libera: ["PLD"],
     visual: "caucus",
     explora: [
@@ -435,6 +450,7 @@ export const TAL_SLIDES: TalSlide[] = [
     titulo: "El mismo audio, ahora lo procesa la IA",
     bajada: "Suban la entrevista a su Gem y comparen con su ficha. ¿Quién escuchó mejor?",
     etapa: 2,
+    nota: "25–40' · Subir el audio al Gem + P10 con la ficha. A los ~38', el veredicto del careo.",
     libera: ["P9", "P10"],
     visual: "vs",
     kit: true,
@@ -445,7 +461,8 @@ export const TAL_SLIDES: TalSlide[] = [
       { emoji: "🛡️", label: "La lección", texto: "La confidencialidad la custodia el mediador, no la herramienta. Antes de subir un audio real: ¿puedo? ¿está anonimizado? ¿dónde queda guardado?" },
     ],
   },
-  { t: "tablero", n: 2 },
+  { t: "tablero", n: 2, nota: "~38' · Avanzar cuando la mayoría esté en el paso 2. El careo viene ahora: pedir honestidad." },
+  { t: "actividad", activa: "tal_careo", escena: "El veredicto del careo", nota: "38-40' · Comentar: nadie escucha como un humano, nadie ordena como la IA. Y lo confidencial lo custodia el mediador." },
 
   // --- 3 · La carpeta (15 min) ----------------------------------------------------------
   {
@@ -454,6 +471,7 @@ export const TAL_SLIDES: TalSlide[] = [
     titulo: "La carpeta del caso, con control",
     bajada: "Ahora los documentos: cada PDF se descarga, se sube y se cita por su código.",
     etapa: 3,
+    nota: "40–55' · Captura vs. chat completo y contrato. Activar las dos votaciones. Si hay atraso, saltear el extra de papeles comerciales.",
     libera: ["D1", "D2", "D3", "D4", "D11", "D12", "D13", "P1", "P2", "P3"],
     kit: true,
     explora: [
@@ -473,6 +491,7 @@ export const TAL_SLIDES: TalSlide[] = [
     titulo: "Todo el caso en una tabla",
     bajada: "Hechos, quién lo afirma, qué documento lo respalda y qué falta. La IA arma; ustedes revisan.",
     etapa: 4,
+    nota: "55–65' · Matriz P4 + corrección registrada. Es el tramo que más se estira: cortar a los 65'.",
     libera: ["D5", "D6", "D7", "PLB", "P4", "P5"],
     visual: "matriz",
     kit: true,
@@ -487,6 +506,7 @@ export const TAL_SLIDES: TalSlide[] = [
     titulo: "Deep Research: traer datos que nadie pueda discutir",
     bajada: "Un agente que planifica, busca, lee y cita. Lo lanzan ahora y sigue solo mientras trabajamos.",
     etapa: 5,
+    nota: "65–70' · Lanzar Deep Research y NO esperar: pasar a la etapa 6 enseguida.",
     kit: true,
     visual: "research",
     explora: [
@@ -505,6 +525,7 @@ export const TAL_SLIDES: TalSlide[] = [
     titulo: "De las posiciones a las cláusulas",
     bajada: "Lo que cada uno pide ya lo sabemos. El acuerdo se escribe sobre lo que cada uno necesita.",
     etapa: 6,
+    nota: "70–95' · Intereses, opciones y acta. Recordarles volver a Deep Research para verificar los datos y pegarlos en el Gem.",
     libera: ["P6", "P7"],
     kit: true,
     explora: [
@@ -530,6 +551,7 @@ export const TAL_SLIDES: TalSlide[] = [
     docs: ["D10"],
     libera: ["D10", "P8", "P11"],
     etapa: 7,
+    nota: "95–110' · Giro CN-13, ajuste del acta, P11 y entrega. Abrir un acta entregada en el tablero para comentarla. Después, el dato y la nube.",
     pregunta: "¿El acuerdo que estaban escribiendo resiste esta información?",
     puntos: [
       "La máquina de hielo necesita una línea eléctrica independiente.",
@@ -538,6 +560,7 @@ export const TAL_SLIDES: TalSlide[] = [
     ],
   },
   { t: "actividad", activa: "tal_giro", escena: "Revisar lo construido" },
+  { t: "tablero", n: 7, nota: "Actas: tocar un nombre para abrir su acta en pantalla y comentarla en voz alta." },
   { t: "actividad", activa: "tal_research", escena: "Puesta en común · el dato" },
   {
     t: "placa",

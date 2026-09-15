@@ -76,16 +76,16 @@ const OBJETO_MODELO =
 
 const ORDINALES_EXTRA = ["NOVENA", "DÉCIMA", "DECIMOPRIMERA", "DECIMOSEGUNDA", "DECIMOTERCERA"];
 
-interface Extra {
+export interface Extra {
   titulo: string;
   texto: string;
 }
-interface Acta {
+export interface Acta {
   campos: Record<string, string>;
   extras: Extra[];
 }
 
-function leer(): Acta {
+export function leerActa(): Acta {
   try {
     const d = JSON.parse(localStorage.getItem(LS_ACTA) ?? "{}");
     return { campos: d.campos ?? {}, extras: d.extras ?? [] };
@@ -94,7 +94,7 @@ function leer(): Acta {
   }
 }
 
-function actaComoTexto(a: Acta): string {
+export function actaComoTexto(a: Acta): string {
   const v = (k: string, modelo = "") => (a.campos[k] ?? modelo).trim() || "____";
   const partes = [
     "ACTA DE ACUERDO DE MEDIACIÓN",
@@ -121,13 +121,17 @@ function actaComoTexto(a: Acta): string {
 
 const SERIF = { fontFamily: 'Georgia, "Times New Roman", serif' } as const;
 
-export function ActaAcuerdo() {
+export function ActaAcuerdo({ nombre }: { nombre?: string }) {
   const [acta, setActa] = useState<Acta>({ campos: {}, extras: [] });
   const [lista, setLista] = useState(false);
 
   useEffect(() => {
-    setActa(leer());
+    const d = leerActa();
+    // El acta nace con el nombre de quien ingresó a esta compu como equipo de mediación.
+    if (nombre && !(d.campos.mediadores ?? "").trim()) d.campos = { ...d.campos, mediadores: nombre };
+    setActa(d);
     setLista(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function guardar(next: Acta) {

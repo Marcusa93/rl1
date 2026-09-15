@@ -139,12 +139,15 @@ export function ControlRemoto({
   titulos,
   nombre,
   vista,
+  vistaTitulo = "👀 Así lo ven en el celular",
 }: {
   slug: string;
   titulos: string[];
   nombre: string;
   /** Cómo ven la placa actual los participantes en su celular (panel plegable). */
   vista?: (estado: EstadoRemoto) => React.ReactNode;
+  /** Título del panel plegable (por defecto, la vista del participante). */
+  vistaTitulo?: string;
 }) {
   const [estado, setEstado] = useState<EstadoRemoto | null>(null);
   const [tocado, setTocado] = useState<string | null>(null);
@@ -292,7 +295,7 @@ export function ControlRemoto({
               onClick={() => setVerVista((v) => !v)}
               className="flex w-full items-center rounded-2xl border border-violet/50 bg-violet/10 px-4 py-3 text-left text-base font-semibold text-violet"
             >
-              <span className="flex-1">👀 Así lo ven en el celular</span>
+              <span className="flex-1">{vistaTitulo}</span>
               <span className="text-sm">{verVista ? "▲" : "▼"}</span>
             </button>
             {verVista && <div className="pointer-events-none">{mostrarVista(vista, estado)}</div>}

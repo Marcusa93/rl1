@@ -7,6 +7,8 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ActaAcuerdo } from "@/components/taller/acta";
+import { SalaEntrevistas } from "@/components/taller/entrevista";
+import { EntregaActa } from "@/components/taller/entrega";
 import { ExpedienteVisual } from "@/components/taller/expediente";
 import { FichaEscucha } from "@/components/taller/ficha";
 import { MessIAs } from "@/components/taller/messias";
@@ -37,7 +39,7 @@ function leerHechos(): Record<string, boolean> {
   }
 }
 
-export function TallerGuiado({ session, actividad }: { session: SessionRow; actividad: ReactNode }) {
+export function TallerGuiado({ session, actividad, nombre }: { session: SessionRow; actividad: ReactNode; nombre?: string }) {
   const cfg = (session.activity_config ?? {}) as ConfigTaller;
   const abierta = Math.max(0, Math.min(cfg.etapa ?? 0, TAL_ETAPAS.length - 1));
   const [vista, setVista] = useState<number | null>(null);
@@ -179,7 +181,7 @@ export function TallerGuiado({ session, actividad }: { session: SessionRow; acti
         </div>
         <div className="space-y-3">
           {etapa.pasos.map((paso, i) => (
-            <Paso key={paso.id} paso={paso} i={i} hecho={!!hechos[paso.id]} onMarcar={(v) => marcar(paso, v)} />
+            <Paso key={paso.id} paso={paso} i={i} hecho={!!hechos[paso.id]} onMarcar={(v) => marcar(paso, v)} nombre={nombre} />
           ))}
         </div>
         <NavEtapas n={etapa.n} abierta={abierta} onIr={(x) => setVista(x === abierta ? null : x)} />
@@ -305,7 +307,7 @@ function NavEtapas({ n, abierta, onIr }: { n: number; abierta: number; onIr: (x:
   );
 }
 
-function Paso({ paso, i, hecho, onMarcar }: { paso: PasoTaller; i: number; hecho: boolean; onMarcar: (v: boolean) => void }) {
+function Paso({ paso, i, hecho, onMarcar, nombre }: { paso: PasoTaller; i: number; hecho: boolean; onMarcar: (v: boolean) => void; nombre?: string }) {
   const [abierto, setAbierto] = useState(!hecho);
   const docs = paso.docs?.map((id) => TAL_DOCS[id]) ?? [];
   return (
@@ -348,7 +350,11 @@ function Paso({ paso, i, hecho, onMarcar }: { paso: PasoTaller; i: number; hecho
 
           {paso.ficha && <FichaEscucha compacta={paso.id !== "e1-ficha"} />}
 
-          {paso.acta && <ActaAcuerdo />}
+          {paso.acta && <ActaAcuerdo nombre={nombre} />}
+
+          {paso.entrevista && <SalaEntrevistas />}
+
+          {paso.entrega && <EntregaActa />}
 
           {docs.length > 0 && (
             <div className="space-y-2">

@@ -144,6 +144,10 @@ export interface PasoTaller {
   ficha?: boolean;
   /** Muestra el acta de acuerdo para redactar en la app. */
   acta?: boolean;
+  /** Muestra la sala de entrevistas (Lucía y Diego responden en personaje). */
+  entrevista?: boolean;
+  /** Muestra el botón de entrega del acta (con la devolución de MessIAs). */
+  entrega?: boolean;
   /** Paso opcional, para quienes terminan antes. */
   extra?: boolean;
   nota?: string;
@@ -248,6 +252,17 @@ export const TAL_ETAPAS: EtapaTaller[] = [
         hacer: [
           "Lo mismo con Diego, columna Diego.",
           "Diego también termina con un «no se lo diga todavía»: a la fila CONFIDENCIAL.",
+        ],
+      },
+      {
+        id: "e1-preguntar",
+        titulo: "Ahora pregunte usted",
+        entrevista: true,
+        hacer: [
+          "Los audios fueron la primera entrevista. Ahora las partes están en la sala: pregúnteles usted.",
+          "Pruebe el experimento: primero una pregunta CERRADA o acusadora («¿usted firmó o no?») y mire cómo se cierra.",
+          "Después una ABIERTA y empática («cuénteme qué significa para usted…») y mire cuánto más aparece.",
+          "Anote en su ficha lo nuevo que consiga. Si se gana su confianza, puede llegar más hondo que el audio.",
         ],
       },
       {
@@ -442,6 +457,16 @@ export const TAL_ETAPAS: EtapaTaller[] = [
         ],
       },
       {
+        id: "e6-partes",
+        titulo: "Extra: pruebe sus opciones con las partes",
+        entrevista: true,
+        extra: true,
+        hacer: [
+          "¿Tiene una idea de acuerdo? Vuelva a la sala de entrevistas y pruébela: «¿qué le parecería si…?»",
+          "Las partes reaccionan: lo que aceptan, lo que los asusta, lo que piden a cambio. Mejor descubrirlo acá que en la sesión conjunta.",
+        ],
+      },
+      {
         id: "e6-borrador",
         titulo: "Redacte el acta de acuerdo",
         acta: true,
@@ -490,6 +515,16 @@ export const TAL_ETAPAS: EtapaTaller[] = [
           "En su Gem, pegue el prompt P11 y debajo el acta. Envíe.",
           "Corrija en el acta lo que el ataque haya encontrado de verdad (no todo lo que diga: usted decide).",
           "Este es el método completo: la IA también sirve para encontrar los huecos del propio trabajo antes de firmarlo.",
+        ],
+      },
+      {
+        id: "e7-entrega",
+        titulo: "Entregue su acta",
+        entrega: true,
+        hacer: [
+          "Cuando el acta esté cerrada, entréguela con el botón: le llega al docente y queda como su producto del taller.",
+          "Al entregarla, MessIAs la lee y le devuelve una mini devolución de mediador senior, solo para usted.",
+          "¿La mejoró después? Puede volver a entregarla: vale la última versión.",
         ],
       },
       {

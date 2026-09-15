@@ -198,7 +198,7 @@ function Deck() {
   const etapa = calcularConfig([], idx);
   const conBarra = slide.t !== "portada" && slide.t !== "ingreso" && slide.t !== "final" && (etapa.caso !== undefined || etapa.trabajo !== undefined);
 
-  useRemotoDeck({ slug: TAL_SLUG, idx, total: TAL_SLIDES.length, titulo: tituloPlacaTaller(slide), parte: parteActual, go });
+  useRemotoDeck({ slug: TAL_SLUG, idx, total: TAL_SLIDES.length, titulo: tituloPlacaTaller(slide), parte: parteActual, nota: slide.nota, go });
 
   const estadoNombre = estado ? (getTalActividad(estado.key)?.titulo ?? "Ingreso") : "";
   const kitVisible = kitManual ?? Boolean(slide.kit);
@@ -504,6 +504,59 @@ function TableroVista({ n }: { n: number }) {
         })}
       </div>
       <PreguntasMessias />
+      {n === 7 && <ActasEntregadas />}
+    </div>
+  );
+}
+
+/** Las actas entregadas: tocar un nombre abre su acta en pantalla para comentarla. */
+function ActasEntregadas() {
+  const { data } = useResultados(TAL_SLUG, "tal_acta", 5000);
+  const actas = (data?.summary?.actas as { name: string; texto: string }[]) ?? [];
+  const [abierta, setAbierta] = useState<number | null>(null);
+  const acta = abierta !== null ? actas[abierta] : null;
+  return (
+    <div className="mx-auto mt-4 w-full max-w-4xl rounded-2xl border border-teal/40 bg-teal/5 p-4">
+      <p className="text-xs font-bold uppercase tracking-widest text-teal">
+        📤 Actas entregadas <span className="ml-2 font-mono normal-case text-faint">{actas.length}</span>
+      </p>
+      {actas.length === 0 ? (
+        <p className="mt-2 text-sm text-faint">Todavía ninguna. Aparecen acá a medida que las entregan.</p>
+      ) : (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {actas.map((a, i) => (
+            <button
+              key={`${a.name}-${i}`}
+              onClick={() => setAbierta(i)}
+              {...rem(`📄 ${a.name}`, abierta === i)}
+              className="rounded-xl border border-line bg-ink-2/60 px-3 py-1.5 text-sm transition hover:border-teal/60 hover:text-teal"
+            >
+              📄 {a.name}
+            </button>
+          ))}
+        </div>
+      )}
+      {acta && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/80 p-6 backdrop-blur" onClick={() => setAbierta(null)}>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="max-h-[86vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-white px-10 py-8 text-neutral-900 shadow-2xl"
+            style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+          >
+            <div className="mb-4 flex items-center justify-between gap-3 border-b border-neutral-200 pb-3">
+              <p className="text-sm font-semibold text-neutral-500">Acta entregada por {acta.name}</p>
+              <button
+                onClick={() => setAbierta(null)}
+                {...rem("✕ Cerrar el acta")}
+                className="rounded-lg border border-neutral-300 px-3 py-1 text-sm text-neutral-600 hover:text-neutral-900"
+              >
+                ✕ Cerrar
+              </button>
+            </div>
+            <p className="whitespace-pre-wrap text-lg leading-relaxed">{acta.texto}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

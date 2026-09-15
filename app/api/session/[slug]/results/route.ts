@@ -94,6 +94,16 @@ export async function GET(
       .slice(-40);
     return ok({ ...base, summary: { total: list.length, respuestas } });
   }
+  // --- Tablero del taller: las actas entregadas (la última versión de cada compu)
+  if (activity === "tal_acta") {
+    const actas = list
+      .filter((r) => String(r.payload?.texto ?? "").trim())
+      .sort((a, b) => String(b.updated_at ?? b.created_at).localeCompare(String(a.updated_at ?? a.created_at)))
+      .slice(0, 16)
+      .map((r) => ({ name: (r.participants?.name as string) ?? "—", texto: String(r.payload?.texto).slice(0, 12000) }));
+    return ok({ activity, participants: participants ?? 0, responded: responders.length, responders: [], summary: { total: actas.length, actas }, config: session.activity_config ?? {} });
+  }
+
   // --- Tablero del taller: las últimas preguntas a MessIAs (anónimas), para el docente
   if (activity === "tal_messias") {
     const preguntas = list

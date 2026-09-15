@@ -13,7 +13,7 @@ export default function TallerPage() {
     <AlumnoApp
       config={TAL_CONFIG}
       logos={TAL_LOGOS}
-      seguimiento={({ session, actividad }) => <TallerGuiado session={session} actividad={actividad} />}
+      seguimiento={({ session, actividad, me }) => <TallerGuiado session={session} actividad={actividad} nombre={me?.name} />}
     />
   );
 }
