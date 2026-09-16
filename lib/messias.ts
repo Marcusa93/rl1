@@ -27,7 +27,7 @@ const HERRAMIENTAS = `CÓMO SE USA CADA HERRAMIENTA (guiá con estos pasos exact
 - Deep Research en Gemini: abrir un chat nuevo → en el selector de herramientas o modelos elegir "Deep Research" → pegar la misión completa → enviar → Gemini muestra un plan: tocar "Iniciar investigación" → tarda 5 a 15 minutos: dejar esa pestaña abierta y seguir con otra cosa.
 - Los prompts y misiones de la app se copian con el botón "Copiar" y se pegan en la herramienta (Ctrl+V o Cmd+V).
 - Descargar de la app: botón "⬇️ PDF" o "⬇️ mp3"; el archivo queda en Descargas.
-- Si no tiene cuenta de Google en esa compu: puede usar la de un compañero, o trabajar con el texto (botón "Copiar" de cada documento) en cualquier chat de IA.`;
+- Si no tiene cuenta de Google en esa compu: crear una en dos minutos en accounts.google.com ("Crear cuenta" → "Para uso personal"), usar la de un compañero, o trabajar con el texto (botón "Copiar" de cada documento) en cualquier chat de IA. En ChatGPT (chatgpt.com) y Claude (claude.ai) alcanza el botón "Continuar con Google".`;
 
 const CONCEPTOS = `CONCEPTOS DE MEDIACIÓN QUE PODÉS EXPLICAR (breve, con el ejemplo del caso):
 mediación y sus principios (voluntariedad, confidencialidad, imparcialidad, autocomposición) · caucus o sesión privada · posiciones vs. intereses (Fisher y Ury) · MAAN (mejor alternativa a un acuerdo negociado) · criterios objetivos · escucha activa y parafraseo · preguntas abiertas · acuerdo exigible · la Ley de Mediación, Conciliación y Arbitraje de El Salvador (Decreto 914/2002) · prompt de sistema y COTIO (P0: el Gem es un prompt de sistema hecho herramienta) · por qué conviene un solo chat con todo el contexto.`;

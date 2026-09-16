@@ -15,7 +15,7 @@ const SALUDO =
 
 /** Atajos según la etapa abierta: las dudas más probables a un toque. */
 const ATAJOS: Record<number, string[]> = {
-  0: ["¿Cómo creo el Gem?", "No me aparece la opción Gems", "¿Qué es una mediación?"],
+  0: ["¿Cómo creo el Gem?", "No tengo cuenta de Google", "No me aparece la opción Gems"],
   1: ["¿Qué anoto en cada fila de la ficha?", "¿Qué es un caucus?", "¿Qué hago con lo confidencial?"],
   2: ["¿Cómo subo el audio a mi Gem?", "¿Cómo copio mi ficha?", "No tengo cuenta de Google en esta compu"],
   3: ["¿Cómo subo un PDF a Gemini?", "La IA no lee la imagen, ¿qué hago?", "¿Qué busco en el contrato?"],

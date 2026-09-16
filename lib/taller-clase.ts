@@ -378,6 +378,63 @@ export const TAL_SLIDES: TalSlide[] = [
   },
   {
     t: "placa",
+    titulo: "¿Qué es esta IA?",
+    bajada: "Inteligencia artificial generativa: programas que trabajan con lenguaje. Y mediar es, sobre todo, lenguaje.",
+    nota: "3-5' · Solo el concepto: generativa = predice lenguaje. No profundizar: el taller lo muestra en la práctica.",
+    explora: [
+      {
+        emoji: "🧠",
+        label: "IA",
+        texto: "Sistemas que hacen tareas que antes pedían inteligencia humana: clasificar, traducir, predecir. Existe hace décadas; ya está en el buscador, el mapa y el corrector del teléfono.",
+      },
+      {
+        emoji: "✨",
+        label: "IA generativa",
+        texto: "La novedad de estos años: genera texto, imágenes y audio nuevos. Aprendió leyendo cantidades enormes de texto y funciona prediciendo la palabra que sigue. Por eso escribe tan bien… y por eso a veces inventa.",
+      },
+      {
+        emoji: "🤝",
+        label: "¿Y con la mediación?",
+        texto: "Mediar es trabajar con lenguaje: escuchar relatos, ordenar hechos, comparar documentos, redactar acuerdos. Justo lo que estas herramientas hacen en segundos. Hoy las vamos a usar en cada etapa del caso.",
+      },
+      {
+        emoji: "🧑‍⚖️",
+        label: "Lo que no hace",
+        texto: "No percibe emociones, no custodia lo confidencial y no decide. Ese es el oficio del mediador. La regla del taller: la IA asiste, el humano conduce.",
+      },
+    ],
+  },
+  {
+    t: "placa",
+    titulo: "Un minuto: su cuenta",
+    bajada: "Todo el taller pasa por Gemini, que se usa con una cuenta de Google. Entren ahora; el de al lado ayuda.",
+    nota: "Verificar que todas las compus tengan sesión en Gemini ANTES del Gem. Quien ya entró, ayuda al vecino.",
+    kit: true,
+    explora: [
+      {
+        emoji: "🔑",
+        label: "¿Ya tiene Gmail?",
+        texto: "Entonces ya tiene cuenta de Google. Abra gemini.google.com, toque «Acceder» y entre con ese correo y su contraseña. Listo.",
+      },
+      {
+        emoji: "🆕",
+        label: "¿No tiene cuenta?",
+        texto: "accounts.google.com → «Crear cuenta» → «Para uso personal». Pide nombre, elegir un correo nuevo y una contraseña. Dos minutos, y sirve para todas las herramientas de hoy.",
+      },
+      {
+        emoji: "🟢",
+        label: "ChatGPT y Claude",
+        texto: "Las herramientas de respaldo del kit: chatgpt.com y claude.ai. En ambas alcanza el botón «Continuar con Google», con la misma cuenta que ya abrieron.",
+      },
+      {
+        emoji: "🚪",
+        label: "Compu compartida",
+        texto: "Miren arriba a la derecha qué cuenta quedó abierta: trabajen con la suya. Y al final del taller, cierren sesión antes de levantarse.",
+      },
+    ],
+  },
+  {
+    t: "placa",
     titulo: "Su asistente se llama Gem",
     bajada: "Un chat con instrucciones fijas: el prompt de sistema hecho herramienta. Se arma una vez y trabaja todo el taller.",
     libera: ["P0"],
