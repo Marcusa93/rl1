@@ -1103,8 +1103,11 @@ function ManosEnPantalla() {
   ).filter((p) => !atendidos.has(p.participant_id));
   const [entrando, setEntrando] = useState<string | null>(null);
   const vistos = useRef<Set<string> | null>(null);
+  // El temporizador vive en un ref: el efecto corre con cada poll y no debe
+  // cancelar la franja que está en curso (si no, quedaría fija en pantalla).
+  const tempo = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  // Una mano nueva cruza la pantalla con una franja (la primera lectura, no).
+  // Una mano nueva cruza la pantalla con una franja (en la primera lectura, no).
   useEffect(() => {
     const ids = new Set(pedidos.map((p) => p.participant_id));
     const previos = vistos.current;
@@ -1113,9 +1116,11 @@ function ManosEnPantalla() {
     const nuevo = pedidos.find((p) => !previos.has(p.participant_id));
     if (!nuevo) return;
     setEntrando(nuevo.name);
-    const t = setTimeout(() => setEntrando(null), 4000);
-    return () => clearTimeout(t);
+    clearTimeout(tempo.current);
+    tempo.current = setTimeout(() => setEntrando(null), 4000);
   }, [pedidos]);
+
+  useEffect(() => () => clearTimeout(tempo.current), []);
 
   function atender(id: string) {
     atendidos.add(id);
