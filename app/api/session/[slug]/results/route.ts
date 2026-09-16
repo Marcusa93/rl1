@@ -42,25 +42,51 @@ export async function GET(
   if (activity === "emp_encuesta") {
     const byQuestion: Record<string, Record<string, number>> = {};
     for (const r of list) {
-      const ans = (r.payload?.answers as Record<string, string | string[]>) ?? {};
+      const ans =
+        (r.payload?.answers as Record<string, string | string[]>) ?? {};
       for (const [q, opt] of Object.entries(ans)) {
         byQuestion[q] ??= {};
-        for (const o of Array.isArray(opt) ? opt : [opt]) byQuestion[q][o] = (byQuestion[q][o] ?? 0) + 1;
+        for (const o of Array.isArray(opt) ? opt : [opt])
+          byQuestion[q][o] = (byQuestion[q][o] ?? 0) + 1;
       }
     }
-    return ok({ activity, participants: participants ?? 0, responded: responders.length, responders: [], summary: { total: list.length, byQuestion }, config: session.activity_config ?? {} });
+    return ok({
+      activity,
+      participants: participants ?? 0,
+      responded: responders.length,
+      responders: [],
+      summary: { total: list.length, byQuestion },
+      config: session.activity_config ?? {},
+    });
   }
   if (activity === "emp_usos") {
     const counts: Record<string, number> = {};
-    for (const r of list) for (const id of (r.payload?.selected as string[]) ?? []) counts[id] = (counts[id] ?? 0) + 1;
-    return ok({ activity, participants: participants ?? 0, responded: responders.length, responders: [], summary: { total: list.length, counts }, config: session.activity_config ?? {} });
+    for (const r of list)
+      for (const id of (r.payload?.selected as string[]) ?? [])
+        counts[id] = (counts[id] ?? 0) + 1;
+    return ok({
+      activity,
+      participants: participants ?? 0,
+      responded: responders.length,
+      responders: [],
+      summary: { total: list.length, counts },
+      config: session.activity_config ?? {},
+    });
   }
   const bloque = getBloque(activity);
   if (bloque) {
-    const base = { activity, participants: participants ?? 0, responded: responders.length, responders: [], config: session.activity_config ?? {} };
+    const base = {
+      activity,
+      participants: participants ?? 0,
+      responded: responders.length,
+      responders: [],
+      config: session.activity_config ?? {},
+    };
     if (bloque.kind === "chips") {
       const counts: Record<string, number> = {};
-      for (const r of list) for (const id of (r.payload?.selected as string[]) ?? []) counts[id] = (counts[id] ?? 0) + 1;
+      for (const r of list)
+        for (const id of (r.payload?.selected as string[]) ?? [])
+          counts[id] = (counts[id] ?? 0) + 1;
       return ok({ ...base, summary: { total: list.length, counts } });
     }
     if (bloque.kind === "opciones") {
@@ -76,7 +102,10 @@ export async function GET(
           name: (r.participants?.name as string) ?? "—",
           comentario: String(r.payload?.comentario ?? "").slice(0, 200),
         }));
-      return ok({ ...base, summary: { total: list.length, counts, comentarios } });
+      return ok({
+        ...base,
+        summary: { total: list.length, counts, comentarios },
+      });
     }
     // "texto" y "texto2": razonamiento abierto — solo las últimas respuestas,
     // para no mandar 200 textos en cada poll; el docente elige qué leer en voz alta.
@@ -86,9 +115,18 @@ export async function GET(
           const [c1, c2] = bloque.campos;
           const v1 = String(r.payload?.[c1.id] ?? "").trim();
           const v2 = String(r.payload?.[c2.id] ?? "").trim();
-          return { name: (r.participants?.name as string) ?? "—", respuesta: v1 || v2 ? `${c1.label} ${v1 || "—"} · ${c2.label} ${v2 || "—"}` : "" };
+          return {
+            name: (r.participants?.name as string) ?? "—",
+            respuesta:
+              v1 || v2
+                ? `${c1.label} ${v1 || "—"} · ${c2.label} ${v2 || "—"}`
+                : "",
+          };
         }
-        return { name: (r.participants?.name as string) ?? "—", respuesta: String(r.payload?.respuesta ?? "").slice(0, 300) };
+        return {
+          name: (r.participants?.name as string) ?? "—",
+          respuesta: String(r.payload?.respuesta ?? "").slice(0, 300),
+        };
       })
       .filter((r) => r.respuesta.trim())
       .slice(-40);
@@ -98,10 +136,24 @@ export async function GET(
   if (activity === "tal_acta") {
     const actas = list
       .filter((r) => String(r.payload?.texto ?? "").trim())
-      .sort((a, b) => String(b.updated_at ?? b.created_at).localeCompare(String(a.updated_at ?? a.created_at)))
+      .sort((a, b) =>
+        String(b.updated_at ?? b.created_at).localeCompare(
+          String(a.updated_at ?? a.created_at),
+        ),
+      )
       .slice(0, 16)
-      .map((r) => ({ name: (r.participants?.name as string) ?? "—", texto: String(r.payload?.texto).slice(0, 12000) }));
-    return ok({ activity, participants: participants ?? 0, responded: responders.length, responders: [], summary: { total: actas.length, actas }, config: session.activity_config ?? {} });
+      .map((r) => ({
+        name: (r.participants?.name as string) ?? "—",
+        texto: String(r.payload?.texto).slice(0, 12000),
+      }));
+    return ok({
+      activity,
+      participants: participants ?? 0,
+      responded: responders.length,
+      responders: [],
+      summary: { total: actas.length, actas },
+      config: session.activity_config ?? {},
+    });
   }
 
   // --- Tablero del taller: las últimas preguntas a MessIAs (anónimas), para el docente
@@ -111,20 +163,70 @@ export async function GET(
       .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))
       .slice(0, 10)
       .map((r) => String(r.payload?.q).slice(0, 160));
-    return ok({ activity, participants: participants ?? 0, responded: responders.length, responders: [], summary: { total: list.length, preguntas }, config: session.activity_config ?? {} });
+    return ok({
+      activity,
+      participants: participants ?? 0,
+      responded: responders.length,
+      responders: [],
+      summary: { total: list.length, preguntas },
+      config: session.activity_config ?? {},
+    });
+  }
+
+  // --- Manos levantadas: quién pide ayuda ahora mismo (lo ve la pantalla del
+  // docente y su celular; el pedido vence solo a la media hora)
+  if (activity === "tal_ayuda") {
+    const ahora = Date.now();
+    const pedidos = list
+      .filter((r) => r.payload?.pidiendo)
+      .map((r) => ({
+        participant_id: r.participant_id as string,
+        name: (r.participants?.name as string) ?? "—",
+        etapa: Number(r.payload?.etapa ?? 0),
+        paso: String(r.payload?.paso ?? ""),
+        desde: new Date(String(r.updated_at ?? r.created_at)).getTime(),
+      }))
+      .filter((p) => ahora - p.desde < 30 * 60 * 1000)
+      .sort((a, b) => a.desde - b.desde);
+    return ok({
+      activity,
+      participants: participants ?? 0,
+      responded: pedidos.length,
+      responders: [],
+      summary: { total: pedidos.length, pedidos },
+      config: session.activity_config ?? {},
+    });
   }
 
   // --- Tablero del taller guiado: cuántas compus marcaron "Listo" en cada paso
   if (activity === "tal_paso") {
     const counts: Record<string, number> = {};
-    for (const r of list) if (r.payload?.done) counts[String(r.item_key)] = (counts[String(r.item_key)] ?? 0) + 1;
-    return ok({ activity, participants: participants ?? 0, responded: responders.length, responders: [], summary: { total: list.length, counts }, config: session.activity_config ?? {} });
+    for (const r of list)
+      if (r.payload?.done)
+        counts[String(r.item_key)] = (counts[String(r.item_key)] ?? 0) + 1;
+    return ok({
+      activity,
+      participants: participants ?? 0,
+      responded: responders.length,
+      responders: [],
+      summary: { total: list.length, counts },
+      config: session.activity_config ?? {},
+    });
   }
 
   // --- Clases en vivo (/web3, /justicia, /taller-ia) — agregación por tipo de actividad
-  const w3 = getW3Actividad(activity) ?? getJusActividad(activity) ?? getTalActividad(activity);
+  const w3 =
+    getW3Actividad(activity) ??
+    getJusActividad(activity) ??
+    getTalActividad(activity);
   if (w3) {
-    const base = { activity, participants: participants ?? 0, responded: responders.length, responders: [], config: session.activity_config ?? {} };
+    const base = {
+      activity,
+      participants: participants ?? 0,
+      responded: responders.length,
+      responders: [],
+      config: session.activity_config ?? {},
+    };
     if (w3.kind === "encuesta") {
       const byQuestion: Record<string, Record<string, number>> = {};
       for (const r of list) {
@@ -146,12 +248,17 @@ export async function GET(
     }
     if (w3.kind === "chips") {
       const counts: Record<string, number> = {};
-      for (const r of list) for (const id of (r.payload?.selected as string[]) ?? []) counts[id] = (counts[id] ?? 0) + 1;
+      for (const r of list)
+        for (const id of (r.payload?.selected as string[]) ?? [])
+          counts[id] = (counts[id] ?? 0) + 1;
       return ok({ ...base, summary: { total: list.length, counts } });
     }
     if (w3.kind === "texto") {
       const respuestas = list
-        .map((r) => ({ name: (r.participants?.name as string) ?? "—", respuesta: String(r.payload?.respuesta ?? "").slice(0, 300) }))
+        .map((r) => ({
+          name: (r.participants?.name as string) ?? "—",
+          respuesta: String(r.payload?.respuesta ?? "").slice(0, 300),
+        }))
         .filter((r) => r.respuesta.trim())
         .slice(-40);
       return ok({ ...base, summary: { total: list.length, respuestas } });
@@ -159,7 +266,9 @@ export async function GET(
     // "palabra"
     const counts: Record<string, number> = {};
     for (const r of list) {
-      const w = String(r.payload?.palabra ?? "").trim().toLowerCase();
+      const w = String(r.payload?.palabra ?? "")
+        .trim()
+        .toLowerCase();
       if (w) counts[w] = (counts[w] ?? 0) + 1;
     }
     const palabras = Object.entries(counts)
@@ -172,20 +281,30 @@ export async function GET(
   if (activity === "emp_cierre") {
     const counts: Record<string, number> = {};
     for (const r of list) {
-      const w = String(r.payload?.palabra ?? "").trim().toLowerCase();
+      const w = String(r.payload?.palabra ?? "")
+        .trim()
+        .toLowerCase();
       if (w) counts[w] = (counts[w] ?? 0) + 1;
     }
     const palabras = Object.entries(counts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 60)
       .map(([palabra, n]) => ({ palabra, n }));
-    return ok({ activity, participants: participants ?? 0, responded: responders.length, responders: [], summary: { total: list.length, palabras }, config: session.activity_config ?? {} });
+    return ok({
+      activity,
+      participants: participants ?? 0,
+      responded: responders.length,
+      responders: [],
+      summary: { total: list.length, palabras },
+      config: session.activity_config ?? {},
+    });
   }
 
   if (activity === "encuesta") {
     const byQuestion: Record<string, Record<string, number>> = {};
     for (const r of list) {
-      const ans = (r.payload?.answers as Record<string, string | string[]>) ?? {};
+      const ans =
+        (r.payload?.answers as Record<string, string | string[]>) ?? {};
       for (const [q, opt] of Object.entries(ans)) {
         byQuestion[q] ??= {};
         const opts = Array.isArray(opt) ? opt : [opt];
@@ -218,7 +337,8 @@ export async function GET(
       if (!a) continue;
       analyzed++;
       for (const s of a.scores ?? []) {
-        const p = s.status === "presente" ? 100 : s.status === "incompleto" ? 50 : 0;
+        const p =
+          s.status === "presente" ? 100 : s.status === "incompleto" ? 50 : 0;
         points[s.var] = (points[s.var] ?? 0) + p;
       }
     }
@@ -242,7 +362,11 @@ export async function GET(
         objeto: r.payload?.objeto ?? "",
         output: r.payload?.output ?? "",
       }));
-    summary = { total: list.length, done: list.filter((r) => r.payload?.done).length, drafts };
+    summary = {
+      total: list.length,
+      done: list.filter((r) => r.payload?.done).length,
+      drafts,
+    };
   } else if (activity === "chat") {
     summary = { total: list.length, usando: list.length };
   } else if (activity === "tarea") {

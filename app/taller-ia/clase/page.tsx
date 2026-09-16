@@ -11,10 +11,26 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AccesoDocente } from "@/components/clase/acceso-docente";
-import { ChipResponda, Constelacion, PlacaIngreso, ResultadosVivo, useResultados } from "@/components/clase/vivo";
-import { DiagramaCaucus, DiagramaGem, DiagramaResearch, DiagramaVs, MapaTaller } from "@/components/taller/diagramas";
+import {
+  ChipResponda,
+  Constelacion,
+  PlacaIngreso,
+  ResultadosVivo,
+  useResultados,
+} from "@/components/clase/vivo";
+import {
+  DiagramaCaucus,
+  DiagramaGem,
+  DiagramaResearch,
+  DiagramaVs,
+  MapaTaller,
+} from "@/components/taller/diagramas";
 import { TarjetaAudio } from "@/components/taller/guiado";
-import { PREGUNTAS_ENTREVISTA, TAL_AUDIOS, TAL_ETAPAS } from "@/lib/taller-guiado";
+import {
+  PREGUNTAS_ENTREVISTA,
+  TAL_AUDIOS,
+  TAL_ETAPAS,
+} from "@/lib/taller-guiado";
 import { Explorables } from "@/components/clase/explorables";
 import { LluviaReacciones } from "@/components/clase/reacciones";
 import { useRemotoDeck } from "@/components/clase/remoto";
@@ -32,7 +48,12 @@ import {
 import { COM_INSTAGRAM_URL, COM_QR_SRC } from "@/lib/comercial";
 import type { ActividadVivo } from "@/lib/clase-vivo";
 import { rem } from "@/lib/remoto";
-import { TAL_DOCS, TAL_PROMPTS, type ConfigTaller, type LiberadoId } from "@/lib/taller-caso";
+import {
+  TAL_DOCS,
+  TAL_PROMPTS,
+  type ConfigTaller,
+  type LiberadoId,
+} from "@/lib/taller-caso";
 import {
   getTalActividad,
   TAL_AUTOR,
@@ -85,7 +106,9 @@ function guardar(key: string, v: unknown) {
 /** Lo que ya se liberó: documentos y prompts de las placas visitadas, en orden de visita. */
 function calcularConfig(vistas: number[], idx: number): ConfigTaller {
   const liberados: LiberadoId[] = [];
-  for (const v of vistas) for (const id of TAL_SLIDES[v]?.libera ?? []) if (!liberados.includes(id)) liberados.push(id);
+  for (const v of vistas)
+    for (const id of TAL_SLIDES[v]?.libera ?? [])
+      if (!liberados.includes(id)) liberados.push(id);
   const previas = TAL_SLIDES.slice(0, idx + 1).reverse();
   const caso = previas.find((s) => s.caso !== undefined)?.caso;
   const trabajo = previas.find((s) => s.trabajo !== undefined)?.trabajo;
@@ -101,19 +124,30 @@ function calcularConfig(vistas: number[], idx: number): ConfigTaller {
 /** Etapa abierta hasta esta placa: la más alta de las placas anteriores. */
 function etapaHasta(idx: number): number {
   let e = 0;
-  for (const sl of TAL_SLIDES.slice(0, idx + 1)) if (sl.etapa !== undefined && sl.etapa > e) e = sl.etapa;
+  for (const sl of TAL_SLIDES.slice(0, idx + 1))
+    if (sl.etapa !== undefined && sl.etapa > e) e = sl.etapa;
   return e;
 }
 
-type EstadoActivacion = { key: string; status: "enviando" | "ok" | "error" } | null;
+type EstadoActivacion = {
+  key: string;
+  status: "enviando" | "ok" | "error";
+} | null;
 
 function Deck() {
-  const [idx, setIdx] = useState(() => Math.min(Math.max(leer<number>(STORAGE_KEY, 0), 0), TAL_SLIDES.length - 1));
-  const [vistas, setVistas] = useState<number[]>(() => leer<number[]>(STORAGE_VISTAS, []));
+  const [idx, setIdx] = useState(() =>
+    Math.min(Math.max(leer<number>(STORAGE_KEY, 0), 0), TAL_SLIDES.length - 1),
+  );
+  const [vistas, setVistas] = useState<number[]>(() =>
+    leer<number[]>(STORAGE_VISTAS, []),
+  );
   const [estado, setEstado] = useState<EstadoActivacion>(null);
   const [kitManual, setKitManual] = useState<boolean | null>(null);
   const [revelada, setRevelada] = useState(false);
-  const enviado = useRef<{ activa: string | null; cfg: string }>({ activa: null, cfg: "" });
+  const enviado = useRef<{ activa: string | null; cfg: string }>({
+    activa: null,
+    cfg: "",
+  });
 
   const go = useCallback((n: number) => {
     const next = Math.min(Math.max(n, 0), TAL_SLIDES.length - 1);
@@ -144,11 +178,15 @@ function Deck() {
 
   // La placa manda: activa su actividad y le pasa a los grupos lo liberado y la etapa.
   useEffect(() => {
-    const cfg = calcularConfig(vistas.includes(idx) ? vistas : [...vistas, idx], idx);
+    const cfg = calcularConfig(
+      vistas.includes(idx) ? vistas : [...vistas, idx],
+      idx,
+    );
     const cfgStr = JSON.stringify(cfg);
     const key = "activa" in slide ? slide.activa : undefined;
     let body: Record<string, unknown> | null = null;
-    if (key && key !== enviado.current.activa) body = { current_activity: key, activity_config: cfg };
+    if (key && key !== enviado.current.activa)
+      body = { current_activity: key, activity_config: cfg };
     else if (cfgStr !== enviado.current.cfg) body = { activity_config: cfg };
     if (!body) return;
     if (key) enviado.current.activa = key;
@@ -162,7 +200,8 @@ function Deck() {
     })
       .then((r) => {
         if (!r.ok) enviado.current = { activa: null, cfg: "" };
-        if (key || !r.ok) setEstado({ key: nombre, status: r.ok ? "ok" : "error" });
+        if (key || !r.ok)
+          setEstado({ key: nombre, status: r.ok ? "ok" : "error" });
       })
       .catch(() => {
         enviado.current = { activa: null, cfg: "" };
@@ -172,7 +211,12 @@ function Deck() {
 
   useEffect(() => {
     async function reiniciar() {
-      if (!confirm("¿Reiniciar el taller? Se borran los grupos, sus respuestas y los documentos liberados.")) return;
+      if (
+        !confirm(
+          "¿Reiniciar el taller? Se borran los grupos, sus respuestas y los documentos liberados.",
+        )
+      )
+        return;
       await fetch(`/api/session/${TAL_SLUG}/reset`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -204,11 +248,25 @@ function Deck() {
     .find((s) => s.parte)?.parte;
   const colorEtapa = TAL_ETAPAS[etapaHasta(idx)]?.color ?? "#5eead4";
   const etapa = calcularConfig([], idx);
-  const conBarra = slide.t !== "portada" && slide.t !== "ingreso" && slide.t !== "final" && (etapa.caso !== undefined || etapa.trabajo !== undefined);
+  const conBarra =
+    slide.t !== "portada" &&
+    slide.t !== "ingreso" &&
+    slide.t !== "final" &&
+    (etapa.caso !== undefined || etapa.trabajo !== undefined);
 
-  useRemotoDeck({ slug: TAL_SLUG, idx, total: TAL_SLIDES.length, titulo: tituloPlacaTaller(slide), parte: parteActual, nota: slide.nota, go });
+  useRemotoDeck({
+    slug: TAL_SLUG,
+    idx,
+    total: TAL_SLIDES.length,
+    titulo: tituloPlacaTaller(slide),
+    parte: parteActual,
+    nota: slide.nota,
+    go,
+  });
 
-  const estadoNombre = estado ? (getTalActividad(estado.key)?.titulo ?? "Ingreso") : "";
+  const estadoNombre = estado
+    ? (getTalActividad(estado.key)?.titulo ?? "Ingreso")
+    : "";
   const kitVisible = kitManual ?? Boolean(slide.kit);
   const { zoom, aviso: avisoZoom } = useZoomDeck();
 
@@ -218,7 +276,10 @@ function Deck() {
       <div className="fixed inset-x-0 top-0 z-40 h-1 bg-ink-2/60">
         <div
           className="h-full transition-all duration-300"
-          style={{ width: `${((idx + 1) / TAL_SLIDES.length) * 100}%`, background: `linear-gradient(90deg, ${colorEtapa}, ${colorEtapa}aa)` }}
+          style={{
+            width: `${((idx + 1) / TAL_SLIDES.length) * 100}%`,
+            background: `linear-gradient(90deg, ${colorEtapa}, ${colorEtapa}aa)`,
+          }}
         />
       </div>
 
@@ -226,13 +287,23 @@ function Deck() {
         <div
           className={cn(
             "fixed right-4 top-3 z-40 flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium",
-            estado.status === "error" ? "bg-magenta/15 text-magenta" : "bg-teal/15 text-teal",
+            estado.status === "error"
+              ? "bg-magenta/15 text-magenta"
+              : "bg-teal/15 text-teal",
           )}
         >
-          <span className={cn("size-1.5 rounded-full", estado.status === "error" ? "bg-magenta" : "animate-pulse bg-teal")} />
+          <span
+            className={cn(
+              "size-1.5 rounded-full",
+              estado.status === "error"
+                ? "bg-magenta"
+                : "animate-pulse bg-teal",
+            )}
+          />
           {estado.status === "enviando" && "activando…"}
           {estado.status === "ok" && <>en vivo: {estadoNombre}</>}
-          {estado.status === "error" && "no se pudo activar — vuelva a ingresar la clave"}
+          {estado.status === "error" &&
+            "no se pudo activar — vuelva a ingresar la clave"}
         </div>
       )}
 
@@ -245,8 +316,15 @@ function Deck() {
             <BarraRecorridos caso={etapa.caso} trabajo={etapa.trabajo} />
           </div>
         )}
-        <Slide slide={slide} revelada={revelada} onRevelar={() => setRevelada((r) => !r)} onSalto={irA} />
+        <Slide
+          slide={slide}
+          revelada={revelada}
+          onRevelar={() => setRevelada((r) => !r)}
+          onSalto={irA}
+        />
       </main>
+
+      <ManosEnPantalla />
 
       <LluviaReacciones slug={TAL_SLUG} contador={slide.t === "final"} />
 
@@ -257,7 +335,9 @@ function Deck() {
             onClick={() => setKitManual(!kitVisible)}
             className={cn(
               "shrink-0 rounded-lg border px-3 py-1.5 transition",
-              kitVisible ? "border-teal/60 bg-teal/15 text-teal" : "border-line bg-panel/60 text-muted hover:text-teal",
+              kitVisible
+                ? "border-teal/60 bg-teal/15 text-teal"
+                : "border-line bg-panel/60 text-muted hover:text-teal",
             )}
             aria-expanded={kitVisible}
           >
@@ -279,26 +359,43 @@ function Deck() {
               ))}
             </div>
           ) : (
-            <span className="hidden min-w-0 truncate lg:block">{TAL_AUTOR} · Laboratorio de IA · Facultad de Derecho y Ciencias Sociales, UNT</span>
+            <span className="hidden min-w-0 truncate lg:block">
+              {TAL_AUTOR} · Laboratorio de IA · Facultad de Derecho y Ciencias
+              Sociales, UNT
+            </span>
           )}
         </div>
         <div className="ml-auto flex shrink-0 items-center gap-3">
-          <ManosEnPantalla />
           {parteActual && (
             <span
-              className={cn("hidden rounded-full border px-2.5 py-1 font-mono text-[11px]", kitVisible ? "2xl:block" : "md:block")}
-              style={{ borderColor: `${colorEtapa}66`, color: colorEtapa, background: `${colorEtapa}14` }}
+              className={cn(
+                "hidden rounded-full border px-2.5 py-1 font-mono text-[11px]",
+                kitVisible ? "2xl:block" : "md:block",
+              )}
+              style={{
+                borderColor: `${colorEtapa}66`,
+                color: colorEtapa,
+                background: `${colorEtapa}14`,
+              }}
             >
               {parteActual}
             </span>
           )}
-          <button onClick={() => go(idx - 1)} className="rounded-lg border border-line bg-panel/60 px-3 py-1.5 text-muted transition hover:text-teal" aria-label="Anterior">
+          <button
+            onClick={() => go(idx - 1)}
+            className="rounded-lg border border-line bg-panel/60 px-3 py-1.5 text-muted transition hover:text-teal"
+            aria-label="Anterior"
+          >
             ◀
           </button>
           <span className="font-mono">
             {idx + 1} / {TAL_SLIDES.length}
           </span>
-          <button onClick={() => go(idx + 1)} className="rounded-lg border border-line bg-panel/60 px-3 py-1.5 text-muted transition hover:text-teal" aria-label="Siguiente">
+          <button
+            onClick={() => go(idx + 1)}
+            className="rounded-lg border border-line bg-panel/60 px-3 py-1.5 text-muted transition hover:text-teal"
+            aria-label="Siguiente"
+          >
             ▶
           </button>
         </div>
@@ -327,7 +424,10 @@ function Logos({ alto = 64 }: { alto?: number }) {
 
 function Parte({ texto, color }: { texto: string; color?: string }) {
   return (
-    <p className="mb-3 flex items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-violet" style={color ? { color } : undefined}>
+    <p
+      className="mb-3 flex items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-violet"
+      style={color ? { color } : undefined}
+    >
       <span className="size-1.5 rounded-full bg-current" />
       {texto}
     </p>
@@ -337,8 +437,13 @@ function Parte({ texto, color }: { texto: string; color?: string }) {
 function Titulo({ titulo, bajada }: { titulo: string; bajada: string }) {
   return (
     <>
-      <h1 className="max-w-5xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">{titulo}</h1>
-      <p className="rise mt-3 max-w-4xl text-lg leading-snug text-muted sm:text-2xl" style={{ animationDelay: "0.12s" }}>
+      <h1 className="max-w-5xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
+        {titulo}
+      </h1>
+      <p
+        className="rise mt-3 max-w-4xl text-lg leading-snug text-muted sm:text-2xl"
+        style={{ animationDelay: "0.12s" }}
+      >
         {bajada}
       </p>
     </>
@@ -356,7 +461,9 @@ function Slide({
   onRevelar: () => void;
   onSalto: (a: string) => void;
 }) {
-  const saltos = slide.saltos ? <Saltos saltos={slide.saltos} onSalto={onSalto} /> : null;
+  const saltos = slide.saltos ? (
+    <Saltos saltos={slide.saltos} onSalto={onSalto} />
+  ) : null;
   switch (slide.t) {
     case "portada":
       return (
@@ -371,26 +478,57 @@ function Slide({
           />
           <Constelacion />
           <Logos alto={62} />
-          <p className="mt-8 font-mono text-sm uppercase tracking-[0.3em] text-violet">Taller práctico</p>
-          <h1 className="text-gradient mt-3 max-w-5xl break-words font-mono text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">{TAL_TITLE}</h1>
-          <p className="rise mt-4 max-w-3xl text-lg text-muted sm:text-2xl" style={{ animationDelay: "0.2s" }}>
+          <p className="mt-8 font-mono text-sm uppercase tracking-[0.3em] text-violet">
+            Taller práctico
+          </p>
+          <h1 className="text-gradient mt-3 max-w-5xl break-words font-mono text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+            {TAL_TITLE}
+          </h1>
+          <p
+            className="rise mt-4 max-w-3xl text-lg text-muted sm:text-2xl"
+            style={{ animationDelay: "0.2s" }}
+          >
             {TAL_SUBTITLE}
           </p>
-          <p className="rise mt-2 text-sm text-faint" style={{ animationDelay: "0.3s" }}>
+          <p
+            className="rise mt-2 text-sm text-faint"
+            style={{ animationDelay: "0.3s" }}
+          >
             {TAL_EVENTO} · {TAL_FECHA}
           </p>
-          <p className="rise mt-5 text-lg font-medium" style={{ animationDelay: "0.4s" }}>
+          <p
+            className="rise mt-5 text-lg font-medium"
+            style={{ animationDelay: "0.4s" }}
+          >
             {TAL_AUTOR}
           </p>
-          <p className="rise text-sm text-muted" style={{ animationDelay: "0.45s" }}>
+          <p
+            className="rise text-sm text-muted"
+            style={{ animationDelay: "0.45s" }}
+          >
             {TAL_CARGO}
           </p>
-          <div className="rise mt-8 flex flex-wrap items-center justify-center gap-5" style={{ animationDelay: "0.6s" }}>
-            <img src={TAL_QR_PLATAFORMA} alt="Código QR para ingresar" width={150} height={150} className="rounded-xl border border-line bg-white p-2" />
+          <div
+            className="rise mt-8 flex flex-wrap items-center justify-center gap-5"
+            style={{ animationDelay: "0.6s" }}
+          >
+            <img
+              src={TAL_QR_PLATAFORMA}
+              alt="Código QR para ingresar"
+              width={150}
+              height={150}
+              className="rounded-xl border border-line bg-white p-2"
+            />
             <div className="pulse-ring rounded-2xl border-gradient px-5 py-4 text-left sm:px-7 sm:py-5">
-              <p className="text-xs uppercase tracking-widest text-faint">Una computadora por persona o por dupla</p>
-              <p className="text-gradient mt-1 break-all font-mono text-xl font-bold sm:text-2xl">{TAL_LINK}</p>
-              <p className="mt-1 text-xs text-faint">escaneen el código o escriban la dirección</p>
+              <p className="text-xs uppercase tracking-widest text-faint">
+                Una computadora por persona o por dupla
+              </p>
+              <p className="text-gradient mt-1 break-all font-mono text-xl font-bold sm:text-2xl">
+                {TAL_LINK}
+              </p>
+              <p className="mt-1 text-xs text-faint">
+                escaneen el código o escriban la dirección
+              </p>
             </div>
           </div>
         </div>
@@ -399,8 +537,15 @@ function Slide({
     case "ingreso":
       return (
         <div>
-          <PlacaIngreso slug={TAL_SLUG} qr={TAL_QR_PLATAFORMA} link={TAL_LINK} />
-          <p className="mt-4 text-center text-lg text-muted">Ingresen con su nombre: en su computadora los espera el itinerario del taller, con MessIAs de asistente.</p>
+          <PlacaIngreso
+            slug={TAL_SLUG}
+            qr={TAL_QR_PLATAFORMA}
+            link={TAL_LINK}
+          />
+          <p className="mt-4 text-center text-lg text-muted">
+            Ingresen con su nombre: en su computadora los espera el itinerario
+            del taller, con MessIAs de asistente.
+          </p>
         </div>
       );
 
@@ -413,7 +558,12 @@ function Slide({
       return (
         <div>
           {slide.parte && <Parte texto={slide.parte} />}
-          <SlideActividad act={act} escena={slide.escena} revelada={revelada} onRevelar={onRevelar} />
+          <SlideActividad
+            act={act}
+            escena={slide.escena}
+            revelada={revelada}
+            onRevelar={onRevelar}
+          />
           {saltos}
         </div>
       );
@@ -435,18 +585,40 @@ function Slide({
       return (
         <div className="flex flex-col items-center text-center">
           <Logos alto={54} />
-          <h1 className="text-gradient mt-8 font-mono text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">Gracias</h1>
-          <p className="rise mt-5 rounded-full border border-teal/40 bg-teal/10 px-5 py-2 text-lg text-foreground sm:text-xl" style={{ animationDelay: "0.2s" }}>
+          <h1 className="text-gradient mt-8 font-mono text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+            Gracias
+          </h1>
+          <p
+            className="rise mt-5 rounded-full border border-teal/40 bg-teal/10 px-5 py-2 text-lg text-foreground sm:text-xl"
+            style={{ animationDelay: "0.2s" }}
+          >
             👏 Manden su aplauso desde su compu o celular
           </p>
-          <p className="rise mt-3 text-lg text-muted sm:text-xl" style={{ animationDelay: "0.3s" }}>
-            📘 La guía del taller ya está en su pantalla: <span className="font-mono text-teal">taller.rossi-ia.com/guia</span>
+          <p
+            className="rise mt-3 text-lg text-muted sm:text-xl"
+            style={{ animationDelay: "0.3s" }}
+          >
+            📘 La guía del taller ya está en su pantalla:{" "}
+            <span className="font-mono text-teal">
+              taller.rossi-ia.com/guia
+            </span>
           </p>
           <p className="mt-4 text-lg text-muted">{TAL_EVENTO}</p>
           <p className="mt-5 text-lg font-medium">{TAL_AUTOR}</p>
           <p className="text-sm text-muted">{TAL_CARGO}</p>
-          <a href={COM_INSTAGRAM_URL} target="_blank" rel="noreferrer" className="mt-8 flex flex-col items-center gap-3">
-            <img src={COM_QR_SRC} alt="Código QR a Instagram" width={190} height={190} className="rounded-2xl border border-line bg-white p-3" />
+          <a
+            href={COM_INSTAGRAM_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-8 flex flex-col items-center gap-3"
+          >
+            <img
+              src={COM_QR_SRC}
+              alt="Código QR a Instagram"
+              width={190}
+              height={190}
+              className="rounded-2xl border border-line bg-white p-3"
+            />
             <span className="font-mono text-lg text-teal">@marquitorossi</span>
           </a>
         </div>
@@ -460,18 +632,30 @@ function AudioVista({ slide }: { slide: TalAudioSlide & { parte?: string } }) {
   return (
     <div>
       {slide.parte && <Parte texto={slide.parte} />}
-      <Titulo titulo={`${a.emoji} ${a.titulo}`} bajada={`Sesión privada con el equipo de mediación · ${a.dur} · escuchen con la ficha PL-D a mano`} />
-      <div className="mx-auto mt-8 w-full max-w-3xl" {...rem(`▶ Audio ${a.codigo}`)}>
+      <Titulo
+        titulo={`${a.emoji} ${a.titulo}`}
+        bajada={`Sesión privada con el equipo de mediación · ${a.dur} · escuchen con la ficha PL-D a mano`}
+      />
+      <div
+        className="mx-auto mt-8 w-full max-w-3xl"
+        {...rem(`▶ Audio ${a.codigo}`)}
+      >
         <TarjetaAudio audio={a} />
       </div>
       <div className="mx-auto mt-6 flex max-w-3xl flex-wrap justify-center gap-2">
         {PREGUNTAS_ENTREVISTA.map((q) => (
-          <span key={q} className="rounded-full border border-line bg-panel/60 px-3.5 py-1.5 text-sm text-muted">
+          <span
+            key={q}
+            className="rounded-full border border-line bg-panel/60 px-3.5 py-1.5 text-sm text-muted"
+          >
             «{q}»
           </span>
         ))}
       </div>
-      <p className="mt-6 text-center text-base text-faint">El audio también está en cada computadora (etapa 1), con su transcripción.</p>
+      <p className="mt-6 text-center text-base text-faint">
+        El audio también está en cada computadora (etapa 1), con su
+        transcripción.
+      </p>
     </div>
   );
 }
@@ -485,32 +669,59 @@ function TableroVista({ n }: { n: number }) {
   return (
     <div>
       <Parte texto={`Tablero de sala · etapa ${etapa.n}`} color={etapa.color} />
-      <Titulo titulo={`${etapa.emoji} ¿Cómo vamos con «${etapa.titulo}»?`} bajada={`${data?.participants ?? 0} computadoras conectadas · cada barra es un paso marcado como listo`} />
+      <Titulo
+        titulo={`${etapa.emoji} ¿Cómo vamos con «${etapa.titulo}»?`}
+        bajada={`${data?.participants ?? 0} computadoras conectadas · cada barra es un paso marcado como listo`}
+      />
       <div className="mx-auto mt-8 w-full max-w-4xl space-y-3">
         {etapa.pasos.map((p, i) => {
           const c = counts[p.id] ?? 0;
           const pct = Math.min(100, Math.round((c / total) * 100));
           return (
-            <div key={p.id} className={cn("rounded-2xl border p-4", p.extra ? "border-dashed border-line/60" : "glass border-line")}>
+            <div
+              key={p.id}
+              className={cn(
+                "rounded-2xl border p-4",
+                p.extra ? "border-dashed border-line/60" : "glass border-line",
+              )}
+            >
               <div className="flex items-baseline justify-between gap-3">
                 <p className="min-w-0 truncate text-lg font-semibold sm:text-xl">
-                  <span className="mr-2 font-mono" style={{ color: etapa.color }}>
+                  <span
+                    className="mr-2 font-mono"
+                    style={{ color: etapa.color }}
+                  >
                     {i + 1}.
                   </span>
                   {p.titulo}
-                  {p.extra && <span className="ml-2 text-xs font-normal text-faint">extra</span>}
+                  {p.extra && (
+                    <span className="ml-2 text-xs font-normal text-faint">
+                      extra
+                    </span>
+                  )}
                 </p>
                 <p className="shrink-0 font-mono">
-                  <span key={c} className="pop inline-block text-3xl font-bold sm:text-4xl" style={{ color: etapa.color }}>
+                  <span
+                    key={c}
+                    className="pop inline-block text-3xl font-bold sm:text-4xl"
+                    style={{ color: etapa.color }}
+                  >
                     {c}
                   </span>
-                  <span className="text-lg text-faint"> / {data?.participants ?? 0}</span>
+                  <span className="text-lg text-faint">
+                    {" "}
+                    / {data?.participants ?? 0}
+                  </span>
                 </p>
               </div>
               <div className="mt-2 h-3.5 overflow-hidden rounded-full bg-ink-2">
                 <div
                   className="h-full rounded-full transition-all duration-700"
-                  style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${etapa.color}, ${etapa.color}bb)`, boxShadow: `0 0 16px ${etapa.color}66` }}
+                  style={{
+                    width: `${pct}%`,
+                    background: `linear-gradient(90deg, ${etapa.color}, ${etapa.color}bb)`,
+                    boxShadow: `0 0 16px ${etapa.color}66`,
+                  }}
                 />
               </div>
             </div>
@@ -526,16 +737,22 @@ function TableroVista({ n }: { n: number }) {
 /** Las actas entregadas: tocar un nombre abre su acta en pantalla para comentarla. */
 function ActasEntregadas() {
   const { data } = useResultados(TAL_SLUG, "tal_acta", 5000);
-  const actas = (data?.summary?.actas as { name: string; texto: string }[]) ?? [];
+  const actas =
+    (data?.summary?.actas as { name: string; texto: string }[]) ?? [];
   const [abierta, setAbierta] = useState<number | null>(null);
   const acta = abierta !== null ? actas[abierta] : null;
   return (
     <div className="mx-auto mt-4 w-full max-w-4xl rounded-2xl border border-teal/40 bg-teal/5 p-4">
       <p className="text-xs font-bold uppercase tracking-widest text-teal">
-        📤 Actas entregadas <span className="ml-2 font-mono normal-case text-faint">{actas.length}</span>
+        📤 Actas entregadas{" "}
+        <span className="ml-2 font-mono normal-case text-faint">
+          {actas.length}
+        </span>
       </p>
       {actas.length === 0 ? (
-        <p className="mt-2 text-sm text-faint">Todavía ninguna. Aparecen acá a medida que las entregan.</p>
+        <p className="mt-2 text-sm text-faint">
+          Todavía ninguna. Aparecen acá a medida que las entregan.
+        </p>
       ) : (
         <div className="mt-2 flex flex-wrap gap-2">
           {actas.map((a, i) => (
@@ -551,14 +768,19 @@ function ActasEntregadas() {
         </div>
       )}
       {acta && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/80 p-6 backdrop-blur" onClick={() => setAbierta(null)}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-ink/80 p-6 backdrop-blur"
+          onClick={() => setAbierta(null)}
+        >
           <div
             onClick={(e) => e.stopPropagation()}
             className="max-h-[86vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-white px-10 py-8 text-neutral-900 shadow-2xl"
             style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
           >
             <div className="mb-4 flex items-center justify-between gap-3 border-b border-neutral-200 pb-3">
-              <p className="text-sm font-semibold text-neutral-500">Acta entregada por {acta.name}</p>
+              <p className="text-sm font-semibold text-neutral-500">
+                Acta entregada por {acta.name}
+              </p>
               <button
                 onClick={() => setAbierta(null)}
                 {...rem("✕ Cerrar el acta")}
@@ -567,7 +789,9 @@ function ActasEntregadas() {
                 ✕ Cerrar
               </button>
             </div>
-            <p className="whitespace-pre-wrap text-lg leading-relaxed">{acta.texto}</p>
+            <p className="whitespace-pre-wrap text-lg leading-relaxed">
+              {acta.texto}
+            </p>
           </div>
         </div>
       )}
@@ -581,16 +805,30 @@ function PreguntasMessias() {
   const preguntas = (data?.summary?.preguntas as string[]) ?? [];
   const total = (data?.summary?.total as number) ?? 0;
   if (!total) {
-    return <p className="mt-6 text-center text-base text-faint">Si un paso viene lento, es ahí donde hay que dar una mano (o mandar a MessIAs).</p>;
+    return (
+      <p className="mt-6 text-center text-base text-faint">
+        Si un paso viene lento, es ahí donde hay que dar una mano (o mandar a
+        MessIAs).
+      </p>
+    );
   }
   return (
     <div className="mx-auto mt-6 w-full max-w-4xl rounded-2xl border border-violet/40 bg-violet/5 p-4">
       <p className="text-xs font-bold uppercase tracking-widest text-violet">
-        🗨️ Lo que le están preguntando a MessIAs <span className="ml-2 font-mono normal-case text-faint">{total} preguntas</span>
+        🗨️ Lo que le están preguntando a MessIAs{" "}
+        <span className="ml-2 font-mono normal-case text-faint">
+          {total} preguntas
+        </span>
       </p>
       <div className="mt-2 flex flex-wrap gap-2">
         {preguntas.map((q, i) => (
-          <span key={`${i}-${q.slice(0, 12)}`} className={cn("rounded-xl border border-line bg-ink-2/60 px-3 py-1.5 text-sm text-muted", i === 0 && "border-violet/50 text-foreground")}>
+          <span
+            key={`${i}-${q.slice(0, 12)}`}
+            className={cn(
+              "rounded-xl border border-line bg-ink-2/60 px-3 py-1.5 text-sm text-muted",
+              i === 0 && "border-violet/50 text-foreground",
+            )}
+          >
             «{q}»
           </span>
         ))}
@@ -599,10 +837,25 @@ function PreguntasMessias() {
   );
 }
 
-function PlacaVista({ slide, saltos }: { slide: TalPlaca & { parte?: string; etapa?: number }; saltos: React.ReactNode }) {
+function PlacaVista({
+  slide,
+  saltos,
+}: {
+  slide: TalPlaca & { parte?: string; etapa?: number };
+  saltos: React.ReactNode;
+}) {
   return (
     <div>
-      {slide.parte && <Parte texto={slide.parte} color={slide.etapa !== undefined ? TAL_ETAPAS[slide.etapa]?.color : undefined} />}
+      {slide.parte && (
+        <Parte
+          texto={slide.parte}
+          color={
+            slide.etapa !== undefined
+              ? TAL_ETAPAS[slide.etapa]?.color
+              : undefined
+          }
+        />
+      )}
       <Titulo titulo={slide.titulo} bajada={slide.bajada} />
       {slide.visual === "recorridos" && <RecorridosGrande />}
       {slide.visual === "matriz" && <MatrizTrabajo />}
@@ -619,7 +872,10 @@ function PlacaVista({ slide, saltos }: { slide: TalPlaca & { parte?: string; eta
         </div>
       )}
       {slide.lede && (
-        <p className="rise mx-auto mt-5 max-w-4xl text-center text-xl italic leading-relaxed text-muted" style={{ animationDelay: "0.4s" }}>
+        <p
+          className="rise mx-auto mt-5 max-w-4xl text-center text-xl italic leading-relaxed text-muted"
+          style={{ animationDelay: "0.4s" }}
+        >
           {slide.lede}
         </p>
       )}
@@ -628,23 +884,45 @@ function PlacaVista({ slide, saltos }: { slide: TalPlaca & { parte?: string; eta
   );
 }
 
-function DocumentoVista({ slide, saltos }: { slide: TalDocumento & { parte?: string }; saltos: React.ReactNode }) {
+function DocumentoVista({
+  slide,
+  saltos,
+}: {
+  slide: TalDocumento & { parte?: string };
+  saltos: React.ReactNode;
+}) {
   const lateral = Boolean(slide.pregunta || slide.puntos || slide.explora);
   const docs = slide.docs.map((d) => TAL_DOCS[d]);
   return (
     <div>
       {slide.parte && <Parte texto={slide.parte} />}
       <Titulo titulo={slide.titulo} bajada={slide.bajada} />
-      <div className={cn("mt-6 grid items-start gap-5", lateral ? "lg:grid-cols-[1.25fr_1fr]" : docs.length === 3 ? "lg:grid-cols-3" : docs.length > 1 && "lg:grid-cols-2")}>
+      <div
+        className={cn(
+          "mt-6 grid items-start gap-5",
+          lateral
+            ? "lg:grid-cols-[1.25fr_1fr]"
+            : docs.length === 3
+              ? "lg:grid-cols-3"
+              : docs.length > 1 && "lg:grid-cols-2",
+        )}
+      >
         {lateral ? (
-          <div className="rise flex flex-col gap-4" style={{ animationDelay: "0.2s" }}>
+          <div
+            className="rise flex flex-col gap-4"
+            style={{ animationDelay: "0.2s" }}
+          >
             {docs.map((d) => (
               <DocumentoCaso key={d.id} doc={d} grande />
             ))}
           </div>
         ) : (
           docs.map((d, i) => (
-            <div key={d.id} className="rise" style={{ animationDelay: `${0.2 + i * 0.12}s` }}>
+            <div
+              key={d.id}
+              className="rise"
+              style={{ animationDelay: `${0.2 + i * 0.12}s` }}
+            >
               <DocumentoCaso doc={d} grande />
             </div>
           ))
@@ -652,13 +930,21 @@ function DocumentoVista({ slide, saltos }: { slide: TalDocumento & { parte?: str
         {lateral && (
           <div className="flex flex-col gap-4">
             {slide.pregunta && (
-              <p className="rise rounded-2xl border border-yellow-400/50 bg-yellow-400/10 p-5 text-xl font-semibold leading-snug sm:text-2xl" style={{ animationDelay: "0.3s" }}>
+              <p
+                className="rise rounded-2xl border border-yellow-400/50 bg-yellow-400/10 p-5 text-xl font-semibold leading-snug sm:text-2xl"
+                style={{ animationDelay: "0.3s" }}
+              >
                 {slide.pregunta}
               </p>
             )}
             {slide.puntos && (
-              <div className="rise glass rounded-2xl p-5" style={{ animationDelay: "0.35s" }}>
-                <p className="text-xs font-bold uppercase tracking-wider text-teal">Estado del caso</p>
+              <div
+                className="rise glass rounded-2xl p-5"
+                style={{ animationDelay: "0.35s" }}
+              >
+                <p className="text-xs font-bold uppercase tracking-wider text-teal">
+                  Estado del caso
+                </p>
                 <ul className="mt-2 space-y-1.5 text-base leading-snug sm:text-lg">
                   {slide.puntos.map((p) => (
                     <li key={p}>• {p}</li>
@@ -666,23 +952,37 @@ function DocumentoVista({ slide, saltos }: { slide: TalDocumento & { parte?: str
                 </ul>
               </div>
             )}
-            {slide.explora && <Explorables items={slide.explora} columnas={1} />}
+            {slide.explora && (
+              <Explorables items={slide.explora} columnas={1} />
+            )}
           </div>
         )}
       </div>
-      <p className="mt-3 text-sm text-faint">📲 Ya está en el dispositivo de cada grupo: el PDF para descargar y subir a su herramienta, o el texto para copiar.</p>
+      <p className="mt-3 text-sm text-faint">
+        📲 Ya está en el dispositivo de cada grupo: el PDF para descargar y
+        subir a su herramienta, o el texto para copiar.
+      </p>
       {saltos}
     </div>
   );
 }
 
-function PromptVista({ slide, saltos }: { slide: TalPrompt & { parte?: string }; saltos: React.ReactNode }) {
+function PromptVista({
+  slide,
+  saltos,
+}: {
+  slide: TalPrompt & { parte?: string };
+  saltos: React.ReactNode;
+}) {
   const prompt = TAL_PROMPTS[slide.prompt];
   const conDocs = slide.con.length
     ? slide.con.map((d) => TAL_DOCS[d].codigo).join(" y ")
     : "todos los documentos que tienen";
   const pasos = [
-    { e: "🧰", t: "Abran su herramienta: ChatGPT, Claude, Gemini o Notebook Gemini." },
+    {
+      e: "🧰",
+      t: "Abran su herramienta: ChatGPT, Claude, Gemini o Notebook Gemini.",
+    },
     { e: "📂", t: `Peguen ${conDocs} (botón «Copiar» en su dispositivo).` },
     { e: "✍️", t: "Peguen la instrucción." },
     { e: "🔍", t: slide.despues },
@@ -697,7 +997,11 @@ function PromptVista({ slide, saltos }: { slide: TalPrompt & { parte?: string };
         </div>
         <ol className="flex flex-col gap-2.5">
           {pasos.map((p, i) => (
-            <li key={i} className="rise glass flex items-start gap-3 rounded-2xl p-4 text-base leading-snug sm:text-lg" style={{ animationDelay: `${0.3 + i * 0.1}s` }}>
+            <li
+              key={i}
+              className="rise glass flex items-start gap-3 rounded-2xl p-4 text-base leading-snug sm:text-lg"
+              style={{ animationDelay: `${0.3 + i * 0.1}s` }}
+            >
               <span className="text-2xl">{p.e}</span>
               <span>
                 <b className="mr-1 font-mono text-teal">{i + 1}.</b>
@@ -734,14 +1038,29 @@ function SlideActividad({
             <span className="size-1.5 shrink-0 rounded-full bg-current" />
             {escena} · en vivo
           </p>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">{act.titulo}</h1>
-          <p className="mt-3 max-w-3xl text-base italic leading-snug text-muted sm:text-xl">{act.bajada}</p>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
+            {act.titulo}
+          </h1>
+          <p className="mt-3 max-w-3xl text-base italic leading-snug text-muted sm:text-xl">
+            {act.bajada}
+          </p>
         </div>
         <ChipResponda qr={TAL_QR_PLATAFORMA} link={TAL_LINK} />
       </div>
 
-      <div className={cn("rise mt-5 flex flex-1 flex-col", nube && "[&>div]:min-h-[48vh]")} style={{ animationDelay: "0.25s" }}>
-        <ResultadosVivo slug={TAL_SLUG} act={act} intervalo={TAL_CONFIG.poll.deck} revelada={revelada} />
+      <div
+        className={cn(
+          "rise mt-5 flex flex-1 flex-col",
+          nube && "[&>div]:min-h-[48vh]",
+        )}
+        style={{ animationDelay: "0.25s" }}
+      >
+        <ResultadosVivo
+          slug={TAL_SLUG}
+          act={act}
+          intervalo={TAL_CONFIG.poll.deck}
+          revelada={revelada}
+        />
       </div>
 
       {act.correcta && (
@@ -756,7 +1075,8 @@ function SlideActividad({
                 : "border-line bg-panel/60 text-muted hover:border-teal/60 hover:text-teal",
             )}
           >
-            {revelada ? "Ocultar respuesta" : "Ver respuesta"} <span className="ml-1 font-mono text-xs text-faint">V</span>
+            {revelada ? "Ocultar respuesta" : "Ver respuesta"}{" "}
+            <span className="ml-1 font-mono text-xs text-faint">V</span>
           </button>
         </div>
       )}
@@ -764,33 +1084,92 @@ function SlideActividad({
   );
 }
 
-/** Manos levantadas, en el pie del deck: se ve desde el atril sin mirar el celular. */
-function ManosEnPantalla() {
-  const [nombres, setNombres] = useState<string[]>([]);
-  useEffect(() => {
-    let vivo = true;
-    async function traer() {
-      try {
-        const r = await fetch(`/api/session/${TAL_SLUG}/ayuda`);
-        if (!r.ok) return;
-        const j = await r.json();
-        if (vivo) setNombres(((j.pedidos ?? []) as { name: string }[]).map((p) => p.name));
-      } catch {}
-    }
-    traer();
-    const id = setInterval(traer, 6000);
-    return () => {
-      vivo = false;
-      clearInterval(id);
-    };
-  }, []);
+/** Marcados como atendidos en esta pantalla: no vuelven a aparecer aunque el poll demore. */
+const atendidos = new Set<string>();
 
-  if (nombres.length === 0) return null;
+/**
+ * Manos levantadas, en la pantalla grande: un cartel que no se puede pasar por
+ * alto mientras se presenta. Cada mano nueva entra con una franja de aviso; el
+ * docente marca "atendido" desde el mismo deck o desde su celular.
+ */
+function ManosEnPantalla() {
+  const { data } = useResultados(TAL_SLUG, "tal_ayuda", 4000);
+  const pedidos = (
+    (data?.summary?.pedidos as {
+      participant_id: string;
+      name: string;
+      etapa: number;
+    }[]) ?? []
+  ).filter((p) => !atendidos.has(p.participant_id));
+  const [entrando, setEntrando] = useState<string | null>(null);
+  const vistos = useRef<Set<string> | null>(null);
+
+  // Una mano nueva cruza la pantalla con una franja (la primera lectura, no).
+  useEffect(() => {
+    const ids = new Set(pedidos.map((p) => p.participant_id));
+    const previos = vistos.current;
+    vistos.current = ids;
+    if (previos === null) return;
+    const nuevo = pedidos.find((p) => !previos.has(p.participant_id));
+    if (!nuevo) return;
+    setEntrando(nuevo.name);
+    const t = setTimeout(() => setEntrando(null), 4000);
+    return () => clearTimeout(t);
+  }, [pedidos]);
+
+  function atender(id: string) {
+    atendidos.add(id);
+    setEntrando(null);
+    fetch(`/api/session/${TAL_SLUG}/ayuda`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ participant_id: id }),
+    }).catch(() => {});
+  }
+
   return (
-    <span className="flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-400/10 px-2.5 py-1 text-[11px] font-semibold text-amber-300">
-      <span className="campana">🔔</span>
-      <span className="hidden max-w-[16rem] truncate md:inline">{nombres.slice(0, 3).join(" · ")}</span>
-      {nombres.length > 3 && <span>+{nombres.length - 3}</span>}
-    </span>
+    <>
+      {entrando && (
+        <div className="barrido pointer-events-none fixed inset-x-0 top-0 z-50 bg-gradient-to-r from-amber-400 to-orange-500 py-2.5 text-center text-lg font-bold text-ink shadow-2xl">
+          <span className="campana mr-2 inline-block">🔔</span>
+          {entrando} pide ayuda
+        </div>
+      )}
+
+      {pedidos.length > 0 && (
+        <aside className="rise fixed bottom-[4.5rem] left-5 z-40 w-[min(24rem,42vw)] rounded-2xl border-2 border-amber-400/80 bg-ink/95 p-4 shadow-[0_0_50px_-10px_rgba(251,191,36,0.7)] backdrop-blur">
+          <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-amber-300">
+            <span className="campana text-xl">🔔</span>
+            {pedidos.length === 1
+              ? "Piden ayuda"
+              : `Piden ayuda · ${pedidos.length}`}
+          </p>
+          <ul className="mt-2.5 space-y-2">
+            {pedidos.slice(0, 5).map((p) => (
+              <li key={p.participant_id} className="flex items-center gap-2">
+                <span className="min-w-0 flex-1 truncate text-xl font-bold leading-tight">
+                  {p.name}
+                </span>
+                <span className="shrink-0 font-mono text-xs text-faint">
+                  et. {p.etapa}
+                </span>
+                <button
+                  onClick={() => atender(p.participant_id)}
+                  title="Ya fui a esa mesa"
+                  className="shrink-0 rounded-full border border-teal/60 bg-teal/15 px-2.5 py-1 text-xs font-semibold text-teal transition hover:bg-teal/25"
+                >
+                  ✓
+                </button>
+              </li>
+            ))}
+            {pedidos.length > 5 && (
+              <li className="text-sm text-faint">
+                y {pedidos.length - 5} más…
+              </li>
+            )}
+          </ul>
+        </aside>
+      )}
+    </>
   );
 }

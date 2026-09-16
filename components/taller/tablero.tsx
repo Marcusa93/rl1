@@ -4,7 +4,7 @@
 // los pasos de la etapa en curso con cuántas compus terminaron, las últimas
 // preguntas a MessIAs y las actas entregadas. Para caminar entre las mesas.
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useResultados } from "@/components/clase/vivo";
 import { TAL_SLIDES, TAL_SLUG } from "@/lib/taller-clase";
 import { TAL_ETAPAS } from "@/lib/taller-guiado";
@@ -58,54 +58,39 @@ function haceCuanto(ms: number): string {
 
 /** Manos levantadas en la sala: quién pide ayuda, desde cuándo y en qué paso. */
 function ManosLevantadas() {
-  const [pedidos, setPedidos] = useState<PedidoAyuda[]>([]);
-  const vistos = useRef<Set<string>>(new Set());
-  const primera = useRef(true);
+  const { data } = useResultados(TAL_SLUG, "tal_ayuda", 4000);
+  const [atendidos, setAtendidos] = useState<string[]>([]);
+  const pedidos = (
+    ((data?.summary?.pedidos as PedidoAyuda[]) ?? []) as PedidoAyuda[]
+  ).filter((p) => !atendidos.includes(p.participant_id));
+  const vistos = useRef<Set<string> | null>(null);
 
-  const traer = useCallback(async () => {
-    try {
-      const r = await fetch(`/api/session/${TAL_SLUG}/ayuda`);
-      if (!r.ok) return;
-      const j = await r.json();
-      const lista = (j.pedidos ?? []) as PedidoAyuda[];
-      // Avisa solo por las manos nuevas (no en la primera carga).
-      const nuevos = lista.filter((p) => !vistos.current.has(p.participant_id));
-      if (nuevos.length && !primera.current) {
-        pip();
-        if ("vibrate" in navigator) navigator.vibrate?.([120, 60, 120]);
-      }
-      primera.current = false;
-      vistos.current = new Set(lista.map((p) => p.participant_id));
-      setPedidos(lista);
-    } catch {}
-  }, []);
-
+  // Pip y vibración cuando se levanta una mano nueva (no en la primera lectura).
   useEffect(() => {
-    traer();
-    const id = setInterval(traer, 5000);
-    return () => clearInterval(id);
-  }, [traer]);
+    const ids = new Set(pedidos.map((p) => p.participant_id));
+    const previos = vistos.current;
+    vistos.current = ids;
+    if (previos === null) return;
+    if (pedidos.some((p) => !previos.has(p.participant_id))) {
+      pip();
+      if ("vibrate" in navigator) navigator.vibrate?.([120, 60, 120]);
+    }
+  }, [pedidos]);
 
-  async function atender(p: PedidoAyuda) {
-    setPedidos((prev) =>
-      prev.filter((x) => x.participant_id !== p.participant_id),
-    );
-    vistos.current.delete(p.participant_id);
-    try {
-      await fetch(`/api/session/${TAL_SLUG}/ayuda`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ participant_id: p.participant_id }),
-      });
-    } catch {}
-    traer();
+  function atender(p: PedidoAyuda) {
+    setAtendidos((prev) => [...prev, p.participant_id]);
+    fetch(`/api/session/${TAL_SLUG}/ayuda`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ participant_id: p.participant_id }),
+    }).catch(() => {});
   }
 
   if (pedidos.length === 0) return null;
 
   return (
-    <div className="pulse-ring mt-2 space-y-2 rounded-2xl border border-amber-400/60 bg-amber-400/10 p-3.5">
-      <p className="text-sm font-bold text-amber-300">
+    <div className="pulse-ring mt-2 space-y-2 rounded-2xl border-2 border-amber-400/70 bg-amber-400/10 p-3.5">
+      <p className="text-base font-bold text-amber-300">
         <span className="campana mr-1 inline-block">🔔</span>
         {pedidos.length === 1
           ? "Una mesa pide ayuda"
@@ -115,7 +100,7 @@ function ManosLevantadas() {
         {pedidos.map((p) => (
           <li key={p.participant_id} className="flex items-center gap-2">
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold">{p.name}</p>
+              <p className="truncate text-base font-bold">{p.name}</p>
               <p className="truncate text-[11px] text-faint">
                 etapa {p.etapa}
                 {tituloPaso(p.paso) && ` · ${tituloPaso(p.paso)}`} ·{" "}
