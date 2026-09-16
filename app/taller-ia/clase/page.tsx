@@ -283,6 +283,7 @@ function Deck() {
           )}
         </div>
         <div className="ml-auto flex shrink-0 items-center gap-3">
+          <ManosEnPantalla />
           {parteActual && (
             <span
               className={cn("hidden rounded-full border px-2.5 py-1 font-mono text-[11px]", kitVisible ? "2xl:block" : "md:block")}
@@ -760,5 +761,36 @@ function SlideActividad({
         </div>
       )}
     </div>
+  );
+}
+
+/** Manos levantadas, en el pie del deck: se ve desde el atril sin mirar el celular. */
+function ManosEnPantalla() {
+  const [nombres, setNombres] = useState<string[]>([]);
+  useEffect(() => {
+    let vivo = true;
+    async function traer() {
+      try {
+        const r = await fetch(`/api/session/${TAL_SLUG}/ayuda`);
+        if (!r.ok) return;
+        const j = await r.json();
+        if (vivo) setNombres(((j.pedidos ?? []) as { name: string }[]).map((p) => p.name));
+      } catch {}
+    }
+    traer();
+    const id = setInterval(traer, 6000);
+    return () => {
+      vivo = false;
+      clearInterval(id);
+    };
+  }, []);
+
+  if (nombres.length === 0) return null;
+  return (
+    <span className="flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-400/10 px-2.5 py-1 text-[11px] font-semibold text-amber-300">
+      <span className="campana">🔔</span>
+      <span className="hidden max-w-[16rem] truncate md:inline">{nombres.slice(0, 3).join(" · ")}</span>
+      {nombres.length > 3 && <span>+{nombres.length - 3}</span>}
+    </span>
   );
 }

@@ -194,3 +194,13 @@ html:has(.deck-escala) {
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--color-line); border-radius: 999px; }
 ::selection { background: rgba(94, 234, 212, 0.3); }
+
+/* La campana de ayuda, mientras la mano sigue levantada. */
+@keyframes campana {
+  0%, 70%, 100% { transform: rotate(0); }
+  75% { transform: rotate(14deg); }
+  80% { transform: rotate(-12deg); }
+  85% { transform: rotate(9deg); }
+  90% { transform: rotate(-6deg); }
+}
+.campana { display: inline-block; animation: campana 2.2s ease-in-out infinite; transform-origin: 50% 10%; }

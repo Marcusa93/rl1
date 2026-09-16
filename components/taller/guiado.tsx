@@ -26,6 +26,7 @@ import {
   type PasoTaller,
 } from "@/lib/taller-guiado";
 import { getTalActividad, TAL_SLUG } from "@/lib/taller-clase";
+import { BotonAyuda } from "./ayuda";
 import type { SessionRow } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -115,7 +116,7 @@ export function TallerGuiado({
 
   return (
     <div className="taller-escritorio">
-      <Encabezado nombre={nombre} participantes={participantes} abierta={abierta} pct={pct} />
+      <Encabezado nombre={nombre} participantes={participantes} abierta={abierta} pct={pct} etapaActual={etapa.n} pasoFoco={foco ?? undefined} />
 
       <div className="mt-5 xl:grid xl:grid-cols-[16rem_minmax(0,1fr)_20rem] xl:items-start xl:gap-7">
         {/* Izquierda: el mapa del taller y el expediente de bolsillo */}
@@ -246,7 +247,21 @@ export function TallerGuiado({
 }
 
 /** Encabezado propio del taller: instituciones, nombre, la etapa en pantalla y el anillo de avance. */
-function Encabezado({ nombre, participantes, abierta, pct }: { nombre?: string; participantes?: number; abierta: number; pct: number }) {
+function Encabezado({
+  nombre,
+  participantes,
+  abierta,
+  pct,
+  etapaActual,
+  pasoFoco,
+}: {
+  nombre?: string;
+  participantes?: number;
+  abierta: number;
+  pct: number;
+  etapaActual: number;
+  pasoFoco?: string;
+}) {
   const e = TAL_ETAPAS[abierta];
   return (
     <header className="sticky top-0 z-30 -mx-4 -mt-6 border-b border-line/60 bg-ink/85 px-4 py-2.5 backdrop-blur xl:-mx-8 xl:px-8">
@@ -274,7 +289,8 @@ function Encabezado({ nombre, participantes, abierta, pct }: { nombre?: string; 
             <span className="size-1.5 animate-pulse rounded-full bg-teal" />
             {participantes ?? 0} conectados
           </span>
-          {nombre && <span className="hidden max-w-[11rem] truncate text-xs text-muted sm:block">{nombre}</span>}
+          {nombre && <span className="hidden max-w-[11rem] truncate text-xs text-muted lg:block">{nombre}</span>}
+          <BotonAyuda etapa={etapaActual} paso={pasoFoco} compacto />
           <Anillo pct={pct} color={e.color} />
         </div>
       </div>
