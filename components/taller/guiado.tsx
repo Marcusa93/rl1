@@ -9,12 +9,26 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ActaAcuerdo } from "@/components/taller/acta";
 import { SalaEntrevistas } from "@/components/taller/entrevista";
 import { EntregaActa } from "@/components/taller/entrega";
-import { ExpedienteMini, ExpedienteVisual } from "@/components/taller/expediente";
-import { FichaEscucha } from "@/components/taller/ficha";
+import {
+  ExpedienteMini,
+  ExpedienteVisual,
+} from "@/components/taller/expediente";
+import { FichaBoton } from "@/components/taller/ficha";
 import { MessIAs } from "@/components/taller/messias";
-import { BotonCopiar, DocumentoCaso, PromptCaja } from "@/components/taller/piezas";
+import {
+  BotonCopiar,
+  DocumentoCaso,
+  PromptCaja,
+} from "@/components/taller/piezas";
 import { TutorTaller } from "@/components/taller/tutor";
-import { docComoTexto, TAL_DOCS, TAL_PLANTILLAS, TAL_PROMPTS, urlPdf, type ConfigTaller } from "@/lib/taller-caso";
+import {
+  docComoTexto,
+  TAL_DOCS,
+  TAL_PLANTILLAS,
+  TAL_PROMPTS,
+  urlPdf,
+  type ConfigTaller,
+} from "@/lib/taller-caso";
 import {
   AUDIOS_URL,
   PREGUNTAS_ENTREVISTA,
@@ -81,7 +95,10 @@ export function TallerGuiado({
   useEffect(() => {
     const el = vivoRef.current;
     if (!el || !enVivo) return;
-    const obs = new IntersectionObserver(([e]) => setVivoVisible(e.isIntersecting), { threshold: 0.1 });
+    const obs = new IntersectionObserver(
+      ([e]) => setVivoVisible(e.isIntersecting),
+      { threshold: 0.1 },
+    );
     obs.observe(el);
     return () => obs.disconnect();
   }, [enVivo]);
@@ -90,7 +107,9 @@ export function TallerGuiado({
   const etapa = TAL_ETAPAS[Math.min(n, abierta)];
 
   // Avance personal: pasos obligatorios hechos, en total y en la etapa a la vista.
-  const obligatorios = TAL_ETAPAS.flatMap((e) => e.pasos.filter((p) => !p.extra));
+  const obligatorios = TAL_ETAPAS.flatMap((e) =>
+    e.pasos.filter((p) => !p.extra),
+  );
   const hechosTotal = obligatorios.filter((p) => hechos[p.id]).length;
   const pct = Math.round((hechosTotal / obligatorios.length) * 100);
   const deEtapa = etapa.pasos.filter((p) => !p.extra);
@@ -106,30 +125,56 @@ export function TallerGuiado({
     fetch(`/api/session/${TAL_SLUG}/respond`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ activity: "tal_paso", item_key: paso.id, payload: { done: valor, etapa: etapa.n } }),
+      body: JSON.stringify({
+        activity: "tal_paso",
+        item_key: paso.id,
+        payload: { done: valor, etapa: etapa.n },
+      }),
     }).catch(() => {});
   }
 
-  const pctEtapa = deEtapa.length ? Math.round((hechosEtapa / deEtapa.length) * 100) : 0;
+  const pctEtapa = deEtapa.length
+    ? Math.round((hechosEtapa / deEtapa.length) * 100)
+    : 0;
   // Modo foco: el primer paso obligatorio sin hacer; si están todos, el primer extra.
-  const foco = deEtapa.find((p) => !hechos[p.id])?.id ?? etapa.pasos.find((p) => p.extra && !hechos[p.id])?.id ?? null;
+  const foco =
+    deEtapa.find((p) => !hechos[p.id])?.id ??
+    etapa.pasos.find((p) => p.extra && !hechos[p.id])?.id ??
+    null;
 
   return (
     <div className="taller-escritorio">
-      <Encabezado nombre={nombre} participantes={participantes} abierta={abierta} pct={pct} etapaActual={etapa.n} pasoFoco={foco ?? undefined} />
+      <Encabezado
+        nombre={nombre}
+        participantes={participantes}
+        abierta={abierta}
+        pct={pct}
+        etapaActual={etapa.n}
+        pasoFoco={foco ?? undefined}
+      />
 
       <div className="mt-5 xl:grid xl:grid-cols-[16rem_minmax(0,1fr)_20rem] xl:items-start xl:gap-7">
         {/* Izquierda: el mapa del taller y el expediente de bolsillo */}
         <aside className="hidden space-y-4 xl:sticky xl:top-24 xl:block xl:max-h-[calc(100dvh-11.5rem)] xl:overflow-y-auto xl:pb-2">
-          <Mapa abierta={abierta} actual={etapa.n} hechos={hechos} onIr={(x) => setVista(x === abierta ? null : x)} />
+          <Mapa
+            abierta={abierta}
+            actual={etapa.n}
+            hechos={hechos}
+            onIr={(x) => setVista(x === abierta ? null : x)}
+          />
           <ExpedienteMini session={session} />
         </aside>
 
         {/* Centro: lo que hay que hacer ahora */}
         <div className="min-w-0 space-y-5">
           {enVivo && (
-            <section ref={vivoRef} className="rise scroll-mt-24 rounded-3xl border-gradient p-4">
-              <p className="mb-2 text-xs font-bold uppercase tracking-widest text-teal">🗳️ Actividad en vivo · responda ahora</p>
+            <section
+              ref={vivoRef}
+              className="rise scroll-mt-24 rounded-3xl border-gradient p-4"
+            >
+              <p className="mb-2 text-xs font-bold uppercase tracking-widest text-teal">
+                🗳️ Actividad en vivo · responda ahora
+              </p>
               {actividad}
             </section>
           )}
@@ -137,7 +182,12 @@ export function TallerGuiado({
           {/* Si la actividad quedó fuera de la vista, una burbuja la trae de vuelta */}
           {enVivo && !vivoVisible && (
             <button
-              onClick={() => vivoRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+              onClick={() =>
+                vivoRef.current?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                })
+              }
               className="pulse-ring fixed bottom-24 left-1/2 z-40 -translate-x-1/2 rounded-full bg-gradient-to-r from-teal to-cyan px-5 py-3 text-base font-bold text-ink shadow-xl"
             >
               🗳️ Actividad en vivo — responder
@@ -152,26 +202,37 @@ export function TallerGuiado({
             <button
               onClick={() => setVista(null)}
               className="w-full rounded-2xl px-4 py-3 text-base font-bold text-ink"
-              style={{ background: `linear-gradient(90deg, ${TAL_ETAPAS[abierta].color}, ${TAL_ETAPAS[abierta].color}bb)` }}
+              style={{
+                background: `linear-gradient(90deg, ${TAL_ETAPAS[abierta].color}, ${TAL_ETAPAS[abierta].color}bb)`,
+              }}
             >
-              🔓 Se abrió la etapa {abierta}: {TAL_ETAPAS[abierta].titulo} — ir ahora
+              🔓 Se abrió la etapa {abierta}: {TAL_ETAPAS[abierta].titulo} — ir
+              ahora
             </button>
           )}
 
           {/* Avance personal (en escritorio lo cuentan el anillo y el mapa) */}
           <div className="rounded-2xl border border-line bg-panel/40 px-4 py-3 xl:hidden">
             <div className="flex items-baseline justify-between gap-3">
-              <p className="text-xs font-bold uppercase tracking-widest text-teal">Su avance</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-teal">
+                Su avance
+              </p>
               <p className="font-mono text-sm">
                 <b key={hechosTotal} className="pop inline-block text-teal">
                   {hechosTotal}
                 </b>
-                <span className="text-faint"> de {obligatorios.length} pasos</span>
+                <span className="text-faint">
+                  {" "}
+                  de {obligatorios.length} pasos
+                </span>
                 {pct === 100 && <span className="ml-2">🏆</span>}
               </p>
             </div>
             <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-ink-2">
-              <div className="h-full rounded-full bg-gradient-to-r from-teal via-cyan to-violet transition-all duration-700" style={{ width: `${pct}%` }} />
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-teal via-cyan to-violet transition-all duration-700"
+                style={{ width: `${pct}%` }}
+              />
             </div>
           </div>
 
@@ -180,7 +241,9 @@ export function TallerGuiado({
             {TAL_ETAPAS.map((e) => {
               const bloqueada = e.n > abierta;
               const activa = e.n === etapa.n;
-              const completos = e.pasos.filter((p) => !p.extra).every((p) => hechos[p.id]);
+              const completos = e.pasos
+                .filter((p) => !p.extra)
+                .every((p) => hechos[p.id]);
               return (
                 <button
                   key={e.n}
@@ -188,11 +251,25 @@ export function TallerGuiado({
                   onClick={() => setVista(e.n === abierta ? null : e.n)}
                   className={cn(
                     "flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-semibold transition",
-                    bloqueada ? "border-line/60 text-faint opacity-50" : "border-line bg-panel/60 text-muted",
+                    bloqueada
+                      ? "border-line/60 text-faint opacity-50"
+                      : "border-line bg-panel/60 text-muted",
                   )}
-                  style={activa ? { borderColor: e.color, color: e.color, background: `${e.color}1f` } : completos && !bloqueada ? { color: e.color } : undefined}
+                  style={
+                    activa
+                      ? {
+                          borderColor: e.color,
+                          color: e.color,
+                          background: `${e.color}1f`,
+                        }
+                      : completos && !bloqueada
+                        ? { color: e.color }
+                        : undefined
+                  }
                 >
-                  <span>{bloqueada ? "🔒" : completos && !activa ? "✓" : e.emoji}</span>
+                  <span>
+                    {bloqueada ? "🔒" : completos && !activa ? "✓" : e.emoji}
+                  </span>
                   <span>
                     {e.n} · {e.titulo}
                   </span>
@@ -203,7 +280,13 @@ export function TallerGuiado({
 
           {/* Etapa actual */}
           <section key={etapa.n} className="rise space-y-4">
-            <CabeceraEtapa etapa={etapa} enCurso={etapa.n === abierta} hechos={hechosEtapa} total={deEtapa.length} pct={pctEtapa} />
+            <CabeceraEtapa
+              etapa={etapa}
+              enCurso={etapa.n === abierta}
+              hechos={hechosEtapa}
+              total={deEtapa.length}
+              pct={pctEtapa}
+            />
             <div className="space-y-3">
               {etapa.pasos.map((paso, i) => (
                 <Paso
@@ -218,15 +301,23 @@ export function TallerGuiado({
                 />
               ))}
             </div>
-            <NavEtapas n={etapa.n} abierta={abierta} onIr={(x) => setVista(x === abierta ? null : x)} />
+            <NavEtapas
+              n={etapa.n}
+              abierta={abierta}
+              onIr={(x) => setVista(x === abierta ? null : x)}
+            />
           </section>
+
+          <DondeQueda />
 
           {/* La ficha del expediente, completa */}
           <ExpedienteVisual session={session} />
 
           {/* Archivo completo, por si algo del itinerario no alcanza */}
           <details className="rounded-2xl border border-line/60 bg-panel/30 p-4">
-            <summary className="cursor-pointer text-sm font-semibold text-muted">✍️ Todos los prompts, plantillas y herramientas liberados</summary>
+            <summary className="cursor-pointer text-sm font-semibold text-muted">
+              ✍️ Todos los prompts, plantillas y herramientas liberados
+            </summary>
             <TutorTaller session={session} />
           </details>
         </div>
@@ -270,18 +361,33 @@ function Encabezado({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/justicia/logo-pgr.png" alt="PGR" className="h-7 w-auto" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/justicia/logo-uees.png" alt="UEES" className="h-7 w-auto rounded bg-white p-0.5" />
+          <img
+            src="/justicia/logo-uees.png"
+            alt="UEES"
+            className="h-7 w-auto rounded bg-white p-0.5"
+          />
         </div>
         <div className="hidden h-8 w-px bg-line sm:block" />
         <div className="min-w-0">
-          <p className="text-gradient truncate text-sm font-bold leading-tight sm:text-base">El mediador aumentado</p>
-          <p className="hidden truncate text-[11px] text-faint sm:block">Taller · IA aplicada a la resolución de conflictos</p>
+          <p className="text-gradient truncate text-sm font-bold leading-tight sm:text-base">
+            El mediador aumentado
+          </p>
+          <p className="hidden truncate text-[11px] text-faint sm:block">
+            Taller · IA aplicada a la resolución de conflictos
+          </p>
         </div>
         <span
           className="mx-auto hidden items-center gap-2 rounded-full border px-3 py-1 text-sm font-semibold md:flex"
-          style={{ borderColor: `${e.color}66`, color: e.color, background: `${e.color}14` }}
+          style={{
+            borderColor: `${e.color}66`,
+            color: e.color,
+            background: `${e.color}14`,
+          }}
         >
-          <span className="size-2 animate-pulse rounded-full" style={{ background: e.color }} />
+          <span
+            className="size-2 animate-pulse rounded-full"
+            style={{ background: e.color }}
+          />
           En pantalla: etapa {e.n} · {e.titulo}
         </span>
         <div className="ml-auto flex shrink-0 items-center gap-3">
@@ -289,7 +395,12 @@ function Encabezado({
             <span className="size-1.5 animate-pulse rounded-full bg-teal" />
             {participantes ?? 0} conectados
           </span>
-          {nombre && <span className="hidden max-w-[11rem] truncate text-xs text-muted lg:block">{nombre}</span>}
+          {nombre && (
+            <span className="hidden max-w-[11rem] truncate text-xs text-muted lg:block">
+              {nombre}
+            </span>
+          )}
+          <FichaBoton />
           <BotonAyuda etapa={etapaActual} paso={pasoFoco} compacto />
           <Anillo pct={pct} color={e.color} />
         </div>
@@ -304,7 +415,14 @@ function Anillo({ pct, color }: { pct: number; color: string }) {
   return (
     <div className="relative size-11 shrink-0" title={`Su avance: ${pct}%`}>
       <svg viewBox="0 0 40 40" className="size-11 -rotate-90">
-        <circle cx="20" cy="20" r={r} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" />
+        <circle
+          cx="20"
+          cy="20"
+          r={r}
+          fill="none"
+          stroke="rgba(255,255,255,0.1)"
+          strokeWidth="4"
+        />
         <circle
           cx="20"
           cy="20"
@@ -315,19 +433,35 @@ function Anillo({ pct, color }: { pct: number; color: string }) {
           strokeLinecap="round"
           strokeDasharray={c}
           strokeDashoffset={c * (1 - pct / 100)}
-          style={{ transition: "stroke-dashoffset 0.7s ease, stroke 0.7s ease" }}
+          style={{
+            transition: "stroke-dashoffset 0.7s ease, stroke 0.7s ease",
+          }}
         />
       </svg>
-      <span className="absolute inset-0 flex items-center justify-center font-mono text-[10px] font-bold">{pct}%</span>
+      <span className="absolute inset-0 flex items-center justify-center font-mono text-[10px] font-bold">
+        {pct}%
+      </span>
     </div>
   );
 }
 
 /** El mapa de las 8 etapas (columna izquierda en escritorio). */
-function Mapa({ abierta, actual, hechos, onIr }: { abierta: number; actual: number; hechos: Record<string, boolean>; onIr: (n: number) => void }) {
+function Mapa({
+  abierta,
+  actual,
+  hechos,
+  onIr,
+}: {
+  abierta: number;
+  actual: number;
+  hechos: Record<string, boolean>;
+  onIr: (n: number) => void;
+}) {
   return (
     <nav className="rounded-2xl border border-line bg-panel/40 p-3">
-      <p className="px-2 pb-2 text-xs font-bold uppercase tracking-widest text-faint">🧭 Las 8 etapas</p>
+      <p className="px-2 pb-2 text-xs font-bold uppercase tracking-widest text-faint">
+        🧭 Las 8 etapas
+      </p>
       <ol>
         {TAL_ETAPAS.map((e, i) => {
           const bloqueada = e.n > abierta;
@@ -341,31 +475,51 @@ function Mapa({ abierta, actual, hechos, onIr }: { abierta: number; actual: numb
                 <span
                   aria-hidden
                   className="absolute left-[1.45rem] top-10 h-[calc(100%-1.9rem)] w-0.5 rounded-full"
-                  style={{ background: completa ? e.color : "rgba(255,255,255,0.08)" }}
+                  style={{
+                    background: completa ? e.color : "rgba(255,255,255,0.08)",
+                  }}
                 />
               )}
               <button
                 disabled={bloqueada}
                 onClick={() => onIr(e.n)}
-                className={cn("flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition", activa ? "bg-white/5" : "hover:bg-white/5", bloqueada && "cursor-not-allowed opacity-45")}
+                className={cn(
+                  "flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition",
+                  activa ? "bg-white/5" : "hover:bg-white/5",
+                  bloqueada && "cursor-not-allowed opacity-45",
+                )}
               >
                 <span
                   className="flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-bold transition"
                   style={
                     activa
-                      ? { background: e.color, color: "#0d0826", boxShadow: `0 0 0 4px ${e.color}33` }
+                      ? {
+                          background: e.color,
+                          color: "#0d0826",
+                          boxShadow: `0 0 0 4px ${e.color}33`,
+                        }
                       : completa && !bloqueada
                         ? { border: `2px solid ${e.color}`, color: e.color }
-                        : { border: "1px solid rgba(255,255,255,0.15)", color: "#b9aee8" }
+                        : {
+                            border: "1px solid rgba(255,255,255,0.15)",
+                            color: "#b9aee8",
+                          }
                   }
                 >
                   {bloqueada ? "🔒" : completa && !activa ? "✓" : e.n}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-semibold" style={activa ? { color: e.color } : undefined}>
+                  <span
+                    className="block truncate text-sm font-semibold"
+                    style={activa ? { color: e.color } : undefined}
+                  >
                     {e.emoji} {e.titulo}
                   </span>
-                  <span className="block text-[11px] text-faint">{bloqueada ? "se abre desde la pantalla" : `${h}/${obl.length} pasos`}</span>
+                  <span className="block text-[11px] text-faint">
+                    {bloqueada
+                      ? "se abre desde la pantalla"
+                      : `${h}/${obl.length} pasos`}
+                  </span>
                 </span>
               </button>
             </li>
@@ -377,23 +531,53 @@ function Mapa({ abierta, actual, hechos, onIr }: { abierta: number; actual: numb
 }
 
 /** La cabecera de la etapa, teñida con su color. */
-function CabeceraEtapa({ etapa, enCurso, hechos, total, pct }: { etapa: EtapaTaller; enCurso: boolean; hechos: number; total: number; pct: number }) {
+function CabeceraEtapa({
+  etapa,
+  enCurso,
+  hechos,
+  total,
+  pct,
+}: {
+  etapa: EtapaTaller;
+  enCurso: boolean;
+  hechos: number;
+  total: number;
+  pct: number;
+}) {
   const c = etapa.color;
   return (
-    <div className="relative overflow-hidden rounded-3xl border p-5 sm:p-6" style={{ borderColor: `${c}55`, background: `linear-gradient(135deg, ${c}24, transparent 62%)` }}>
-      <span aria-hidden className="pointer-events-none absolute -right-3 -top-7 select-none text-[7.5rem] leading-none opacity-[0.06] grayscale">
+    <div
+      className="relative overflow-hidden rounded-3xl border p-5 sm:p-6"
+      style={{
+        borderColor: `${c}55`,
+        background: `linear-gradient(135deg, ${c}24, transparent 62%)`,
+      }}
+    >
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -right-3 -top-7 select-none text-[7.5rem] leading-none opacity-[0.06] grayscale"
+      >
         {etapa.emoji}
       </span>
-      <p className="text-xs font-bold uppercase tracking-widest" style={{ color: c }}>
-        Etapa {etapa.n} de {TAL_ETAPAS.length - 1} · {enCurso ? "en curso" : "repaso"}
+      <p
+        className="text-xs font-bold uppercase tracking-widest"
+        style={{ color: c }}
+      >
+        Etapa {etapa.n} de {TAL_ETAPAS.length - 1} ·{" "}
+        {enCurso ? "en curso" : "repaso"}
       </p>
       <h2 className="mt-1 text-2xl font-bold leading-tight sm:text-3xl">
         {etapa.emoji} {etapa.titulo}
       </h2>
-      <p className="mt-1 max-w-2xl text-base text-muted sm:text-lg">{etapa.bajada}</p>
+      <p className="mt-1 max-w-2xl text-base text-muted sm:text-lg">
+        {etapa.bajada}
+      </p>
       <div className="mt-4 flex items-center gap-3">
         <div className="h-2 flex-1 overflow-hidden rounded-full bg-ink-2/80">
-          <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, background: c }} />
+          <div
+            className="h-full rounded-full transition-all duration-700"
+            style={{ width: `${pct}%`, background: c }}
+          />
         </div>
         <p className="shrink-0 font-mono text-sm" style={{ color: c }}>
           {hechos}/{total} ✓
@@ -410,7 +594,9 @@ function Desbloqueo({ n }: { n: number }) {
     <div className="pointer-events-none fixed inset-x-0 top-20 z-50 flex justify-center px-4">
       <div
         className="barrido flex items-center gap-3 rounded-2xl px-6 py-3.5 text-lg font-bold text-ink shadow-2xl"
-        style={{ background: `linear-gradient(90deg, ${e.color}, ${e.color}cc)` }}
+        style={{
+          background: `linear-gradient(90deg, ${e.color}, ${e.color}cc)`,
+        }}
       >
         <span className="text-2xl">🔓</span>
         Se abrió la etapa {e.n} · {e.emoji} {e.titulo}
@@ -423,10 +609,18 @@ function Desbloqueo({ n }: { n: number }) {
 function GuiaTallerCard() {
   return (
     <section className="rise rounded-3xl border-gradient p-5">
-      <p className="text-xs font-bold uppercase tracking-widest text-teal">📘 La guía del taller</p>
-      <p className="mt-2 text-xl font-bold leading-snug">El mediador aumentado: el método, los conceptos y las herramientas, para llevarse.</p>
+      <p className="text-xs font-bold uppercase tracking-widest text-teal">
+        📘 La guía del taller
+      </p>
+      <p className="mt-2 text-xl font-bold leading-snug">
+        El mediador aumentado: el método, los conceptos y las herramientas, para
+        llevarse.
+      </p>
       <div className="mt-4 grid gap-2">
-        <a href="/taller-ia/guia" className="rounded-2xl bg-gradient-to-r from-teal to-cyan px-4 py-3 text-center text-lg font-bold text-ink">
+        <a
+          href="/taller-ia/guia"
+          className="rounded-2xl bg-gradient-to-r from-teal to-cyan px-4 py-3 text-center text-lg font-bold text-ink"
+        >
           Ver la guía
         </a>
         <div className="grid grid-cols-2 gap-2">
@@ -473,7 +667,10 @@ function Festejo({ activo }: { activo: boolean }) {
   if (!mostrar) return null;
   const colores = ["#5eead4", "#22d3ee", "#a78bfa", "#f0abfc", "#fbbf24"];
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-0 z-50 overflow-hidden"
+    >
       {Array.from({ length: 48 }, (_, i) => (
         <span
           key={i}
@@ -491,8 +688,12 @@ function Festejo({ activo }: { activo: boolean }) {
       ))}
       <div className="rise absolute left-1/2 top-1/3 -translate-x-1/2 rounded-3xl border-gradient bg-ink/95 px-8 py-6 text-center shadow-2xl">
         <p className="text-5xl">🏆</p>
-        <p className="mt-2 text-2xl font-bold text-gradient">¡Taller completo!</p>
-        <p className="mt-1 text-sm text-muted">Todos los pasos del mediador aumentado.</p>
+        <p className="mt-2 text-2xl font-bold text-gradient">
+          ¡Taller completo!
+        </p>
+        <p className="mt-1 text-sm text-muted">
+          Todos los pasos del mediador aumentado.
+        </p>
       </div>
     </div>
   );
@@ -503,7 +704,15 @@ function dispersion(i: number) {
   return ((i * 37 + 11) % 89) + 7;
 }
 
-function NavEtapas({ n, abierta, onIr }: { n: number; abierta: number; onIr: (x: number) => void }) {
+function NavEtapas({
+  n,
+  abierta,
+  onIr,
+}: {
+  n: number;
+  abierta: number;
+  onIr: (x: number) => void;
+}) {
   return (
     <div className="mt-5 flex items-center justify-between gap-3">
       <button
@@ -514,11 +723,17 @@ function NavEtapas({ n, abierta, onIr }: { n: number; abierta: number; onIr: (x:
         ‹ Etapa {Math.max(0, n - 1)}
       </button>
       {n < abierta ? (
-        <button onClick={() => onIr(n + 1)} className="rounded-xl border border-teal/60 bg-teal/10 px-4 py-2.5 text-base font-semibold text-teal">
+        <button
+          onClick={() => onIr(n + 1)}
+          className="rounded-xl border border-teal/60 bg-teal/10 px-4 py-2.5 text-base font-semibold text-teal"
+        >
           Etapa {n + 1} ›
         </button>
       ) : (
-        <p className="text-sm text-faint">La etapa {Math.min(n + 1, TAL_ETAPAS.length - 1)} se abre desde la pantalla</p>
+        <p className="text-sm text-faint">
+          La etapa {Math.min(n + 1, TAL_ETAPAS.length - 1)} se abre desde la
+          pantalla
+        </p>
       )}
     </div>
   );
@@ -554,7 +769,11 @@ function Paso({
     }
     if (enFoco) {
       setAbierto(true);
-      const t = setTimeout(() => ref.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 160);
+      const t = setTimeout(
+        () =>
+          ref.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+        160,
+      );
       return () => clearTimeout(t);
     }
   }, [enFoco]);
@@ -570,36 +789,88 @@ function Paso({
       ref={ref}
       className={cn(
         "scroll-mt-24 rounded-2xl border transition-all duration-300",
-        hecho ? "border-line/60 bg-panel/20" : enFoco ? "bg-panel/70" : paso.extra ? "border-dashed border-line bg-panel/20" : "glass border-line",
+        hecho
+          ? "border-line/60 bg-panel/20"
+          : enFoco
+            ? "bg-panel/70"
+            : paso.extra
+              ? "border-dashed border-line bg-panel/20"
+              : "glass border-line",
       )}
-      style={enFoco && !hecho ? { borderColor: color, borderWidth: 2, boxShadow: `0 0 0 4px ${color}14, 0 22px 50px -26px ${color}88` } : undefined}
+      style={
+        enFoco && !hecho
+          ? {
+              borderColor: color,
+              borderWidth: 2,
+              boxShadow: `0 0 0 4px ${color}14, 0 22px 50px -26px ${color}88`,
+            }
+          : undefined
+      }
     >
-      <button onClick={() => setAbierto((v) => !v)} className={cn("flex w-full items-center gap-3 text-left", hecho ? "px-4 py-3" : "p-4")}>
+      <button
+        onClick={() => setAbierto((v) => !v)}
+        className={cn(
+          "flex w-full items-center gap-3 text-left",
+          hecho ? "px-4 py-3" : "p-4",
+        )}
+      >
         <span
           key={hecho ? "hecho" : "pendiente"}
-          className={cn("flex shrink-0 items-center justify-center rounded-full font-bold", hecho ? "pop size-7 text-sm" : enFoco ? "size-10 text-base" : "size-8 text-sm")}
+          className={cn(
+            "flex shrink-0 items-center justify-center rounded-full font-bold",
+            hecho
+              ? "pop size-7 text-sm"
+              : enFoco
+                ? "size-10 text-base"
+                : "size-8 text-sm",
+          )}
           style={
             hecho
               ? { background: color, color: "#0d0826" }
               : enFoco
-                ? { background: `${color}26`, color, border: `2px solid ${color}` }
-                : { border: "1px solid rgba(255,255,255,0.15)", color: "#b9aee8" }
+                ? {
+                    background: `${color}26`,
+                    color,
+                    border: `2px solid ${color}`,
+                  }
+                : {
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    color: "#b9aee8",
+                  }
           }
         >
           {hecho ? "✓" : i + 1}
         </span>
         <span className="min-w-0 flex-1">
           {enFoco && !hecho && (
-            <span className="block text-[11px] font-bold uppercase tracking-widest" style={{ color }}>
+            <span
+              className="block text-[11px] font-bold uppercase tracking-widest"
+              style={{ color }}
+            >
               ▶ Ahora
             </span>
           )}
-          <span className={cn("block font-semibold leading-snug", hecho ? "text-base text-muted line-through decoration-1 opacity-80" : enFoco ? "text-xl" : "text-lg")}>
+          <span
+            className={cn(
+              "block font-semibold leading-snug",
+              hecho
+                ? "text-base text-muted line-through decoration-1 opacity-80"
+                : enFoco
+                  ? "text-xl"
+                  : "text-lg",
+            )}
+          >
             {paso.titulo}
-            {paso.extra && <span className="ml-2 rounded-full border border-line px-2 py-0.5 text-[10px] font-normal text-faint no-underline">extra · si va rápido</span>}
+            {paso.extra && (
+              <span className="ml-2 rounded-full border border-line px-2 py-0.5 text-[10px] font-normal text-faint no-underline">
+                extra · si va rápido
+              </span>
+            )}
           </span>
         </span>
-        <span className="shrink-0 text-xl text-faint">{abierto ? "−" : "+"}</span>
+        <span className="shrink-0 text-xl text-faint">
+          {abierto ? "−" : "+"}
+        </span>
       </button>
 
       {abierto && (
@@ -607,7 +878,9 @@ function Paso({
           <ol className="space-y-2">
             {paso.hacer.map((linea, j) => (
               <li key={j} className="flex gap-2.5 text-base leading-relaxed">
-                <span className="shrink-0 font-mono text-sm font-bold text-teal">{j + 1}.</span>
+                <span className="shrink-0 font-mono text-sm font-bold text-teal">
+                  {j + 1}.
+                </span>
                 <span>{linea}</span>
               </li>
             ))}
@@ -615,7 +888,7 @@ function Paso({
 
           {paso.audio && <TarjetaAudio audio={TAL_AUDIOS[paso.audio]} />}
 
-          {paso.ficha && <FichaEscucha compacta={paso.id !== "e1-ficha"} />}
+          {paso.ficha && <FichaBoton grande />}
 
           {paso.acta && <ActaAcuerdo nombre={nombre} />}
 
@@ -642,11 +915,16 @@ function Paso({
               <span className="text-2xl">📋</span>
               <span className="min-w-0 flex-1">
                 <span className="block text-base font-semibold text-amber-200">
-                  {TAL_PLANTILLAS[paso.plantilla].codigo} · {TAL_PLANTILLAS[paso.plantilla].titulo}
+                  {TAL_PLANTILLAS[paso.plantilla].codigo} ·{" "}
+                  {TAL_PLANTILLAS[paso.plantilla].titulo}
                 </span>
-                <span className="block text-sm text-faint">{TAL_PLANTILLAS[paso.plantilla].para}</span>
+                <span className="block text-sm text-faint">
+                  {TAL_PLANTILLAS[paso.plantilla].para}
+                </span>
               </span>
-              <span className="shrink-0 rounded-lg border border-amber-300/60 px-3 py-1.5 text-sm font-semibold text-amber-200">⬇️ PDF</span>
+              <span className="shrink-0 rounded-lg border border-amber-300/60 px-3 py-1.5 text-sm font-semibold text-amber-200">
+                ⬇️ PDF
+              </span>
             </a>
           )}
 
@@ -665,15 +943,45 @@ function Paso({
 
           {paso.misiones && <Misiones />}
 
-          {paso.nota && <p className="rounded-xl border border-line bg-ink-2/60 px-3 py-2 text-sm text-muted">💡 {paso.nota}</p>}
+          {paso.nota && (
+            <p className="rounded-xl border border-line bg-ink-2/60 px-3 py-2 text-sm text-muted">
+              💡 {paso.nota}
+            </p>
+          )}
 
-          <button
-            onClick={alternar}
-            className="w-full rounded-2xl px-4 py-3.5 text-base font-bold transition hover:brightness-110 active:scale-[0.99]"
-            style={hecho ? { border: `1px solid ${color}80`, background: `${color}14`, color } : { background: `linear-gradient(90deg, ${color}, ${color}c4)`, color: "#0d0826" }}
+          {/*
+            El botón queda pegado abajo mientras el paso está en curso: es lo que
+            abre el paso siguiente y antes había que bajar hasta el final para verlo.
+          */}
+          <div
+            className={cn(
+              enFoco && !hecho && "sticky bottom-3 z-10 -mx-1 px-1",
+            )}
           >
-            {hecho ? "✓ Listo (tocar para desmarcar)" : "Marcar como listo ✓ y seguir"}
-          </button>
+            <button
+              onClick={alternar}
+              className={cn(
+                "w-full rounded-2xl px-4 py-4 text-base font-bold transition hover:brightness-110 active:scale-[0.99]",
+                enFoco && !hecho && "shadow-2xl",
+              )}
+              style={
+                hecho
+                  ? {
+                      border: `1px solid ${color}80`,
+                      background: `${color}14`,
+                      color,
+                    }
+                  : {
+                      background: `linear-gradient(90deg, ${color}, ${color}c4)`,
+                      color: "#0d0826",
+                    }
+              }
+            >
+              {hecho
+                ? "✓ Listo (tocar para desmarcar)"
+                : "✓ Terminé este paso · abrir el siguiente"}
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -686,7 +994,10 @@ function DocPaso({ id }: { id: keyof typeof TAL_DOCS }) {
   return (
     <div className="rounded-2xl border border-line bg-ink-2/50 p-3">
       <div className="flex items-center gap-2">
-        <button onClick={() => setVer((v) => !v)} className="min-w-0 flex-1 text-left">
+        <button
+          onClick={() => setVer((v) => !v)}
+          className="min-w-0 flex-1 text-left"
+        >
           <p className="truncate text-base font-semibold">
             <span className="mr-1.5 font-mono text-teal">{d.codigo}</span>
             {d.titulo}
@@ -752,14 +1063,21 @@ export function TarjetaAudio({ audio }: { audio: AudioCaso }) {
   }
 
   // Onda decorativa estable por audio
-  const barras = Array.from({ length: 36 }, (_, i) => 0.25 + 0.75 * Math.abs(Math.sin(i * (audio.id === "EA1" ? 0.7 : 1.1) + 1)));
+  const barras = Array.from(
+    { length: 36 },
+    (_, i) =>
+      0.25 +
+      0.75 * Math.abs(Math.sin(i * (audio.id === "EA1" ? 0.7 : 1.1) + 1)),
+  );
 
   return (
     <div className="overflow-hidden rounded-2xl border border-violet/40 bg-gradient-to-br from-violet/10 to-teal/5">
       <div className="flex items-center gap-3 p-4">
         <span className="text-3xl">{audio.emoji}</span>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-bold uppercase tracking-widest text-violet">🎙️ {audio.codigo} · Entrevista privada (caucus)</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-violet">
+            🎙️ {audio.codigo} · Entrevista privada (caucus)
+          </p>
           <p className="truncate text-base font-semibold">{audio.quien}</p>
         </div>
         <a
@@ -778,27 +1096,43 @@ export function TarjetaAudio({ audio }: { audio: AudioCaso }) {
         >
           {sonando ? "❚❚" : "▶"}
         </button>
-        <div onClick={saltar} className="flex h-12 flex-1 cursor-pointer items-center gap-[3px]">
+        <div
+          onClick={saltar}
+          className="flex h-12 flex-1 cursor-pointer items-center gap-[3px]"
+        >
           {barras.map((v, i) => {
             const activa = i / barras.length <= prog;
             return (
               <span
                 key={i}
-                className={cn("w-1.5 rounded-full transition-colors", activa ? "bg-teal" : "bg-line", sonando && activa && "onda")}
-                style={{ height: `${8 + v * 34}px`, animationDelay: `${(i % 6) * 0.12}s` }}
+                className={cn(
+                  "w-1.5 rounded-full transition-colors",
+                  activa ? "bg-teal" : "bg-line",
+                  sonando && activa && "onda",
+                )}
+                style={{
+                  height: `${8 + v * 34}px`,
+                  animationDelay: `${(i % 6) * 0.12}s`,
+                }}
               />
             );
           })}
         </div>
-        <span className="shrink-0 font-mono text-sm text-faint">{audio.dur}</span>
+        <span className="shrink-0 font-mono text-sm text-faint">
+          {audio.dur}
+        </span>
       </div>
       <audio ref={ref} src={src} preload="metadata" />
       <details className="border-t border-line/50 px-4 py-3">
-        <summary className="cursor-pointer text-sm font-semibold text-muted">📄 Transcripción oficial (si el audio no se escucha bien)</summary>
+        <summary className="cursor-pointer text-sm font-semibold text-muted">
+          📄 Transcripción oficial (si el audio no se escucha bien)
+        </summary>
         <div className="mt-3 space-y-3">
           {audio.transcripcion.map((p, i) => (
             <div key={i}>
-              <p className="text-xs font-bold uppercase tracking-wider text-violet">— {PREGUNTAS_ENTREVISTA[i]}</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-violet">
+                — {PREGUNTAS_ENTREVISTA[i]}
+              </p>
               <p className="mt-1 text-sm leading-relaxed text-muted">{p}</p>
             </div>
           ))}
@@ -815,8 +1149,17 @@ function Misiones() {
       {TAL_MISIONES.map((m) => {
         const on = elegida === m.id;
         return (
-          <div key={m.id} className={cn("rounded-2xl border transition", on ? "border-teal bg-teal/10" : "border-line bg-ink-2/50")}>
-            <button onClick={() => setElegida(on ? null : m.id)} className="flex w-full items-center gap-3 p-3.5 text-left">
+          <div
+            key={m.id}
+            className={cn(
+              "rounded-2xl border transition",
+              on ? "border-teal bg-teal/10" : "border-line bg-ink-2/50",
+            )}
+          >
+            <button
+              onClick={() => setElegida(on ? null : m.id)}
+              className="flex w-full items-center gap-3 p-3.5 text-left"
+            >
               <span className="text-2xl">{m.emoji}</span>
               <span className="min-w-0 flex-1">
                 <span className="block text-base font-semibold">
@@ -824,19 +1167,72 @@ function Misiones() {
                 </span>
                 <span className="block text-sm text-muted">{m.pregunta}</span>
               </span>
-              <span className="shrink-0 text-xl text-faint">{on ? "−" : "+"}</span>
+              <span className="shrink-0 text-xl text-faint">
+                {on ? "−" : "+"}
+              </span>
             </button>
             {on && (
               <div className="px-3.5 pb-3.5">
                 <div className="mb-2 flex justify-end">
                   <BotonCopiar texto={m.texto} label="Copiar la misión" />
                 </div>
-                <pre className="whitespace-pre-wrap rounded-xl border border-line bg-ink/60 p-3 font-mono text-[12.5px] leading-relaxed">{m.texto}</pre>
+                <pre className="whitespace-pre-wrap rounded-xl border border-line bg-ink/60 p-3 font-mono text-[12.5px] leading-relaxed">
+                  {m.texto}
+                </pre>
               </div>
             )}
           </div>
         );
       })}
     </div>
+  );
+}
+
+/**
+ * La duda más repetida del taller: "lo que le subo a la IA, ¿dónde queda?".
+ * Tres lugares, tres colores, sin vueltas.
+ */
+function DondeQueda() {
+  const filas = [
+    {
+      emoji: "💬",
+      color: "#a78bfa",
+      titulo: "En la conversación con la IA",
+      texto:
+        "Todo el análisis vive en el chat de su Gem (o en el de MessIAs). No se guarda en esta app. Por eso se trabaja siempre en el MISMO chat: si abre otro, el asistente pierde el hilo.",
+    },
+    {
+      emoji: "💾",
+      color: "#5eead4",
+      titulo: "En esta computadora",
+      texto:
+        "Su ficha de escucha, su acta de acuerdo y los pasos marcados. Se guardan solos. La ficha se baja con «Descargar» y el acta con «Descargar en PDF»: eso es lo que se lleva.",
+    },
+    {
+      emoji: "📤",
+      color: "#fbbf24",
+      titulo: "Al docente",
+      texto:
+        "Solo lo que usted entrega a propósito: las votaciones, los pasos listos y el acta cuando toca «Entregar mi acta».",
+    },
+  ];
+  return (
+    <section className="rounded-2xl border border-line bg-panel/30 p-4">
+      <p className="text-sm font-bold">🧭 ¿Dónde queda lo que voy haciendo?</p>
+      <div className="mt-3 grid gap-2.5 sm:grid-cols-3">
+        {filas.map((f) => (
+          <div
+            key={f.titulo}
+            className="rounded-xl border p-3"
+            style={{ borderColor: `${f.color}55`, background: `${f.color}0f` }}
+          >
+            <p className="text-sm font-semibold" style={{ color: f.color }}>
+              {f.emoji} {f.titulo}
+            </p>
+            <p className="mt-1 text-xs leading-relaxed text-muted">{f.texto}</p>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

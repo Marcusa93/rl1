@@ -11,21 +11,56 @@ import { cn } from "@/lib/utils";
 const AVATAR = "/taller-ia/messias.png";
 
 const SALUDO =
-  "¡Hola! Soy MessIAs, el 10 de la mediación ⚽. Estoy para guiarle el paso a paso: las herramientas, los conceptos y el caso. Si se traba en algo, acá me tiene. ¿Arrancamos?";
+  "¡Hola! Soy MessIAs, el 10 de la mediación ⚽. Le guío el paso a paso: las herramientas, los conceptos y el caso.\n\n¿No pudo crear su Gem? No hay problema: yo ya tengo el expediente cargado y trabajamos el caso acá mismo. Dígame «trabajemos el caso conmigo» y seguimos.";
 
 /** Atajos según la etapa abierta: las dudas más probables a un toque. */
 const ATAJOS: Record<number, string[]> = {
-  0: ["¿Cómo creo el Gem?", "No tengo cuenta de Google", "No me aparece la opción Gems"],
-  1: ["¿Qué anoto en cada fila de la ficha?", "¿Qué es un caucus?", "¿Qué hago con lo confidencial?"],
-  2: ["¿Cómo subo el audio a mi Gem?", "¿Cómo copio mi ficha?", "No tengo cuenta de Google en esta compu"],
-  3: ["¿Cómo subo un PDF a Gemini?", "La IA no lee la imagen, ¿qué hago?", "¿Qué busco en el contrato?"],
-  4: ["¿Cómo reviso la matriz?", "¿Qué es una inferencia?", "¿Para qué sirve mirar como la contraparte?"],
-  5: ["No encuentro Deep Research", "¿Qué misión me conviene?", "¿Cómo verifico una fuente?"],
-  6: ["¿Posiciones e intereses no son lo mismo?", "¿Qué tiene que tener el acuerdo?", "¿Qué es la MAAN?"],
-  7: ["¿Cómo incorporo el documento nuevo?", "¿Qué ajusto del acuerdo?", "¿Qué presento en la puesta en común?"],
+  0: [
+    "No pude crear el Gem: trabajemos acá",
+    "¿Cómo creo el Gem?",
+    "No tengo cuenta de Google",
+  ],
+  1: [
+    "¿Qué anoto en cada fila de la ficha?",
+    "¿Qué es un caucus?",
+    "No tengo Gem: resumí las entrevistas",
+  ],
+  2: [
+    "No tengo Gem: compará vos mi ficha",
+    "¿Cómo subo el audio a mi Gem?",
+    "¿Dónde queda lo que subo a la IA?",
+  ],
+  3: [
+    "No tengo Gem: analizá vos los documentos",
+    "¿Cómo subo un PDF a Gemini?",
+    "¿Qué busco en el contrato?",
+  ],
+  4: [
+    "No tengo Gem: armá vos la matriz",
+    "¿Qué es una inferencia?",
+    "¿Cómo reviso la matriz?",
+  ],
+  5: [
+    "No encuentro Deep Research",
+    "¿Qué misión me conviene?",
+    "¿Cómo verifico una fuente?",
+  ],
+  6: [
+    "No tengo Gem: proponé las cláusulas",
+    "¿Qué tiene que tener el acuerdo?",
+    "¿Qué es la MAAN?",
+  ],
+  7: [
+    "¿Cómo incorporo el documento nuevo?",
+    "¿Qué ajusto del acuerdo?",
+    "¿Qué presento en la puesta en común?",
+  ],
 };
 
-async function streamMessias(messages: ChatMessage[], onChunk: (t: string) => void): Promise<void> {
+async function streamMessias(
+  messages: ChatMessage[],
+  onChunk: (t: string) => void,
+): Promise<void> {
   const res = await fetch("/api/messias", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -47,7 +82,13 @@ async function streamMessias(messages: ChatMessage[], onChunk: (t: string) => vo
   }
 }
 
-export function MessIAs({ etapa, acoplado }: { etapa: number; /** Panel fijo en la columna derecha (escritorio). */ acoplado?: boolean }) {
+export function MessIAs({
+  etapa,
+  acoplado,
+}: {
+  etapa: number;
+  /** Panel fijo en la columna derecha (escritorio). */ acoplado?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -73,7 +114,10 @@ export function MessIAs({ etapa, acoplado }: { etapa: number; /** Panel fijo en 
       await streamMessias(next, (chunk) =>
         setMessages((prev) => {
           const copy = [...prev];
-          copy[copy.length - 1] = { role: "assistant", content: copy[copy.length - 1].content + chunk };
+          copy[copy.length - 1] = {
+            role: "assistant",
+            content: copy[copy.length - 1].content + chunk,
+          };
           return copy;
         }),
       );
@@ -91,19 +135,28 @@ export function MessIAs({ etapa, acoplado }: { etapa: number; /** Panel fijo en 
     <>
       <div className="flex items-center gap-3 border-b border-line/60 bg-gradient-to-r from-teal/15 to-violet/15 px-4 py-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={AVATAR} alt="MessIAs" className="size-10 rounded-full border border-teal/50 object-cover" />
+        <img
+          src={AVATAR}
+          alt="MessIAs"
+          className="size-10 rounded-full border border-teal/50 object-cover"
+        />
         <div className="min-w-0">
           <p className="text-sm font-bold">MessIAs · el 10 de la mediación</p>
-          <p className="truncate text-[11px] text-faint">Le guía el paso a paso · no resuelve el caso por usted</p>
+          <p className="truncate text-[11px] text-faint">
+            Le guía el paso a paso · no resuelve el caso por usted
+          </p>
         </div>
-        {acoplado && <span className="ml-auto size-2 shrink-0 animate-pulse rounded-full bg-teal" />}
+        {acoplado && (
+          <span className="ml-auto size-2 shrink-0 animate-pulse rounded-full bg-teal" />
+        )}
       </div>
 
       <div ref={listaRef} className="flex-1 space-y-3 overflow-y-auto p-3">
         <Burbuja rol="assistant">{SALUDO}</Burbuja>
         {messages.map((m, i) => (
           <Burbuja key={i} rol={m.role}>
-            {m.content || (busy && i === messages.length - 1 ? <Spinner /> : null)}
+            {m.content ||
+              (busy && i === messages.length - 1 ? <Spinner /> : null)}
           </Burbuja>
         ))}
         {messages.length === 0 && (
@@ -149,7 +202,11 @@ export function MessIAs({ etapa, acoplado }: { etapa: number; /** Panel fijo en 
   );
 
   if (acoplado) {
-    return <div className="flex h-full flex-col overflow-hidden rounded-3xl border border-teal/40 bg-ink/70 shadow-2xl backdrop-blur">{panel}</div>;
+    return (
+      <div className="flex h-full flex-col overflow-hidden rounded-3xl border border-teal/40 bg-ink/70 shadow-2xl backdrop-blur">
+        {panel}
+      </div>
+    );
   }
 
   return (
@@ -160,7 +217,9 @@ export function MessIAs({ etapa, acoplado }: { etapa: number; /** Panel fijo en 
         aria-label="Abrir MessIAs, el asistente del taller"
         className={cn(
           "fixed bottom-24 right-4 z-40 flex items-center gap-2 rounded-full shadow-xl transition active:scale-95",
-          open ? "border border-line bg-panel p-2" : "border-2 border-teal/70 bg-ink p-1 pr-4",
+          open
+            ? "border border-line bg-panel p-2"
+            : "border-2 border-teal/70 bg-ink p-1 pr-4",
         )}
       >
         {open ? (
@@ -168,7 +227,11 @@ export function MessIAs({ etapa, acoplado }: { etapa: number; /** Panel fijo en 
         ) : (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={AVATAR} alt="" className="size-11 rounded-full border border-teal/40 object-cover" />
+            <img
+              src={AVATAR}
+              alt=""
+              className="size-11 rounded-full border border-teal/40 object-cover"
+            />
             <span className="text-sm font-bold text-teal">MessIAs</span>
           </>
         )}
@@ -183,13 +246,23 @@ export function MessIAs({ etapa, acoplado }: { etapa: number; /** Panel fijo en 
   );
 }
 
-function Burbuja({ rol, children }: { rol: "user" | "assistant" | "system"; children: React.ReactNode }) {
+function Burbuja({
+  rol,
+  children,
+}: {
+  rol: "user" | "assistant" | "system";
+  children: React.ReactNode;
+}) {
   return (
-    <div className={cn("flex", rol === "user" ? "justify-end" : "justify-start")}>
+    <div
+      className={cn("flex", rol === "user" ? "justify-end" : "justify-start")}
+    >
       <div
         className={cn(
           "max-w-[88%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed",
-          rol === "user" ? "bg-gradient-to-r from-teal to-cyan text-ink" : "border border-line bg-panel/60",
+          rol === "user"
+            ? "bg-gradient-to-r from-teal to-cyan text-ink"
+            : "border border-line bg-panel/60",
         )}
       >
         {children}

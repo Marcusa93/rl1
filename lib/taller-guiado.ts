@@ -164,7 +164,10 @@ export interface EtapaTaller {
 }
 
 const GEMINI = { label: "Gemini", url: "https://gemini.google.com" };
-const NOTEBOOK = { label: "Notebook Gemini", url: "https://notebooklm.google.com" };
+const NOTEBOOK = {
+  label: "Notebook Gemini",
+  url: "https://notebooklm.google.com",
+};
 
 export const TAL_ETAPAS: EtapaTaller[] = [
   {
@@ -207,7 +210,10 @@ export const TAL_ETAPAS: EtapaTaller[] = [
         id: "e0-gem",
         titulo: "Cree su asistente (su primer prompt de sistema)",
         prompt: "P0",
-        herramienta: { label: "Crear Gem (directo)", url: "https://gemini.google.com/gems/create" },
+        herramienta: {
+          label: "Crear Gem (directo)",
+          url: "https://gemini.google.com/gems/create",
+        },
         hacer: [
           "Abra gemini.google.com e inicie sesión con una cuenta de Google.",
           "En el menú de la izquierda toque «Explorar Gems» (o «Gems») y luego «Crear Gem». ¿No lo encuentra? Use el botón «Crear Gem (directo)» de acá abajo: lo lleva derecho.",
@@ -215,6 +221,7 @@ export const TAL_ETAPAS: EtapaTaller[] = [
           "Abra su Gem y escríbale: «presentate en dos líneas». Ya tiene un asistente que conoce su rol.",
           "TODO el taller se trabaja DENTRO de este Gem: cada audio y documento que suba queda en la misma conversación, y el asistente acumula el caso completo.",
           "¿No le aparece Gems? Plan B: abra un chat nuevo, pegue P0 como PRIMER mensaje y no cambie de chat en todo el taller. Es la misma idea: el contexto se construye una vez.",
+          "¿No le sale en 3 minutos? NO SE TRABE: dígale a MessIAs «no pude crear el Gem» y él pasa a ser su asistente, con toda la carpeta del caso ya cargada. Siga el taller completo con él y vuelva al Gem cuando pueda.",
         ],
       },
     ],
@@ -284,7 +291,8 @@ export const TAL_ETAPAS: EtapaTaller[] = [
     emoji: "🎙️",
     color: "#a78bfa",
     titulo: "La IA escucha",
-    bajada: "El mismo audio, procesado por la herramienta. ¿Quién escuchó mejor?",
+    bajada:
+      "El mismo audio, procesado por la herramienta. ¿Quién escuchó mejor?",
     pasos: [
       {
         id: "e2-subir",
@@ -374,23 +382,16 @@ export const TAL_ETAPAS: EtapaTaller[] = [
     bajada: "Todo el caso en una tabla: hechos, pruebas, contradicciones.",
     pasos: [
       {
-        id: "e4-docs",
-        titulo: "Complete la carpeta",
-        docs: ["D5", "D6", "D7"],
-        hacer: [
-          "Suba lo que falta: CN-08 (reclamo de Diego), CN-09 (respuesta de Lucía) y CN-10 (informe técnico).",
-          "Ya tiene el expediente completo hasta hoy.",
-        ],
-      },
-      {
         id: "e4-matriz",
-        titulo: "Pida la matriz de hechos y prueba",
+        titulo: "Todo el caso en una tabla",
+        docs: ["D5", "D6", "D7"],
         plantilla: "PLB",
         prompt: "P4",
         hacer: [
-          "Envíe el prompt P4. Puede descargar la plantilla PL-B para ver el formato esperado (o subirla).",
-          "Revise la tabla FILA POR FILA contra los documentos: ¿cada afirmación cita bien su fuente?",
-          "Corrija al menos un error o marque una inferencia como hipótesis. La corrección es el trabajo del profesional.",
+          "Suba lo que falta de la carpeta: CN-08, CN-09 y CN-10. Ya tiene el expediente completo.",
+          "Envíe el prompt P4 y revise la tabla FILA POR FILA: ¿cada afirmación cita bien su documento?",
+          "Corrija al menos un error o marque una inferencia como hipótesis: esa corrección es el trabajo del profesional.",
+          "¿Sin Gem? Pídaselo a MessIAs: él tiene la carpeta cargada y le arma la matriz para que usted la revise.",
         ],
       },
       {
@@ -398,7 +399,9 @@ export const TAL_ETAPAS: EtapaTaller[] = [
         titulo: "Extra: mirar con los ojos del otro",
         prompt: "P5",
         extra: true,
-        hacer: ["Envíe el prompt P5: la IA revisa el expediente como si fuera la contraparte. Sirve para encontrar los puntos débiles del propio análisis."],
+        hacer: [
+          "Envíe el prompt P5: la IA revisa el expediente como si fuera la contraparte. Sirve para encontrar los puntos débiles del propio análisis.",
+        ],
       },
     ],
   },
@@ -410,22 +413,14 @@ export const TAL_ETAPAS: EtapaTaller[] = [
     bajada: "Deep Research: datos externos que ninguna parte pueda discutir.",
     pasos: [
       {
-        id: "e5-mision",
-        titulo: "Elija su misión",
-        misiones: true,
-        hacer: [
-          "Un buen mediador trae CRITERIOS OBJETIVOS: datos de afuera que las partes no puedan discutir.",
-          "Elija UNA misión (idealmente, repártanse con las compus vecinas): A el precio justo, B el acuerdo que sirva, C la alternativa al juicio.",
-        ],
-      },
-      {
         id: "e5-lanzar",
-        titulo: "Lance la investigación y NO espere",
+        titulo: "Elija su misión y láncela (sin esperar)",
+        misiones: true,
         herramienta: GEMINI,
         hacer: [
-          "Deep Research corre FUERA del Gem: en Gemini, abra un chat nuevo y elija «Deep Research» (en el selector de herramientas o modelos).",
-          "Copie el prompt de su misión, péguelo y envíe. Gemini propone un plan: toque «Iniciar investigación».",
-          "IMPORTANTE: tarda entre 5 y 15 minutos. Déjelo trabajando en esa pestaña y siga con la etapa siguiente. Vuelva después.",
+          "Un mediador trae CRITERIOS OBJETIVOS: datos de afuera que las partes no puedan discutir. Elija UNA misión de acá abajo (repártanse con las compus vecinas).",
+          "Deep Research corre FUERA del Gem: en Gemini, chat nuevo y elija «Deep Research». Pegue su misión y toque «Iniciar investigación».",
+          "Tarda 5 a 15 minutos: déjelo en esa pestaña y SIGA con la etapa siguiente. Vuelve después a buscar el resultado.",
         ],
       },
       {
@@ -445,7 +440,8 @@ export const TAL_ETAPAS: EtapaTaller[] = [
     emoji: "📝",
     color: "#f0abfc",
     titulo: "El acuerdo",
-    bajada: "De las posiciones a los intereses; de los intereses a las cláusulas.",
+    bajada:
+      "De las posiciones a los intereses; de los intereses a las cláusulas.",
     pasos: [
       {
         id: "e6-intereses",
@@ -518,7 +514,8 @@ export const TAL_ETAPAS: EtapaTaller[] = [
       },
       {
         id: "e7-control",
-        titulo: "El abogado hostil (control final)",
+        extra: true,
+        titulo: "Extra: el abogado hostil (control final)",
         prompt: "P11",
         hacer: [
           "Antes de dar el acta por cerrada, hágala atacar: en el paso anterior toque «Copiar el acta».",

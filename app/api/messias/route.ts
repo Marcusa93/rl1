@@ -23,16 +23,29 @@ export async function POST(req: Request) {
   if (!pid) return fail("Ingrese a la clase primero", 401);
 
   const db = getAdmin();
-  const { data: p } = await db.from("participants").select("id").eq("id", pid).eq("session_id", session.id).maybeSingle();
+  const { data: p } = await db
+    .from("participants")
+    .select("id")
+    .eq("id", pid)
+    .eq("session_id", session.id)
+    .maybeSingle();
   if (!p) return fail("Vuelva a ingresar a la clase", 401);
 
   const body = await req.json().catch(() => ({}));
-  const incoming = Array.isArray(body.messages) ? (body.messages as ChatMessage[]) : [];
+  const incoming = Array.isArray(body.messages)
+    ? (body.messages as ChatMessage[])
+    : [];
   const history = incoming
-    .filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
+    .filter(
+      (m) =>
+        m &&
+        (m.role === "user" || m.role === "assistant") &&
+        typeof m.content === "string",
+    )
     .slice(-10)
     .map((m) => ({ role: m.role, content: m.content.slice(0, 4000) }));
-  if (!history.length || history[history.length - 1].role !== "user") return fail("Falta el mensaje");
+  if (!history.length || history[history.length - 1].role !== "user")
+    return fail("Falta el mensaje");
 
   // Límite por participante + registro de la pregunta para el docente.
   const { count } = await db
@@ -41,7 +54,8 @@ export async function POST(req: Request) {
     .eq("session_id", session.id)
     .eq("participant_id", pid)
     .eq("activity", "tal_messias");
-  if ((count ?? 0) >= MAX_PREGUNTAS) return fail("Se alcanzó el límite de preguntas de esta compu por hoy", 429);
+  if ((count ?? 0) >= MAX_PREGUNTAS)
+    return fail("Se alcanzó el límite de preguntas de esta compu por hoy", 429);
   await db.from("responses").insert({
     session_id: session.id,
     participant_id: pid,
@@ -50,7 +64,21 @@ export async function POST(req: Request) {
     payload: { q: history[history.length - 1].content.slice(0, 500) },
   });
 
-  const system = buildMessiasSystem((session.activity_config ?? {}) as ConfigTaller);
+  // Dónde se quedó esta compu: los pasos que marcó como listos.
+  const { data: pasos } = await db
+    .from("responses")
+    .select("item_key, payload")
+    .eq("session_id", session.id)
+    .eq("participant_id", pid)
+    .eq("activity", "tal_paso");
+  const hechos = (pasos ?? [])
+    .filter((r) => r.payload?.done)
+    .map((r) => String(r.item_key));
+
+  const system = buildMessiasSystem(
+    (session.activity_config ?? {}) as ConfigTaller,
+    hechos,
+  );
 
   const upstream = await fetch(ENDPOINT, {
     method: "POST",
@@ -71,7 +99,10 @@ export async function POST(req: Request) {
 
   if (!upstream.ok || !upstream.body) {
     const t = await upstream.text().catch(() => "");
-    return fail(`MessIAs no responde (${upstream.status}): ${t.slice(0, 160)}`, 502);
+    return fail(
+      `MessIAs no responde (${upstream.status}): ${t.slice(0, 160)}`,
+      502,
+    );
   }
 
   // SSE de OpenRouter → texto plano en streaming.
@@ -96,7 +127,8 @@ export async function POST(req: Request) {
             try {
               const json = JSON.parse(data);
               const delta = json?.choices?.[0]?.delta?.content;
-              if (typeof delta === "string" && delta) controller.enqueue(encoder.encode(delta));
+              if (typeof delta === "string" && delta)
+                controller.enqueue(encoder.encode(delta));
             } catch {
               /* línea SSE incompleta */
             }
@@ -108,5 +140,10 @@ export async function POST(req: Request) {
     },
   });
 
-  return new Response(stream, { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" } });
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-store",
+    },
+  });
 }
