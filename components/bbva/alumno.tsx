@@ -52,7 +52,7 @@ async function pedir(url: string, init?: RequestInit, ms = 7000): Promise<Respon
 }
 
 /** Manda una respuesta; si falla la red, reintenta una vez. */
-async function postear(p: Pendiente): Promise<Resultado> {
+async function postear(p: Pendiente, reinicio: number | null): Promise<Resultado> {
   for (let intento = 0; intento < 2; intento++) {
     try {
       const r = await pedir(
@@ -60,7 +60,9 @@ async function postear(p: Pendiente): Promise<Resultado> {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ activity: p.a, item_key: p.i, payload: { v: p.v } }),
+          // reinicio: la última marca de "Reiniciar actividad" que vio este celular; el servidor
+          // rechaza lo que se tocó antes de un reinicio que todavía no llegó a verse acá.
+          body: JSON.stringify({ activity: p.a, item_key: p.i, payload: { v: p.v }, reinicio }),
           keepalive: true,
         },
         8000,
@@ -107,6 +109,8 @@ export function AlumnoBbva() {
   /** Cuenta los toques: si cambia mientras se restaura, gana lo local. */
   const escrituras = useRef(0);
   const guardadoT = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  /** Última marca de reinicio de actividad que vio este dispositivo (viaja con cada respuesta). */
+  const reinicioVisto = useRef<number | null>(null);
 
   const ponerMe = useCallback((p: Participante | null) => {
     meRef.current = p;
@@ -177,7 +181,7 @@ export function AlumnoBbva() {
         for (let vuelta = 0; vuelta < 6; vuelta++) {
           const p = pendientes.current.get(k);
           if (!p) break;
-          res = await postear(p);
+          res = await postear(p, reinicioVisto.current);
           if (res === "descartar") {
             pendientes.current.delete(k);
             break;
@@ -339,9 +343,12 @@ export function AlumnoBbva() {
           });
           setVerTarjeta(false);
           setReinicios((n) => n + 1);
+          escrituras.current++; // invalida cualquier sincronizar() en vuelo con datos previos al borrado
+          if (meRef.current) void sincronizar();
           if (meRef.current && getActividadBbva(actividad)) vibrar([20, 60, 20]);
         }
         ultimoReinicio = t;
+        reinicioVisto.current = t;
         if (pendientes.current.size) reintentar();
       } catch {
         if (vivo) setFallos((f) => f + 1);

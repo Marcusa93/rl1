@@ -457,21 +457,27 @@ export function MiniQR({ className }: { className?: string }) {
 
 /**
  * "Reiniciar actividad" en dos toques (sin confirm(): un diálogo taparía el proyector y no
- * se puede aceptar desde el control remoto). El primer toque lo arma 5 s; el segundo borra.
+ * se puede aceptar desde el control remoto). El primer toque lo arma 12 s; el segundo borra.
  */
 export function BotonReiniciar({ onReiniciar, className }: { onReiniciar: () => void; className?: string }) {
   const [armado, setArmado] = useState(false);
   const t = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const armadoEn = useRef(0);
   useEffect(() => () => clearTimeout(t.current), []);
-  function tocar() {
+  function tocar(e: React.MouseEvent<HTMLButtonElement>) {
+    e.currentTarget.blur(); // que Enter/Espacio (pasar placa) nunca caigan sobre este botón
+    // El 2º clic de un doble clic no confirma: tiene que ser un toque aparte.
+    if (armado && e.timeStamp - armadoEn.current < 800) return;
     clearTimeout(t.current);
     if (armado) {
       setArmado(false);
       onReiniciar();
       return;
     }
+    armadoEn.current = e.timeStamp;
     setArmado(true);
-    t.current = setTimeout(() => setArmado(false), 5000);
+    // 12 s: desde el control remoto la ida y vuelta (armar → ver "Confirmar" → tocar) tarda varios segundos.
+    t.current = setTimeout(() => setArmado(false), 12000);
   }
   return (
     <button

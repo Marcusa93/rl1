@@ -31,6 +31,18 @@ export async function POST(
   )
     return fail("Esta actividad ya está cerrada", 409);
 
+  // Respuesta tocada antes de un "Reiniciar actividad" que ese celular todavía no vio:
+  // no puede revivir lo que se acaba de borrar. (Las apps viejas no mandan la marca.)
+  const reinicio = (session.activity_config as { reinicio?: { activity?: string; t?: number } } | null)?.reinicio;
+  if (
+    slug === BBVA_SLUG &&
+    body.reinicio !== undefined &&
+    reinicio?.activity === activity &&
+    item_key !== HIPOTESIS_ITEM &&
+    body.reinicio !== reinicio.t
+  )
+    return fail("La actividad se reinició", 409);
+
   const db = getAdmin();
 
   // la cookie puede apuntar a un participante borrado (ej. tras reiniciar la clase)
