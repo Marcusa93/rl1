@@ -17,6 +17,15 @@ const REWRITES: Record<string, Record<string, string>> = {
     "/clase": "/bbva/clase",
     "/control": "/bbva/control",
   },
+  "congreso.rossi-ia.com": {
+    "/": "/congreso",
+    "/clase": "/congreso/clase",
+    "/control": "/congreso/control",
+    "/demo": "/congreso/demo",
+    "/demo/cronologia": "/congreso/demo/cronologia",
+    "/demo/prueba": "/congreso/demo/prueba",
+    "/demo/entrevista": "/congreso/demo/entrevista",
+  },
   "taller.rossi-ia.com": {
     "/": "/taller-ia",
     "/clase": "/taller-ia/clase",

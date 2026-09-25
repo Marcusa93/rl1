@@ -2,6 +2,12 @@
 
 export type ActivityKey =
   | "lobby"
+  // Congreso IA · Vibe coding para abogados (/congreso) — prefijo cong_
+  | "cong_molestia"
+  | "cong_usar"
+  | "cong_elegir"
+  | "cong_datos"
+  | "cong_intentar"
   // Laboratorio de IA · BBVA (/bbva) — prefijo bbva_
   | "bbva_a1"
   | "bbva_a2"
