@@ -14,7 +14,7 @@ import { CG, FUENTE } from "./paleta";
 type V = 1 | 2 | 3 | 4;
 
 /** Escala de la app ensayada dentro del marco de la placa. */
-const ZOOM = 0.78;
+const ZOOM = 0.66;
 
 /** Ventana de "vista previa" con la app ensayada adentro. */
 export function MarcoApp({ caso, v, children, className }: { caso: CasoId; v: V; children?: React.ReactNode; className?: string }) {

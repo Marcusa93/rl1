@@ -160,7 +160,7 @@ function PlacaTipo({ s }: { s: SlidePlaca }) {
       )}
       <Hoja folio={<Folio numero={s.numero} rotulo={s.movimiento} />}>
         <div className="flex h-full flex-col justify-center">
-          <h1 className="cg-titular cg-sube relative z-10 text-[12.5rem] leading-[0.84] text-cg-tinta">{s.titulo}</h1>
+          <h1 className="cg-titular cg-sube relative z-10 text-[11rem] leading-[0.86] text-cg-tinta">{s.titulo}</h1>
           <p className="cg-bajada cg-sube relative z-10 mt-[2.4rem] max-w-[48rem] text-[2.3rem] leading-snug text-cg-sepia" style={{ animationDelay: "0.6s" }}>
             {s.bajada}
           </p>
@@ -339,7 +339,7 @@ function CurvaFunciona({ s }: { s: SlideCurva }) {
           <Anillo texto={s.anillo} dur={120} />
         </div>
         <div className="relative z-10 flex h-full flex-col justify-center">
-          <h1 className="cg-titular cg-sube text-[13.5rem] leading-[0.8] text-cg-tinta">{s.titulo}</h1>
+          <h1 className="cg-titular cg-sube text-[12rem] leading-[0.8] text-cg-tinta">{s.titulo}</h1>
           <p className="cg-bajada cg-sube mt-[2.4rem] text-[2.2rem] text-cg-sepia" style={{ animationDelay: "2.2s" }}>
             {s.bajada}
           </p>

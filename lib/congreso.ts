@@ -346,6 +346,18 @@ export interface CasoDemo {
   /** La frase de Marco al detectar la falla. */
   frase: string;
   pasos: PasoDemo[];
+  /** Recurso dinámico: un documento ficticio para cargar en la app ya construida. */
+  documento: DocumentoDemo;
+}
+
+export interface DocumentoDemo {
+  titulo: string;
+  /** Archivo en public/ (también en la carpeta "Congreso IA/Documentos para la demo"). */
+  archivo: string;
+  /** La instrucción que agrega la carga del documento a la app. */
+  prompt: string;
+  /** Qué debería pasar al cargarlo (lo que se muestra y se discute). */
+  probar: string;
 }
 
 export const CONG_CASOS: CasoDemo[] = [
@@ -357,6 +369,14 @@ export const CONG_CASOS: CasoDemo[] = [
     problema: "Tengo un expediente de 300 fojas y necesito ver qué pasó, cuándo y quién lo hizo.",
     falla: "Dos actuaciones del mismo día aparecen como una sola: la segunda pisa a la primera.",
     frase: "En un expediente puede haber varias actuaciones el mismo día. No quiero que las trate como una sola.",
+    documento: {
+      titulo: "Historial de actuaciones del expediente 1234/2024",
+      archivo: "/congreso/docs/expediente-perez.txt",
+      prompt:
+        "Agregá un botón “Importar expediente” donde pueda pegar el historial de actuaciones tal como sale del sistema del Poder Judicial. Que lea cada actuación (foja, fecha, tipo, parte y descripción), las ordene cronológicamente y me las muestre para revisarlas antes de sumarlas a la línea de tiempo.",
+      probar:
+        "Pegar el documento: 11 actuaciones desordenadas se ordenan solas, incluidas las dos del 14/03/2025 y las dos del 30/06/2025. Remarcar que primero las muestra para revisar: la decisión sigue siendo del abogado. Y preguntar: ¿a dónde viajó ese texto para que la IA lo leyera?",
+    },
     pasos: [
       {
         v: 1,
@@ -396,6 +416,14 @@ export const CONG_CASOS: CasoDemo[] = [
     problema: "Antes de la audiencia necesito saber qué hecho está probado con qué, y qué me falta.",
     falla: "Cada prueba se puede vincular a un solo hecho: la pericia que acredita dos hechos obliga a elegir uno.",
     frase: "Una misma prueba puede acreditar varios hechos. Y un hecho puede tener varias pruebas.",
+    documento: {
+      titulo: "Extractos de demanda, contestación y prueba ofrecida",
+      archivo: "/congreso/docs/contestacion-y-prueba.txt",
+      prompt:
+        "Agregá un botón “Importar escritos” donde pueda pegar extractos de la demanda, la contestación y el ofrecimiento de prueba. Que identifique los hechos que la demandada niega (esos son los controvertidos), las pruebas ofrecidas y su estado, y me proponga los vínculos entre hechos y prueba para que yo los confirme.",
+      probar:
+        "Pegar el documento: aparecen los hechos negados como controvertidos y la pericia mecánica vinculada a dos hechos. Discutir: ¿el hecho 7, que la demandada no contestó, está controvertido? Eso lo decide un abogado, no la app.",
+    },
     pasos: [
       {
         v: 1,
@@ -434,6 +462,14 @@ export const CONG_CASOS: CasoDemo[] = [
     problema: "En la primera entrevista siempre me olvido de preguntar algo, y después falta un dato clave.",
     falla: "Hace las mismas preguntas para cualquier caso: a un despido le pregunta si hubo lesionados.",
     frase: "Las preguntas no pueden ser las mismas para todos los casos. Un despido no es un accidente.",
+    documento: {
+      titulo: "Mensaje de WhatsApp de un posible cliente",
+      archivo: "/congreso/docs/mensaje-cliente.txt",
+      prompt:
+        "Agregá un botón “Tengo un mensaje del cliente” donde pueda pegar lo que me escribió antes de la entrevista. Que complete las respuestas que ya estén en el mensaje, marque cuáles faltan preguntar y me avise si hay algo urgente.",
+      probar:
+        "Pegar el mensaje: se completan fecha de ingreso, tareas, forma del despido y remuneración; quedan marcadas las preguntas pendientes; la ficha abre con la alerta por la carta documento. Preguntar: ¿le pediste permiso al cliente para pasar su mensaje por una IA?",
+    },
     pasos: [
       {
         v: 1,
@@ -737,7 +773,7 @@ export const CONG_SLIDES: SlideCong[] = [
     titulo: "No era eso.",
     bajada: "Y acá empieza lo interesante.",
     fase: "error",
-    nota: "Encontrar la limitación en vivo (Marcar la falla). Decir la frase del abogado y pedir la corrección (V2). Si hay tiempo, una más (V3). Remate: \"La IA escribió el código. Pero yo tuve que explicarle qué estaba mal. Construir es conversar con el error.\"",
+    nota: "Encontrar la limitación en vivo (Marcar la falla). Decir la frase del abogado y pedir la corrección (V2). Si hay tiempo, una más (V3). Remate: \"La IA escribió el código. Pero yo tuve que explicarle qué estaba mal. Construir es conversar con el error.\" RECURSO DINÁMICO (si hay tiempo): pedir que importe un documento y pegar el ficticio de /demo — y preguntar a dónde viajó ese texto.",
   },
   {
     t: "vitrina",

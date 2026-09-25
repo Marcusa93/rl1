@@ -1,0 +1,18 @@
+MENSAJE DE UN POSIBLE CLIENTE (llegó por WhatsApp al estudio)
+Documento ficticio para una demostración. Nombres, fechas y hechos inventados.
+
+Hola doctor, buenas tardes. Me pasó su número mi cuñada. Le cuento porque no sé qué hacer.
+Me llamo Jorge Ledesma, tengo 47 años. Trabajo (trabajaba, mejor dicho) en una distribuidora de bebidas acá en Tucumán, en Banda del Río Salí, desde marzo de 2016, o sea hace más de 9 años. Hago de todo: descargo camiones, controlo el depósito, a veces manejo el utilitario.
+El lunes 15 de septiembre cuando llegué no me dejaron entrar. El encargado me dijo que "por reestructuración" ya no había lugar para mí y que pasara la semana que viene a firmar unos papeles. No me dieron nada por escrito.
+Ayer me llegó una carta documento de la empresa que dice que me despiden "con justa causa" por "reiteradas inasistencias injustificadas". Eso es mentira, falté dos días en agosto porque estaba enfermo y llevé el certificado del médico.
+Cobraba más o menos $ 1.100.000 por mes, pero una parte me la pagaban en negro, creo que como $ 300.000.
+Tengo los recibos de sueldo de este año (no todos), el certificado médico de agosto y la carta documento. También tengo unos audios del encargado.
+Tengo dos hijos chicos y mi señora no trabaja. Quiero saber si me corresponde algo y qué tengo que hacer. ¿Tengo que contestar la carta? Me dijeron que hay poco tiempo.
+Puedo ir el jueves a la tarde si usted me atiende.
+Gracias, Jorge.
+
+---
+Para la demo: el mensaje responde muchas preguntas de la entrevista laboral (fecha de ingreso,
+tareas, forma del despido, remuneración, trabajo en negro, documentación) y deja otras sin
+responder (categoría y convenio, horario, fecha exacta de la carta documento). Incluye una
+carta documento recibida: la ficha debería abrir con la alerta de plazo urgente.

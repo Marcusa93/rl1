@@ -11,6 +11,7 @@
 //   R mostrar/ocultar resultados · V ver frases · F pantalla completa
 //   B o . pantalla en blanco · + − tamaño · Esc cerrar ventana/blanco
 //   Los emojis que manda el público desde la botonera del celular suben por la pantalla.
+//   Q QR fijo en el margen (sí/no) · C alto contraste para salas iluminadas (sí/no)
 //   Shift+R reiniciar la sesión (borra participantes y respuestas: después de ensayar)
 // Control remoto: /congreso/control (celular de Marco, con el guion de cada placa).
 
@@ -141,6 +142,10 @@ function Deck() {
   const [ventana, setVentana] = useState<string | null>(null);
   const [version, setVersion] = useState<Ctx["version"]>({ inicial: null, actual: null });
   const [planB, setPlanB] = useState(false);
+  const [conectados, setConectados] = useState(0);
+  // Sala iluminada: QR fijo en el margen y alto contraste, prendidos por defecto (teclas Q y C).
+  const [margen, setMargen] = useState(() => leerPreferencia("congreso-margen", true));
+  const [contraste, setContraste] = useState(() => leerPreferencia("congreso-contraste", true));
   const { zoom, aviso: avisoZoom } = useZoomDeck();
 
   const slide = CONG_SLIDES[idx];
@@ -248,6 +253,7 @@ function Deck() {
             setVersion({ inicial, actual, cambio: d.cambio, cuando: Date.now() });
           }
           setPlanB(d.actividad === CONG_PLAN_B.activity && d.config?.seguimiento === true);
+          setConectados(d.conectados);
           if (primera && !pedida.current) {
             pedida.current = d.actividad;
             setActivacion({ key: d.actividad, status: "ok" });
@@ -340,6 +346,16 @@ function Deck() {
         if (slide.t === "actividad" && maxEtapa > 0) setEtapa(etapa >= 1 ? 0 : 1);
       } else if (k === "v" || k === "V") setFrases((f) => !f);
       else if (k === "f" || k === "F") pantallaCompleta();
+      else if (k === "q" || k === "Q")
+        setMargen((m) => {
+          guardarPreferencia("congreso-margen", !m);
+          return !m;
+        });
+      else if (k === "c" || k === "C")
+        setContraste((c) => {
+          guardarPreferencia("congreso-contraste", !c);
+          return !c;
+        });
       else if (k === "b" || k === "B" || k === ".") setBlanco((v) => !v);
       else if (k === "Escape") {
         setBlanco(false);
@@ -412,7 +428,7 @@ function Deck() {
   const sinPie = slide.t === "portada" || slide.t === "final";
 
   return (
-    <div className={cn("deck-escala cong cg-papel relative flex h-dvh flex-col overflow-hidden select-none", !cursor && "cursor-none")}>
+    <div className={cn("deck-escala cong cg-papel relative flex h-dvh flex-col overflow-hidden select-none", contraste && "cg-contraste", !cursor && "cursor-none")}>
       <div className="pointer-events-none fixed inset-x-0 top-0 z-40 h-[3px] bg-cg-tinta/5">
         <div className="h-full bg-cg-lacre transition-[width] duration-500 ease-out" style={{ width: `${((idx + 1) / TOTAL) * 100}%` }} />
       </div>
@@ -425,7 +441,8 @@ function Deck() {
         </div>
       )}
 
-      <main key={idx} className="rise relative min-h-0 flex-1">
+      <div className="flex min-h-0 flex-1">
+      <main key={idx} className="rise relative min-h-0 min-w-0 flex-1">
         <Placa slide={slide} ctx={ctx} />
         {ventana && (
           <div className="absolute inset-x-[1.2rem] bottom-[0.6rem] top-[2.6rem] z-30 flex flex-col overflow-hidden rounded-[0.6rem] border border-cg-tinta/20 bg-cg-blanco shadow-[0_30px_60px_-30px_rgba(0,0,0,0.6)]">
@@ -456,6 +473,8 @@ function Deck() {
           </div>
         )}
       </main>
+      {margen && <MargenQR conectados={conectados} conQR={slide.t !== "actividad"} />}
+      </div>
 
       {!sinPie && (
         <footer className="relative z-10 mx-[4.5rem] flex h-[2.8rem] shrink-0 items-center justify-between gap-[2rem] border-t border-cg-tinta/10 cg-mono text-[0.7rem] uppercase tracking-[0.18em] text-cg-gris">
@@ -484,6 +503,48 @@ function Deck() {
 
       {blanco && <div className="cg-papel fixed inset-0 z-[60]" onClick={() => setBlanco(false)} />}
     </div>
+  );
+}
+
+function leerPreferencia(clave: string, porDefecto: boolean): boolean {
+  try {
+    const v = localStorage.getItem(clave);
+    return v === null ? porDefecto : v === "1";
+  } catch {
+    return porDefecto;
+  }
+}
+
+function guardarPreferencia(clave: string, valor: boolean) {
+  try {
+    localStorage.setItem(clave, valor ? "1" : "0");
+  } catch {}
+}
+
+/**
+ * Margen de la foja: el QR para sumarse queda en todas las placas, negro puro
+ * sobre blanco y grande, para que se escanee aunque el proyector esté lavado.
+ * En las interacciones la placa ya trae su QR grande: acá queda solo el contador.
+ */
+function MargenQR({ conectados, conQR }: { conectados: number; conQR: boolean }) {
+  return (
+    <aside className="relative flex w-[12rem] shrink-0 flex-col justify-end border-l-[0.15rem] border-dashed border-cg-lacre/50 px-[1.2rem] pb-[1.2rem]">
+      {conQR && (
+        <>
+          <p className="cg-titular text-[1.9rem] leading-none text-cg-tinta">Sumate</p>
+          <p className="mt-[0.3rem] cg-mono text-[0.68rem] uppercase leading-snug tracking-[0.14em] text-cg-sepia">Sin registro · sin nombre</p>
+          <div className="mt-[0.8rem] aspect-square w-full border-[0.2rem] border-black bg-white p-[0.45rem]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={CONG_QR} alt={`Código QR: ${CONG_LINK}`} className="h-full w-full [image-rendering:pixelated]" />
+          </div>
+          <p className="mt-[0.6rem] break-all cg-mono text-[0.86rem] font-semibold leading-tight text-cg-tinta">{CONG_LINK}</p>
+        </>
+      )}
+      <p className="mt-[0.8rem] flex items-baseline gap-[0.4rem] cg-mono text-[0.72rem] uppercase tracking-[0.14em] text-cg-sepia">
+        <span className="cg-titular text-[1.6rem] normal-case tracking-normal text-cg-tinta tabular-nums">{conectados}</span>
+        conectados
+      </p>
+    </aside>
   );
 }
 

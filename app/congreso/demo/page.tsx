@@ -128,8 +128,44 @@ function Caso({ c }: { c: CasoDemo }) {
               )}
             </Fragment>
           ))}
+          <Documento c={c} />
         </ol>
       </div>
     </details>
+  );
+}
+
+/** Recurso dinámico: un documento ficticio para cargar en la app ya construida. */
+function Documento({ c }: { c: CasoDemo }) {
+  const d = c.documento;
+  return (
+    <li className="rounded-xl border-2 border-cg-azul-2/40 bg-cg-blanco/70 p-4 sm:p-5">
+      <p className="cg-mono text-[11px] uppercase tracking-[0.18em] text-cg-azul-2">Recurso dinámico · cargar un documento</p>
+      <h3 className="cg-serif mt-1 text-xl font-semibold leading-tight text-cg-tinta">{d.titulo}</h3>
+      <p className="mt-1 text-[14px] leading-snug text-cg-sepia">
+        Ficticio, redactado para la demo. Abrilo, copiá todo el texto y pegalo en la app cuando tenga el botón para importarlo.
+      </p>
+      <a
+        href={d.archivo}
+        target="_blank"
+        rel="noreferrer"
+        className="mt-3 inline-flex items-center rounded-lg border border-cg-tinta/30 bg-cg-blanco px-4 py-2.5 text-[15px] font-semibold text-cg-tinta transition hover:bg-cg-tinta hover:text-cg-blanco"
+      >
+        Abrir el documento ↗
+      </a>
+      <div className="mt-3 rounded-lg border border-cg-niebla bg-cg-papel/60 p-3">
+        <p className="cg-mono whitespace-pre-wrap break-words text-[14px] leading-relaxed text-cg-tinta">{d.prompt}</p>
+        <div className="mt-2 flex justify-end">
+          <BotonCopiarPrompt texto={d.prompt} />
+        </div>
+      </div>
+      <p className="mt-3 text-[14px] leading-snug text-cg-sepia">
+        <span className="font-semibold text-cg-tinta">Probar:</span> {d.probar}
+      </p>
+      <p className="mt-2 text-[13px] leading-snug text-cg-gris">
+        Para leer texto libre la app necesita IA adentro (en Claude, los artefactos pueden usarla). Sin eso, pedí que lea las líneas con el
+        formato “fs. | fecha | tipo | parte”.
+      </p>
+    </li>
   );
 }

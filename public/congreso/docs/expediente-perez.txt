@@ -1,0 +1,46 @@
+PODER JUDICIAL DE TUCUMÁN — CONSULTA DE EXPEDIENTES
+Documento ficticio para una demostración. Nombres, fechas y hechos inventados.
+
+Expediente N.º 1234/2024
+Carátula: PÉREZ, LUCÍA c/ TRANSPORTES DEL NORTE S.A. s/ DAÑOS Y PERJUICIOS
+Juzgado Civil y Comercial Común de la IIIa Nominación — Centro Judicial Capital
+Estado: en trámite — período de prueba
+
+HISTORIAL DE ACTUACIONES (según fecha de carga en el sistema; no siempre coincide con el orden procesal)
+
+fs. 58 | 14/03/2025 | Ofrecimiento de prueba | Parte actora
+La actora ofrece prueba documental (historia clínica del Hospital Padilla, fotografías del lugar), testimonial (dos testigos presenciales), pericial médica y pericial mecánica, e informativa a la Policía de Tucumán.
+
+fs. 12 | 02/12/2024 | Demanda | Parte actora
+Lucía Pérez demanda a Transportes del Norte S.A. por el choque del 12/08/2023 en Av. Mate de Luna y Av. Mitre, cuando cruzaba con semáforo a su favor. Reclama $ 18.500.000 más intereses por incapacidad sobreviniente, daño moral y gastos médicos.
+
+fs. 41 | 14/03/2025 | Contestación de demanda | Parte demandada
+Transportes del Norte S.A. niega los hechos: sostiene que el colectivo circulaba a velocidad reglamentaria y que la actora cruzó con el semáforo en rojo. Cita en garantía a La Previsora Seguros S.A.
+
+fs. 20 | 16/12/2024 | Traslado de la demanda | Tribunal
+Se corre traslado de la demanda a la parte demandada por el plazo de 15 días hábiles.
+
+fs. 75 | 07/05/2025 | Apertura a prueba | Tribunal
+Se abre la causa a prueba por el plazo de 40 días hábiles. Se designan peritos médico y mecánico de la lista oficial.
+
+fs. 63 | 21/04/2025 | Audiencia de conciliación | Tribunal
+Comparecen ambas partes. No hay acuerdo. La demandada ofrece $ 4.000.000; la actora lo rechaza.
+
+fs. 49 | 20/03/2025 | Citación en garantía | Tribunal
+Se cita en garantía a La Previsora Seguros S.A. para que comparezca dentro de 10 días hábiles.
+
+fs. 88 | 30/06/2025 | Pericia médica | Perito
+El perito médico dictamina una incapacidad parcial y permanente del 18% de la actora. Las partes tienen 5 días hábiles para impugnarla.
+
+fs. 91 | 30/06/2025 | Impugnación de pericia | Parte demandada
+La demandada impugna la pericia médica y pide explicaciones al perito sobre el porcentaje de incapacidad.
+
+fs. 97 | 11/08/2025 | Pericia mecánica | Perito
+El perito mecánico estima que el colectivo circulaba a 52 km/h en una zona de 40 km/h. Las partes tienen 5 días hábiles para impugnarla.
+
+fs. 102 | 03/09/2025 | Clausura del período de prueba | Tribunal
+Se clausura el período de prueba y se ponen los autos para alegar por 6 días hábiles.
+
+---
+Para la demo: son 11 actuaciones desordenadas. Hay dos el 14/03/2025 y dos el 30/06/2025
+(una app que "agrupa por fecha" pierde una de cada par). Varias abren plazos en días hábiles.

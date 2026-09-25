@@ -400,3 +400,24 @@ html:has(.deck-escala) {
 @media (prefers-reduced-motion: reduce) {
   .cg-cae, .cg-sube, .cg-traza, .cg-gira, .cg-cursor, .cg-pulso { animation: none; }
 }
+
+/* Congreso · sala muy iluminada: el proyector lava los grises y el beige.
+   Alto contraste (tecla C en /congreso/clase): papel blanco, tinta negra,
+   secundarios más oscuros y sin textura. */
+.cg-contraste {
+  --color-cg-papel: #ffffff;
+  --color-cg-papel-2: #eeebe4;
+  --color-cg-carton: #c9bfa9;
+  --color-cg-blanco: #ffffff;
+  --color-cg-tinta: #000000;
+  --color-cg-sepia: #2b241d;
+  --color-cg-gris: #4f483e;
+  --color-cg-niebla: #a9a193;
+  --color-cg-salvia: #55664f;
+  --color-cg-musgo: #2c3a29;
+  --color-cg-azul: #4c6a85;
+  --color-cg-azul-2: #1b3550;
+  --color-cg-lacre: #9c2512;
+  --color-cg-ocre: #b07f18;
+}
+.cg-contraste.cg-papel, .cg-contraste .cg-papel { background-image: none; background-color: #ffffff; }

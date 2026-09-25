@@ -1,0 +1,44 @@
+EXPEDIENTE 1234/2024 — PÉREZ, LUCÍA c/ TRANSPORTES DEL NORTE S.A. s/ DAÑOS Y PERJUICIOS
+Extractos de la demanda, la contestación y el ofrecimiento de prueba.
+Documento ficticio para una demostración. Nombres, fechas y hechos inventados.
+
+I. LO QUE AFIRMA LA ACTORA (demanda, fs. 12)
+1. El 12/08/2023, a las 18:40, Lucía Pérez cruzaba Av. Mate de Luna por la senda peatonal.
+2. El semáforo peatonal estaba en verde para ella.
+3. El colectivo de la línea 102, dominio AB 123 CD, conducido por un dependiente de la demandada, no frenó ante el semáforo en rojo.
+4. El colectivo circulaba a una velocidad superior a la permitida (40 km/h).
+5. Como consecuencia del impacto, la actora sufrió una fractura de tibia y peroné que le dejó una incapacidad del 18%.
+6. La actora tuvo gastos médicos y de traslado por $ 1.200.000.
+7. La actora trabajaba como empleada administrativa y perdió cuatro meses de ingresos.
+
+II. LO QUE RESPONDE LA DEMANDADA (contestación, fs. 41)
+- Reconoce que el 12/08/2023 hubo un accidente en esa esquina en el que intervino su colectivo.
+- Niega que el semáforo estuviera en verde para la actora: afirma que cruzó con el semáforo en rojo, distraída con el celular.
+- Niega que el colectivo excediera la velocidad permitida.
+- Niega la entidad de las lesiones y el porcentaje de incapacidad.
+- Desconoce los gastos médicos por falta de comprobantes.
+- No dice nada sobre la pérdida de ingresos.
+
+III. PRUEBA OFRECIDA
+Por la actora (fs. 58):
+- Documental: historia clínica del Hospital Padilla; fotografías del lugar; comprobantes de farmacia y de remises.
+- Testimonial: Marta Juárez y Diego Ledesma, que esperaban el colectivo en la parada.
+- Pericial médica: para determinar lesiones e incapacidad.
+- Pericial mecánica: para determinar la velocidad del colectivo y la mecánica del accidente.
+- Informativa: a la Policía de Tucumán (sumario del accidente) y a la Dirección de Tránsito (funcionamiento del semáforo ese día).
+
+Por la demandada (fs. 41):
+- Documental: planilla de recorrido del colectivo; registro del tacógrafo.
+- Testimonial: el chofer, Ramón Acosta.
+- Informativa: a La Previsora Seguros S.A.
+
+IV. ESTADO DE LA PRUEBA (a septiembre de 2025)
+- Pericia médica: producida (18% de incapacidad), impugnada por la demandada.
+- Pericia mecánica: producida (52 km/h en zona de 40 km/h).
+- Testimonial de Marta Juárez: producida. Diego Ledesma: la actora desistió.
+- Informativa a la Policía: producida. Informativa a Tránsito: pendiente de respuesta.
+- Tacógrafo: ofrecido, no producido.
+
+---
+Para la demo: la pericia mecánica acredita dos hechos (3 y 4). Los hechos 1 y 5 están admitidos o
+tienen prueba producida; el 7 no fue negado; el 2 depende de testigos e informativa pendiente.
