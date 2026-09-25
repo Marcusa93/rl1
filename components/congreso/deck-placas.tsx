@@ -358,7 +358,7 @@ function PlacaActividad({ s, ctx }: { s: SlideActividad; ctx: Ctx }) {
 
   return (
     <Hoja folio={<Folio rotulo={`Interacción ${act.numero} · ${act.nombre}`} extra={s.movimiento} acento />}>
-      <div className={cn("grid h-full gap-[3rem]", primera ? "grid-cols-[33rem_1fr]" : "grid-cols-[28rem_1fr]")}>
+      <div className={cn("grid h-full grid-rows-[minmax(0,1fr)] gap-[3rem]", primera ? "grid-cols-[33rem_1fr]" : "grid-cols-[28rem_1fr]")}>
         <div className="flex min-h-0 flex-col justify-between gap-[1.2rem]">
           <div>
             <p className="cg-mono text-[0.76rem] uppercase tracking-[0.22em] text-cg-lacre">En tu celular</p>
@@ -422,7 +422,7 @@ function AntesAhora({ data, ctx }: { data: ResultadosCong | null; ctx: Ctx }) {
   const frases = data?.frases ?? [];
   return (
     <div className="flex h-full flex-col">
-      <div className="grid min-h-0 flex-1 grid-cols-2 gap-[2rem]">
+      <div className="grid min-h-0 flex-1 grid-cols-[2fr_3fr] grid-rows-[minmax(0,1fr)] gap-[2rem]">
         <div className="flex min-h-0 flex-col border-r border-dashed border-cg-tinta/20 pr-[2rem]">
           <p className="cg-mono text-[0.74rem] uppercase tracking-[0.2em] text-cg-gris">Antes · ¿qué molestia resolverías?</p>
           <div className="min-h-0 flex-1">
@@ -432,7 +432,7 @@ function AntesAhora({ data, ctx }: { data: ResultadosCong | null; ctx: Ctx }) {
         <div className="flex min-h-0 flex-col">
           <p className="cg-mono text-[0.74rem] uppercase tracking-[0.2em] text-cg-lacre">Ahora · ¿qué intentarías construir?</p>
           <div className="min-h-0 flex-1">
-            <Nube nube={data?.nube} maxRem={4.2} minRem={1.1} />
+            <Nube nube={data?.nube} maxRem={4.6} minRem={1.2} />
           </div>
         </div>
       </div>

@@ -307,12 +307,25 @@ function Ajustar({ children, className, firma }: { children: ReactNode; classNam
   const dentro = useRef<HTMLDivElement>(null);
   const [escala, setEscala] = useState(1);
   useLayoutEffect(() => {
+    // Busca la escala en la que entra todo: de alto (las filas) y de ancho (la palabra más larga).
+    // Al achicar, la caja interna se ensancha (100/escala %), así que se prueba de a pasos.
     const medir = () => {
       const c = caja.current;
       const d = dentro.current;
-      if (!c || !d) return;
-      const alto = d.scrollHeight;
-      setEscala(alto > c.clientHeight && alto > 0 ? Math.max(0.35, c.clientHeight / alto) : 1);
+      if (!c || !d || !c.clientHeight) return;
+      let e = 1;
+      for (let i = 0; i < 12; i++) {
+        d.style.width = `${100 / e}%`;
+        const anchoMax = Math.max(0, ...[...d.children].map((x) => (x as HTMLElement).offsetWidth));
+        const altoOk = d.scrollHeight * e <= c.clientHeight;
+        const anchoOk = anchoMax <= d.clientWidth + 1;
+        if (altoOk && anchoOk) break;
+        const porAlto = altoOk ? 1 : c.clientHeight / (d.scrollHeight * e);
+        e = Math.max(0.3, e * Math.min(0.94, porAlto));
+        if (e === 0.3) break;
+      }
+      d.style.width = `${100 / e}%`;
+      setEscala(e);
     };
     medir();
     const ro = new ResizeObserver(medir);

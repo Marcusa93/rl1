@@ -466,7 +466,8 @@ function Deck() {
           </div>
         )}
       </main>
-      {margen && <MargenQR conectados={conectados} conQR={slide.t !== "actividad"} />}
+      {/* En las interacciones la placa ya trae su QR grande: el margen se guarda para darles el ancho a los resultados. */}
+      {margen && slide.t !== "actividad" && <MargenQR conectados={conectados} conQR />}
       </div>
 
       {!sinPie && (
