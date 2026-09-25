@@ -62,6 +62,8 @@ html, body { background: #f2eee6 !important; color-scheme: light; }
   transition: transform .12s ease, background-color .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease; }
 .alu-boton:active:not(:disabled) { transform: translateY(1px) scale(.985); }
 .alu-boton:focus-visible { outline: 2px solid #e2582b; outline-offset: 2px; }
+/* En dos renglones las tildes de las mayúsculas (INFORMACIÓN) no pisan la línea de arriba. */
+.alu-boton .bbva-titular, .alu-boton.bbva-titular { line-height: 1.04; }
 .alu-sombra { box-shadow: 0 1px 0 rgba(0,0,0,.05), 0 10px 18px -14px rgba(40,30,10,.6); }
 .alu-hundido { box-shadow: inset 0 2px 0 rgba(0,0,0,.18); }
 .alu-renglon { background-image: linear-gradient(transparent calc(100% - 1.5px), rgba(69,72,79,.42) calc(100% - 1.5px)); background-size: 100% 1.85rem; line-height: 1.85rem; }

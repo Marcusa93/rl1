@@ -146,7 +146,7 @@ export const BBVA_ACTIVIDADES: ActividadBbva[] = [
       {
         id: "c3",
         rotulo: "Caso 3",
-        texto: "Comparar la información de una solicitud con determinados criterios de riesgo.",
+        texto: "Comparar información de una solicitud con determinados criterios de riesgo.",
         opciones: SND,
         max: 1,
       },
@@ -158,7 +158,7 @@ export const BBVA_ACTIVIDADES: ActividadBbva[] = [
     key: "bbva_a3",
     numero: 3,
     nombre: "¿Hasta dónde la dejarías llegar?",
-    pregunta: "Llega una consulta o reclamo de un cliente. ¿Hasta dónde dejarías actuar solo al sistema?",
+    pregunta: "Llega una consulta o reclamo de un cliente. ¿Hasta dónde dejarías actuar automáticamente al sistema?",
     consigna: "Tocá el último paso que permitirías sin intervención humana.",
     resultado: "Termómetro de autonomía",
     items: [
@@ -213,7 +213,7 @@ export const BBVA_ACTIVIDADES: ActividadBbva[] = [
       {
         id: "q1",
         rotulo: "Lo que molesta",
-        texto: "¿Qué es lo que más te molesta de ese proceso?",
+        texto: "¿Qué te molesta de ese proceso?",
         max: 1,
         opciones: [
           { id: "tiempo", label: "Consume tiempo" },
@@ -228,7 +228,7 @@ export const BBVA_ACTIVIDADES: ActividadBbva[] = [
       {
         id: "q2",
         rotulo: "La operación",
-        texto: "¿Qué hacés principalmente en ese proceso?",
+        texto: "¿Qué hacés principalmente?",
         max: 1,
         opciones: [
           { id: "buscar", label: "Buscar" },
@@ -251,7 +251,7 @@ export const BBVA_ACTIVIDADES: ActividadBbva[] = [
           { id: "prepare", label: "Prepare algo para que yo lo revise" },
           { id: "recomiende", label: "Me recomiende qué hacer" },
           { id: "ejecute", label: "Ejecute algunos pasos" },
-          { id: "casi_todo", label: "Haga casi todo, salvo excepciones" },
+          { id: "casi_todo", label: "Haga casi todo salvo excepciones" },
         ],
       },
       {
@@ -318,7 +318,7 @@ const FRECUENCIA: Record<string, string> = {
   diario: "que ocurre todos los días",
   varias: "que ocurre varias veces por semana",
   semanal: "que ocurre todas las semanas",
-  ocasional: "aunque ocurra ocasionalmente",
+  ocasional: "que ocurre ocasionalmente",
 };
 
 /** Lo que la persona conserva, según lo que elige delegar. */
@@ -424,7 +424,7 @@ export type Bloque =
   | "¿Hasta dónde puede avanzar la IA?"
   | "¿Cómo se desarma un proceso?"
   | "¿Qué tipo de solución necesitamos?"
-  | "¿Qué proceso podría transformar?"
+  | "¿Qué proceso de mi trabajo podría transformar?"
   | "Cierre";
 
 interface Base {
@@ -555,7 +555,7 @@ export const BBVA_SLIDES: SlideBbva[] = [
     t: "actividad",
     activa: "bbva_a2",
     bloque: "¿Qué estamos dispuestos a delegar?",
-    nota: "ACTIVIDAD 2 (1-2 min). Cinco casos seguidos en el celular. No busco quién tiene razón: busco mostrar que la aceptación cambia según la naturaleza de la tarea. Mostrar resultados y mirar dónde crece el DEPENDE (seguramente en el caso 3 y el 5).",
+    nota: "ACTIVIDAD 2 (1-2 min). Cinco casos seguidos en el celular. No busco quién tiene razón: busco mostrar que la aceptación cambia según la naturaleza de la tarea. Mostrar resultados y mirar dónde crece el DEPENDE (sin anticiparlo: la placa 06 lo trae marcado).",
   },
   {
     t: "placa",
@@ -709,7 +709,7 @@ export const BBVA_SLIDES: SlideBbva[] = [
   {
     t: "placa",
     numero: 19,
-    bloque: "¿Qué proceso podría transformar?",
+    bloque: "¿Qué proceso de mi trabajo podría transformar?",
     titulo: "Ahora desarmá tu trabajo",
     bajada: "Elegí algo real. Algo que hagas.",
     ilus: "p19-desarma",
@@ -720,7 +720,7 @@ export const BBVA_SLIDES: SlideBbva[] = [
   {
     t: "resultado",
     de: "bbva_a5",
-    bloque: "¿Qué proceso podría transformar?",
+    bloque: "¿Qué proceso de mi trabajo podría transformar?",
     titulo: "El mapa del grupo",
     bajada: "Qué nos molesta, qué hacemos, cuánta autonomía queremos y cada cuánto pasa.",
     nota: "Mostrar resultados cuando la mayoría tenga su tarjeta. Leer el mapa: qué problemas se repiten, qué operaciones quieren intervenir, qué grado de autonomía prefieren para empezar, qué tan frecuentes son los procesos. Todo sale de sus respuestas reales.",
@@ -781,8 +781,8 @@ export function resultadosDeSlide(s: SlideBbva): BbvaActivityKey | undefined {
 export const BBVA_RECORRIDO = [
   { etapa: "Clase inicial", pregunta: "¿Qué parte de mi trabajo quiero transformar?", hoy: true },
   { etapa: "Clase de construcción", pregunta: "¿Cómo convierto ese problema en un asistente especializado?", hoy: false },
-  { etapa: "Desarrollo", pregunta: "¿Cómo lo pruebo, corrijo, integro y aumento su autonomía?", hoy: false },
-  { etapa: "Proyecto final", pregunta: "¿La solución realmente mejora el proceso original?", hoy: false },
+  { etapa: "Desarrollo posterior", pregunta: "¿Cómo lo pruebo, corrijo, integro y eventualmente aumento su autonomía?", hoy: false },
+  { etapa: "Proyecto final", pregunta: "¿La solución realmente mejora el proceso que originalmente quería transformar?", hoy: false },
 ];
 
 /** La fórmula de la hipótesis (placa 19 y tarjeta del celular). */

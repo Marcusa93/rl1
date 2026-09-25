@@ -124,7 +124,7 @@ function Clave({ onOk }: { onOk: () => void }) {
 
 // --- La presentación -------------------------------------------------------------------------
 
-type EstadoActivacion = { key: string; status: "enviando" | "reintento" | "ok" | "clave" | "error" };
+type EstadoActivacion = { key: string; status: "enviando" | "reintento" | "ok" | "clave" | "error" | "espera" };
 
 /** Qué actividad pone la placa al llegar (portada/ingreso → lobby; el resto, la suya o ninguna). */
 function actividadAlLlegar(s: SlideBbva): string | undefined {
@@ -136,6 +136,70 @@ function nombreActividad(key: string) {
   if (key === "lobby") return "ingreso";
   const a = getActividadBbva(key);
   return a ? `Actividad ${a.numero}` : key;
+}
+
+const CANDADO = "bbva-clase-deck";
+
+/**
+ * Si el deck queda abierto en dos pestañas (un ensayo olvidado, otra ventana), manda una sola:
+ * la última que se abrió o que se tocó. Las demás siguen la placa (localStorage) pero no abren
+ * actividades ni obedecen al control remoto: si no, una pestaña atrasada podía ejecutar los
+ * comandos del celular a destiempo y reabrir una actividad vieja en todos los celulares.
+ */
+function useLider(): boolean | null {
+  // null: todavía no se sabe (dura milisegundos, hasta que el navegador entrega el candado).
+  const [lider, setLider] = useState<boolean | null>(() =>
+    typeof navigator === "undefined" || !(navigator as Navigator & { locks?: LockManager }).locks?.request ? true : null,
+  );
+
+  useEffect(() => {
+    const locks = (navigator as Navigator & { locks?: LockManager }).locks;
+    if (!locks?.request) return; // sin Web Locks: como antes, esta pestaña manda (estado inicial)
+    let vivo = true;
+    let tengo = false;
+    let gen = 0;
+    let soltar: (() => void) | null = null;
+    let enFila: AbortController | null = null;
+
+    const pedir = (robar: boolean) => {
+      const mio = ++gen;
+      enFila?.abort();
+      enFila = robar ? null : new AbortController();
+      locks
+        .request(CANDADO, enFila ? { signal: enFila.signal } : { steal: true }, () => {
+          if (!vivo) return;
+          tengo = true;
+          setLider(true);
+          return new Promise<void>((res) => (soltar = res));
+        })
+        .catch(() => {
+          // Otra pestaña tomó la presentación (o este pedido quedó reemplazado por uno nuevo).
+          if (!vivo || mio !== gen) return;
+          tengo = false;
+          soltar = null;
+          setLider(false);
+          pedir(false); // queda en la fila: si la otra pestaña se cierra, esta vuelve a mandar
+        });
+    };
+
+    pedir(true);
+    const tomar = () => {
+      if (!tengo) pedir(true);
+    };
+    window.addEventListener("focus", tomar);
+    window.addEventListener("pointerdown", tomar, true);
+    window.addEventListener("keydown", tomar, true);
+    return () => {
+      vivo = false;
+      window.removeEventListener("focus", tomar);
+      window.removeEventListener("pointerdown", tomar, true);
+      window.removeEventListener("keydown", tomar, true);
+      enFila?.abort();
+      soltar?.();
+    };
+  }, []);
+
+  return lider;
 }
 
 function Deck() {
@@ -172,48 +236,64 @@ function Deck() {
     } catch {}
   }, []);
 
-  // --- Activación automática (con reintentos) ---
+  const esLider = useLider();
+  const lider = esLider === true;
+
+  // --- Activación automática ---
+  // Un pedido por vez y en orden: al pasar rápido por dos placas que activan (ej. ← desde la
+  // actividad 1 hasta el ingreso) los dos POST viajaban juntos y podían llegar al revés.
+  // Y sin rendirse: si la red del aula se cae, sigue reintentando mientras la placa lo pida.
   const pedida = useRef<string | null>(null);
+  const sinConfirmar = useRef<string | null>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const cola = useRef<Promise<unknown>>(Promise.resolve());
 
   const activar = useCallback((key: string) => {
     pedida.current = key;
+    sinConfirmar.current = key;
     timers.current.forEach(clearTimeout);
     timers.current = [];
+    setActivacion({ key, status: "enviando" });
     let intento = 0;
-    const probar = () => {
+    const probar = async () => {
       if (pedida.current !== key) return;
       intento++;
-      setActivacion({ key, status: intento === 1 ? "enviando" : "reintento" });
+      if (intento > 1 && intento <= 5) setActivacion({ key, status: "reintento" });
       const ctrl = new AbortController();
       const corte = setTimeout(() => ctrl.abort(), 7000);
-      fetch(`/api/session/${BBVA_SLUG}/activity`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ current_activity: key }),
-        signal: ctrl.signal,
-      })
-        .then((r) => {
-          if (pedida.current !== key) return;
-          if (r.ok) setActivacion({ key, status: "ok" });
-          else if (r.status === 401) {
-            // La cookie docente venció: reintentar no sirve.
-            pedida.current = null;
-            setActivacion({ key, status: "clave" });
-          } else throw new Error(String(r.status));
-        })
-        .catch(() => {
-          if (pedida.current !== key) return;
-          if (intento < 5) timers.current.push(setTimeout(probar, Math.min(8000, 700 * 2 ** (intento - 1))));
-          else {
-            // Se deja libre para que al volver a la placa (o tocando el aviso) se intente otra vez.
-            pedida.current = null;
-            setActivacion({ key, status: "error" });
-          }
-        })
-        .finally(() => clearTimeout(corte));
+      try {
+        const r = await fetch(`/api/session/${BBVA_SLUG}/activity`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ current_activity: key }),
+          signal: ctrl.signal,
+        });
+        if (pedida.current !== key) return;
+        if (r.ok) {
+          sinConfirmar.current = null;
+          setActivacion({ key, status: "ok" });
+          return;
+        }
+        if (r.status === 401) {
+          // La cookie docente venció: reintentar no sirve.
+          pedida.current = null;
+          sinConfirmar.current = null;
+          setActivacion({ key, status: "clave" });
+          return;
+        }
+      } catch {
+        /* red caída o sin respuesta */
+      } finally {
+        clearTimeout(corte);
+      }
+      if (pedida.current !== key) return;
+      if (intento >= 5) setActivacion({ key, status: "error" });
+      timers.current.push(setTimeout(encolar, Math.min(8000, 700 * 2 ** (intento - 1))));
     };
-    probar();
+    const encolar = () => {
+      cola.current = cola.current.then(probar);
+    };
+    encolar();
   }, []);
 
   useEffect(() => {
@@ -222,6 +302,36 @@ function Deck() {
       pedida.current = null;
       t.current.forEach(clearTimeout);
     };
+  }, []);
+
+  // Esta pestaña dejó de mandar: corta sus reintentos (los hace la pestaña que manda).
+  useEffect(() => {
+    if (lider) return;
+    pedida.current = null;
+    sinConfirmar.current = null;
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+  }, [lider]);
+
+  // Volvió la red: reintentar ya lo que no se pudo abrir.
+  useEffect(() => {
+    const alVolver = () => {
+      const k = sinConfirmar.current;
+      if (lider && k && pedida.current === k) activar(k);
+    };
+    window.addEventListener("online", alVolver);
+    return () => window.removeEventListener("online", alVolver);
+  }, [lider, activar]);
+
+  // Otra pestaña del deck cambió de placa: esta la sigue (nunca quedan dos placas distintas).
+  useEffect(() => {
+    const alCambiar = (e: StorageEvent) => {
+      if (e.key !== STORAGE_KEY || e.newValue === null) return;
+      const v = parseInt(e.newValue, 10);
+      if (Number.isFinite(v)) setIdx(Math.min(Math.max(v, 0), TOTAL - 1));
+    };
+    window.addEventListener("storage", alCambiar);
+    return () => window.removeEventListener("storage", alCambiar);
   }, []);
 
   // Al abrir (o recargar) la presentación en una placa sin actividad: mostrar qué hay abierto en los celulares.
@@ -238,11 +348,17 @@ function Deck() {
   }, []);
 
   // La placa manda: si trae actividad (o es portada/ingreso), se abre sola, una vez.
+  // Con una pausa corta: si Marco pasa de largo (varias flechas seguidas, ej. volviendo de la
+  // actividad 3 a la placa 04), la actividad 2 del camino no se reabre en los celulares.
   useEffect(() => {
+    if (!lider) return;
     const key = actividadAlLlegar(slide);
     if (!key || pedida.current === key) return;
-    activar(key);
-  }, [slide, activar]);
+    const t = setTimeout(() => {
+      if (pedida.current !== key) activar(key);
+    }, 600);
+    return () => clearTimeout(t);
+  }, [slide, activar, lider]);
 
   // --- Resultados ---
   const toggleRevelar = useCallback(() => {
@@ -262,6 +378,12 @@ function Deck() {
   // --- Reinicio (después de ensayar) ---
   const reiniciar = useCallback(async () => {
     if (!confirm("¿Reiniciar la sesión? Se borran todos los participantes y sus respuestas.")) return;
+    // Que ninguna activación vieja quede en viaje y llegue después del reinicio.
+    pedida.current = null;
+    sinConfirmar.current = null;
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+    await cola.current;
     try {
       const r = await fetch(`/api/session/${BBVA_SLUG}/reset`, {
         method: "POST",
@@ -279,6 +401,8 @@ function Deck() {
       setAviso("Sesión reiniciada: sin participantes ni respuestas");
     } catch {
       setAviso("No se pudo reiniciar la sesión");
+      const k = actividadAlLlegar(BBVA_SLIDES[idx]);
+      if (k) activar(k);
     }
   }, [idx, activar]);
 
@@ -366,6 +490,7 @@ function Deck() {
     parte: slide.bloque,
     nota: slide.nota,
     go,
+    activo: lider,
   });
 
   const esPortada = slide.t === "portada";
@@ -377,7 +502,7 @@ function Deck() {
         <div className="h-full bg-naranja transition-[width] duration-500 ease-out" style={{ width: `${((idx + 1) / TOTAL) * 100}%` }} />
       </div>
 
-      <IndicadorVivo estado={activacion} onReintentar={activar} />
+      <IndicadorVivo estado={esLider === false ? { key: "", status: "espera" } : activacion} onReintentar={activar} />
 
       {(avisoZoom || aviso) && (
         <div className="pointer-events-none fixed left-1/2 top-[1rem] z-50 -translate-x-1/2 rounded-full border border-tinta/15 bg-blanco/95 px-[1rem] py-[0.35rem] font-mono text-[0.75rem] uppercase tracking-[0.16em] text-tinta shadow-sm">
@@ -441,7 +566,9 @@ function IndicadorVivo({ estado, onReintentar }: { estado: EstadoActivacion | nu
           ? `Reintentando ${nombreActividad(estado.key)}…`
           : estado.status === "clave"
             ? "No se pudo activar · la clave venció, recargá"
-            : "No se pudo activar · tocá para reintentar";
+            : estado.status === "espera"
+              ? "Otra pestaña maneja la clase · tocá para usar esta"
+              : `No abre ${nombreActividad(estado.key)} · sigo intentando (tocá)`;
   return (
     <button
       type="button"

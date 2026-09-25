@@ -952,7 +952,7 @@ function NubeOperaciones({ data }: { data: ResultadosBbva | null }) {
               </text>
               {data && (
                 <text x={-w / 2 + 18} y={17} style={MONO} fontSize={11} fill={K.gris}>
-                  {n} {n === 1 ? "conectado" : "conectados"}
+                  {n} {n === 1 ? "conectada" : "conectadas"}
                 </text>
               )}
             </g>

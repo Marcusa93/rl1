@@ -342,7 +342,10 @@ function contados(activity: BbvaActivityKey, data: ResultadosBbva | null) {
 
 function PlacaCurva({ s }: { s: SlideCurva }) {
   const n = CURVAS.indexOf(s) + 1;
-  const tituloAparte = !s.titulo.toUpperCase().includes(s.centro.toUpperCase());
+  // El título va aparte salvo que el centro lo diga entero (07: PODER ≠ CONVENIR).
+  // En la 12 el centro es "ROMPÉ LA TAREA": el "Primero," del título tiene que verse.
+  const letras = (t: string) => t.toUpperCase().replace(/[^\p{L}≠]+/gu, "");
+  const tituloAparte = letras(s.titulo) !== letras(s.centro);
   return (
     <Hoja folio={<Folio rotulo="Curva" numero={String(n)} acento extra={`Placa ${dos(s.numero)}`} />}>
       <div className="flex h-full items-center gap-[4rem]">
@@ -356,7 +359,7 @@ function PlacaCurva({ s }: { s: SlideCurva }) {
               <Ilustracion id={s.ilus} />
             </div>
           )}
-          {tituloAparte && <h2 className="bbva-titular mb-[1.6rem] text-[3.6rem] text-tinta">{s.titulo}</h2>}
+          {tituloAparte && <h2 className="bbva-titular mb-[1.6rem] text-balance text-[3.6rem] text-tinta">{s.titulo}</h2>}
           <Giro de={s.de} a={s.a} />
           <Bajada texto={s.bajada} className="mt-[1.6rem] text-[1.8rem]" />
         </div>
@@ -589,7 +592,7 @@ function Anticipo({ act }: { act: ActividadBbva }) {
                 <span className="relative z-10 grid size-[3rem] place-items-center rounded-full border-[1.5px] border-grafito/50 bg-papel font-mono text-[1.15rem] text-grafito">
                   {i + 1}
                 </span>
-                <span className="bbva-titular mt-[0.8rem] pr-[0.4rem] text-[1.75rem] leading-[0.95] text-grafito">{o.label}</span>
+                <span className="bbva-titular mt-[0.8rem] pr-[0.4rem] text-[1.5rem] leading-[0.95] text-grafito">{o.label}</span>
               </li>
             ))}
           </ol>

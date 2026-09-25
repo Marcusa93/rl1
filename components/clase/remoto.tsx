@@ -36,6 +36,7 @@ export function useRemotoDeck({
   parte,
   nota,
   go,
+  activo = true,
 }: {
   slug: string;
   idx: number;
@@ -44,12 +45,15 @@ export function useRemotoDeck({
   parte?: string;
   nota?: string;
   go: (n: number) => void;
+  /** false: esta pestaña no publica ni obedece (hay otra pestaña del deck que manda). */
+  activo?: boolean;
 }) {
   const ref = useRef({ idx, total, titulo, parte, nota, go });
   ref.current = { idx, total, titulo, parte, nota, go };
 
   // Publicar el estado cuando cambia (y un latido cada tanto).
   useEffect(() => {
+    if (!activo) return;
     let ultimo = "";
     let ultimoEnvio = 0;
     let enviando = false;
@@ -76,10 +80,11 @@ export function useRemotoDeck({
         .finally(() => (enviando = false));
     }, 300);
     return () => clearInterval(id);
-  }, [slug]);
+  }, [slug, activo]);
 
   // Consultar y ejecutar los comandos del celular.
   useEffect(() => {
+    if (!activo) return;
     let vivo = true;
     let seq: number | null = null;
     let timer: ReturnType<typeof setTimeout>;
@@ -122,7 +127,7 @@ export function useRemotoDeck({
       vivo = false;
       clearTimeout(timer);
     };
-  }, [slug]);
+  }, [slug, activo]);
 }
 
 function mostrarVista(vista: (estado: EstadoRemoto) => React.ReactNode, estado: EstadoRemoto) {

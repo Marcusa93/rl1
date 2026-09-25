@@ -414,8 +414,9 @@ function notaA2(filas: Fila[]): Nota | null {
 
 /** A4: el caso 4 es ambiguo a propósito; "No alcanza la información" es la respuesta interesante. */
 function notaA4(filas: Fila[]): Nota | null {
+  // Solo si alguien la eligió: sin el aro rojo sobre el segmento, la nota señalaría la barra equivocada.
   const f = filas.find((x) => x.item.id === "c4");
-  return f && f.total ? { item: "c4", serie: "falta_info", texto: "la respuesta más interesante" } : null;
+  return f && (f.c.falta_info ?? 0) > 0 ? { item: "c4", serie: "falta_info", texto: "la respuesta más interesante" } : null;
 }
 
 function Leyenda({ series, compacto }: { series: Serie[]; compacto: boolean }) {

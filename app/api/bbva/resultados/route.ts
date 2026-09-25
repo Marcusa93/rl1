@@ -16,10 +16,10 @@ export async function GET(req: Request) {
   const activity = url.searchParams.get("activity") || session.current_activity;
   const db = getAdmin();
 
-  const [{ data: gente }, { data: rows }] = await Promise.all([
+  const [{ data: gente, error: errGente }, { data: rows, error: errRows }] = await Promise.all([
     db.from("participants").select("id, name").eq("session_id", session.id).limit(1000),
     activity === "lobby"
-      ? Promise.resolve({ data: [] as { participant_id: string; item_key: string; payload: { v?: unknown } }[] })
+      ? Promise.resolve({ data: [] as { participant_id: string; item_key: string; payload: { v?: unknown } }[], error: null })
       : db
           .from("responses")
           .select("participant_id, item_key, payload")
@@ -27,6 +27,11 @@ export async function GET(req: Request) {
           .eq("activity", activity)
           .limit(5000),
   ]);
+
+  // Si la base falla, 503: el deck conserva el último dato (con un 200 vacío el gráfico
+  // proyectado se desarmaba a "Esperando respuestas…" en medio de la clase).
+  const errDb = errGente ?? errRows;
+  if (errDb) return fail(errDb.message, 503);
 
   const areaDe = new Map<string, string>();
   const porArea: Conteo = {};

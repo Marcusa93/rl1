@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { ResultadosBbva } from "@/lib/bbva-clase";
 
 /**
@@ -10,10 +10,11 @@ import type { ResultadosBbva } from "@/lib/bbva-clase";
  */
 export function useResultadosBbva(activity: string | null, intervalo = 1500) {
   const [data, setData] = useState<ResultadosBbva | null>(null);
-  const vivo = useRef(true);
 
   useEffect(() => {
-    vivo.current = true;
+    // Una bandera por efecto (no un ref compartido): si cambia la actividad o
+    // StrictMode monta dos veces, el ciclo viejo no puede revivir.
+    let vivo = true;
     let timer: ReturnType<typeof setTimeout>;
     const url = `/api/bbva/resultados${activity ? `?activity=${activity}` : ""}`;
     async function tick() {
@@ -21,17 +22,17 @@ export function useResultadosBbva(activity: string | null, intervalo = 1500) {
       const t = setTimeout(() => ctrl.abort(), 6000);
       try {
         const res = await fetch(url, { cache: "no-store", signal: ctrl.signal });
-        if (res.ok && vivo.current) setData((await res.json()) as ResultadosBbva);
+        if (res.ok && vivo) setData((await res.json()) as ResultadosBbva);
       } catch {
         /* se mantiene el último dato */
       } finally {
         clearTimeout(t);
       }
-      if (vivo.current) timer = setTimeout(tick, intervalo);
+      if (vivo) timer = setTimeout(tick, intervalo);
     }
     tick();
     return () => {
-      vivo.current = false;
+      vivo = false;
       clearTimeout(timer);
     };
   }, [activity, intervalo]);

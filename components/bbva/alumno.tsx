@@ -65,7 +65,8 @@ async function postear(p: Pendiente): Promise<Resultado> {
       );
       if (r.ok) return "ok";
       if (r.status === 401) return "401";
-      if (r.status >= 400 && r.status < 500 && r.status !== 408 && r.status !== 429) return "descartar";
+      // 404 "Sesión no encontrada" solo pasa si la base no respondió (la sesión existe): se reintenta, no se tira.
+      if (r.status >= 400 && r.status < 500 && r.status !== 404 && r.status !== 408 && r.status !== 429) return "descartar";
     } catch {
       /* red caída o timeout */
     }

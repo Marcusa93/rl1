@@ -857,8 +857,8 @@ function P10Espectro() {
 const FLUJO_11: { l: string[]; ia: boolean; verbo?: string }[] = [
   { l: ["INGRESA", "CASO"], ia: true },
   { l: ["RECOPILA", "DATOS"], ia: true },
-  { l: ["ANALIZA"], ia: true, verbo: "DECIDIR" },
-  { l: ["PROPONE", "RESPUESTA"], ia: true, verbo: "REVISAR" },
+  { l: ["ANALIZA"], ia: true, verbo: "REVISAR" },
+  { l: ["PROPONE", "RESPUESTA"], ia: true, verbo: "DECIDIR" },
   { l: ["AUTORIZA"], ia: false, verbo: "AUTORIZAR" },
   { l: ["ENVÍA"], ia: true },
   { l: ["REGISTRA"], ia: true },

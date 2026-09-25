@@ -131,14 +131,14 @@ export function Actividad1({ act, resp, guardar, enPantalla }: Props) {
       </div>
 
       {/* Botón "Listo" siempre a mano, pegado abajo */}
-      <div className="sticky bottom-0 z-10 -mx-4 mt-4 bg-gradient-to-t from-papel from-70% to-transparent px-4 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-5">
+      <div className="sticky bottom-0 z-10 -mx-4 mt-4 bg-gradient-to-t from-papel/85 from-40% to-transparent px-4 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-5">
         <button
           type="button"
           onClick={terminar}
           disabled={!sel.length}
           className={cx(
             "alu-boton flex min-h-14 w-full items-center justify-center gap-3 rounded-[4px] border-[1.5px] font-mono text-[13px] font-semibold uppercase tracking-[0.2em]",
-            sel.length ? "alu-sombra border-tinta bg-tinta text-papel" : "border-dashed border-gris bg-transparent text-gris",
+            sel.length ? "alu-sombra border-tinta bg-tinta text-papel" : "border-dashed border-gris bg-papel/95 text-gris",
           )}
         >
           {sel.length ? (
@@ -281,7 +281,13 @@ export function ActividadCasos({ act, resp, guardar, enPantalla, variante }: Pro
             {String(actual + 1).padStart(2, "0")}/{String(n).padStart(2, "0")}
           </span>
         </header>
-        <p className={cx("bbva-serif mt-3 leading-[1.14] text-tinta", it.texto.length > 110 ? "text-[1.42rem]" : "text-[1.7rem]")}>
+        {/* El caso 3 de la actividad 4 es largo: más chico, para que en un celular de 360 px las cuatro opciones queden cerca. */}
+        <p
+          className={cx(
+            "bbva-serif mt-3 leading-[1.14] text-tinta",
+            it.texto.length > 140 ? "text-[1.28rem]" : it.texto.length > 110 ? "text-[1.42rem]" : "text-[1.7rem]",
+          )}
+        >
           {it.texto}
         </p>
       </article>
@@ -390,7 +396,7 @@ export function Actividad3({ act, resp, guardar, enPantalla }: Props) {
         <IconoSobre className="absolute right-3.5 top-3.5 h-7 w-9" />
       </div>
 
-      <h1 className="bbva-titular mt-5 text-[1.85rem] text-tinta">¿Hasta dónde dejarías actuar solo al sistema?</h1>
+      <h1 className="bbva-titular mt-5 text-[1.85rem] text-tinta">¿Hasta dónde dejarías actuar automáticamente al sistema?</h1>
       <p className="bbva-serif mt-1.5 text-[1.1rem] italic leading-snug text-grafito">
         Tocá el último paso que dejarías hacer al sistema sin intervención humana.
       </p>

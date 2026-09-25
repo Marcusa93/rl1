@@ -1730,8 +1730,8 @@ function P19Desarma() {
         <line x1={20} y1={182} x2={243} y2={182} stroke={K.naranja} strokeWidth={0.9} strokeOpacity={0.5} />
       </Pieza>
       {/* Marcalo sobre tu flujo: de las operaciones a la IA, de las decisiones a vos */}
-      <Traza d="M478,318 C494,300 486,222 500,204" delay={1.5} c={K.pizarra} ancho={1.8} />
-      <Traza d="M478,404 C490,404 492,398 500,398" delay={1.65} c={K.naranja} ancho={1.8} />
+      <Flecha d="M476,322 C496,300 482,226 498,206" x={498} y={206} ang={-52} delay={1.5} c={K.pizarra} ancho={2} t={8} />
+      <Flecha d="M476,406 C486,404 490,400 498,400" x={498} y={400} ang={-10} delay={1.65} c={K.naranja} ancho={2} t={8} />
 
       {/* El vínculo con el celular */}
       <Aparece d={1.8}>
@@ -2258,7 +2258,7 @@ function P20EscritorioOrdenado() {
       <Flecha d="M298,150 C312,146 326,146 340,150" x={340} y={150} ang={8} delay={T20 + 0.2} />
 
       {/* 02 · Operaciones: procedimiento y planilla */}
-      <Etapa x={346} y={62} d={T20 + 0.1}>
+      <Etapa x={404} y={62} d={T20 + 0.1}>
         02 · OPERACIONES
       </Etapa>
       <Flecha d="M452,150 C466,146 478,146 490,150" x={490} y={150} ang={8} delay={T20 + 0.45} />

@@ -22,12 +22,14 @@ export async function POST(
   const db = getAdmin();
 
   // la cookie puede apuntar a un participante borrado (ej. tras reiniciar la clase)
-  const { data: p } = await db
+  const { data: p, error: errP } = await db
     .from("participants")
     .select("id")
     .eq("id", pid)
     .eq("session_id", session.id)
     .maybeSingle();
+  // Si la base no respondió no es "no existe": 503 para que el celular reintente sin echar a nadie.
+  if (errP) return fail(errP.message, 503);
   if (!p) return fail("Volvé a unirte a la clase", 401);
   const { data, error } = await db
     .from("responses")
