@@ -2,6 +2,12 @@
 
 export type ActivityKey =
   | "lobby"
+  // Laboratorio de IA · BBVA (/bbva) — prefijo bbva_
+  | "bbva_a1"
+  | "bbva_a2"
+  | "bbva_a3"
+  | "bbva_a4"
+  | "bbva_a5"
   | "encuesta"
   | "diagnostico"
   | "verdadero_falso"

@@ -12,6 +12,11 @@ const REWRITES: Record<string, Record<string, string>> = {
     "/control": "/justicia/control",
     "/guia": "/justicia/guia",
   },
+  "bbva.rossi-ia.com": {
+    "/": "/bbva",
+    "/clase": "/bbva/clase",
+    "/control": "/bbva/control",
+  },
   "taller.rossi-ia.com": {
     "/": "/taller-ia",
     "/clase": "/taller-ia/clase",

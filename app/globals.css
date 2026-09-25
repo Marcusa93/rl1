@@ -204,3 +204,199 @@ html:has(.deck-escala) {
   90% { transform: rotate(-6deg); }
 }
 .campana { display: inline-block; animation: campana 2.2s ease-in-out infinite; transform-origin: 50% 10%; }
+
+/* ============================================================
+   Laboratorio de IA · BBVA (/bbva) — "arqueología contemporánea del trabajo".
+   Collage editorial sobre papel: negros y grises, azules grisáceos,
+   acentos naranja/rojo. Nada de neón. Las clases viven bajo .bbva.
+   ============================================================ */
+@theme {
+  --color-papel: #f2eee6;
+  --color-papel-2: #e8e2d6;
+  --color-carton: #d8cfbd;
+  --color-blanco: #fbfaf7;
+  --color-tinta: #17181b;
+  --color-grafito: #45484f;
+  --color-gris: #8a8d94;
+  --color-niebla: #c9ccd1;
+  --color-pizarra: #5d7087;
+  --color-pizarra-2: #3c4d61;
+  --color-cielo: #b3c1d1;
+  --color-naranja: #e2582b;
+  --color-rojo: #c0392b;
+  --color-ambar: #f3c54b;
+  --color-bbva: #004481;
+
+  --font-titular: var(--font-archivo);
+  --font-serif: var(--font-instrument);
+  --font-mano: var(--font-caveat);
+}
+
+.bbva {
+  background-color: var(--color-papel);
+  color: var(--color-tinta);
+  color-scheme: light;
+}
+/* Papel: grano fino + viñeta muy suave. */
+.bbva-papel {
+  background-color: var(--color-papel);
+  background-image:
+    radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(60, 50, 30, 0.10) 100%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.3 0 0 0 0 0.22 0 0 0 0.09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+/* Títulos: grotesca condensada, en mayúsculas. */
+.bbva-titular {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-stretch: 68%;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 0.9;
+}
+.bbva-serif { font-family: var(--font-instrument), Georgia, serif; }
+.bbva-mano { font-family: var(--font-caveat), cursive; }
+/* Recorte: pieza de papel apoyada sobre la mesa. */
+.bbva-recorte {
+  background: var(--color-blanco);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06), 0 14px 28px -16px rgba(40, 30, 10, 0.45);
+}
+/* Cinta adhesiva semitransparente (usar como elemento absoluto). */
+.bbva-cinta {
+  background: rgba(236, 226, 196, 0.72);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(1px);
+}
+/* Post-it. */
+.bbva-postit {
+  background: linear-gradient(180deg, #f7d465, var(--color-ambar));
+  box-shadow: 0 12px 18px -12px rgba(60, 40, 0, 0.55);
+}
+/* Botón grande del celular. */
+.bbva-boton {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+/* Rastro de lápiz: subrayado a mano. */
+.bbva-subrayado {
+  background-image: linear-gradient(transparent 62%, rgba(226, 88, 43, 0.35) 62%, rgba(226, 88, 43, 0.35) 90%, transparent 90%);
+}
+/* Entrada de los elementos del collage. */
+@keyframes bbva-cae {
+  from { opacity: 0; transform: translateY(-14px) rotate(var(--rot, 0deg)) scale(1.03); }
+  to { opacity: 1; transform: translateY(0) rotate(var(--rot, 0deg)) scale(1); }
+}
+.bbva-cae { animation: bbva-cae 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes bbva-traza {
+  from { stroke-dashoffset: var(--largo, 600); }
+  to { stroke-dashoffset: 0; }
+}
+.bbva-traza { stroke-dasharray: var(--largo, 600); animation: bbva-traza 1.4s ease-out both; }
+@keyframes bbva-gira { to { transform: rotate(360deg); } }
+.bbva-gira { animation: bbva-gira var(--dur, 60s) linear infinite; transform-origin: 50% 50%; transform-box: fill-box; }
+@media (prefers-reduced-motion: reduce) {
+  .bbva-cae, .bbva-traza, .bbva-gira { animation: none; }
+}
+
+/* ============================================================
+   Congreso IA · "Vibe coding para abogados" (/congreso) —
+   arqueología tecnológica aplicada al Derecho. Papel de expediente,
+   tinta de máquina de escribir, verdes grisáceos, azules suaves y
+   un acento de lacre. Nada de robots ni neón. Vive bajo .cong.
+   ============================================================ */
+@theme {
+  --color-cg-papel: #efe9dc;
+  --color-cg-papel-2: #e5dccb;
+  --color-cg-carton: #d3c6ab;
+  --color-cg-blanco: #faf7f0;
+  --color-cg-tinta: #1f1c18;
+  --color-cg-sepia: #574d41;
+  --color-cg-gris: #938a7c;
+  --color-cg-niebla: #cfc7b8;
+  --color-cg-salvia: #87957f;
+  --color-cg-musgo: #4d5c4a;
+  --color-cg-azul: #7b93a8;
+  --color-cg-azul-2: #3e5870;
+  --color-cg-lacre: #b3432b;
+  --color-cg-ocre: #cf9f3f;
+}
+
+.cong {
+  background-color: var(--color-cg-papel);
+  color: var(--color-cg-tinta);
+  color-scheme: light;
+  font-family: var(--font-cg-sans), system-ui, sans-serif;
+}
+/* Papel: grano fino, cálido, con viñeta apenas tostada. */
+.cg-papel {
+  background-color: var(--color-cg-papel);
+  background-image:
+    radial-gradient(130% 95% at 50% 38%, transparent 58%, rgba(92, 70, 38, 0.11) 100%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.29 0 0 0 0 0.18 0 0 0 0.10 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+/* Titulares: serif expresiva y humana (Fraunces, con sus ejes blandos). */
+.cg-titular {
+  font-family: var(--font-cg-display), Georgia, serif;
+  font-weight: 800;
+  font-variation-settings: "SOFT" 60, "WONK" 1, "opsz" 144;
+  letter-spacing: -0.025em;
+  line-height: 0.9;
+}
+/* Bajadas: la misma serif en cursiva liviana. */
+.cg-bajada {
+  font-family: var(--font-cg-display), Georgia, serif;
+  font-style: italic;
+  font-weight: 340;
+  font-variation-settings: "SOFT" 100, "WONK" 0, "opsz" 48;
+  letter-spacing: -0.005em;
+}
+.cg-serif { font-family: var(--font-cg-display), Georgia, serif; }
+.cg-mono { font-family: var(--font-cg-mono), ui-monospace, monospace; }
+.cg-mano { font-family: var(--font-cg-mano), cursive; }
+/* Hoja suelta apoyada sobre la mesa. */
+.cg-hoja {
+  background: var(--color-cg-blanco);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 16px 30px -18px rgba(60, 40, 12, 0.5);
+}
+/* Renglones de foja (hoja de expediente). */
+.cg-renglones {
+  background-image: repeating-linear-gradient(180deg, transparent 0, transparent calc(1.6em - 1px), rgba(62, 88, 112, 0.16) calc(1.6em - 1px), rgba(62, 88, 112, 0.16) 1.6em);
+}
+/* Cinta adhesiva. */
+.cg-cinta {
+  background: rgba(231, 218, 184, 0.75);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+/* Marca de resaltador (ocre) detrás del texto. */
+.cg-resalta {
+  background-image: linear-gradient(transparent 58%, rgba(207, 159, 63, 0.45) 58%, rgba(207, 159, 63, 0.45) 88%, transparent 88%);
+}
+/* Botón grande del celular. */
+.cg-boton {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+@keyframes cg-cae {
+  from { opacity: 0; transform: translateY(-12px) rotate(var(--rot, 0deg)) scale(1.02); }
+  to { opacity: 1; transform: translateY(0) rotate(var(--rot, 0deg)) scale(1); }
+}
+.cg-cae { animation: cg-cae 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes cg-sube {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.cg-sube { animation: cg-sube 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes cg-traza {
+  from { stroke-dashoffset: var(--largo, 600); }
+  to { stroke-dashoffset: 0; }
+}
+.cg-traza { stroke-dasharray: var(--largo, 600); animation: cg-traza 1.3s ease-out both; }
+@keyframes cg-gira { to { transform: rotate(360deg); } }
+.cg-gira { animation: cg-gira var(--dur, 80s) linear infinite; transform-origin: 50% 50%; transform-box: fill-box; }
+/* Cursor que espera una instrucción. */
+@keyframes cg-titila { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.cg-cursor { animation: cg-titila 1.05s steps(1) infinite; }
+@keyframes cg-pulso { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
+.cg-pulso { animation: cg-pulso 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .cg-cae, .cg-sube, .cg-traza, .cg-gira, .cg-cursor, .cg-pulso { animation: none; }
+}
