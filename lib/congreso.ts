@@ -9,7 +9,8 @@
 //                        llegar a una interacción, la abre sola en los celulares)
 //   /congreso/control  → control remoto en el celular de Marco (guion + resultados)
 //   /congreso/demo     → los tres caminos de la demo, versión por versión (plan B)
-// En congreso.rossi-ia.com, "/" es el público y "/clase", "/control", "/demo" lo demás.
+// Se usa en taller.rossi-ia.com/congreso (el QR apunta ahí). Si algún día se conecta
+// congreso.rossi-ia.com, proxy.ts ya sirve "/" como el público y "/clase", "/control", "/demo".
 //
 // Respuestas: /api/session/[slug]/respond { activity, item_key, payload: { v } }.
 // Resultados agregados: /api/congreso/resultados. Estado para los celulares
@@ -23,8 +24,8 @@ export const CONG_EVENTO = "Congreso de Inteligencia Artificial";
 export const CONG_SEDE = "Facultad de Derecho y Ciencias Sociales · UNT";
 export const CONG_AUTOR = "Marco Rossi";
 /** Dirección que se muestra para escribir a mano (el QR apunta a la misma). */
-export const CONG_LINK = "congreso.rossi-ia.com";
-export const CONG_URL = "https://congreso.rossi-ia.com";
+export const CONG_LINK = "taller.rossi-ia.com/congreso";
+export const CONG_URL = "https://taller.rossi-ia.com/congreso";
 export const CONG_QR = "/congreso/qr.svg";
 /** Botonera de emojis del celular (deben estar en REACCIONES o REACCIONES_EXTRA de lib/clase-vivo.ts). */
 export const CONG_REACCIONES = ["👏", "💡", "🤔", "😮", "👍", "🔥"] as const;

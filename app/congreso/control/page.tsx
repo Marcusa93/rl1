@@ -1,7 +1,7 @@
 "use client";
 
-// Control remoto del Congreso desde el celular de Marco (congreso.rossi-ia.com/control
-// o /congreso/control): pasa placas (▶ revela antes de pasar, igual que el clicker),
+// Control remoto del Congreso desde el celular de Marco (taller.rossi-ia.com/congreso/control):
+// pasa placas (▶ revela antes de pasar, igual que el clicker),
 // toca los botones de la placa, lee el guion y espía los resultados antes de
 // proyectarlos. En la placa del experimento tiene el plan B a un toque.
 

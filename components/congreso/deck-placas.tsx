@@ -165,7 +165,7 @@ function Ingreso() {
           Sin descargar nada.
         </p>
         <p className="mt-[2.4rem] cg-mono text-[0.8rem] uppercase tracking-[0.2em] text-cg-gris">O escribí en el navegador</p>
-        <p className="mt-[0.4rem] whitespace-nowrap cg-mono text-[2.05rem] font-semibold leading-none tracking-[-0.02em] text-cg-tinta">{CONG_LINK}</p>
+        <p className="mt-[0.4rem] whitespace-nowrap cg-mono text-[1.7rem] font-semibold leading-none tracking-[-0.02em] text-cg-tinta">{CONG_LINK}</p>
         <p className="mt-[2.6rem] flex items-baseline gap-[0.8rem]">
           <Latido className="self-center" />
           <span className="cg-titular text-[4.2rem] leading-none tabular-nums text-cg-tinta">{n}</span>
