@@ -691,6 +691,10 @@ interface SlideBase {
 export interface SlidePortada extends SlideBase {
   t: "portada";
 }
+/** Ingreso: el QR enorme para que la sala se sume antes de empezar. */
+export interface SlideIngreso extends SlideBase {
+  t: "ingreso";
+}
 /** Placa numerada del diseño (1 a 15). */
 export interface SlidePlaca extends SlideBase {
   t: "placa";
@@ -749,6 +753,7 @@ export interface SlideFinal extends SlideBase {
 
 export type SlideCong =
   | SlidePortada
+  | SlideIngreso
   | SlidePlaca
   | SlideCurva
   | SlideActividad
@@ -766,6 +771,11 @@ export const CONG_SLIDES: SlideCong[] = [
     t: "portada",
     movimiento: "Apertura",
     nota: "Mientras la gente se acomoda. No explicar nada todavía. Cuando empiece: saludar corto y pasar directo a la primera pregunta.",
+  },
+  {
+    t: "ingreso",
+    movimiento: "Apertura",
+    nota: "QR ENORME mientras la gente se acomoda (o apenas empezás): \"Saquen el teléfono y escaneen; no hay que registrarse ni poner el nombre. Lo vamos a usar toda la charla.\" Mirar el contador de conectados y seguir cuando la mayoría entró.",
   },
   // --- Movimiento 1 · ~3 min ---
   {
@@ -953,6 +963,8 @@ export function tituloSlide(s: SlideCong): string {
   switch (s.t) {
     case "portada":
       return "Portada";
+    case "ingreso":
+      return "Sumate · QR";
     case "placa":
     case "demo":
     case "vitrina":
@@ -974,7 +986,7 @@ export function tituloSlide(s: SlideCong): string {
 
 /** Actividad que abre una placa al llegar ("lobby" en la portada; undefined si no toca nada). */
 export function actividadDeSlide(s: SlideCong): string | undefined {
-  if (s.t === "portada") return "lobby";
+  if (s.t === "portada" || s.t === "ingreso") return "lobby";
   if (s.t === "actividad" || s.t === "experimento") return s.activa;
   return undefined;
 }

@@ -14,6 +14,7 @@ import {
   CONG_INSTRUCCION_EN_VIVO,
   CONG_LINK,
   CONG_ORIGEN,
+  CONG_QR,
   CONG_SEDE,
   CONG_TITLE,
   CONG_VITRINA,
@@ -38,6 +39,7 @@ import {
   Fichas,
   Folio,
   Hoja,
+  Latido,
   Nube,
   Tipeo,
   dos,
@@ -85,6 +87,8 @@ export function Placa({ slide, ctx }: { slide: SlideCong; ctx: Ctx }) {
   switch (slide.t) {
     case "portada":
       return <Portada />;
+    case "ingreso":
+      return <Ingreso />;
     case "placa":
       return slide.layout === "tipo" ? <PlacaTipo s={slide} /> : slide.layout === "lado" ? <PlacaLado s={slide} ctx={ctx} /> : <PlacaCentro s={slide} ctx={ctx} />;
     case "curva":
@@ -140,6 +144,38 @@ function Portada() {
       <div className="flex items-end justify-between border-t border-cg-tinta/15 pt-[1rem]">
         <p className="cg-serif text-[1.6rem] text-cg-tinta">{CONG_AUTOR}</p>
         <p className="cg-mono text-[0.78rem] uppercase tracking-[0.2em] text-cg-sepia">Abogado · experimenta con tecnología</p>
+      </div>
+    </div>
+  );
+}
+
+// --- Ingreso: el QR enorme -----------------------------------------------------------------------
+
+function Ingreso() {
+  const data = useVivo("cong_molestia", 2500);
+  const n = data?.participantes ?? 0;
+  return (
+    <div className="flex h-full items-center justify-between gap-[3rem] px-[5rem] pb-[2rem] pt-[3.4rem]">
+      <div className="flex w-[32rem] shrink-0 flex-col justify-center">
+        <p className="cg-mono text-[0.9rem] uppercase tracking-[0.24em] text-cg-lacre">Saquen el teléfono</p>
+        <h1 className="cg-titular cg-sube mt-[1rem] text-[7.5rem] text-cg-tinta">Sumate.</h1>
+        <p className="cg-bajada cg-sube mt-[1.2rem] text-[2.2rem] leading-snug text-cg-sepia" style={{ animationDelay: "0.2s" }}>
+          Sin registro. Sin nombre.
+          <br />
+          Sin descargar nada.
+        </p>
+        <p className="mt-[2.4rem] cg-mono text-[0.8rem] uppercase tracking-[0.2em] text-cg-gris">O escribí en el navegador</p>
+        <p className="mt-[0.4rem] whitespace-nowrap cg-mono text-[2.05rem] font-semibold leading-none tracking-[-0.02em] text-cg-tinta">{CONG_LINK}</p>
+        <p className="mt-[2.6rem] flex items-baseline gap-[0.8rem]">
+          <Latido className="self-center" />
+          <span className="cg-titular text-[4.2rem] leading-none tabular-nums text-cg-tinta">{n}</span>
+          <span className="cg-bajada text-[1.8rem] text-cg-sepia">{n === 1 ? "persona conectada" : "personas conectadas"}</span>
+        </p>
+      </div>
+      {/* El QR lo más grande posible: negro puro sobre blanco, con margen blanco para que se escanee de lejos. */}
+      <div className="cg-cae relative aspect-square h-full max-h-[50rem] min-w-0 shrink border-[0.35rem] border-black bg-white p-[1.4rem]" style={vars({ "--rot": "0deg" })}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={CONG_QR} alt={`Código QR: ${CONG_LINK}`} className="h-full w-full [image-rendering:pixelated]" />
       </div>
     </div>
   );

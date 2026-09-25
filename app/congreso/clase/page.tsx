@@ -418,7 +418,7 @@ function Deck() {
     abrir: setVentana,
   };
 
-  const sinPie = slide.t === "portada" || slide.t === "final";
+  const sinPie = slide.t === "portada" || slide.t === "ingreso" || slide.t === "final";
 
   return (
     <div className={cn("deck-escala cong cg-papel relative flex h-dvh flex-col overflow-hidden select-none", contraste && "cg-contraste", !cursor && "cursor-none")}>
@@ -467,7 +467,7 @@ function Deck() {
         )}
       </main>
       {/* En las interacciones la placa ya trae su QR grande: el margen se guarda para darles el ancho a los resultados. */}
-      {margen && slide.t !== "actividad" && <MargenQR conectados={conectados} conQR />}
+      {margen && slide.t !== "actividad" && slide.t !== "ingreso" && <MargenQR conectados={conectados} conQR />}
       </div>
 
       {!sinPie && (
