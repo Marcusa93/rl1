@@ -2,7 +2,7 @@
 //   node scripts/congreso-simular.mjs [base] [cantidad]
 //   node scripts/congreso-simular.mjs http://localhost:3000 60
 //   node scripts/congreso-simular.mjs https://congreso.rossi-ia.com 40
-// Cada celular entra sin nombre y responde las cinco preguntas (con sesgos
+// Cada celular entra sin nombre y responde las cuatro preguntas (con sesgos
 // verosímiles); un tercio de los DEPENDE escribe de qué depende.
 // Después de ensayar: Shift+R en la sala de control reinicia la sesión.
 
@@ -76,11 +76,6 @@ async function celular(i) {
   const r = (activity, item_key, v) => req(`/api/session/${SLUG}/respond`, { activity, item_key, payload: { v } });
 
   await r("cong_molestia", "texto", azar(MOLESTIAS));
-  // Situaciones 1 y 3 son "usar"; 2 y 4, "construir" (con ruido).
-  await r("cong_usar", "c1", azar(["usar", "construir"], [8, 2]));
-  await r("cong_usar", "c2", azar(["usar", "construir"], [3, 7]));
-  await r("cong_usar", "c3", azar(["usar", "construir"], [6, 4]));
-  await r("cong_usar", "c4", azar(["usar", "construir"], [2, 8]));
   await r("cong_elegir", "caso", azar(["cronologia", "prueba", "entrevista"], [5, 3, 3]));
   const datos = azar(["si", "no", "depende"], [1, 4, 6]);
   await r("cong_datos", "q", datos);

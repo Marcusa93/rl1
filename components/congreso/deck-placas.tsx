@@ -90,7 +90,7 @@ export function Placa({ slide, ctx }: { slide: SlideCong; ctx: Ctx }) {
     case "placa":
       return slide.layout === "tipo" ? <PlacaTipo s={slide} /> : slide.layout === "lado" ? <PlacaLado s={slide} ctx={ctx} /> : <PlacaCentro s={slide} ctx={ctx} />;
     case "curva":
-      return slide.numero === 12 ? <CurvaFunciona s={slide} /> : <CurvaBarrera s={slide} />;
+      return slide.principal ? <CurvaFunciona s={slide} /> : <CurvaBarrera s={slide} />;
     case "actividad":
       return <PlacaActividad s={slide} ctx={ctx} />;
     case "demo":
@@ -226,7 +226,7 @@ function PlacaLado({ s, ctx }: { s: SlidePlaca; ctx: Ctx }) {
 }
 
 function PlacaCentro({ s, ctx }: { s: SlidePlaca; ctx: Ctx }) {
-  const escalera = s.numero === 14 && s.pasos;
+  const escalera = s.ilus === "p14-madurez" && s.pasos;
   return (
     <Hoja folio={<Folio numero={s.numero} rotulo={s.movimiento} />}>
       <div className="flex h-full min-h-0 flex-col">

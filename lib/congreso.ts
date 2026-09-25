@@ -89,11 +89,6 @@ export type ActividadCong = ActividadTexto | ActividadOpciones;
 /** item_key donde se guarda la frase de seguimiento de un ítem. */
 export const itemSeguimiento = (itemId: string) => `${itemId}~porque`;
 
-const USAR_CONSTRUIR: Opcion[] = [
-  { id: "usar", label: "Usar IA" },
-  { id: "construir", label: "Construir con IA" },
-];
-
 export const CONG_ACTIVIDADES: ActividadCong[] = [
   {
     key: "cong_molestia",
@@ -114,33 +109,9 @@ export const CONG_ACTIVIDADES: ActividadCong[] = [
     ],
   },
   {
-    key: "cong_usar",
-    tipo: "opciones",
-    numero: 2,
-    nombre: "¿Usar o construir?",
-    pregunta: "¿Usar IA o construir con IA?",
-    consigna: "Cuatro situaciones. No es un examen: respondé rápido.",
-    items: [
-      { id: "c1", rotulo: "Situación 1", texto: "Le pido a una IA que resuma una sentencia.", opciones: USAR_CONSTRUIR },
-      {
-        id: "c2",
-        rotulo: "Situación 2",
-        texto: "Creo una herramienta donde cargo sentencias y arma sola fichas con los campos que yo definí.",
-        opciones: USAR_CONSTRUIR,
-      },
-      { id: "c3", rotulo: "Situación 3", texto: "Le pido a una IA que redacte una demanda.", opciones: USAR_CONSTRUIR },
-      {
-        id: "c4",
-        rotulo: "Situación 4",
-        texto: "Construyo una aplicación que me guía con preguntas para reunir la información que necesito para preparar una demanda.",
-        opciones: USAR_CONSTRUIR,
-      },
-    ],
-  },
-  {
     key: "cong_elegir",
     tipo: "opciones",
-    numero: 3,
+    numero: 2,
     nombre: "¿Qué construimos?",
     pregunta: "¿Qué construimos ahora, en vivo?",
     consigna: "Elegí un problema. El más votado lo construimos desde cero.",
@@ -159,7 +130,7 @@ export const CONG_ACTIVIDADES: ActividadCong[] = [
   {
     key: "cong_datos",
     tipo: "opciones",
-    numero: 4,
+    numero: 3,
     nombre: "¿La usarías?",
     pregunta: "La aplicación funciona. ¿Le cargarías ahora mismo información de un expediente real?",
     consigna: "Una sola respuesta.",
@@ -178,7 +149,7 @@ export const CONG_ACTIVIDADES: ActividadCong[] = [
   {
     key: "cong_intentar",
     tipo: "texto",
-    numero: 5,
+    numero: 4,
     nombre: "¿Qué intentarías?",
     pregunta: "Después de ver esto, ¿qué intentarías construir?",
     consigna: "En pocas palabras. Puede ser lo mismo de antes… o no.",
@@ -617,6 +588,8 @@ export interface SlideCurva extends SlideBase {
   titulo: string;
   bajada: string;
   anillo: string;
+  /** La curva principal ("Funciona."): palabra enorme y el anillo chico en un rincón. */
+  principal?: boolean;
 }
 /** Interacción: pregunta + QR + contador; el resultado aparece en vivo o a pedido. */
 export interface SlideActividad extends SlideBase {
@@ -663,13 +636,16 @@ export type SlideCong =
   | SlideExperimento
   | SlideFinal;
 
+// Versión corta (~17 min, 19 placas): se quitaron las placas que repetían una idea
+// ya dicha (ya diseñamos sistemas, empezar hablando, usar o construir, probar
+// también es programar, puedo ≠ debo); su contenido vive en el guion de la vecina.
 export const CONG_SLIDES: SlideCong[] = [
   {
     t: "portada",
     movimiento: "Apertura",
     nota: "Mientras la gente se acomoda. No explicar nada todavía. Cuando empiece: saludar corto y pasar directo a la primera pregunta.",
   },
-  // --- Movimiento 1 · 3-4 min ---
+  // --- Movimiento 1 · ~3 min ---
   {
     t: "placa",
     numero: 1,
@@ -678,7 +654,7 @@ export const CONG_SLIDES: SlideCong[] = [
     bajada: "Probablemente no. Y quizás eso ya no sea lo más importante.",
     ilus: "p01-pantalla-vieja",
     layout: "tipo",
-    nota: "MANO ALZADA: \"¿Cuántos de ustedes saben programar?\" Contar en voz alta, con humor (\"uno, dos… bien, los ingenieros infiltrados\"). NO explicar todavía qué es vibe coding. Recordar el número: se usa al final.",
+    nota: "MANO ALZADA: \"¿Cuántos de ustedes saben programar?\" Contar en voz alta, con humor. NO explicar todavía qué es vibe coding. Recordar el número: vuelve al final.",
   },
   {
     t: "placa",
@@ -694,37 +670,27 @@ export const CONG_SLIDES: SlideCong[] = [
       { label: "Excepción", texto: "…salvo que pague lo adeudado antes de la intimación." },
       { label: "Entrada", texto: "¿Qué datos necesito? Fechas de pago, montos, fecha de la intimación." },
     ],
-    nota: "Leer la cláusula y revelar de a una: CONDICIÓN, CONSECUENCIA, EXCEPCIÓN, ENTRADA. \"Esto no es código. Es una cláusula. Pero tiene condiciones, excepciones, entradas y consecuencias.\" Aclarar: no digo que el Derecho sea programación; es una analogía.",
-  },
-  {
-    t: "placa",
-    numero: 3,
-    movimiento: "1 · Los abogados ya pensaban en sistemas",
-    titulo: "Ya diseñamos sistemas",
-    bajada: "Sólo que no los llamábamos así.",
-    ilus: "p03-collage",
-    layout: "centro",
-    nota: "Preguntar: \"¿Cuántos diseñaron alguna vez un procedimiento, una planilla, un formulario, un contrato con condiciones o una estrategia procesal?\" (todas las manos). \"Eso es diseñar sistemas. Sólo que no los llamábamos así.\" Anunciar: saquen el teléfono.",
+    nota: "Revelar rápido: CONDICIÓN, CONSECUENCIA, EXCEPCIÓN, ENTRADA. \"Esto no es código: es una cláusula. Pero tiene la misma estructura.\" (Es una analogía, no una equivalencia.) Remate: \"Ya diseñamos sistemas. Sólo que no los llamábamos así.\" Y: saquen el teléfono.",
   },
   {
     t: "actividad",
     activa: "cong_molestia",
     movimiento: "1 · Los abogados ya pensaban en sistemas",
-    nota: "INTERACCIÓN 1 (1-2 min). QR en pantalla: sin registro, sin nombre. La nube se arma sola. Mirar el resultado en voz alta y decir: \"Fíjense algo: todavía no estamos hablando de aplicaciones. Estamos hablando de problemas.\" (Tecla F = ver frases en la pantalla si sirve leer alguna.)",
+    nota: "INTERACCIÓN 1 (1 min). QR en pantalla: sin registro, sin nombre. La nube se arma sola. Cierre: \"Fíjense algo: todavía no estamos hablando de aplicaciones. Estamos hablando de problemas.\" (Tecla V = ver frases.)",
   },
   {
     t: "curva",
-    numero: 4,
+    numero: 3,
     movimiento: "1 · Los abogados ya pensaban en sistemas",
     titulo: "¿Y si desaparece la barrera?",
     bajada: "De describir una idea a construir algo.",
     anillo: "De describir una idea a construir algo · ¿Y si desaparece la barrera? · ",
-    nota: "CURVA · FRENAR. Silencio. Síntesis: \"Tenemos problemas que sabemos explicar. Ustedes acaban de escribirlos. Hasta hace poco, entre explicar un problema y tener una herramienta había una barrera enorme. ¿Y si esa barrera desaparece?\" Cambiar de bloque.",
+    nota: "CURVA · FRENAR. \"Tenemos problemas que sabemos explicar: los acaban de escribir. Entre explicar un problema y tener una herramienta había una barrera enorme. ¿Y si desaparece?\"",
   },
-  // --- Movimiento 2 · 4-5 min ---
+  // --- Movimiento 2 · ~3 min ---
   {
     t: "placa",
-    numero: 5,
+    numero: 4,
     movimiento: "2 · Programar hablando",
     titulo: "Antes había que traducir",
     bajada: "Problema → especificación → código → software.",
@@ -736,85 +702,61 @@ export const CONG_SLIDES: SlideCong[] = [
       { label: "El desarrollo", texto: "Un equipo lo presupuesta, lo diseña, lo programa." },
       { label: "El software", texto: "Meses después, llega algo. Y no era exactamente eso." },
     ],
-    nota: "Ejemplo: \"Necesito un sistema que me ordene los vencimientos de mis causas.\" Revelar cada capa de traducción. Cada capa es una persona, un presupuesto y un malentendido posible. Humor: \"y cuando llega, no era exactamente eso\".",
+    nota: "Revelar las capas de traducción (cada una: una persona, un presupuesto, un malentendido). Humor: \"y cuando llega, no era exactamente eso\". Giro: \"Ahora podés empezar hablando: la frase del principio ya es el punto de partida.\"",
   },
   {
     t: "placa",
-    numero: 6,
-    movimiento: "2 · Programar hablando",
-    titulo: "Ahora podés empezar hablando",
-    bajada: "El lenguaje natural también puede convertirse en interfaz de construcción.",
-    ilus: "p06-frase-interfaz",
-    layout: "lado",
-    nota: "Mostrar la herramienta real (salir de las placas unos segundos). Escribir una primera instrucción sencilla, SIN construir todavía: \"Quiero una app que me ordene los vencimientos de mis causas\". Mostrar que la frase ya es el punto de partida. Volver.",
-  },
-  {
-    t: "placa",
-    numero: 7,
+    numero: 5,
     movimiento: "2 · Programar hablando",
     titulo: "Pedir ≠ construir",
     bajada: "Una respuesta termina. Una herramienta permanece.",
     ilus: "p07-pedir-construir",
     layout: "centro",
-    nota: "Izquierda: una conversación (pido, me responde, se terminó). Derecha: una herramienta (la uso mañana, la usa otro, con otros datos). \"Ahora les propongo cuatro situaciones.\"",
-  },
-  {
-    t: "actividad",
-    activa: "cong_usar",
-    movimiento: "2 · Programar hablando",
-    nota: "INTERACCIÓN 2 (1 min). No es examen. Mostrar resultados (R). Usar los porcentajes para construir la distinción: USAR IA = pedir una respuesta. CONSTRUIR CON IA = crear algo que queda y que repite el criterio que yo definí. Las situaciones 2 y 4 son construir.",
+    nota: "Izquierda: pido un resumen, me responde, se terminó. Derecha: construyo algo que queda, que usa otro, mañana, con otros datos, y que repite el criterio que YO definí. Eso es vibe coding: usar la IA para construir herramientas. \"Construyamos una. Ustedes eligen cuál.\"",
   },
   {
     t: "actividad",
     activa: "cong_elegir",
     movimiento: "2 · Programar hablando",
-    nota: "INTERACCIÓN 3 (1 min). Antes de abandonar las placas: que la sala elija. Mostrar resultados (R). Decir: \"Bueno. Construyamos esa.\" Las tres están ensayadas (plan B en /demo). Si hay empate, elegir la A.",
+    nota: "INTERACCIÓN 2 (1 min). Que la sala elija. Mostrar resultados (→ o R). \"Bueno. Construyamos esa.\" Las tres están ensayadas (plan B adentro de la placa siguiente). Empate: la A.",
   },
-  // --- Movimiento 3 · 8-10 min ---
+  // --- Movimiento 3 · ~6 min ---
   {
     t: "demo",
-    numero: 8,
+    numero: 6,
     movimiento: "3 · Construyamos algo",
     titulo: "Hagamos una app",
     bajada: "Ahora. Desde cero.",
     fase: "construir",
-    nota: "Salir de las placas. Abrir la herramienta de vibe coding. Pegar la instrucción (está en pantalla y en /demo, botón Copiar). Generar, abrir, probar. Mientras genera: \"No escribí una línea de código. Escribí lo que un abogado le pediría a un colega.\" Si falla: \"Perfecto. Bienvenidos al desarrollo de software.\" y abrir la V1 ensayada.",
+    nota: "Salir a la herramienta. Pegar la instrucción (botón Copiar). Generar, abrir, probar. Mientras genera: \"No escribí una línea de código. Escribí lo que un abogado le pediría a un colega.\" Si falla: \"Perfecto. Bienvenidos al desarrollo de software.\" y seguir con la V1 ensayada.",
   },
   {
     t: "demo",
-    numero: 9,
+    numero: 7,
     movimiento: "3 · Construyamos algo",
     titulo: "No era eso.",
     bajada: "Y acá empieza lo interesante.",
     fase: "error",
-    nota: "Encontrar la limitación EN VIVO (está en pantalla). Decir la frase del abogado. Pedir la corrección en lenguaje natural. Mostrar el resultado. La falla es el momento pedagógico: el que la detectó es el abogado, no la IA.",
-  },
-  {
-    t: "demo",
-    numero: 10,
-    movimiento: "3 · Construyamos algo",
-    titulo: "Probar también es programar",
-    bajada: "Construir es conversar con el error.",
-    fase: "probar",
-    nota: "Segunda modificación (y tercera si hay tiempo). Remarcar: \"La IA escribió el código. Pero yo tuve que explicarle qué estaba mal.\" Ciclo: idea → prototipo → error → corrección → prueba.",
+    nota: "Encontrar la limitación en vivo (Marcar la falla). Decir la frase del abogado y pedir la corrección (V2). Si hay tiempo, una más (V3). Remate: \"La IA escribió el código. Pero yo tuve que explicarle qué estaba mal. Construir es conversar con el error.\"",
   },
   {
     t: "vitrina",
-    numero: 11,
-    movimiento: "3 · Construyamos algo",
+    numero: 8,
     titulo: "El código no era el problema",
     bajada: "El problema era entender el problema.",
-    nota: "No es un catálogo. Abrir UNA o DOS herramientas reales (tocar la tarjeta): \"Esto no es una posibilidad teórica. Son objetos concretos que construí para situaciones concretas: una votación, un simulador, un recorrido de decisiones.\" En todas, lo difícil no fue el código: fue entender la clase.",
+    movimiento: "3 · Construyamos algo",
+    nota: "Abrir UNA herramienta real (30 segundos, no un catálogo): \"Esto no es una posibilidad teórica: son objetos que construí para mis clases.\" En todas, lo difícil no fue el código: fue entender la clase.",
   },
-  // --- Movimiento 4 · 4-5 min ---
+  // --- Movimiento 4 · ~4 min ---
   {
     t: "curva",
-    numero: 12,
+    numero: 9,
+    principal: true,
     movimiento: "4 · Funciona. ¿Entonces está bien?",
     titulo: "Funciona.",
     bajada: "¿Entonces está bien?",
     anillo: "Funciona · ¿Entonces está bien? · ",
-    nota: "CURVA PRINCIPAL · HACER SILENCIO. Dejar la placa tres segundos sin hablar. Después: \"Funciona. ¿Entonces está bien?\" Y pasar a la pregunta.",
+    nota: "CURVA PRINCIPAL · HACER SILENCIO. Tres segundos sin hablar. Después: \"Funciona. ¿Entonces está bien?\" Y pasar a la pregunta.",
   },
   {
     t: "actividad",
@@ -828,21 +770,11 @@ export const CONG_SLIDES: SlideCong[] = [
       "¿Qué ocurre si cambia una regla jurídica?",
       "¿Quién responde cuando falla?",
     ],
-    nota: "INTERACCIÓN 4. Mostrar resultados (R). \"Los que pusieron DEPENDE: ¿de qué depende?\" Tomar 2 o 3 respuestas orales y revelar cada pregunta cuando alguien la roce. EXPERIMENTO (opcional): acá, ir a la terminal y dictarle a la IA el cambio (ver placa \"Cambiémosla ahora\"); decir \"le pedí algo a la IA, después volvemos\" y seguir: el deploy tarda 1-2 min.",
+    nota: "INTERACCIÓN 3. Mostrar resultados. \"Los que pusieron DEPENDE: ¿de qué depende?\" Dos respuestas orales y revelar las preguntas (→). \"Puedo ≠ debo: construir rápido no elimina la responsabilidad.\" EXPERIMENTO: acá dictarle a la IA el cambio (placa \"Cambiémosla ahora\") — \"le pedí algo, después volvemos\" — y seguir: el deploy tarda 1-2 min.",
   },
   {
     t: "placa",
-    numero: 13,
-    movimiento: "4 · Funciona. ¿Entonces está bien?",
-    titulo: "Puedo ≠ debo",
-    bajada: "Construir rápido no elimina la responsabilidad.",
-    ilus: "p13-capas",
-    layout: "lado",
-    nota: "Volver a la app construida: \"¿Sabemos realmente dónde terminarían los datos que acabamos de ingresar?\" La reducción de la barrera técnica no elimina las obligaciones jurídicas, profesionales ni técnicas: secreto profesional, datos personales, responsabilidad.",
-  },
-  {
-    t: "placa",
-    numero: 14,
+    numero: 10,
     movimiento: "4 · Funciona. ¿Entonces está bien?",
     titulo: "Prototipar no es implementar",
     bajada: "Una idea funcionando todavía no es un sistema confiable.",
@@ -856,40 +788,40 @@ export const CONG_SLIDES: SlideCong[] = [
       { label: "Sistema profesional", texto: "Pruebas, seguridad, responsables, auditoría." },
       { label: "Sistema sobre derechos de terceros", texto: "Información sensible, decisiones que afectan a otros: el máximo de exigencia." },
     ],
-    nota: "Revelar la escalera de a un escalón. No es malo vs bueno: es madurez distinta. El nivel de exigencia sube según el contexto. El prototipo es también una forma de comunicarse con desarrolladores y organizaciones.",
+    nota: "Subir la escalera sin detenerse en cada escalón. No es malo vs bueno: es madurez distinta, y la exigencia sube con el contexto. \"¿Sabemos dónde terminarían los datos que cargamos hace un rato?\"",
   },
   {
     t: "revelacion",
     movimiento: "4 · Funciona. ¿Entonces está bien?",
-    nota: "LA REVELACIÓN. \"Hay algo que todavía no les conté.\" (tocar Revelar) \"La aplicación que ustedes vienen usando desde el teléfono durante toda esta charla también la hice con vibe coding.\" PAUSA. Mostrar el pedido real, con sus errores de tipeo. \"No estuvieron viendo ejemplos de vibe coding. Estuvieron adentro de uno.\"",
+    nota: "LA REVELACIÓN. \"Hay algo que todavía no les conté.\" (→) \"La aplicación que vienen usando desde el teléfono también la hice con vibe coding.\" PAUSA. Mostrar el pedido real, con sus errores de tipeo. (→) \"No estuvieron viendo ejemplos de vibe coding. Estuvieron adentro de uno.\"",
   },
   {
     t: "experimento",
     activa: "cong_datos",
     movimiento: "4 · Funciona. ¿Entonces está bien?",
-    nota: "EXPERIMENTO (sólo si hay plan B — lo hay). \"Y como la hice así, la puedo cambiar ahora.\" Si ya la dictaste en la placa de la pregunta, mostrar que se publicó (se ve arriba). Si no llegó: botón PLAN B (acá y en el control) habilita el campo sin deploy. Pedir a los de DEPENDE que escriban de qué depende. Leer las frases. Ciclo: necesidad → descripción → modificación → uso real.",
+    nota: "EXPERIMENTO. \"Y como la hice así, la puedo cambiar ahora.\" Si el cambio ya se publicó, se ve el sello arriba. Si no llegó: botón PLAN B (acá y en el control). Pedir a los de DEPENDE que escriban de qué depende. Leer dos frases. Necesidad → descripción → modificación → uso real.",
   },
-  // --- Movimiento 5 · 3-4 min ---
+  // --- Movimiento 5 · ~2 min ---
   {
     t: "placa",
-    numero: 15,
+    numero: 11,
     movimiento: "5 · Del abogado usuario al abogado constructor",
     titulo: "El código dejó de ser la primera barrera",
     bajada: "Ahora la barrera es saber qué queremos construir.",
     ilus: "p15-espacio",
     layout: "lado",
-    nota: "Placa limpia. Durante décadas decíamos \"necesitaríamos un sistema que haga esto\". Ahora aparece otra frase posible: \"tengo una idea, construí una primera versión, probémosla\". El abogado no reemplaza al desarrollador: adquiere la capacidad de convertir una intuición profesional en algo que puede probarse.",
+    nota: "Durante décadas decíamos \"necesitaríamos un sistema que haga esto\". Ahora aparece otra frase: \"tengo una idea, construí una primera versión, probémosla\". El abogado no reemplaza al desarrollador: aprende a convertir una intuición profesional en algo que puede probarse.",
   },
   {
     t: "actividad",
     activa: "cong_intentar",
     movimiento: "5 · Del abogado usuario al abogado constructor",
-    nota: "INTERACCIÓN 5. La misma pregunta del principio, pero ahora: ¿qué intentarías construir? Se ve ANTES y AHORA lado a lado (no es una medición: es un recurso narrativo). Mirar las respuestas y cerrar: \"Hace veinte minutos les pregunté cuántos sabían programar.\" Pausa. \"Ahora esa pregunta me interesa bastante menos.\"",
+    nota: "INTERACCIÓN 4. La pregunta del principio, pero ahora: ¿qué intentarías construir? ANTES y AHORA lado a lado. Cerrar: \"Hace veinte minutos les pregunté cuántos sabían programar.\" Pausa. \"Ahora esa pregunta me interesa bastante menos.\"",
   },
   {
     t: "final",
     movimiento: "5 · Del abogado usuario al abogado constructor",
-    nota: "\"La pregunta es qué problema de nuestro trabajo sabemos explicar lo suficientemente bien como para intentar construir una solución.\" NO decir \"muchas gracias\" enseguida. Dejar respirar la pregunta en pantalla. Recién después, agradecer.",
+    nota: "\"La pregunta es qué problema de nuestro trabajo sabemos explicar lo suficientemente bien como para intentar construir una solución.\" NO decir \"muchas gracias\" enseguida. Dejar respirar la pregunta. Recién después, agradecer.",
   },
 ];
 
