@@ -11,6 +11,7 @@ import {
   AnilloTexto,
   Bajada,
   BotonesResultados,
+  BotonReiniciar,
   Casillas,
   ChipCelular,
   ContadorVivo,
@@ -76,6 +77,8 @@ export interface PropsPlaca {
   porArea: boolean;
   onRevelar: () => void;
   onPorArea: () => void;
+  /** Borra las respuestas de una actividad (botón de dos toques en la placa). */
+  onReiniciar: (activity: BbvaActivityKey) => void;
 }
 
 export function Placa(p: PropsPlaca) {
@@ -86,7 +89,7 @@ export function Placa(p: PropsPlaca) {
     case "ingreso":
       return <Ingreso />;
     case "placa":
-      return <PlacaContenido s={s} />;
+      return <PlacaContenido s={s} onReiniciar={p.onReiniciar} />;
     case "curva":
       return <PlacaCurva s={s} />;
     case "actividad":
@@ -260,7 +263,7 @@ function Ingreso() {
 
 // --- Placas numeradas -------------------------------------------------------------------
 
-function PlacaContenido({ s }: { s: SlidePlaca }) {
+function PlacaContenido({ s, onReiniciar }: { s: SlidePlaca; onReiniciar: (activity: BbvaActivityKey) => void }) {
   const marca = MARCAS[s.numero];
   const folio = <Folio rotulo="Placa" numero={dos(s.numero)} bloque={s.bloque} />;
   const ilus = s.ilus ? (
@@ -301,7 +304,7 @@ function PlacaContenido({ s }: { s: SlidePlaca }) {
           <Titulo texto={s.titulo} marca={marca} tam={tamTitulo(s.titulo, 30, cierre ? 6 : 6.5)} />
           <span className="mt-[1.8rem] block h-[3px] w-[3.5rem] bg-naranja" />
           <Bajada texto={s.bajada} className="mt-[1.1rem] text-[2.15rem]" />
-          {s.activa && <TarjetasEnVivo activa={s.activa} />}
+          {s.activa && <TarjetasEnVivo activa={s.activa} onReiniciar={onReiniciar} />}
         </div>
         <div className="relative h-full max-h-[38rem] min-w-0 flex-1">{ilus}</div>
       </div>
@@ -310,7 +313,7 @@ function PlacaContenido({ s }: { s: SlidePlaca }) {
 }
 
 /** Placa 19: la actividad 5 está abierta mientras la placa queda proyectada. */
-function TarjetasEnVivo({ activa }: { activa: BbvaActivityKey }) {
+function TarjetasEnVivo({ activa, onReiniciar }: { activa: BbvaActivityKey; onReiniciar: (activity: BbvaActivityKey) => void }) {
   const data = useVivo(activa, 2000);
   const n = contados(activa, data);
   const total = data?.participantes ?? 0;
@@ -328,6 +331,7 @@ function TarjetasEnVivo({ activa }: { activa: BbvaActivityKey }) {
         </span>
       </div>
       <Casillas n={n} total={total} className="mt-[0.9rem]" />
+      <BotonReiniciar onReiniciar={() => onReiniciar(activa)} className="mt-[1.1rem]" />
     </div>
   );
 }
@@ -408,7 +412,7 @@ function partirPregunta(p: string): [string | null, string] {
   return i > 0 ? [p.slice(0, i + 1), p.slice(i + 2)] : [null, p];
 }
 
-function PlacaActividad({ s, revelado, porArea, onRevelar, onPorArea }: PropsPlaca & { s: SlideActividad }) {
+function PlacaActividad({ s, revelado, porArea, onRevelar, onPorArea, onReiniciar }: PropsPlaca & { s: SlideActividad }) {
   const act = getActividadBbva(s.activa);
   const data = useVivo(s.activa, 1500);
   if (!act) return null;
@@ -418,7 +422,14 @@ function PlacaActividad({ s, revelado, porArea, onRevelar, onPorArea }: PropsPla
   const [contexto, pregunta] = partirPregunta(act.pregunta);
   const folio = <Folio rotulo="Actividad" numero={String(act.numero)} acento extra={act.nombre} />;
   const botones = (
-    <BotonesResultados revelado={revelado} porArea={porArea} conArea={conArea} onRevelar={onRevelar} onPorArea={onPorArea} />
+    <BotonesResultados
+      revelado={revelado}
+      porArea={porArea}
+      conArea={conArea}
+      onRevelar={onRevelar}
+      onPorArea={onPorArea}
+      onReiniciar={() => onReiniciar(s.activa)}
+    />
   );
 
   if (revelado)
@@ -447,7 +458,7 @@ function PlacaActividad({ s, revelado, porArea, onRevelar, onPorArea }: PropsPla
   );
 }
 
-function PlacaResultado({ s, revelado, porArea, onRevelar, onPorArea }: PropsPlaca & { s: SlideResultado }) {
+function PlacaResultado({ s, revelado, porArea, onRevelar, onPorArea, onReiniciar }: PropsPlaca & { s: SlideResultado }) {
   const act = getActividadBbva(s.de);
   const data = useVivo(s.de, 1500);
   if (!act) return null;
@@ -457,7 +468,14 @@ function PlacaResultado({ s, revelado, porArea, onRevelar, onPorArea }: PropsPla
   const folio = <Folio rotulo="Resultado" numero={String(act.numero)} acento extra={act.nombre} />;
   const texto = s.de === "bbva_a5" ? "tienen su tarjeta" : "respondieron";
   const botones = (
-    <BotonesResultados revelado={revelado} porArea={porArea} conArea={conArea} onRevelar={onRevelar} onPorArea={onPorArea} />
+    <BotonesResultados
+      revelado={revelado}
+      porArea={porArea}
+      conArea={conArea}
+      onRevelar={onRevelar}
+      onPorArea={onPorArea}
+      onReiniciar={() => onReiniciar(s.de)}
+    />
   );
 
   if (revelado)

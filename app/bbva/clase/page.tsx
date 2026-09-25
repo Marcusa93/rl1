@@ -33,6 +33,7 @@ import {
   getActividadBbva,
   resultadosDeSlide,
   tituloSlide,
+  type BbvaActivityKey,
   type SlideBbva,
 } from "@/lib/bbva-clase";
 import { cn } from "@/lib/utils";
@@ -377,6 +378,32 @@ function Deck() {
     if (nuevo) setRevelado((r) => ({ ...r, [idx]: true }));
   }, [idx, porArea]);
 
+  // --- Reiniciar una actividad (botón de dos toques en su placa o desde el control) ---
+  // Borra solo sus respuestas (las hipótesis escritas se conservan); los celulares y compus
+  // ven la marca de reinicio y vuelven a mostrar la actividad vacía.
+  const reiniciarActividad = useCallback(async (key: BbvaActivityKey) => {
+    try {
+      const r = await fetch("/api/bbva/reiniciar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ activity: key }),
+      });
+      if (!r.ok) throw new Error(String(r.status));
+      olvidarVivo();
+      // Las placas de esa actividad vuelven a la pregunta (resultado oculto).
+      setRevelado((prev) => {
+        const n = { ...prev };
+        BBVA_SLIDES.forEach((s, i) => {
+          if (resultadosDeSlide(s) === key) delete n[i];
+        });
+        return n;
+      });
+      setAviso(`${nombreActividad(key)} reiniciada · 0 respuestas`);
+    } catch {
+      setAviso(`No se pudo reiniciar ${nombreActividad(key)}`);
+    }
+  }, []);
+
   // --- Reinicio (después de ensayar) ---
   const reiniciar = useCallback(async () => {
     if (!confirm("¿Reiniciar la sesión? Se borran todos los participantes y sus respuestas.")) return;
@@ -519,6 +546,7 @@ function Deck() {
           porArea={conArea && Boolean(porArea[idx])}
           onRevelar={toggleRevelar}
           onPorArea={togglePorArea}
+          onReiniciar={reiniciarActividad}
         />
       </main>
 

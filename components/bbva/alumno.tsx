@@ -19,6 +19,7 @@ import {
   BBVA_SLUG,
   getActividadBbva,
   getArea,
+  HIPOTESIS_ITEM,
   tituloSlide,
   type ActividadBbva,
   type Area,
@@ -95,6 +96,8 @@ export function AlumnoBbva() {
   const [entrando, setEntrando] = useState<string | null>(null);
   const [errorIngreso, setErrorIngreso] = useState<string | null>(null);
   const [verTarjeta, setVerTarjeta] = useState(false);
+  /** Sube cada vez que Marco reinicia una actividad: la pantalla se vuelve a montar vacía. */
+  const [reinicios, setReinicios] = useState(0);
 
   const meRef = useRef<Participante | null | undefined>(undefined);
   /** Respuestas todavía no confirmadas por el servidor (activity|item → valor). */
@@ -272,6 +275,8 @@ export function AlumnoBbva() {
     let vivo = true;
     let timer: ReturnType<typeof setTimeout> | undefined;
     let ultima: string | null = null;
+    /** Marca del último reinicio visto (undefined = todavía no se leyó ninguna). */
+    let ultimoReinicio: number | null | undefined = undefined;
     let ciclos = 0;
 
     const programar = (ms: number) => {
@@ -287,7 +292,7 @@ export function AlumnoBbva() {
         const r = await pedir(BASE, undefined, 6000);
         if (!r.ok) throw new Error(String(r.status));
         const d = (await r.json()) as {
-          session?: { current_activity?: string };
+          session?: { current_activity?: string; activity_config?: { reinicio?: { activity?: string; t?: number } } };
           participants?: number;
           placa?: { idx?: number } | null;
         };
@@ -312,6 +317,31 @@ export function AlumnoBbva() {
           void sincronizar();
         }
         ultima = actividad;
+
+        // Marco reinició una actividad: se tiran las respuestas locales (menos la hipótesis
+        // escrita) y lo que esperaba para mandarse, y la actividad se vuelve a mostrar vacía.
+        const marca = d.session?.activity_config?.reinicio;
+        const t = typeof marca?.t === "number" ? marca.t : null;
+        if (ultimoReinicio !== undefined && t !== null && t !== ultimoReinicio && marca?.activity) {
+          const a = marca.activity;
+          for (const k of [...pendientes.current.keys()]) {
+            if (!k.startsWith(`${a}|`) || k === `${a}|${HIPOTESIS_ITEM}`) continue;
+            pendientes.current.delete(k);
+            const tm = timers.current.get(k);
+            if (tm) clearTimeout(tm);
+            timers.current.delete(k);
+          }
+          setRespuestas((prev) => {
+            const propia = prev[a]?.[HIPOTESIS_ITEM];
+            const queda: Record<string, Valor> = {};
+            if (propia !== undefined) queda[HIPOTESIS_ITEM] = propia;
+            return { ...prev, [a]: queda };
+          });
+          setVerTarjeta(false);
+          setReinicios((n) => n + 1);
+          if (meRef.current && getActividadBbva(actividad)) vibrar([20, 60, 20]);
+        }
+        ultimoReinicio = t;
         if (pendientes.current.size) reintentar();
       } catch {
         if (vivo) setFallos((f) => f + 1);
@@ -430,7 +460,7 @@ export function AlumnoBbva() {
       <Encabezado centro={centro} area={area} reconectando={reconectando} />
       <AvisoGuardado estado={guardado} onReintentar={reintentar} />
       <main
-        key={vista}
+        key={`${vista}-${reinicios}`}
         className="alu-entra mx-auto w-full max-w-md flex-1 overflow-x-clip px-4 pb-[calc(env(safe-area-inset-bottom)+7.5rem)] pt-5"
       >
         {vista === "carga" ? (

@@ -6,7 +6,7 @@
 // Estética: collage editorial sobre papel. Todo en rem (la raíz escala con la
 // pantalla, ver .deck-escala) o en SVG con viewBox.
 
-import { Fragment, useEffect, useId, type CSSProperties, type ReactNode } from "react";
+import { Fragment, useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useResultadosBbva } from "@/components/bbva/use-resultados";
 import { BBVA_LINK, BBVA_QR, type ResultadosBbva } from "@/lib/bbva-clase";
 import { rem } from "@/lib/remoto";
@@ -455,6 +455,41 @@ export function MiniQR({ className }: { className?: string }) {
   );
 }
 
+/**
+ * "Reiniciar actividad" en dos toques (sin confirm(): un diálogo taparía el proyector y no
+ * se puede aceptar desde el control remoto). El primer toque lo arma 5 s; el segundo borra.
+ */
+export function BotonReiniciar({ onReiniciar, className }: { onReiniciar: () => void; className?: string }) {
+  const [armado, setArmado] = useState(false);
+  const t = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(t.current), []);
+  function tocar() {
+    clearTimeout(t.current);
+    if (armado) {
+      setArmado(false);
+      onReiniciar();
+      return;
+    }
+    setArmado(true);
+    t.current = setTimeout(() => setArmado(false), 5000);
+  }
+  return (
+    <button
+      type="button"
+      {...rem(armado ? "Confirmar: borrar respuestas" : "Reiniciar actividad", armado)}
+      onClick={tocar}
+      className={cn(
+        "inline-flex items-center gap-[0.5rem] whitespace-nowrap rounded-full px-[1rem] py-[0.5rem] font-mono text-[0.72rem] uppercase tracking-[0.16em] transition active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-naranja",
+        armado ? "bg-rojo text-blanco" : "border border-tinta/20 text-gris hover:border-rojo/50 hover:text-rojo",
+        className,
+      )}
+    >
+      <span aria-hidden>↺</span>
+      {armado ? "¿Borrar respuestas? Tocá de nuevo" : "Reiniciar actividad"}
+    </button>
+  );
+}
+
 /** Botones de la placa (también se tocan desde el celular de Marco). */
 export function BotonesResultados({
   revelado,
@@ -462,12 +497,15 @@ export function BotonesResultados({
   conArea,
   onRevelar,
   onPorArea,
+  onReiniciar,
 }: {
   revelado: boolean;
   porArea: boolean;
   conArea: boolean;
   onRevelar: () => void;
   onPorArea: () => void;
+  /** Borra las respuestas de la actividad de esta placa (dos toques). */
+  onReiniciar?: () => void;
 }) {
   const base =
     "inline-flex items-center gap-[0.6rem] whitespace-nowrap rounded-full px-[1.1rem] py-[0.55rem] font-mono text-[0.78rem] uppercase tracking-[0.16em] transition active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-naranja";
@@ -494,6 +532,7 @@ export function BotonesResultados({
           <span className={tecla}>A</span>
         </button>
       )}
+      {onReiniciar && <BotonReiniciar onReiniciar={onReiniciar} />}
     </div>
   );
 }
