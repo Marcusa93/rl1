@@ -391,8 +391,15 @@ export function PreguntaUnica({
   onSeguimiento: (itemId: string, texto: string) => void;
 }) {
   const elegida = resp[item.id];
-  const seg = elegida ? seguimiento(item.id, elegida) : undefined;
+  const lista = item.multiple ? (elegida ? elegida.split("|") : []) : [];
+  const seg = elegida && !item.multiple ? seguimiento(item.id, elegida) : undefined;
   const cortas = item.opciones.every((o) => o.label.length <= 8);
+  const tocar = (id: string) => {
+    if (!item.multiple) return onElegir(item.id, id);
+    const nueva = lista.includes(id) ? lista.filter((x) => x !== id) : [...lista, id];
+    // Se respeta el orden de las opciones para que el valor sea estable.
+    onElegir(item.id, item.opciones.map((o) => o.id).filter((x) => nueva.includes(x)).join("|"));
+  };
   return (
     <div className="pub-entra">
       <Kicker numero={act.numero} total={total} />
@@ -400,7 +407,7 @@ export function PreguntaUnica({
       <p className="mt-3 text-[15px] text-cg-sepia">{act.consigna}</p>
       <div className="mt-6 space-y-3">
         {item.opciones.map((o) => (
-          <BotonOpcion key={o.id} activa={elegida === o.id} grande={cortas} onClick={() => onElegir(item.id, o.id)}>
+          <BotonOpcion key={o.id} activa={item.multiple ? lista.includes(o.id) : elegida === o.id} grande={cortas} onClick={() => tocar(o.id)}>
             {o.label}
             {o.detalle && <span className="mt-0.5 block text-sm opacity-70">{o.detalle}</span>}
           </BotonOpcion>
@@ -411,7 +418,7 @@ export function PreguntaUnica({
       )}
       {elegida && !seg && (
         <p className="pub-entra mt-6 text-[16px] leading-snug text-cg-sepia">
-          <span className="text-cg-tinta">Listo.</span> Mirá la pantalla. Podés cambiar tu respuesta mientras la pregunta siga abierta.
+          <span className="text-cg-tinta">{item.multiple ? `Elegiste ${lista.length}.` : "Listo."}</span> Mirá la pantalla. Podés cambiar tu respuesta mientras la pregunta siga abierta.
         </p>
       )}
     </div>

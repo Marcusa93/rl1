@@ -1,14 +1,26 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Fragment } from "react";
-import { CONG_CASOS, CONG_TITLE, type CasoDemo, type CasoId } from "@/lib/congreso";
+import {
+  ANON_DOCUMENTOS,
+  ANON_FALLA,
+  ANON_FRASE,
+  ANON_PASOS,
+  ANON_PLAN_B,
+  CONG_CASOS,
+  CONG_TITLE,
+  type CasoDemo,
+  type CasoId,
+} from "@/lib/congreso";
 import { BotonCopiarPrompt } from "@/components/congreso/demos";
 
-// Tablero de la demo (laptop de Marco y celular): los tres caminos, versión por
-// versión, con la instrucción para copiar y el link a la versión ensayada.
+// Tablero de la demo (laptop de Marco y celular). Arriba, la demo de la charla:
+// el anonimizador de escritos (instrucciones a un click, el HTML ensayado para
+// abrir o descargar y los PDF ficticios para probarlo). Abajo, otros tres
+// caminos ensayados, versión por versión.
 
 export const metadata: Metadata = {
-  title: "La demo · tres caminos ensayados",
+  title: "La demo · anonimizador de escritos",
 };
 
 /** Dónde tocar en cada versión ensayada para que se vea lo que hay que ver. */
@@ -34,10 +46,15 @@ export default function DemoPage() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 pb-24 pt-8 sm:px-6 sm:pt-12">
       <p className="cg-mono text-[12px] uppercase tracking-[0.2em] text-cg-sepia">{CONG_TITLE} · plan B</p>
-      <h1 className="cg-titular mt-3 text-[40px] text-cg-tinta sm:text-[60px]">La demo · tres caminos ensayados</h1>
+      <h1 className="cg-titular mt-3 text-[40px] text-cg-tinta sm:text-[60px]">La demo · anonimizador de escritos</h1>
       <p className="cg-bajada mt-4 text-lg text-cg-sepia sm:text-xl">
         Si la generación en vivo falla: «Perfecto. Bienvenidos al desarrollo de software.» Y se abre la versión ensayada.
       </p>
+
+      <Anonimizador />
+
+      <h2 className="cg-titular mt-16 text-[30px] text-cg-tinta sm:text-[40px]">Otros caminos ensayados</h2>
+      <p className="cg-bajada mt-2 text-lg text-cg-sepia">Por si querés construir otra cosa: tres apps, cuatro versiones cada una.</p>
 
       <nav className="mt-6 flex flex-wrap gap-2" aria-label="Casos">
         {CONG_CASOS.map((c) => (
@@ -167,5 +184,88 @@ function Documento({ c }: { c: CasoDemo }) {
         formato “fs. | fecha | tipo | parte”.
       </p>
     </li>
+  );
+}
+
+/** La demo de la charla: el anonimizador. */
+function Anonimizador() {
+  return (
+    <section className="mt-8 space-y-4">
+      <div className="rounded-xl border border-cg-niebla bg-cg-blanco/60 px-4 py-3 text-[14px] leading-snug text-cg-sepia">
+        <p className="cg-mono text-[11px] uppercase tracking-[0.18em] text-cg-musgo">Cómo se hace</p>
+        <p className="mt-1">
+          En la charla, la placa <b className="text-cg-tinta">Hagamos una app</b> muestra la instrucción armada con lo que votó la sala. Acá está la
+          versión estándar. Pegala en <b className="text-cg-tinta">Claude</b> (claude.ai): genera la herramienta como artefacto, se prueba al lado del
+          chat y se descarga como un solo archivo HTML. No hace falta base de datos: el PDF se procesa en el navegador.
+        </p>
+      </div>
+
+      <ol className="space-y-4">
+        {ANON_PASOS.map((p) => (
+          <Fragment key={p.v}>
+            <li className="cg-hoja rounded-xl p-4 sm:p-5">
+              <div className="flex items-baseline gap-3">
+                <span className="cg-mono shrink-0 rounded bg-cg-tinta px-2 py-0.5 text-[14px] font-semibold text-cg-blanco">V{p.v}</span>
+                <h3 className="cg-serif text-xl font-semibold leading-tight text-cg-tinta">{p.titulo}</h3>
+              </div>
+              <div className="mt-3 rounded-lg border border-cg-niebla bg-cg-papel/60 p-3">
+                <p className="cg-mono whitespace-pre-wrap break-words text-[14px] leading-relaxed text-cg-tinta">{p.prompt}</p>
+                <div className="mt-2 flex justify-end">
+                  <BotonCopiarPrompt texto={p.prompt} />
+                </div>
+              </div>
+              <p className="mt-3 text-[14px] leading-snug text-cg-sepia">
+                <span className="font-semibold text-cg-tinta">Probar:</span> {p.probar}
+              </p>
+              <a
+                href={`${ANON_PLAN_B}?v=${p.v}`}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-4 inline-flex items-center rounded-lg bg-cg-tinta px-4 py-2.5 text-[15px] font-semibold text-cg-blanco transition hover:bg-cg-azul-2"
+              >
+                Abrir V{p.v} ensayada ↗
+              </a>
+            </li>
+            {p.v === 1 && (
+              <li className="rounded-xl border-2 border-dashed border-cg-lacre/50 px-4 py-4 sm:px-5">
+                <p className="cg-mono text-[11px] uppercase tracking-[0.18em] text-cg-lacre">La falla que hay que encontrar</p>
+                <p className="mt-1 text-[17px] font-medium leading-snug text-cg-tinta">{ANON_FALLA}</p>
+                <p className="cg-mono mt-4 text-[11px] uppercase tracking-[0.18em] text-cg-musgo">La frase del abogado</p>
+                <p className="cg-bajada mt-1 text-xl leading-snug text-cg-tinta">“{ANON_FRASE}”</p>
+              </li>
+            )}
+          </Fragment>
+        ))}
+      </ol>
+
+      <div className="cg-hoja rounded-xl p-4 sm:p-5">
+        <p className="cg-mono text-[11px] uppercase tracking-[0.18em] text-cg-azul-2">Documentos para probarlo</p>
+        <p className="mt-1 text-[14px] leading-snug text-cg-sepia">
+          Ficticios, llenos de datos personales a propósito (nombres escritos de varias formas, DNI, CUIL, domicilios, teléfonos, salud, montos).
+        </p>
+        <ul className="mt-3 space-y-2">
+          {ANON_DOCUMENTOS.map((d) => (
+            <li key={d.archivo} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-cg-niebla bg-cg-blanco px-3 py-2">
+              <span className="text-[15px] text-cg-tinta">{d.titulo}</span>
+              <span className="flex gap-2">
+                <a href={d.archivo} target="_blank" rel="noreferrer" className="cg-mono rounded-md border border-cg-tinta/25 px-3 py-1.5 text-[13px] text-cg-tinta hover:bg-cg-tinta hover:text-cg-blanco">
+                  Abrir
+                </a>
+                <a href={d.archivo} download className="cg-mono rounded-md bg-cg-tinta px-3 py-1.5 text-[13px] text-cg-blanco hover:bg-cg-azul-2">
+                  Descargar PDF
+                </a>
+              </span>
+            </li>
+          ))}
+        </ul>
+        <a
+          href={ANON_PLAN_B}
+          download="anonimizador.html"
+          className="mt-4 inline-flex items-center rounded-lg border border-cg-tinta/30 bg-cg-blanco px-4 py-2.5 text-[15px] font-semibold text-cg-tinta hover:bg-cg-tinta hover:text-cg-blanco"
+        >
+          Descargar el anonimizador ensayado (.html)
+        </a>
+      </div>
+    </section>
   );
 }

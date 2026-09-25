@@ -21,11 +21,12 @@ import { LluviaReacciones } from "@/components/clase/reacciones";
 import { useRemotoDeck } from "@/components/clase/remoto";
 import { useZoomDeck } from "@/components/clase/zoom";
 import { etapasDe, Placa, type Ctx } from "@/components/congreso/deck-placas";
-import { BotonPlaca, olvidarVivo, suma, useVivo } from "@/components/congreso/deck-piezas";
+import { BotonPlaca, olvidarVivo, useVivo } from "@/components/congreso/deck-piezas";
 import {
   actividadDeSlide,
   CONG_AUTOR,
-  CONG_CASOS,
+  categoriasElegidas,
+  promptAnonimizador,
   CONG_LINK,
   CONG_PLAN_B,
   CONG_QR,
@@ -34,7 +35,6 @@ import {
   CONG_TITLE,
   getActividadCong,
   tituloSlide,
-  type CasoId,
   type EstadoCong,
 } from "@/lib/congreso";
 import { cn } from "@/lib/utils";
@@ -134,7 +134,6 @@ function Deck() {
   });
   const [etapas, setEtapas] = useState<Record<number, number>>({});
   const [frases, setFrases] = useState(false);
-  const [casoFijo, setCasoFijo] = useState<CasoId | null>(null);
   const [activacion, setActivacion] = useState<EstadoActivacion | null>(null);
   const [blanco, setBlanco] = useState(false);
   const [cursor, setCursor] = useState(true);
@@ -154,14 +153,10 @@ function Deck() {
 
   preload(CONG_QR, { as: "image" });
 
-  // El caso de la demo: el que ganó la votación (o el que fijó Marco). Empate o sin votos → A.
+  // La demo: lo que la sala eligió ocultar arma la instrucción del anonimizador.
   const elegir = useVivo("cong_elegir", 4000);
-  const ganador = useMemo<CasoId>(() => {
-    const c = elegir?.items.caso ?? {};
-    if (!suma(c)) return "cronologia";
-    return CONG_CASOS.reduce((mejor, x) => ((c[x.id] ?? 0) > (c[mejor.id] ?? 0) ? x : mejor), CONG_CASOS[0]).id;
-  }, [elegir]);
-  const caso = casoFijo ?? ganador;
+  const ocultar = useMemo(() => categoriasElegidas(elegir?.items.datos, elegir?.respondieronItem.datos ?? 0), [elegir]);
+  const promptV1 = useMemo(() => promptAnonimizador(ocultar), [ocultar]);
 
   const go = useCallback((n: number) => {
     const next = Math.min(Math.max(n, 0), TOTAL - 1);
@@ -298,7 +293,6 @@ function Deck() {
       if (!r.ok) throw new Error();
       olvidarVivo();
       setEtapas({});
-      setCasoFijo(null);
       setPlanB(false);
       pedida.current = "lobby";
       setActivacion({ key: "lobby", status: "ok" });
@@ -416,9 +410,8 @@ function Deck() {
     setEtapa,
     frases,
     toggleFrases: () => setFrases((f) => !f),
-    caso,
-    casoFijado: casoFijo !== null,
-    setCaso: setCasoFijo,
+    ocultar,
+    promptV1,
     version,
     planB,
     togglePlanB,

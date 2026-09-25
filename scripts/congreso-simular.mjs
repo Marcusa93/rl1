@@ -76,7 +76,9 @@ async function celular(i) {
   const r = (activity, item_key, v) => req(`/api/session/${SLUG}/respond`, { activity, item_key, payload: { v } });
 
   await r("cong_molestia", "texto", azar(MOLESTIAS));
-  await r("cong_elegir", "caso", azar(["cronologia", "prueba", "entrevista"], [5, 3, 3]));
+  const ocultar = ["nombres", "documentos", "domicilios", "contacto", "salud", "montos", "fechas", "expediente", "funcionarios"]
+    .filter((_, k) => Math.random() < [0.95, 0.9, 0.8, 0.8, 0.7, 0.35, 0.2, 0.3, 0.25][k]);
+  await r("cong_elegir", "datos", ocultar.join("|"));
   const datos = azar(["si", "no", "depende"], [1, 4, 6]);
   await r("cong_datos", "q", datos);
   if (datos === "depende" && Math.random() < 0.4) await r("cong_datos", "q~porque", azar(DEPENDE));

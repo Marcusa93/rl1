@@ -80,7 +80,10 @@ export async function GET(req: Request) {
       continue;
     }
 
-    const valores = (Array.isArray(v) ? v : [v]).filter((x): x is string => typeof x === "string" && x.length > 0);
+    // Selección múltiple: se guarda "a|b|c".
+    const valores = (Array.isArray(v) ? v : [v])
+      .flatMap((x) => (typeof x === "string" ? x.split("|") : []))
+      .filter((x) => x.length > 0);
     if (!valores.length) continue;
     quienes.add(pid);
     (quienesItem[item] ??= new Set()).add(pid);

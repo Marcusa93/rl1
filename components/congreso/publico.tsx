@@ -343,6 +343,7 @@ export function PublicoCongreso() {
         }}
         onElegir={(i, o) => {
           vibrar(12);
+          // En la selección múltiple, cambios rápidos: se envía el último estado (sin vacíos).
           guardar(act.key, i, o);
         }}
         onSeguimiento={(i, t) => guardar(act.key, itemSeguimiento(i), t)}

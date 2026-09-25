@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Anonimizador de escritos</title>
+<!--
+  Anonimizador de escritos — versión ensayada (plan B) de la demo de la ponencia
+  "Vibe coding para abogados" (Marco Rossi). Un solo archivo: se descarga y se abre
+  en cualquier navegador. El PDF se lee y se anonimiza en esta computadora: no se
+  envía a ningún servidor (solo se descarga pdf.js para leer PDF).
+  Versiones: ?v=1 (primera, con la falla), ?v=2 (la misma persona escrita de muchas
+  formas), ?v=3 (revisión humana antes de descargar). ?cats=nombres,documentos,…
+-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+  :root { --tinta:#0f172a; --gris:#64748b; --borde:#e2e8f0; --fondo:#f8fafc; --acento:#4f46e5; --orig:#fde68a; --nuevo:#c7d2fe; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--tinta); background:var(--fondo); }
+  header { background:#fff; border-bottom:1px solid var(--borde); padding:18px 28px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  header .logo { width:40px; height:40px; border-radius:10px; background:var(--acento); color:#fff; display:grid; place-items:center; font-weight:700; font-size:20px; }
+  header h1 { margin:0; font-size:22px; }
+  header p { margin:2px 0 0; color:var(--gris); font-size:14px; }
+  header .version { margin-left:auto; font-size:12px; color:var(--gris); display:flex; gap:4px; align-items:center; }
+  header .version a { padding:3px 8px; border-radius:6px; border:1px solid var(--borde); color:var(--gris); text-decoration:none; }
+  header .version a.activa { background:var(--tinta); color:#fff; border-color:var(--tinta); }
+  main { padding:22px 28px 40px; max-width:1500px; margin:0 auto; }
+  .fila { display:flex; gap:16px; flex-wrap:wrap; align-items:stretch; }
+  .tarjeta { background:#fff; border:1px solid var(--borde); border-radius:14px; padding:18px; box-shadow:0 1px 2px rgba(0,0,0,.04); }
+  .subir { flex:1 1 380px; border:2px dashed #c7d2fe; background:#eef2ff; text-align:center; cursor:pointer; transition:.15s; }
+  .subir.encima { background:#e0e7ff; border-color:var(--acento); }
+  .subir strong { display:block; font-size:17px; margin-bottom:4px; }
+  .subir span { color:var(--gris); font-size:14px; }
+  .cats { flex:2 1 520px; }
+  .cats h2, .tarjeta h2 { margin:0 0 10px; font-size:15px; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chips label { display:flex; align-items:center; gap:6px; border:1px solid var(--borde); border-radius:999px; padding:6px 12px; font-size:14px; cursor:pointer; user-select:none; }
+  .chips input { accent-color: var(--acento); }
+  .candado { margin-top:12px; font-size:13px; color:#047857; display:flex; gap:6px; align-items:center; }
+  .estado { margin:16px 0 8px; color:var(--gris); font-size:14px; min-height:20px; }
+  .paneles { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .panel { display:flex; flex-direction:column; min-height:420px; }
+  .panel .cab { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .panel .cab h2 { margin:0; }
+  .texto { flex:1; white-space:pre-wrap; font-family: Georgia, "Times New Roman", serif; font-size:15px; line-height:1.65; overflow:auto; max-height:62vh; padding-right:6px; }
+  mark.o { background:var(--orig); border-radius:3px; padding:0 2px; }
+  mark.n { background:var(--nuevo); border-radius:3px; padding:0 3px; font-family: ui-monospace, Menlo, monospace; font-size:13px; }
+  mark.off { background:#fee2e2; text-decoration: line-through; }
+  button { font:inherit; }
+  .btn { background:var(--acento); color:#fff; border:0; border-radius:10px; padding:10px 16px; font-weight:600; cursor:pointer; }
+  .btn:disabled { opacity:.4; cursor:not-allowed; }
+  .btn.sec { background:#fff; color:var(--tinta); border:1px solid var(--borde); }
+  .resumen { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .resumen span { font-size:12px; background:#f1f5f9; border-radius:999px; padding:3px 10px; color:#334155; }
+  .revision { margin-top:16px; }
+  .revision table { width:100%; border-collapse:collapse; font-size:14px; }
+  .revision td, .revision th { border-bottom:1px solid var(--borde); padding:7px 8px; text-align:left; vertical-align:top; }
+  .revision th { color:var(--gris); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+  .vacio { color:var(--gris); font-size:15px; display:grid; place-items:center; height:100%; text-align:center; padding:30px; }
+  .ejemplos { margin-top:10px; font-size:13px; color:var(--gris); }
+  .ejemplos button { background:none; border:0; color:var(--acento); text-decoration:underline; cursor:pointer; padding:0 4px; }
+  @media (max-width: 900px) { .paneles { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">A</div>
+  <div>
+    <h1>Anonimizador de escritos</h1>
+    <p>Subí un PDF: se reemplazan los datos personales por marcadores. Todo ocurre en tu navegador.</p>
+  </div>
+  <nav class="version" id="version"></nav>
+</header>
+<main>
+  <div class="fila">
+    <label class="tarjeta subir" id="zona">
+      <input type="file" id="archivo" accept=".pdf,.txt,application/pdf,text/plain" hidden />
+      <strong>📄 Subí un escrito en PDF</strong>
+      <span>o arrastralo acá (también acepta .txt)</span>
+      <div class="ejemplos" id="ejemplos"></div>
+    </label>
+    <div class="tarjeta cats">
+      <h2>Qué ocultar</h2>
+      <div class="chips" id="cats"></div>
+      <div class="candado">🔒 El documento no se envía a ningún servidor: se procesa en esta computadora.</div>
+    </div>
+  </div>
+
+  <div class="estado" id="estado"></div>
+
+  <div class="paneles">
+    <section class="tarjeta panel">
+      <div class="cab"><h2>Original</h2><span class="resumen" id="cuentaOrig"></span></div>
+      <div class="texto" id="original"><div class="vacio">Todavía no subiste ningún documento.</div></div>
+    </section>
+    <section class="tarjeta panel">
+      <div class="cab"><h2>Anonimizado</h2><button class="btn" id="descargar" disabled>Descargar .txt</button></div>
+      <div class="texto" id="anonimo"><div class="vacio">Acá aparece el texto sin datos personales.</div></div>
+      <div class="resumen" id="resumen"></div>
+    </section>
+  </div>
+
+  <section class="tarjeta revision" id="revision" hidden>
+    <h2>Revisá cada reemplazo antes de descargar</h2>
+    <p style="margin:0 0 10px;color:var(--gris);font-size:14px">Desmarcá los que no correspondan. Nada se descarga hasta que confirmes.</p>
+    <table><thead><tr><th></th><th>Marcador</th><th>Dato original</th><th>Veces</th></tr></thead><tbody id="filas"></tbody></table>
+    <div style="margin-top:12px"><button class="btn" id="confirmar">Confirmar revisión</button></div>
+  </section>
+</main>
+
+<script>
+/*MOTOR-INICIO*/
+const CATEGORIAS = [
+  { id: "nombres", label: "Nombres de las partes" },
+  { id: "documentos", label: "DNI, CUIL y CUIT" },
+  { id: "domicilios", label: "Domicilios" },
+  { id: "contacto", label: "Teléfonos y correos" },
+  { id: "salud", label: "Datos de salud" },
+  { id: "montos", label: "Montos" },
+  { id: "fechas", label: "Fechas" },
+  { id: "expediente", label: "Número de expediente" },
+  { id: "funcionarios", label: "Jueces y funcionarios" },
+];
+
+// Palabras con mayúscula que no son nombres de personas (instituciones, lugares, encabezados).
+const NO_PERSONA = new Set(("El La Los Las Sr Sra Sres Srta Dr Dra Ing Lic Señor Señora Juez Jueza Juzgado Trabajo Nominación Centro Judicial Capital Tucumán San Miguel Banda Río Salí " +
+  "Promueve Demanda Laboral Objeto Hechos Prueba Petitorio Distribuidora Valle Maestranza Correo Argentino Documental Testimonial Informativa Hospital Padilla " +
+  "Transportes Norte Previsora Seguros Mate Luna Mitre Sentencia Considerando Resuelvo Costas Honorarios Acta Mediación Familiar Poder Barrio Oeste Yerba Buena " +
+  "Laprida Escuela Nicolás Avellaneda Crecer Primero Segundo Tercero Civil Comercial Común Cámara Excma Ante Abogada Abogado Mediadora Secretario Secretaria " +
+  "Enero Febrero Marzo Abril Mayo Junio Julio Agosto Septiembre Octubre Noviembre Diciembre Lunes Martes Miércoles Jueves Viernes Sábado Domingo " +
+  "Ruta Calle Avenida Pasaje Pje Av AFIP CCT Argentina Por Que Leída Documento Ficticio Creado Para Una Demostración").split(" "));
+const PARTICULAS = new Set(["de", "del", "la", "las", "los", "y"]);
+const MESES = "enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre";
+
+function limpiarTexto(t) {
+  return t
+    .replace(/\r/g, "")
+    .replace(/(\p{Ll})-\n(\p{Ll})/gu, "$1$2") // palabras cortadas al final de renglón
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/[ \t]{2,}/g, " ");
+}
+
+function rol(texto, ini, fin) {
+  const antes = texto.slice(Math.max(0, ini - 60), ini);
+  const despues = texto.slice(fin, fin + 18);
+  return /(jueza?|secretari[oa]|perito[^.;]{0,20}|mediador[a]?|ante mí)[\s,:.]*(Dr\.|Dra\.|Ing\.|Lic\.)?\s*$/i.test(antes) ||
+    /^\s*[—-]\s*(Jueza?|Secretari[oa]|Mediador[a]?)/.test(despues)
+    ? "funcionario"
+    : "persona";
+}
+
+function tituloCase(w) { return w.charAt(0) + w.slice(1).toLowerCase(); }
+
+/** Busca todos los datos. v: 1 | 2 | 3. Devuelve tramos {ini, fin, cat, tipo, clave, original}. */
+function detectar(texto, v) {
+  const tramos = [];
+  const agregar = (m, cat, tipo, clave, prio, desplaz = 0, largo) => {
+    const ini = m.index + desplaz;
+    const orig = largo != null ? m[0].substr(desplaz, largo) : m[0].slice(desplaz);
+    tramos.push({ ini, fin: ini + orig.length, cat, tipo, clave: clave ?? orig.toLowerCase(), original: orig, prio });
+  };
+  const todas = (re, fn) => { for (const m of texto.matchAll(re)) fn(m); };
+  const digitos = (s) => s.replace(/\D/g, "");
+
+  todas(/\b(?:Expte\.?|Expediente)\s*N\.?\s*º?\s*\d{1,6}\/\d{2,4}|\b(?:N\.?\s*º\s*)\d{3,6}\/\d{4}/gi, (m) => agregar(m, "expediente", "EXPEDIENTE", digitos(m[0]), 1));
+  todas(/\bDNI\s*(?:N\.?\s*º?\s*)?\d{1,2}\.?\d{3}\.?\d{3}\b/g, (m) => agregar(m, "documentos", "DNI", digitos(m[0]), 1));
+  todas(/\b(CUIL|CUIT)\s*\d{2}-?\d{8}-?\d\b/g, (m) => agregar(m, "documentos", m[1], digitos(m[0]), 1));
+  todas(/\bCBU\s*\d{22}\b/g, (m) => agregar(m, "documentos", "CBU", digitos(m[0]), 1));
+  todas(/\b\d{11}\b/g, (m) => agregar(m, "documentos", "CUIL", m[0], 2));
+  todas(/[\w.+-]+@[\w-]+\.[\w.]+\w/g, (m) => agregar(m, "contacto", "CORREO", m[0].toLowerCase(), 1));
+  todas(/\b(?:\+?54\s?9?\s?)?\d{3,4}[-\s]\d{3}[-\s]\d{4}\b/g, (m) => agregar(m, "contacto", "TELÉFONO", digitos(m[0]), 1));
+  const calle = "(?:calle|Calle|Av\\.|Avenida|Pje\\.|Pasaje|Ruta)\\s+(?:\\d{1,2}\\s+de\\s+\\p{Lu}\\p{Ll}+|\\p{Lu}[\\p{L}.]*(?:\\s+(?:de\\s+|del\\s+|la\\s+)?\\p{Lu}[\\p{L}.]*)*|\\d{1,3})\\s+(?:km\\s*)?[\\d.]{1,6}(?:,\\s*(?:departamento|depto\\.?|oficina|piso|\\d{1,2}\\.?\\s*º\\s*piso)\\s*[\\w.º]*)*";
+  todas(new RegExp(calle, "gu"), (m) => agregar(m, "domicilios", "DOMICILIO", null, 1));
+  todas(/\bBarrio\s+[\p{L}\s]+?,\s*manzana\s+\w+,\s*casa\s+\d+/giu, (m) => agregar(m, "domicilios", "DOMICILIO", null, 1));
+  todas(/\$\s*[\d.]+(?:,\d+)?(?:\s*\(pesos[^)]*\))?/g, (m) => agregar(m, "montos", "MONTO", null, 1));
+  todas(/\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/g, (m) => agregar(m, "fechas", "FECHA", null, 1));
+  todas(new RegExp(`\\b\\d{1,2} de (?:${MESES}) de \\d{4}\\b`, "gi"), (m) => agregar(m, "fechas", "FECHA", null, 1));
+  todas(/\b(?:fractura[^,.;]*|lumbalgia[^,.;]*|incapacidad parcial y permanente del \d+\s*%|trastorno de ansiedad[^,.;]*|tratamiento (?:psicológico|psiquiátrico|fonoaudiológico)|asma bronquial|historia clínica del [^,.;]*|dos intervenciones quirúrgicas)/giu, (m) => agregar(m, "salud", "DATO DE SALUD", null, 1));
+
+  // Personas: palabras con mayúscula inicial, de a dos a cuatro (con iniciales y partículas).
+  const personas = []; // {tokens, apellido, tipo}
+  const nombreRe = /\p{Lu}\p{Ll}+(?:[ \t]+(?:(?:de|del)[ \t]+)?\p{Lu}(?:\p{Ll}+|\.))+/gu;
+  for (const m of texto.matchAll(nombreRe)) {
+    const palabras = m[0].split(/\s+/).filter((w) => !PARTICULAS.has(w));
+    if (palabras.length < 2 || palabras.length > 4) continue;
+    if (palabras.some((w) => NO_PERSONA.has(w.replace(/\.$/, "")))) continue;
+    const tokens = palabras.filter((w) => !/^\p{Lu}\.$/u.test(w));
+    if (tokens.length < 2) continue;
+    const tipo = rol(texto, m.index, m.index + m[0].length);
+    let p = personas.find((x) => x.tipo === tipo && tokens.every((t) => x.tokens.includes(t)));
+    if (!p) {
+      p = personas.find((x) => x.tipo === tipo && x.apellido === tokens[tokens.length - 1] && x.tokens[0] === tokens[0]);
+      if (p) for (const t of tokens) if (!p.tokens.includes(t)) p.tokens.push(t);
+    }
+    if (!p) { p = { id: personas.length, tokens: [...tokens], apellido: tokens[tokens.length - 1], tipo }; personas.push(p); }
+    // V1: cada forma escrita es una persona distinta (la falla de consistencia también aparece).
+    agregar(m, tipo === "funcionario" ? "funcionarios" : "nombres", tipo === "funcionario" ? "FUNCIONARIO" : "PERSONA", v >= 2 ? `p${p.id}` : m[0], 3);
+  }
+
+  if (v >= 2) {
+    const deQuien = (tokensTitulo) => {
+      const porApellido = personas.find((x) => tokensTitulo.includes(x.apellido) && tokensTitulo.filter((t) => x.tokens.includes(t)).length >= Math.min(2, tokensTitulo.length));
+      return porApellido ?? personas.find((x) => tokensTitulo.some((t) => x.tokens.includes(t)));
+    };
+    // MAYÚSCULAS con el apellido primero: "LEDESMA, JORGE A."
+    for (const m of texto.matchAll(/\b\p{Lu}{2,}(?:\s+\p{Lu}{2,})*,\s+\p{Lu}{2,}(?:\s+\p{Lu}{2,})*(?:\s+\p{Lu}\.)?/gu)) {
+      const t = m[0].replace(",", " ").split(/\s+/).filter((w) => w.length > 2).map(tituloCase);
+      const p = deQuien(t);
+      if (p) agregar(m, p.tipo === "funcionario" ? "funcionarios" : "nombres", p.tipo === "funcionario" ? "FUNCIONARIO" : "PERSONA", `p${p.id}`, 2);
+    }
+    // MAYÚSCULAS en orden: "JORGE ALBERTO LEDESMA"
+    for (const m of texto.matchAll(/\b\p{Lu}{2,}(?:\s+\p{Lu}{2,}){1,3}\b/gu)) {
+      const t = m[0].split(/\s+/).map(tituloCase);
+      const p = personas.find((x) => t.filter((w) => x.tokens.includes(w)).length >= 2);
+      if (p) agregar(m, p.tipo === "funcionario" ? "funcionarios" : "nombres", p.tipo === "funcionario" ? "FUNCIONARIO" : "PERSONA", `p${p.id}`, 2);
+    }
+    // Nombre o apellido suelto: "el Sr. Ledesma", "Gómez y Ríos", "Tomás continuará".
+    const sueltos = new Map();
+    for (const p of personas) {
+      if (!sueltos.has(p.apellido)) sueltos.set(p.apellido, p);
+    }
+    for (const p of personas) for (const t of p.tokens) if (!sueltos.has(t)) sueltos.set(t, p);
+    for (const m of texto.matchAll(/\b\p{Lu}\p{Ll}+\b/gu)) {
+      const p = sueltos.get(m[0]);
+      if (p) agregar(m, p.tipo === "funcionario" ? "funcionarios" : "nombres", p.tipo === "funcionario" ? "FUNCIONARIO" : "PERSONA", `p${p.id}`, 4);
+    }
+  }
+  return tramos;
+}
+
+/** Aplica los reemplazos de las categorías elegidas. desactivadas: claves "TIPO|clave" que el abogado desmarcó. */
+function anonimizar(texto, cats, v, desactivadas = new Set()) {
+  const elegidos = detectar(texto, v).filter((t) => cats.has(t.cat));
+  elegidos.sort((a, b) => a.prio - b.prio || (b.fin - b.ini) - (a.fin - a.ini));
+  const aceptados = [];
+  for (const t of elegidos) if (!aceptados.some((a) => t.ini < a.fin && a.ini < t.fin)) aceptados.push(t);
+  aceptados.sort((a, b) => a.ini - b.ini);
+  const numeros = new Map();
+  const cuenta = {};
+  for (const t of aceptados) {
+    const k = `${t.tipo}|${t.clave}`;
+    if (!numeros.has(k)) { cuenta[t.tipo] = (cuenta[t.tipo] ?? 0) + 1; numeros.set(k, cuenta[t.tipo]); }
+    t.marcador = `[${t.tipo} ${numeros.get(k)}]`;
+    t.k = k;
+    t.activo = !desactivadas.has(k);
+  }
+  let salida = "";
+  let i = 0;
+  for (const t of aceptados) { salida += texto.slice(i, t.ini) + (t.activo ? t.marcador : t.original); i = t.fin; }
+  salida += texto.slice(i);
+  return { salida, tramos: aceptados };
+}
+/*MOTOR-FIN*/
+
+// --- Interfaz ------------------------------------------------------------------------------
+const params = new URLSearchParams(location.search);
+const V = Math.min(3, Math.max(1, parseInt(params.get("v") || "3", 10) || 3));
+const catsIniciales = (params.get("cats") || "nombres,documentos,domicilios,contacto").split(",");
+const cats = new Set(catsIniciales);
+const desactivadas = new Set();
+let texto = "";
+let nombreArchivo = "escrito";
+let confirmado = V < 3;
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
+
+$("version").innerHTML = "Versión " + [1, 2, 3].map((n) => {
+  const q = new URLSearchParams(location.search); q.set("v", n);
+  return `<a href="?${q}" class="${n === V ? "activa" : ""}">V${n}</a>`;
+}).join("");
+
+$("cats").innerHTML = CATEGORIAS.map((c) => `<label><input type="checkbox" value="${c.id}" ${cats.has(c.id) ? "checked" : ""}/> ${c.label}</label>`).join("");
+$("cats").addEventListener("change", (e) => { e.target.checked ? cats.add(e.target.value) : cats.delete(e.target.value); confirmado = V < 3; pintar(); });
+
+if (location.protocol.startsWith("http")) {
+  const ejemplos = [["Demanda laboral", "docs/demanda-ledesma.pdf"], ["Sentencia", "docs/sentencia-perez.pdf"], ["Acta de mediación", "docs/acta-mediacion.pdf"]];
+  $("ejemplos").innerHTML = "Probar con: " + ejemplos.map(([t, u]) => `<button type="button" data-u="${u}">${t}</button>`).join("·");
+  $("ejemplos").addEventListener("click", async (e) => {
+    const u = e.target.dataset?.u; if (!u) return;
+    e.preventDefault();
+    const r = await fetch(u); const b = await r.arrayBuffer();
+    nombreArchivo = u.split("/").pop().replace(/\.pdf$/, "");
+    await leerPdf(b);
+  });
+}
+
+async function leerPdf(buffer) {
+  if (!window.pdfjsLib) { $("estado").textContent = "No se pudo cargar el lector de PDF (¿sin internet?). Probá con un .txt."; return; }
+  $("estado").textContent = "Leyendo el PDF en esta computadora…";
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+  let t = "";
+  for (let n = 1; n <= pdf.numPages; n++) {
+    const pag = await pdf.getPage(n);
+    const cont = await pag.getTextContent();
+    for (const it of cont.items) t += it.str + (it.hasEOL ? "\n" : "");
+    t += "\n\n";
+  }
+  texto = limpiarTexto(t).trim();
+  desactivadas.clear();
+  confirmado = V < 3;
+  pintar();
+}
+
+async function recibir(file) {
+  if (!file) return;
+  nombreArchivo = file.name.replace(/\.(pdf|txt)$/i, "");
+  if (/\.txt$/i.test(file.name) || file.type === "text/plain") { texto = limpiarTexto(await file.text()).trim(); desactivadas.clear(); confirmado = V < 3; pintar(); }
+  else await leerPdf(await file.arrayBuffer());
+}
+$("archivo").addEventListener("change", (e) => recibir(e.target.files[0]));
+const zona = $("zona");
+["dragenter", "dragover"].forEach((ev) => zona.addEventListener(ev, (e) => { e.preventDefault(); zona.classList.add("encima"); }));
+["dragleave", "drop"].forEach((ev) => zona.addEventListener(ev, (e) => { e.preventDefault(); zona.classList.remove("encima"); }));
+zona.addEventListener("drop", (e) => recibir(e.dataTransfer.files[0]));
+
+function pintar() {
+  if (!texto) return;
+  const { salida, tramos } = anonimizar(texto, cats, V, desactivadas);
+  let o = "", n = "", i = 0;
+  for (const t of tramos) {
+    o += esc(texto.slice(i, t.ini)) + `<mark class="o${t.activo ? "" : " off"}">${esc(t.original)}</mark>`;
+    n += esc(texto.slice(i, t.ini)) + (t.activo ? `<mark class="n">${esc(t.marcador)}</mark>` : esc(t.original));
+    i = t.fin;
+  }
+  o += esc(texto.slice(i)); n += esc(texto.slice(i));
+  $("original").innerHTML = o;
+  $("anonimo").innerHTML = n;
+  const porTipo = {};
+  for (const t of tramos) if (t.activo) porTipo[t.tipo] = (porTipo[t.tipo] ?? 0) + 1;
+  $("resumen").innerHTML = Object.entries(porTipo).map(([k, c]) => `<span>${k}: ${c}</span>`).join("") || "<span>Sin reemplazos</span>";
+  $("estado").textContent = `${tramos.filter((t) => t.activo).length} reemplazos en «${nombreArchivo}».` + (V >= 3 && !confirmado ? " Revisalos abajo antes de descargar." : "");
+  $("descargar").disabled = !confirmado;
+  $("descargar").onclick = () => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([salida], { type: "text/plain;charset=utf-8" }));
+    a.download = `${nombreArchivo}-anonimizado.txt`;
+    a.click();
+  };
+  if (V >= 3) {
+    const grupos = new Map();
+    for (const t of tramos) { const g = grupos.get(t.k) ?? { t, n: 0, formas: new Set() }; g.n++; g.formas.add(t.original.replace(/\s+/g, " ")); grupos.set(t.k, g); }
+    $("revision").hidden = false;
+    $("filas").innerHTML = [...grupos.values()].map((g) => `<tr><td><input type="checkbox" data-k="${esc(g.t.k)}" ${g.t.activo ? "checked" : ""}/></td><td><mark class="n">${esc(g.t.marcador)}</mark></td><td>${[...g.formas].map(esc).join(" · ")}</td><td>${g.n}</td></tr>`).join("");
+  }
+}
+// ?doc=docs/…pdf: carga un ejemplo al abrir (lo usa la presentación).
+if (params.get("doc") && location.protocol.startsWith("http")) {
+  const u = params.get("doc");
+  fetch(u).then((r) => r.arrayBuffer()).then((b) => { nombreArchivo = u.split("/").pop().replace(/\.pdf$/, ""); return leerPdf(b); }).catch(() => {});
+}
+$("filas").addEventListener("change", (e) => { const k = e.target.dataset.k; e.target.checked ? desactivadas.delete(k) : desactivadas.add(k); pintar(); });
+$("confirmar").addEventListener("click", () => { confirmado = true; pintar(); $("descargar").focus(); });
+</script>
+</body>
+</html>

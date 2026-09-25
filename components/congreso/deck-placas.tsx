@@ -8,7 +8,8 @@
 import { useState } from "react";
 import {
   CONG_AUTOR,
-  CONG_CASOS,
+  ANON_CATEGORIAS,
+  ANON_UMBRAL,
   CONG_EVENTO,
   CONG_INSTRUCCION_EN_VIVO,
   CONG_LINK,
@@ -17,9 +18,6 @@ import {
   CONG_TITLE,
   CONG_VITRINA,
   getActividadCong,
-  getCaso,
-  type ActividadOpciones,
-  type CasoId,
   type CongKey,
   type ResultadosCong,
   type SlideActividad,
@@ -30,7 +28,7 @@ import {
 } from "@/lib/congreso";
 import { cn } from "@/lib/utils";
 import { Ilus } from "./ilus";
-import { MesaError, MesaPrueba } from "./deck-demo";
+import { MesaAnonimizador, urlAnonimizador } from "./deck-demo";
 import {
   Anillo,
   BloqueQR,
@@ -59,10 +57,10 @@ export interface Ctx {
   /** Frases visibles en la nube (tecla V). */
   frases: boolean;
   toggleFrases: () => void;
-  /** Caso de la demo (el que eligió la sala o el que fijó Marco). */
-  caso: CasoId;
-  casoFijado: boolean;
-  setCaso: (c: CasoId | null) => void;
+  /** Qué oculta el anonimizador: lo que eligió la sala (o lo mínimo, si nadie votó). */
+  ocultar: string[];
+  /** La instrucción de la V1, armada con lo que eligió la sala. */
+  promptV1: string;
   /** Versión publicada: la del comienzo y la actual (cambia con el experimento). */
   version: { inicial: string | null; actual: string | null; cambio?: string; cuando?: number };
   planB: boolean;
@@ -372,8 +370,7 @@ function PlacaActividad({ s, ctx }: { s: SlideActividad; ctx: Ctx }) {
         <div className="relative min-h-0">
           {act.key === "cong_molestia" && <ResultadoNube data={data} ctx={ctx} />}
           {act.key === "cong_intentar" && <AntesAhora data={data} ctx={ctx} />}
-          {act.key === "cong_usar" && act.tipo === "opciones" && <UsarConstruir act={act} data={data} oculto={oculto} ctx={ctx} />}
-          {act.key === "cong_elegir" && <Ganador data={data} oculto={oculto} ctx={ctx} />}
+          {act.key === "cong_elegir" && <QueOcultar data={data} oculto={oculto} ctx={ctx} />}
           {act.key === "cong_datos" && <Datos s={s} data={data} ctx={ctx} />}
         </div>
       </div>
@@ -454,100 +451,38 @@ function AntesAhora({ data, ctx }: { data: ResultadosCong | null; ctx: Ctx }) {
   );
 }
 
-/** Interacción 2: usar IA o construir con IA, situación por situación. */
-function UsarConstruir({ act, data, oculto, ctx }: { act: ActividadOpciones; data: ResultadosCong | null; oculto: boolean; ctx: Ctx }) {
+/** Interacción 2: ¿qué tiene que ocultar el anonimizador? Lo que pasa el umbral entra en la instrucción. */
+function QueOcultar({ data, oculto, ctx }: { data: ResultadosCong | null; oculto: boolean; ctx: Ctx }) {
+  const c = data?.items.datos ?? {};
+  const n = data?.respondieronItem.datos ?? 0;
+  const orden = [...ANON_CATEGORIAS].sort((a, b) => (oculto ? 0 : (c[b.id] ?? 0) - (c[a.id] ?? 0)));
   return (
     <div className="flex h-full flex-col">
-      <div className="mb-[1rem] flex items-center justify-between">
-        <div className="flex gap-[1.6rem] cg-mono text-[0.78rem] uppercase tracking-[0.18em]">
-          <span className="flex items-center gap-[0.5rem] text-cg-azul-2">
-            <span className="size-[0.8rem] rounded-full bg-cg-azul-2" /> Usar IA
-          </span>
-          <span className="flex items-center gap-[0.5rem] text-cg-lacre">
-            <span className="size-[0.8rem] rounded-full bg-cg-lacre" /> Construir con IA
-          </span>
-        </div>
+      <div className="mb-[0.8rem] flex items-center justify-between gap-[1rem]">
+        <p className="cg-mono text-[0.74rem] uppercase tracking-[0.18em] text-cg-sepia">
+          Entra en la instrucción lo que elige {ANON_UMBRAL}% o más
+        </p>
         <BotonesResultado ctx={ctx} max={1} />
       </div>
-      <div className="flex min-h-0 flex-1 flex-col justify-around gap-[1rem]">
-        {act.items.map((it, i) => {
-          const c = data?.items[it.id] ?? {};
-          const total = suma(c);
-          const u = porc(c.usar ?? 0, total);
-          const k = total ? 100 - u : 0;
+      <div className="flex min-h-0 flex-1 flex-col justify-around">
+        {orden.map((cat, i) => {
+          const p = porc(c[cat.id] ?? 0, n);
+          const entra = !oculto && ctx.ocultar.includes(cat.id);
           return (
-            <div key={it.id} className="cg-sube" style={{ animationDelay: `${i * 0.08}s` }}>
-              <p className="flex items-baseline gap-[0.8rem]">
-                <span className="shrink-0 whitespace-nowrap cg-mono text-[0.72rem] uppercase tracking-[0.18em] text-cg-gris">{it.rotulo}</span>
-                <span className="cg-bajada text-[1.45rem] leading-snug text-cg-tinta">{it.texto}</span>
-              </p>
-              <div className="mt-[0.5rem] flex h-[3rem] overflow-hidden rounded-[0.3rem] border border-cg-tinta/15 bg-cg-blanco/60">
-                {oculto || !total ? (
-                  <div className="flex flex-1 items-center justify-center cg-mono text-[0.8rem] uppercase tracking-[0.2em] text-cg-gris">
-                    {oculto ? "?" : "sin respuestas todavía"}
-                  </div>
-                ) : (
-                  <>
-                    <div className="flex items-center bg-cg-azul-2 px-[0.8rem] text-cg-blanco transition-[width] duration-700" style={{ width: `${Math.max(u, 0)}%` }}>
-                      {u >= 10 && <span className="cg-mono text-[1.2rem] font-semibold">{u}%</span>}
-                    </div>
-                    <div className="flex flex-1 items-center justify-end bg-cg-lacre px-[0.8rem] text-cg-blanco">
-                      {k >= 10 && <span className="cg-mono text-[1.2rem] font-semibold">{k}%</span>}
-                    </div>
-                  </>
-                )}
+            <div key={cat.id} className="cg-sube grid grid-cols-[17rem_1fr_4.5rem] items-center gap-[1rem]" style={{ animationDelay: `${i * 0.05}s` }}>
+              <span className={cn("cg-titular text-[1.6rem] leading-none", entra ? "text-cg-tinta" : "text-cg-sepia")}>
+                {entra && <span className="mr-[0.4rem] text-cg-lacre">✓</span>}
+                {cat.label}
+              </span>
+              <div className="relative h-[1.9rem] overflow-hidden rounded-[0.25rem] bg-cg-tinta/8">
+                <div className={cn("h-full transition-[width] duration-700", entra ? "bg-cg-lacre" : "bg-cg-sepia/45")} style={{ width: oculto ? 0 : `${p}%` }} />
+                <span className="absolute inset-y-0 border-l-[0.15rem] border-dashed border-cg-tinta/50" style={{ left: `${ANON_UMBRAL}%` }} aria-hidden />
               </div>
+              <span className="cg-titular text-right text-[1.7rem] leading-none tabular-nums text-cg-tinta">{oculto ? "?" : `${p}%`}</span>
             </div>
           );
         })}
       </div>
-    </div>
-  );
-}
-
-/** Interacción 3: ¿qué construimos? Gana uno y "construyamos esa". */
-function Ganador({ data, oculto, ctx }: { data: ResultadosCong | null; oculto: boolean; ctx: Ctx }) {
-  const c = data?.items.caso ?? {};
-  const total = suma(c);
-  return (
-    <div className="flex h-full flex-col">
-      <div className="mb-[1.2rem] flex justify-end">
-        <BotonesResultado ctx={ctx} max={1} />
-      </div>
-      <div className="grid min-h-0 flex-1 grid-cols-3 gap-[1.4rem]">
-        {CONG_CASOS.map((caso, i) => {
-          const n = c[caso.id] ?? 0;
-          const p = porc(n, total);
-          const gana = !oculto && total > 0 && caso.id === ctx.caso;
-          return (
-            <div
-              key={caso.id}
-              className={cn(
-                "cg-cae relative flex flex-col rounded-[0.35rem] px-[1.5rem] pb-[1.4rem] pt-[1.3rem] transition-all duration-700",
-                gana ? "bg-cg-tinta text-cg-blanco shadow-[0_24px_36px_-24px_rgba(0,0,0,0.8)]" : "cg-hoja text-cg-tinta",
-                !oculto && total > 0 && !gana && "opacity-55",
-              )}
-              style={vars({ "--rot": `${(i - 1) * 0.8}deg`, animationDelay: `${i * 0.1}s` })}
-            >
-              <span className={cn("cg-titular text-[5rem] leading-none", gana ? "text-cg-ocre" : "text-cg-lacre")}>{caso.letra}</span>
-              <p className="cg-titular mt-[0.8rem] text-[1.75rem] leading-[1.02]">{caso.titulo}</p>
-              <p className={cn("cg-bajada mt-[0.8rem] text-[1.1rem] leading-snug", gana ? "text-cg-niebla" : "text-cg-sepia")}>{caso.problema}</p>
-              <div className="mt-auto pt-[1.2rem]">
-                <p className="cg-titular text-[4rem] leading-none tabular-nums">{oculto ? "?" : `${p}%`}</p>
-                <div className={cn("mt-[0.5rem] h-[0.45rem] overflow-hidden rounded-full", gana ? "bg-cg-blanco/20" : "bg-cg-tinta/10")}>
-                  <div className={cn("h-full rounded-full transition-[width] duration-700", gana ? "bg-cg-ocre" : "bg-cg-tinta")} style={{ width: oculto ? 0 : `${p}%` }} />
-                </div>
-              </div>
-              {gana && (
-                <span className="cg-cae absolute -bottom-[2.6rem] right-[0.5rem] text-[2.4rem] text-cg-lacre" style={vars({ fontFamily: FUENTE.mano, "--rot": "-4deg", animationDelay: "0.6s" })}>
-                  Construyamos esa.
-                </span>
-              )}
-            </div>
-          );
-        })}
-      </div>
-      <div className="h-[2.6rem]" />
     </div>
   );
 }
@@ -599,71 +534,41 @@ function Datos({ s, data, ctx }: { s: SlideActividad; data: ResultadosCong | nul
   );
 }
 
-// --- La demo (placas 8, 9 y 10) ------------------------------------------------------------------
-
-function ElegirCaso({ ctx }: { ctx: Ctx }) {
-  return (
-    <div className="flex items-center gap-[0.35rem]">
-      {CONG_CASOS.map((c) => (
-        <BotonPlaca key={c.id} activo={ctx.caso === c.id} onClick={() => ctx.setCaso(c.id)} remoto={`Caso ${c.letra}`} className="px-[0.75rem]">
-          {c.letra}
-        </BotonPlaca>
-      ))}
-      {ctx.casoFijado && (
-        <BotonPlaca onClick={() => ctx.setCaso(null)} remoto="Caso: el que eligió la sala">
-          el de la sala
-        </BotonPlaca>
-      )}
-    </div>
-  );
-}
+// --- La demo: el anonimizador -----------------------------------------------------------------------
 
 function PlacaDemo({ s, ctx }: { s: SlideDemo; ctx: Ctx }) {
-  const caso = getCaso(ctx.caso) ?? CONG_CASOS[0];
-  const folio = <Folio numero={s.numero} rotulo={s.movimiento} extra={`${caso.letra} · ${caso.app}`} />;
-
+  const folio = <Folio numero={s.numero} rotulo={s.movimiento} extra="Anonimizador de escritos" />;
   if (s.fase === "construir") return <Construir s={s} ctx={ctx} folio={folio} />;
-
   return (
     <Hoja folio={folio}>
-      <div className="grid h-full grid-cols-[27rem_1fr] gap-[2.6rem]">
+      <div className="grid h-full grid-cols-[25rem_1fr] gap-[2.4rem]">
         <div className="flex min-h-0 flex-col">
-          <h1 className={cn("cg-titular cg-sube text-cg-tinta", s.fase === "error" ? "text-[6.6rem]" : "text-[4.8rem]")}>{s.titulo}</h1>
+          <h1 className="cg-titular cg-sube text-[6.2rem] text-cg-tinta">{s.titulo}</h1>
           <p className="cg-bajada cg-sube mt-[1rem] text-[1.8rem] leading-snug text-cg-sepia" style={{ animationDelay: "0.3s" }}>
             {s.bajada}
           </p>
-          {s.fase === "error" ? (
-            <div className="mt-auto space-y-[1rem] pb-[0.4rem]">
-              <p className="cg-mono text-[0.72rem] uppercase tracking-[0.2em] text-cg-gris">Lo que detecta el abogado</p>
-              <p className="text-[2.1rem] leading-[1.05] text-cg-lacre" style={{ fontFamily: FUENTE.mano }}>
-                “{caso.frase}”
-              </p>
-            </div>
-          ) : (
-            <>
-              <div className="mt-[1.2rem] min-h-0 flex-1">
-                <Ilus id="p10-ciclo" />
-              </div>
-              <p className="cg-bajada pb-[0.4rem] text-[1.35rem] leading-snug text-cg-tinta">
-                “La IA escribió el código. Pero yo tuve que explicarle qué estaba mal.”
-              </p>
-            </>
-          )}
-          <div className="mt-[0.8rem]">
-            <ElegirCaso ctx={ctx} />
+          <div className="mt-auto space-y-[0.8rem] pb-[0.4rem]">
+            <p className="cg-mono text-[0.72rem] uppercase tracking-[0.2em] text-cg-gris">Lo que detecta el abogado</p>
+            <p className="text-[2rem] leading-[1.05] text-cg-lacre" style={{ fontFamily: FUENTE.mano }}>
+              “{ANON_FRASE_CORTA}”
+            </p>
+            <p className="cg-bajada text-[1.2rem] leading-snug text-cg-tinta">“La IA escribió el código. Pero yo tuve que explicarle qué estaba mal.”</p>
           </div>
         </div>
-        <div className="min-h-0">{s.fase === "error" ? <MesaError key={caso.id} caso={caso.id} /> : <MesaPrueba key={caso.id} caso={caso.id} />}</div>
+        <div className="min-h-0">
+          <MesaAnonimizador ocultar={ctx.ocultar} promptV1={ctx.promptV1} />
+        </div>
       </div>
     </Hoja>
   );
 }
 
-/** Placa 8: casi vacía, un cursor que espera; la instrucción se escribe cuando Marco lo pide. */
+const ANON_FRASE_CORTA = "Si una persona se escapa una vez, el escrito no está anonimizado.";
+
+/** Placa "Hagamos una app": casi vacía, un cursor que espera; la instrucción (armada con lo que votó la sala) se escribe a pedido. */
 function Construir({ s, ctx, folio }: { s: SlideDemo; ctx: Ctx; folio: React.ReactNode }) {
-  const caso = getCaso(ctx.caso) ?? CONG_CASOS[0];
-  const prompt = caso.pasos[0].prompt;
   const [escribir, setEscribir] = useState(false);
+  const etiquetas = ANON_CATEGORIAS.filter((c) => ctx.ocultar.includes(c.id)).map((c) => c.label);
   return (
     <Hoja folio={folio}>
       <div className="flex h-full flex-col">
@@ -674,21 +579,16 @@ function Construir({ s, ctx, folio }: { s: SlideDemo; ctx: Ctx; folio: React.Rea
               {s.bajada}
             </p>
           </div>
-          <div className="pt-[1rem] text-right">
-            <p className="cg-mono text-[0.72rem] uppercase tracking-[0.2em] text-cg-gris">{ctx.casoFijado ? "Caso elegido por Marco" : "Eligió la sala"}</p>
-            <p className="cg-serif mt-[0.3rem] max-w-[26rem] text-[1.35rem] leading-snug text-cg-tinta">
-              <span className="text-cg-lacre">{caso.letra} ·</span> {caso.titulo}
-            </p>
-            <div className="mt-[0.6rem] flex justify-end">
-              <ElegirCaso ctx={ctx} />
-            </div>
+          <div className="max-w-[24rem] pt-[1rem] text-right">
+            <p className="cg-mono text-[0.72rem] uppercase tracking-[0.2em] text-cg-gris">La sala eligió ocultar</p>
+            <p className="cg-serif mt-[0.3rem] text-[1.25rem] leading-snug text-cg-tinta">{etiquetas.join(" · ")}</p>
           </div>
         </div>
         <div className="flex min-h-0 flex-1 items-center">
-          <div className="w-full rounded-[0.8rem] border-[0.15rem] border-cg-tinta/80 bg-cg-blanco px-[2.2rem] py-[1.8rem] shadow-[0_24px_40px_-30px_rgba(60,40,12,0.8)]">
+          <div className="w-full rounded-[0.8rem] border-[0.15rem] border-cg-tinta/80 bg-cg-blanco px-[2.2rem] py-[1.6rem] shadow-[0_24px_40px_-30px_rgba(60,40,12,0.8)]">
             <p className="cg-mono text-[0.72rem] uppercase tracking-[0.2em] text-cg-gris">Describí lo que necesitás</p>
-            <p className="mt-[0.9rem] min-h-[9rem] cg-mono text-[1.45rem] leading-[1.45] text-cg-tinta">
-              {escribir ? <Tipeo texto={prompt} cps={45} /> : <span className="cg-cursor inline-block h-[1.4rem] w-[0.7rem] translate-y-[0.2rem] bg-cg-lacre" />}
+            <p className="mt-[0.9rem] min-h-[10rem] cg-mono text-[1.3rem] leading-[1.45] text-cg-tinta">
+              {escribir ? <Tipeo texto={ctx.promptV1} cps={55} /> : <span className="cg-cursor inline-block h-[1.3rem] w-[0.65rem] translate-y-[0.2rem] bg-cg-lacre" />}
             </p>
           </div>
         </div>
@@ -696,18 +596,16 @@ function Construir({ s, ctx, folio }: { s: SlideDemo; ctx: Ctx; folio: React.Rea
           <BotonPlaca activo={escribir} onClick={() => setEscribir((e) => !e)} remoto="Escribir la instrucción">
             {escribir ? "Borrar" : "Escribir la instrucción"}
           </BotonPlaca>
-          <BotonCopiar texto={prompt} remoto="Copiar la instrucción" />
+          <BotonCopiar texto={ctx.promptV1} remoto="Copiar la instrucción" />
           <a
-            href={`/congreso/demo/${caso.id}?v=1`}
+            href={urlAnonimizador(1, ctx.ocultar)}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-[0.5rem] rounded-full border border-cg-tinta/25 bg-cg-blanco/70 px-[1rem] py-[0.45rem] cg-mono text-[0.74rem] uppercase tracking-[0.16em] text-cg-sepia hover:text-cg-tinta"
           >
-            Plan B · abrir V1 ensayada ↗
+            Plan B · abrir la V1 ensayada ↗
           </a>
-          <span className="ml-auto cg-mono text-[0.7rem] uppercase tracking-[0.18em] text-cg-gris">
-            Si falla: “Bienvenidos al desarrollo de software.”
-          </span>
+          <span className="ml-auto cg-mono text-[0.7rem] uppercase tracking-[0.18em] text-cg-gris">Si falla: “Bienvenidos al desarrollo de software.”</span>
         </div>
       </div>
     </Hoja>
@@ -931,7 +829,7 @@ export function ResumenControl({ activity, data }: { activity: CongKey; data: Re
     <div className="space-y-3">
       {act.items.map((it) => {
         const c = data.items[it.id] ?? {};
-        const total = suma(c);
+        const total = it.multiple ? (data.respondieronItem[it.id] ?? 0) : suma(c);
         return (
           <div key={it.id}>
             {act.items.length > 1 && <p className="text-[13px] leading-snug text-cg-sepia">{it.texto}</p>}

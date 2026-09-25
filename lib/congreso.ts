@@ -58,6 +58,8 @@ export interface Item {
   texto: string;
   rotulo?: string;
   opciones: Opcion[];
+  /** Selección múltiple: se guarda como "a|b|c" (el agregado separa por "|"). */
+  multiple?: boolean;
 }
 
 interface Base {
@@ -89,6 +91,93 @@ export type ActividadCong = ActividadTexto | ActividadOpciones;
 /** item_key donde se guarda la frase de seguimiento de un ítem. */
 export const itemSeguimiento = (itemId: string) => `${itemId}~porque`;
 
+// --- La demo: un anonimizador de escritos ----------------------------------------------
+// La sala vota qué datos tiene que ocultar y la instrucción se arma sola con eso.
+// Plan B: public/congreso/anonimizador.html (un solo archivo, V1/V2/V3 con ?v=).
+
+export interface CategoriaAnon {
+  id: string;
+  label: string;
+  /** Cómo se lo pide la instrucción. */
+  frase: string;
+}
+
+export const ANON_CATEGORIAS: CategoriaAnon[] = [
+  { id: "nombres", label: "Nombres de las partes", frase: "los nombres de las personas" },
+  { id: "documentos", label: "DNI, CUIL y CUIT", frase: "los DNI, CUIL y CUIT" },
+  { id: "domicilios", label: "Domicilios", frase: "los domicilios" },
+  { id: "contacto", label: "Teléfonos y correos", frase: "los teléfonos y correos electrónicos" },
+  { id: "salud", label: "Datos de salud", frase: "los datos de salud (diagnósticos, lesiones, tratamientos)" },
+  { id: "montos", label: "Montos", frase: "los montos de dinero" },
+  { id: "fechas", label: "Fechas", frase: "las fechas" },
+  { id: "expediente", label: "Número de expediente", frase: "el número de expediente" },
+  { id: "funcionarios", label: "Jueces y funcionarios", frase: "los nombres de jueces, secretarios, peritos y mediadores" },
+];
+
+/** Si nadie votó todavía: lo mínimo indiscutible. */
+export const ANON_POR_DEFECTO = ["nombres", "documentos", "domicilios", "contacto"];
+/** Entra en la instrucción lo que eligió al menos este porcentaje de quienes respondieron. */
+export const ANON_UMBRAL = 40;
+
+/** Categorías que entran en la instrucción según la votación (conteo por categoría y cuántos respondieron). */
+export function categoriasElegidas(conteo: Record<string, number> | undefined, respondieron: number): string[] {
+  if (!conteo || !respondieron) return ANON_POR_DEFECTO;
+  const elegidas = ANON_CATEGORIAS.filter((c) => ((conteo[c.id] ?? 0) / respondieron) * 100 >= ANON_UMBRAL).map((c) => c.id);
+  return elegidas.length ? elegidas : ANON_POR_DEFECTO;
+}
+
+function enumerar(xs: string[]): string {
+  return xs.length <= 1 ? (xs[0] ?? "") : `${xs.slice(0, -1).join(", ")} y ${xs[xs.length - 1]}`;
+}
+
+/** La instrucción de la V1, con lo que eligió la sala. */
+export function promptAnonimizador(ids: string[]): string {
+  const frases = ANON_CATEGORIAS.filter((c) => ids.includes(c.id)).map((c) => c.frase);
+  return (
+    "Necesito una herramienta sencilla para abogados, en un solo archivo HTML que pueda descargar y abrir en mi computadora. " +
+    "Que me permita subir un escrito judicial en PDF, extraiga el texto y lo anonimice: reemplazá " +
+    enumerar(frases) +
+    " por marcadores como [PERSONA 1] o [DNI 1], siempre el mismo marcador para el mismo dato. " +
+    "Mostrame el original y el anonimizado lado a lado, con los reemplazos resaltados, y un botón para descargar el resultado. " +
+    "Todo tiene que funcionar en el navegador: el documento no puede enviarse a ningún servidor."
+  );
+}
+
+export const ANON_PLAN_B = "/congreso/anonimizador.html";
+
+export const ANON_PASOS: { v: 1 | 2 | 3; titulo: string; prompt: string; probar: string }[] = [
+  {
+    v: 1,
+    titulo: "Primera versión",
+    prompt: promptAnonimizador(ANON_POR_DEFECTO),
+    probar: "Subir la demanda de Ledesma. Parece perfecto… hasta mirar la carátula: «LEDESMA, JORGE» sigue ahí, y más abajo «el Sr. Ledesma».",
+  },
+  {
+    v: 2,
+    titulo: "La misma persona, escrita de muchas formas",
+    prompt:
+      "Los nombres aparecen de muchas formas: en mayúsculas, con el apellido primero (LEDESMA, JORGE) o solo el apellido (el Sr. Ledesma). Detectá todas las formas de la misma persona y usá siempre el mismo marcador.",
+    probar: "Ahora la carátula y las menciones sueltas dicen [PERSONA 1]. Preguntar: ¿y el nombre de la jueza? ¿Se oculta? Eso es criterio jurídico.",
+  },
+  {
+    v: 3,
+    titulo: "Revisión humana antes de descargar",
+    prompt:
+      "Antes de descargar, mostrame una lista con cada reemplazo para que yo lo revise y pueda desmarcar los que no correspondan. Nada se descarga sin que yo lo confirme.",
+    probar: "La lista de reemplazos con casillas: desmarcar uno y ver cómo vuelve al texto. La decisión final es del abogado.",
+  },
+];
+
+export const ANON_FALLA = "Reemplazó «Jorge Ledesma», pero en la carátula sigue «LEDESMA, JORGE» y más abajo «el Sr. Ledesma».";
+export const ANON_FRASE = "Una persona no aparece escrita siempre igual. Si se escapa una vez, no está anonimizado.";
+
+/** Documentos ficticios para probarlo (PDF con texto, generados con scripts/gen-congreso-docs.mjs). */
+export const ANON_DOCUMENTOS = [
+  { titulo: "Demanda laboral · Ledesma c/ Distribuidora del Valle", archivo: "/congreso/docs/demanda-ledesma.pdf" },
+  { titulo: "Sentencia · Pérez c/ Transportes del Norte", archivo: "/congreso/docs/sentencia-perez.pdf" },
+  { titulo: "Acta de mediación familiar · Gómez / Ríos", archivo: "/congreso/docs/acta-mediacion.pdf" },
+];
+
 export const CONG_ACTIVIDADES: ActividadCong[] = [
   {
     key: "cong_molestia",
@@ -112,18 +201,15 @@ export const CONG_ACTIVIDADES: ActividadCong[] = [
     key: "cong_elegir",
     tipo: "opciones",
     numero: 2,
-    nombre: "¿Qué construimos?",
-    pregunta: "¿Qué construimos ahora, en vivo?",
-    consigna: "Elegí un problema. El más votado lo construimos desde cero.",
+    nombre: "¿Qué oculta?",
+    pregunta: "Vamos a construir un anonimizador de escritos. ¿Qué tiene que ocultar?",
+    consigna: "Tocá todos los que quieras. Con lo que elija la sala se arma la instrucción.",
     items: [
       {
-        id: "caso",
-        texto: "¿Qué construimos ahora, en vivo?",
-        opciones: [
-          { id: "cronologia", label: "A · Reconstruir cronológicamente un expediente" },
-          { id: "prueba", label: "B · Vincular hechos controvertidos con la prueba" },
-          { id: "entrevista", label: "C · Preparar la entrevista inicial con un cliente" },
-        ],
+        id: "datos",
+        texto: "Vamos a construir un anonimizador de escritos. ¿Qué tiene que ocultar?",
+        multiple: true,
+        opciones: ANON_CATEGORIAS.map((c) => ({ id: c.id, label: c.label })),
       },
     ],
   },
@@ -748,13 +834,13 @@ export const CONG_SLIDES: SlideCong[] = [
     bajada: "Una respuesta termina. Una herramienta permanece.",
     ilus: "p07-pedir-construir",
     layout: "centro",
-    nota: "Izquierda: pido un resumen, me responde, se terminó. Derecha: construyo algo que queda, que usa otro, mañana, con otros datos, y que repite el criterio que YO definí. Eso es vibe coding: usar la IA para construir herramientas. \"Construyamos una. Ustedes eligen cuál.\"",
+    nota: "Izquierda: pido un resumen, me responde, se terminó. Derecha: construyo algo que queda, que usa otro, mañana, con otros datos, y que repite el criterio que YO definí. Eso es vibe coding: usar la IA para construir herramientas. \"Construyamos una: un anonimizador de escritos. Y ustedes deciden qué tiene que ocultar.\"",
   },
   {
     t: "actividad",
     activa: "cong_elegir",
     movimiento: "2 · Programar hablando",
-    nota: "INTERACCIÓN 2 (1 min). Que la sala elija. Mostrar resultados (→ o R). \"Bueno. Construyamos esa.\" Las tres están ensayadas (plan B adentro de la placa siguiente). Empate: la A.",
+    nota: "INTERACCIÓN 2 (1 min). Qué tiene que ocultar el anonimizador (varias opciones). Mostrar resultados (→ o R): lo que pasa el 40% entra en la instrucción, sola. Discutir lo que queda en el límite: ¿las fechas? ¿el nombre de la jueza? Eso es criterio jurídico, no código.",
   },
   // --- Movimiento 3 · ~6 min ---
   {
@@ -764,7 +850,7 @@ export const CONG_SLIDES: SlideCong[] = [
     titulo: "Hagamos una app",
     bajada: "Ahora. Desde cero.",
     fase: "construir",
-    nota: "Salir a la herramienta. Pegar la instrucción (botón Copiar). Generar, abrir, probar. Mientras genera: \"No escribí una línea de código. Escribí lo que un abogado le pediría a un colega.\" Si falla: \"Perfecto. Bienvenidos al desarrollo de software.\" y seguir con la V1 ensayada.",
+    nota: "La instrucción ya trae lo que votó la sala (tecla o botón Escribir; Copiar). Salir a Claude, pegarla, generar el artefacto y subir la demanda de Ledesma (PDF en /demo). Descargar el HTML: \"esto es un archivo; corre en mi computadora, el escrito no sale de acá\". Mientras genera: \"No escribí una línea de código. Escribí lo que un abogado le pediría a un colega.\" Si falla: \"Perfecto. Bienvenidos al desarrollo de software.\" y seguir con la V1 ensayada.",
   },
   {
     t: "demo",
@@ -773,7 +859,7 @@ export const CONG_SLIDES: SlideCong[] = [
     titulo: "No era eso.",
     bajada: "Y acá empieza lo interesante.",
     fase: "error",
-    nota: "Encontrar la limitación en vivo (Marcar la falla). Decir la frase del abogado y pedir la corrección (V2). Si hay tiempo, una más (V3). Remate: \"La IA escribió el código. Pero yo tuve que explicarle qué estaba mal. Construir es conversar con el error.\" RECURSO DINÁMICO (si hay tiempo): pedir que importe un documento y pegar el ficticio de /demo — y preguntar a dónde viajó ese texto.",
+    nota: "Mirar la carátula: \"LEDESMA, JORGE\" sigue ahí, y \"el Sr. Ledesma\" más abajo (Marcar la falla). Pedir la corrección (V2). Si hay tiempo, la revisión humana antes de descargar (V3). Plan B: V1/V2/V3 corren adentro de esta placa. Remate: \"La IA escribió el código. Pero yo tuve que explicarle qué estaba mal. Construir es conversar con el error.\"",
   },
   {
     t: "vitrina",
