@@ -42,7 +42,7 @@ export default function BbvaControlPage() {
 }
 
 function nombreActividad(key: string) {
-  if (key === "lobby") return "el ingreso (esperando)";
+  if (key === "lobby") return "ninguna actividad (en espera)";
   const a = getActividadBbva(key);
   return a ? `Actividad ${a.numero} · ${a.nombre}` : key;
 }
@@ -69,7 +69,8 @@ function VistaDocente({ idx }: { idx: number }) {
                 de {data.participantes} {key === "bbva_a5" ? "tienen su tarjeta" : "respondieron"}
               </span>
             </p>
-            {data.actual !== key && (
+            {/* Solo en las placas que abren la actividad: en la del mapa del grupo ya está cerrada a propósito. */}
+            {slide && actividadDeSlide(slide) && data.actual !== key && (
               <p className="mt-2 rounded-lg border border-rojo/30 bg-blanco px-3 py-2 text-sm text-rojo">
                 Ojo: en los celulares está abierta {nombreActividad(data.actual)}.
               </p>

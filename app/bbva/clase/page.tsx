@@ -18,6 +18,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { preload } from "react-dom";
 import { useRemotoDeck } from "@/components/clase/remoto";
+import { LluviaReacciones } from "@/components/clase/reacciones";
 import { useZoomDeck } from "@/components/clase/zoom";
 import { CON_POR_AREA, Placa } from "@/components/bbva/deck-placas";
 import { olvidarVivo, vars } from "@/components/bbva/deck-piezas";
@@ -127,13 +128,14 @@ function Clave({ onOk }: { onOk: () => void }) {
 type EstadoActivacion = { key: string; status: "enviando" | "reintento" | "ok" | "clave" | "error" | "espera" };
 
 /** Qué actividad pone la placa al llegar (portada/ingreso → lobby; el resto, la suya o ninguna). */
-function actividadAlLlegar(s: SlideBbva): string | undefined {
-  if (s.t === "portada" || s.t === "ingreso") return "lobby";
-  return actividadDeSlide(s);
+// Cada actividad se puede responder solo mientras su placa está en pantalla: cualquier otra
+// placa pone "lobby" y los celulares/compus vuelven a "Mirá la pantalla".
+function actividadAlLlegar(s: SlideBbva): string {
+  return actividadDeSlide(s) ?? "lobby";
 }
 
 function nombreActividad(key: string) {
-  if (key === "lobby") return "ingreso";
+  if (key === "lobby") return "sin actividad abierta";
   const a = getActividadBbva(key);
   return a ? `Actividad ${a.numero}` : key;
 }
@@ -519,6 +521,9 @@ function Deck() {
           onPorArea={togglePorArea}
         />
       </main>
+
+      {/* Los emojis que mandan desde el celular o la compu suben por cualquier placa. */}
+      <LluviaReacciones slug={BBVA_SLUG} />
 
       {!esPortada && (
         <footer className="relative z-10 mx-[4.5rem] flex h-[3rem] shrink-0 items-center justify-between gap-[2rem] border-t border-tinta/10 font-mono text-[0.72rem] uppercase tracking-[0.18em] text-gris">

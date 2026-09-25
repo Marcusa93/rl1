@@ -477,7 +477,7 @@ function Hipotesis({
         </a>
       </div>
       <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.16em] text-gris">
-        El borrador queda guardado en este celular
+        El borrador queda guardado en este dispositivo
       </p>
     </section>
   );

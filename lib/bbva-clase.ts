@@ -28,6 +28,8 @@ export const BBVA_LINK = "taller.rossi-ia.com/bbva";
 export const BBVA_URL = "https://taller.rossi-ia.com/bbva";
 export const BBVA_QR = "/bbva/qr.svg";
 export const BBVA_LOGO = "/bbva/logo-bbva.png";
+/** Botonera de reacciones del participante (flotan en la pantalla grande). Sin 🤖: el protagonista es el trabajo. */
+export const BBVA_REACCIONES = ["👏", "💡", "🤔", "😮", "👍", "🔥"] as const;
 
 // --- Áreas (se eligen al entrar; no se pide nombre) --------------------------
 

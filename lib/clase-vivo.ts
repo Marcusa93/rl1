@@ -44,6 +44,8 @@ export interface ActividadVivo {
 /** Emojis que el participante puede mandar a la pantalla en cualquier momento. */
 export const REACCIONES = ["👏", "💡", "🤖", "😮", "❤️", "🔥"] as const;
 export type Reaccion = (typeof REACCIONES)[number];
+/** Otros emojis que una clase puede usar en su botonera (ej. BBVA, sin 🤖). */
+export const REACCIONES_EXTRA = ["🤔", "👍", "🙌"] as const;
 /** Actividad bajo la que se guardan las reacciones en `responses`. */
 export const REACCION_ACTIVITY = "reaccion";
 

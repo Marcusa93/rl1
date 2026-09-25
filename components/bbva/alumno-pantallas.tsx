@@ -109,7 +109,7 @@ export function Ingreso({
       </section>
 
       <p className="bbva-mano mt-auto pt-7 text-[1.35rem] leading-tight text-naranja" style={{ transform: "rotate(-1.5deg)" }}>
-        Entrás una sola vez: este celular te acompaña toda la clase.
+        Entrás una sola vez: esta pantalla te acompaña toda la clase.
       </p>
     </main>
   );
@@ -198,7 +198,7 @@ export function Espera({
       <IlusMira />
       <h1 className="bbva-titular mt-5 text-[3.3rem] text-tinta">Mirá la pantalla</h1>
       <p className="bbva-serif mt-2 max-w-[19rem] text-[1.2rem] italic leading-snug text-grafito">
-        Cuando se abra una actividad, este celular cambia solo. No tenés que tocar nada.
+        Cuando se abra una actividad, esta pantalla cambia sola. No tenés que tocar nada.
       </p>
 
       {enPantalla && (

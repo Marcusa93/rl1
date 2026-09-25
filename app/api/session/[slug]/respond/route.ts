@@ -1,6 +1,7 @@
 import { fail, getSession, ok } from "@/lib/api";
 import { getAdmin } from "@/lib/supabase/server";
 import { getParticipantId } from "@/lib/participant";
+import { BBVA_SLUG, HIPOTESIS_ITEM } from "@/lib/bbva-clase";
 
 export async function POST(
   req: Request,
@@ -18,6 +19,17 @@ export async function POST(
   if (!activity) return fail("Falta activity");
   const item_key = String(body.item_key ?? "");
   const payload = body.payload ?? {};
+
+  // Laboratorio BBVA: una actividad se responde solo mientras su placa está proyectada
+  // (la presentación pone "lobby" en el resto). La hipótesis de la actividad 5 es personal:
+  // se puede terminar de escribir y guardar después.
+  if (
+    slug === BBVA_SLUG &&
+    activity.startsWith("bbva_") &&
+    activity !== session.current_activity &&
+    item_key !== HIPOTESIS_ITEM
+  )
+    return fail("Esta actividad ya está cerrada", 409);
 
   const db = getAdmin();
 

@@ -369,7 +369,7 @@ function IconoCelular({ className }: { className?: string }) {
 }
 
 /** "Respondé en tu celular" (con el punto que late). */
-export function ChipCelular({ texto = "Respondé en tu celular", className }: { texto?: string; className?: string }) {
+export function ChipCelular({ texto = "Respondé en tu celular o compu", className }: { texto?: string; className?: string }) {
   return (
     <span
       className={cn(

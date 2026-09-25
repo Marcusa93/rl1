@@ -1743,7 +1743,7 @@ function P19Desarma() {
           <rect x={4} y={18} width={10} height={2} fill={K.niebla} />
         </g>
         <text x={546} y={532} fontSize={22} fill={K.grafito} style={MANO}>
-          respondé en el celular
+          respondé en el celular o la compu
         </text>
       </Aparece>
     </svg>

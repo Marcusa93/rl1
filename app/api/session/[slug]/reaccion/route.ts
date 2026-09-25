@@ -1,7 +1,7 @@
 import { fail, getSession, ok } from "@/lib/api";
 import { getAdmin } from "@/lib/supabase/server";
 import { getParticipantId } from "@/lib/participant";
-import { REACCION_ACTIVITY, REACCIONES } from "@/lib/clase-vivo";
+import { REACCION_ACTIVITY, REACCIONES, REACCIONES_EXTRA } from "@/lib/clase-vivo";
 
 // Emojis que los participantes mandan desde el celular y el deck muestra
 // flotando. Se guardan en `responses` (activity "reaccion", item_key único),
@@ -21,7 +21,7 @@ export async function POST(
 
   const body = await req.json().catch(() => ({}));
   const emoji = String(body.emoji ?? "");
-  if (!(REACCIONES as readonly string[]).includes(emoji)) return fail("Emoji inválido");
+  if (!([...REACCIONES, ...REACCIONES_EXTRA] as readonly string[]).includes(emoji)) return fail("Emoji inválido");
 
   const { error } = await getAdmin()
     .from("responses")

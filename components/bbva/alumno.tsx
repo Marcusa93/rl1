@@ -12,6 +12,7 @@
 // Respuestas: /respond { activity, item_key, payload: { v } }, restauradas con /my-responses.
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { BotoneraReacciones } from "@/components/bbva/reacciones";
 import {
   BBVA_ACTIVIDADES,
   BBVA_SLIDES,
@@ -430,7 +431,7 @@ export function AlumnoBbva() {
       <AvisoGuardado estado={guardado} onReintentar={reintentar} />
       <main
         key={vista}
-        className="alu-entra mx-auto w-full max-w-md flex-1 overflow-x-clip px-4 pb-[calc(env(safe-area-inset-bottom)+2.5rem)] pt-5"
+        className="alu-entra mx-auto w-full max-w-md flex-1 overflow-x-clip px-4 pb-[calc(env(safe-area-inset-bottom)+7.5rem)] pt-5"
       >
         {vista === "carga" ? (
           <div className="grid min-h-[60dvh] place-items-center">
@@ -459,6 +460,7 @@ export function AlumnoBbva() {
           actividad(act, me)
         ) : null}
       </main>
+      <BotoneraReacciones />
     </>
   );
 }
