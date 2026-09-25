@@ -26,10 +26,13 @@ import {
 } from "@/lib/bbva-clase";
 import { Actividad1, Actividad3, ActividadCasos } from "./alumno-actividades";
 import { Actividad5 } from "./alumno-candidato";
-import { AvisoGuardado, Cargando, Encabezado, Espera, Ingreso, type EstadoGuardado } from "./alumno-pantallas";
+import { AvisoGuardado, Cargando, Encabezado, Espera, Ingreso, PedirNombre, type EstadoGuardado } from "./alumno-pantallas";
+import { BotonGuia } from "./descargar-guia";
 import { EstilosAlumno, Girando, esperar, respondido, type Valor } from "./alumno-ui";
 
 const BASE = `/api/session/${BBVA_SLUG}`;
+/** Desde la placa 20 en adelante se ofrece la guía de la clase para descargar. */
+const IDX_FINAL = BBVA_SLIDES.findIndex((s) => s.t === "placa" && s.numero === 20);
 const POLL_MS = 2500;
 /** Cada cuántos ciclos (~30 s) se verifica que la sesión siga y se refrescan las respuestas propias. */
 const VERIFICAR_CADA = 12;
@@ -376,7 +379,7 @@ export function AlumnoBbva() {
   }, [sincronizar, reintentar, volcar]);
 
   const entrar = useCallback(
-    async (area: Area) => {
+    async (area: Area, nombre: string) => {
       setEntrando(area.id);
       setErrorIngreso(null);
       try {
@@ -391,6 +394,14 @@ export function AlumnoBbva() {
           setRespuestas({});
           setAviso(null);
           ponerMe(d.participant);
+          if (nombre) {
+            guardar("perfil", "nombre", nombre);
+            try {
+              localStorage.setItem("bbva-nombre", nombre);
+            } catch {
+              /* sin almacenamiento */
+            }
+          }
           vibrar(20);
           window.scrollTo(0, 0);
           void sincronizar();
@@ -403,7 +414,7 @@ export function AlumnoBbva() {
         setEntrando(null);
       }
     },
-    [ponerMe, sincronizar],
+    [ponerMe, sincronizar, guardar],
   );
 
   const reconectando = fallos >= 2;
@@ -443,6 +454,19 @@ export function AlumnoBbva() {
       ? `Actividad ${act.numero} de ${BBVA_ACTIVIDADES.length}`
       : "Laboratorio de IA";
 
+  const nombrePropio = typeof respuestas.perfil?.nombre === "string" ? respuestas.perfil.nombre : "";
+  const guardarNombre = (n: string) => {
+    guardar("perfil", "nombre", n);
+    try {
+      localStorage.setItem("bbva-nombre", n);
+    } catch {
+      /* sin almacenamiento */
+    }
+  };
+  // Al final de la clase (placa 20 y "Lo que sigue") aparece la guía para descargar.
+  const alFinal = sesion?.placaIdx != null && sesion.placaIdx >= IDX_FINAL;
+  const guia = alFinal ? <BotonGuia nombre={nombrePropio} area={me.name} respuestas={respuestas} /> : null;
+
   const guardarEn = (a: string) => (item: string, v: Valor, demora?: number) => guardar(a, item, v, demora);
 
   function actividad(a: ActividadBbva, participante: Participante) {
@@ -470,6 +494,7 @@ export function AlumnoBbva() {
         key={`${vista}-${reinicios}`}
         className="alu-entra mx-auto w-full max-w-md flex-1 overflow-x-clip px-4 pb-[calc(env(safe-area-inset-bottom)+7.5rem)] pt-5"
       >
+        {vista !== "carga" && !nombrePropio && <PedirNombre onGuardar={guardarNombre} />}
         {vista === "carga" ? (
           <div className="grid min-h-[60dvh] place-items-center">
             <Girando texto={reconectando ? "reconectando…" : "conectando…"} />
@@ -481,6 +506,7 @@ export function AlumnoBbva() {
             conectados={sesion?.conectados ?? 0}
             hechas={hechas}
             onVerTarjeta={tarjetaLista ? () => setVerTarjeta(true) : undefined}
+            extra={guia}
           />
         ) : vista === "tarjeta" && a5 ? (
           <Actividad5

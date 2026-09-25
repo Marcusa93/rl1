@@ -6,7 +6,7 @@
 // vivo de la placa actual — solo los ve él, antes de proyectarlos. En el mapa
 // del grupo (actividad 5) también lista las hipótesis escritas, para copiarlas.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AccesoDocente } from "@/components/clase/acceso-docente";
 import { ControlRemoto } from "@/components/clase/remoto";
 import { AreasConectadas, ResultadoActividad } from "@/components/bbva/resultados";
@@ -92,6 +92,42 @@ function VistaDocente({ idx }: { idx: number }) {
           <AreasConectadas data={data} compacto />
         </>
       )}
+      <Asistentes />
+    </div>
+  );
+}
+
+/** Quiénes entraron, con nombre y apellido, para la próxima clase (descarga en Excel). */
+function Asistentes() {
+  const [lista, setLista] = useState<{ nombre: string; area: string }[] | null>(null);
+  useEffect(() => {
+    let vivo = true;
+    const leer = () =>
+      fetch("/api/bbva/participantes", { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => vivo && d && setLista(d.participantes))
+        .catch(() => {});
+    leer();
+    const id = setInterval(leer, 10000);
+    return () => {
+      vivo = false;
+      clearInterval(id);
+    };
+  }, []);
+  if (!lista) return null;
+  const conNombre = lista.filter((p) => p.nombre).length;
+  return (
+    <div className="pointer-events-auto rounded-xl border border-tinta/15 bg-blanco/70 p-3">
+      <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-gris">Asistentes</p>
+      <p className="mt-1 text-sm text-grafito">
+        <b className="text-tinta">{conNombre}</b> con nombre y apellido · {lista.length} conectados
+      </p>
+      <a
+        href="/api/bbva/participantes?formato=csv"
+        className="mt-2 flex min-h-11 items-center justify-center rounded-lg bg-tinta font-mono text-[12px] font-semibold uppercase tracking-[0.16em] text-papel"
+      >
+        ↓ Descargar asistentes (Excel)
+      </a>
     </div>
   );
 }

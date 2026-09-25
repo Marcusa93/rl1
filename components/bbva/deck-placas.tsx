@@ -255,7 +255,7 @@ function Ingreso() {
           <AreasConectadas data={data} />
         </div>
 
-        <p className="bbva-serif mt-[1.2rem] text-[1.6rem] italic text-grafito">Un solo código para toda la clase.</p>
+        <p className="bbva-serif mt-[1.2rem] text-[1.6rem] italic text-grafito">Un solo código para toda la clase: nombre, área y listo.</p>
       </div>
     </div>
   );
@@ -685,6 +685,9 @@ function Cierre() {
             <span className="bbva-cinta absolute -top-[0.8rem] left-1/2 h-[1.6rem] w-[6rem] -translate-x-1/2 rotate-2" />
             <p className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-tinta/70">Para el próximo encuentro</p>
             <p className="bbva-mano mt-[0.5rem] text-[2.6rem] leading-[1] text-tinta">Traé un caso real de tu candidato.</p>
+            <p className="mt-[0.9rem] border-t border-tinta/20 pt-[0.7rem] font-mono text-[0.78rem] uppercase tracking-[0.18em] text-tinta">
+              ↓ Descargá la guía de hoy en tu celular o compu
+            </p>
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@
 // ingreso con el área, espera ("Mirá la pantalla"), encabezado y aviso de guardado.
 
 import Image from "next/image";
+import { useState } from "react";
 import { BBVA_ACTIVIDADES, BBVA_AREAS, BBVA_AUTOR, BBVA_LOGO, BBVA_TITLE, type Area } from "@/lib/bbva-clase";
 import { Girando, cx } from "./alumno-ui";
 
@@ -26,6 +27,27 @@ function Logo({ alto }: { alto: number }) {
 
 // --- Ingreso ----------------------------------------------------------------------------
 
+/** Nombre y apellido: al menos dos palabras. */
+export function nombreValido(n: string) {
+  const t = n.trim().replace(/\s+/g, " ");
+  return t.length >= 5 && t.includes(" ");
+}
+
+/** Campo de nombre y apellido (ingreso y pedido a quienes entraron antes). */
+function CampoNombre({ valor, onCambio, onListo }: { valor: string; onCambio: (v: string) => void; onListo?: () => void }) {
+  return (
+    <input
+      value={valor}
+      onChange={(e) => onCambio(e.target.value)}
+      onKeyDown={(e) => e.key === "Enter" && onListo?.()}
+      placeholder="Nombre y apellido"
+      autoComplete="name"
+      maxLength={60}
+      className="mt-2 w-full rounded-[4px] border-[1.5px] border-tinta bg-blanco px-3.5 py-3 text-[1.1rem] text-tinta outline-none placeholder:text-gris focus:border-naranja"
+    />
+  );
+}
+
 export function Ingreso({
   onElegir,
   entrando,
@@ -33,12 +55,20 @@ export function Ingreso({
   aviso,
   reconectando,
 }: {
-  onElegir: (a: Area) => void;
+  onElegir: (a: Area, nombre: string) => void;
   entrando: string | null;
   error: string | null;
   aviso: string | null;
   reconectando: boolean;
 }) {
+  const [nombre, setNombre] = useState(() => {
+    try {
+      return localStorage.getItem("bbva-nombre") ?? "";
+    } catch {
+      return "";
+    }
+  });
+  const listo = nombreValido(nombre);
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col overflow-x-hidden px-5 pb-[calc(env(safe-area-inset-bottom)+1.25rem)] pt-[calc(env(safe-area-inset-top)+1.5rem)]">
       <div className="bbva-cae flex items-center justify-between">
@@ -55,11 +85,19 @@ export function Ingreso({
         <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.2em] text-grafito">Clase inicial · {BBVA_AUTOR}</p>
       </div>
 
-      <section className="mt-7" aria-labelledby="pregunta-area">
+      <section className="mt-7" aria-labelledby="pregunta-nombre">
+        <h2 id="pregunta-nombre" className="bbva-titular text-[2.2rem] text-tinta">
+          ¿Cómo te llamás?
+        </h2>
+        <p className="bbva-serif mt-1 text-[1.1rem] italic leading-snug text-grafito">Nombre y apellido: lo usamos para la próxima clase.</p>
+        <CampoNombre valor={nombre} onCambio={setNombre} />
+      </section>
+
+      <section className={cx("mt-7 transition-opacity", !listo && "opacity-45")} aria-labelledby="pregunta-area">
         <h2 id="pregunta-area" className="bbva-titular text-[2.2rem] text-tinta">
           ¿En qué área trabajás?
         </h2>
-        <p className="bbva-serif mt-1.5 text-[1.18rem] italic leading-snug text-grafito">Elegí la más cercana. No te pedimos el nombre.</p>
+        <p className="bbva-serif mt-1.5 text-[1.18rem] italic leading-snug text-grafito">{listo ? "Elegí la más cercana." : "Primero escribí tu nombre y apellido."}</p>
         {aviso && (
           <p role="status" className="bbva-mano mt-3 text-[1.3rem] leading-tight text-rojo">
             {aviso}
@@ -73,8 +111,8 @@ export function Ingreso({
               <li key={a.id} className="bbva-cae" style={{ animationDelay: `${0.16 + i * 0.06}s` }}>
                 <button
                   type="button"
-                  onClick={() => onElegir(a)}
-                  disabled={!!entrando}
+                  onClick={() => onElegir(a, nombre.trim().replace(/\s+/g, " "))}
+                  disabled={!!entrando || !listo}
                   aria-busy={esta}
                   className={cx(
                     "alu-boton flex min-h-14 w-full items-center gap-3 rounded-[4px] border-[1.5px] px-3 py-1.5 text-left",
@@ -185,6 +223,7 @@ export function Espera({
   conectados,
   hechas,
   onVerTarjeta,
+  extra,
 }: {
   area?: Area;
   enPantalla: string | null;
@@ -192,9 +231,12 @@ export function Espera({
   /** Actividades respondidas completas (por clave). */
   hechas: Set<string>;
   onVerTarjeta?: () => void;
+  /** Lo que se agrega arriba de todo (ej.: la guía para descargar al final). */
+  extra?: React.ReactNode;
 }) {
   return (
     <section className="flex flex-col items-center pt-4 text-center">
+      {extra}
       <IlusMira />
       <h1 className="bbva-titular mt-5 text-[3.3rem] text-tinta">Mirá la pantalla</h1>
       <p className="bbva-serif mt-2 max-w-[19rem] text-[1.2rem] italic leading-snug text-grafito">
@@ -330,3 +372,26 @@ export function Cargando({ texto }: { texto: string }) {
   );
 }
 
+
+// --- Nombre pendiente (quienes entraron antes de que se pidiera) -----------------------
+
+export function PedirNombre({ onGuardar }: { onGuardar: (nombre: string) => void }) {
+  const [nombre, setNombre] = useState("");
+  const listo = nombreValido(nombre);
+  const guardar = () => listo && onGuardar(nombre.trim().replace(/\s+/g, " "));
+  return (
+    <div className="bbva-recorte mb-6 rounded-[3px] border-l-[3px] border-naranja px-4 pb-4 pt-3.5 text-left">
+      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-naranja">Un dato para la próxima clase</p>
+      <p className="bbva-titular mt-1 text-[1.6rem] leading-none text-tinta">¿Cómo te llamás?</p>
+      <CampoNombre valor={nombre} onCambio={setNombre} onListo={guardar} />
+      <button
+        type="button"
+        onClick={guardar}
+        disabled={!listo}
+        className="alu-boton mt-2.5 min-h-12 w-full rounded-[4px] bg-tinta font-mono text-[12.5px] font-semibold uppercase tracking-[0.18em] text-papel disabled:opacity-40"
+      >
+        {listo ? "Guardar" : "Nombre y apellido"}
+      </button>
+    </div>
+  );
+}
