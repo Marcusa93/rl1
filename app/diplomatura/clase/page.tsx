@@ -431,6 +431,7 @@ function IngresoZoom() {
       <p className="text-sm uppercase tracking-[0.3em] text-faint">Abrí en tu navegador · el enlace está en el chat de Zoom</p>
       <p className="text-gradient pulse-ring mt-8 break-all rounded-3xl border-gradient px-8 py-6 font-mono text-4xl font-bold sm:text-6xl">{DIP_LINK}</p>
       <p className="mt-6 max-w-2xl text-lg text-muted sm:text-xl">Escribí tu nombre (o un apodo) y dejá la pestaña abierta: las actividades aparecen solas.</p>
+      <p className="mt-4 rounded-full border border-teal/40 bg-teal/10 px-5 py-2 text-lg text-foreground">👏 💡 🤖 😮 ❤️ 🔥 Mandá emojis cuando quieras: aparecen acá, en la pantalla</p>
       <p className="mt-8 font-mono text-6xl font-bold text-teal">{data?.participants ?? 0}</p>
       <p className="text-sm uppercase tracking-widest text-faint">ya entraron</p>
     </div>
