@@ -244,12 +244,25 @@ function Deck() {
 
       <main
         key={idx}
-        className="rise mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-20 pt-10 sm:px-10 sm:pt-14"
+        className="rise mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-20 pt-20 sm:px-10 sm:pt-20"
       >
         <Slide slide={slide} revelada={revelada} onRevelar={() => setRevelada((r) => !r)} />
       </main>
 
       <LluviaReacciones slug={DIP_SLUG} contador={slide.t === "final"} />
+
+      {/* Instagram del docente, chico y fijo en todas las placas (portada y final ya lo tienen grande). */}
+      {slide.t !== "portada" && slide.t !== "final" && (
+        <a
+          href={COM_INSTAGRAM_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="fixed left-4 top-3 z-40 flex items-center gap-2 rounded-xl border border-line bg-panel/70 p-1.5 pr-3 backdrop-blur"
+        >
+          <img src={COM_QR_SRC} alt="Código QR a Instagram" width={52} height={52} className="rounded-md bg-white p-0.5" />
+          <span className="font-mono text-xs text-muted">@marquitorossi</span>
+        </a>
+      )}
 
       {/* El kit vive en el pie: nunca tapa el contenido de la placa. */}
       <footer className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 bg-gradient-to-t from-ink via-ink/90 to-transparent px-5 pb-3 pt-6 text-xs text-faint">
@@ -281,7 +294,7 @@ function Deck() {
               ))}
             </div>
           ) : (
-            <span className="hidden min-w-0 truncate lg:block">{DIP_AUTOR} · Laboratorio de IA · Facultad de Derecho y Ciencias Sociales, UNT</span>
+            <span className="hidden min-w-0 truncate lg:block">{DIP_AUTOR} · Diplomatura en IA, Tecnología y Proceso Judicial · UNNE · Fundación Formarte</span>
           )}
         </div>
         <div className="ml-auto flex shrink-0 items-center gap-3">

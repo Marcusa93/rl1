@@ -18,12 +18,14 @@ export type { JusPlaca, JusSlide } from "./justicia-clase";
 export const DIP_SLUG = "diplomatura";
 export const DIP_TITLE = "IA y ejercicio profesional";
 export const DIP_SUBTITLE = "De pedirle cosas a diseñar cómo trabajamos con ella";
-export const DIP_EVENTO = "Diplomatura en IA, Tecnología y Proceso Judicial · Módulo 6";
+export const DIP_EVENTO = "Diplomatura en IA, Tecnología y Proceso Judicial · UNNE · Fundación Formarte · Módulo 6";
 export const DIP_FECHA = "Jueves 1 de octubre de 2026";
 export const DIP_LINK = "taller.rossi-ia.com/diplomatura";
 export const DIP_AUTOR = "Dr. Marco Rossi";
 export const DIP_CARGO = "Director del Laboratorio de IA · Facultad de Derecho y Ciencias Sociales, UNT";
-export const DIP_LOGOS: { src: string; alt: string; fondo: boolean }[] = [];
+export const DIP_LOGOS: { src: string; alt: string; fondo: boolean }[] = [
+  { src: "/diplomatura/logo-unne.png", alt: "Facultad de Derecho y Ciencias Sociales y Políticas — UNNE", fondo: true },
+];
 
 // --- Actividades en vivo --------------------------------------------------
 
