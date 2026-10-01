@@ -2,6 +2,7 @@ import { fail, getSession, ok } from "@/lib/api";
 import { getBloque } from "@/lib/comercial";
 import { getW3Actividad } from "@/lib/web3-clase";
 import { getJusActividad } from "@/lib/justicia-clase";
+import { getDipActividad } from "@/lib/diplo-clase";
 import { getTalActividad } from "@/lib/taller-clase";
 import { getAdmin } from "@/lib/supabase/server";
 import type { CotioVar } from "@/lib/types";
@@ -218,6 +219,7 @@ export async function GET(
   const w3 =
     getW3Actividad(activity) ??
     getJusActividad(activity) ??
+    getDipActividad(activity) ??
     getTalActividad(activity);
   if (w3) {
     const base = {

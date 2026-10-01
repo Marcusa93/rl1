@@ -62,7 +62,19 @@ export type ActivityKey =
   | "tal_alternativa"
   | "tal_giro"
   | "tal_prompt_util"
-  | "tal_nube";
+  | "tal_nube"
+  // Clase "IA y ejercicio profesional" (/diplomatura) — prefijo dip_
+  | "dip_encuesta"
+  | "dip_antes"
+  | "dip_x_alucina"
+  | "dip_falta"
+  | "dip_audiencia"
+  | "dip_categoria"
+  | "dip_x_delegar"
+  | "dip_hip1"
+  | "dip_hip2"
+  | "dip_nunca"
+  | "dip_despues";
 
 export type SessionStatus = "lobby" | "live" | "ended";
 

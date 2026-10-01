@@ -1,0 +1,648 @@
+"use client";
+
+// Presentación de la clase "IA y ejercicio profesional" (Diplomatura,
+// 01/10/2026, por Zoom). Motor copiado de /justicia/clase. La placa manda: al llegar a una placa de actividad, la
+// activa sola vía la API (cookie docente) y muestra los resultados en
+// vivo. Los participantes responden desde /diplomatura.
+//
+// Teclado: ← → avanzar · Home inicio · V revelar la respuesta de una
+// pregunta exprés · Shift+R reiniciar la sesión (borra participantes y
+// respuestas — usar después de ensayar). Los emojis que mandan desde el
+// celular flotan sobre cualquier placa.
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { LogoRL1 } from "@/components/brand/logo-rl1";
+import { Button, Spinner } from "@/components/ui";
+import { Constelacion, ResultadosVivo } from "@/components/clase/vivo";
+import { useLive } from "@/components/use-live";
+import { DiagramaJus } from "@/components/justicia/diagramas";
+import { BuscadorExpediente } from "@/components/justicia/buscador";
+import { Captura, Leyenda, LEYENDAS, type CapturaId } from "@/components/justicia/capturas";
+import { SimuladorConflicto } from "@/components/justicia/simulador";
+import { ConstructorCotio } from "@/components/justicia/cotio";
+import { DemoSistema, type DemoId } from "@/components/justicia/demos";
+import { DemoDictado } from "@/components/justicia/dictado";
+import { Explorables } from "@/components/clase/explorables";
+import { LluviaReacciones } from "@/components/clase/reacciones";
+import { useRemotoDeck } from "@/components/clase/remoto";
+import { AvisoZoom, useZoomDeck } from "@/components/clase/zoom";
+import { rem } from "@/lib/remoto";
+import {
+  getDipActividad,
+  DIP_AUTOR,
+  DIP_CARGO,
+  DIP_CONFIG,
+  DIP_EVENTO,
+  DIP_FECHA,
+  DIP_KIT,
+  DIP_LINK,
+  DIP_LOGOS,
+  DIP_SLIDES,
+  DIP_SLUG,
+  DIP_SUBTITLE,
+  DIP_TITLE,
+  tituloPlaca,
+  type JusPlaca,
+  type JusSlide,
+} from "@/lib/diplo-clase";
+import { COM_INSTAGRAM_URL, COM_QR_SRC } from "@/lib/comercial";
+import type { ActividadVivo } from "@/lib/clase-vivo";
+import { cn } from "@/lib/utils";
+
+const STORAGE_KEY = "diplomatura-clase-slide";
+
+/** Mini demostraciones de las tarjetas que traen `demo` (Lo que la justicia puede construir). */
+const verDemo = (d: string) => <DemoSistema id={d as DemoId} />;
+
+// --- Acceso docente -----------------------------------------------------------
+
+export default function DiplomaturaClasePage() {
+  const [authed, setAuthed] = useState<boolean | null>(null);
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  useEffect(() => {
+    fetch("/api/teacher/me")
+      .then((r) => r.json())
+      .then((d) => setAuthed(d.teacher))
+      .catch(() => setAuthed(false));
+  }, []);
+
+  async function login(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setErr("");
+    const res = await fetch("/api/teacher/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+    setBusy(false);
+    if (res.ok) setAuthed(true);
+    else setErr("Clave incorrecta");
+  }
+
+  if (authed === null)
+    return (
+      <main className="flex min-h-dvh items-center justify-center">
+        <Spinner />
+      </main>
+    );
+
+  if (!authed)
+    return (
+      <main className="bg-grid flex min-h-dvh items-center justify-center px-5">
+        <form onSubmit={login} className="glass w-full max-w-sm rounded-2xl p-6 rise">
+          <div className="mb-5 flex justify-center">
+            <LogoRL1 size={38} />
+          </div>
+          <h1 className="text-lg font-semibold">Presentación · {DIP_TITLE}</h1>
+          <p className="mt-1 text-sm text-muted">La presentación activa las actividades por su cuenta; por eso pide la clave docente.</p>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="clave"
+            autoFocus
+            className="mt-4 w-full rounded-xl border border-line bg-ink-2/70 px-4 py-3 outline-none placeholder:text-faint focus:border-teal/60"
+          />
+          {err && <p className="mt-2 text-sm text-magenta">{err}</p>}
+          <Button type="submit" disabled={busy} className="mt-4 w-full">
+            {busy ? <Spinner /> : "Entrar"}
+          </Button>
+        </form>
+      </main>
+    );
+
+  return <Deck />;
+}
+
+// --- La presentación ------------------------------------------------------------
+
+type EstadoActivacion = { key: string; status: "enviando" | "ok" | "error" } | null;
+
+function Deck() {
+  const [idx, setIdx] = useState(() => {
+    try {
+      const v = parseInt(localStorage.getItem(STORAGE_KEY) ?? "0", 10);
+      return Number.isFinite(v) ? Math.min(Math.max(v, 0), DIP_SLIDES.length - 1) : 0;
+    } catch {
+      return 0;
+    }
+  });
+  const [estado, setEstado] = useState<EstadoActivacion>(null);
+  // null = lo que indique la placa; true/false = lo que eligió el docente en esta placa
+  const [kitManual, setKitManual] = useState<boolean | null>(null);
+  const [revelada, setRevelada] = useState(false);
+  const lastActivada = useRef<string | null>(null);
+
+  const go = useCallback((n: number) => {
+    const next = Math.min(Math.max(n, 0), DIP_SLIDES.length - 1);
+    setIdx(next);
+    setKitManual(null);
+    setRevelada(false);
+    try {
+      localStorage.setItem(STORAGE_KEY, String(next));
+    } catch {}
+  }, []);
+
+  const slide = DIP_SLIDES[idx];
+
+  const activar = useCallback((key: string) => {
+    lastActivada.current = key;
+    setEstado({ key, status: "enviando" });
+    fetch(`/api/session/${DIP_SLUG}/activity`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ current_activity: key }),
+    })
+      .then((r) => setEstado({ key, status: r.ok ? "ok" : "error" }))
+      .catch(() => setEstado({ key, status: "error" }));
+  }, []);
+
+  // La placa manda: si tiene actividad asociada, se activa sola.
+  useEffect(() => {
+    const key = "activa" in slide ? slide.activa : undefined;
+    if (!key || lastActivada.current === key) return;
+    activar(key);
+  }, [slide, activar]);
+
+  useEffect(() => {
+    async function reiniciar() {
+      if (!confirm("¿Reiniciar la sesión? Se borran todos los participantes y sus respuestas.")) return;
+      await fetch(`/api/session/${DIP_SLUG}/reset`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ all: true }),
+      });
+      const actual = DIP_SLIDES[idx];
+      if ("activa" in actual) activar(actual.activa);
+    }
+    function onKey(e: KeyboardEvent) {
+      if ((e.target as HTMLElement)?.tagName === "INPUT") return;
+      if (e.key === "v" || e.key === "V") {
+        setRevelada((r) => !r);
+        return;
+      }
+      if (["ArrowRight", "PageDown", " "].includes(e.key)) {
+        e.preventDefault();
+        go(idx + 1);
+      } else if (["ArrowLeft", "PageUp"].includes(e.key)) {
+        e.preventDefault();
+        go(idx - 1);
+      } else if (e.key === "Home") go(0);
+      else if (e.key === "R" && e.shiftKey) reiniciar();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [go, idx, activar]);
+
+  const parteActual = DIP_SLIDES.slice(0, idx + 1)
+    .reverse()
+    .find((s) => s.parte)?.parte;
+
+  // Control desde el celular del docente (justicia.rossi-ia.com/control).
+  useRemotoDeck({
+    slug: DIP_SLUG,
+    idx,
+    total: DIP_SLIDES.length,
+    titulo: tituloPlaca(slide),
+    parte: parteActual,
+    nota: slide.t === "placa" ? slide.nota : undefined,
+    go,
+  });
+
+  const estadoNombre = estado ? (getDipActividad(estado.key)?.titulo ?? "Ingreso") : "";
+  // El kit se despliega solo en las placas marcadas; en el resto, a un clic.
+  const kitVisible = kitManual ?? Boolean(slide.kit);
+  const { zoom, aviso: avisoZoom } = useZoomDeck();
+
+  return (
+    <div className="deck-escala bg-grid relative flex min-h-dvh flex-col overflow-hidden">
+      <AvisoZoom zoom={zoom} visible={avisoZoom} />
+      <div className="fixed inset-x-0 top-0 z-40 h-1 bg-ink-2/60">
+        <div
+          className="h-full bg-gradient-to-r from-teal via-cyan to-violet transition-all duration-300"
+          style={{ width: `${((idx + 1) / DIP_SLIDES.length) * 100}%` }}
+        />
+      </div>
+
+      {estado && (
+        <div
+          className={cn(
+            "fixed right-4 top-3 z-40 flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium",
+            estado.status === "error" ? "bg-magenta/15 text-magenta" : "bg-teal/15 text-teal",
+          )}
+        >
+          <span className={cn("size-1.5 rounded-full", estado.status === "error" ? "bg-magenta" : "animate-pulse bg-teal")} />
+          {estado.status === "enviando" && "activando…"}
+          {estado.status === "ok" && <>en vivo: {estadoNombre}</>}
+          {estado.status === "error" && "no se pudo activar — vuelva a ingresar la clave"}
+        </div>
+      )}
+
+      <main
+        key={idx}
+        className="rise mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-20 pt-10 sm:px-10 sm:pt-14"
+      >
+        <Slide slide={slide} revelada={revelada} onRevelar={() => setRevelada((r) => !r)} />
+      </main>
+
+      <LluviaReacciones slug={DIP_SLUG} contador={slide.t === "final"} />
+
+      {/* El kit vive en el pie: nunca tapa el contenido de la placa. */}
+      <footer className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 bg-gradient-to-t from-ink via-ink/90 to-transparent px-5 pb-3 pt-6 text-xs text-faint">
+        <div className="flex min-w-0 items-center gap-2">
+          <button
+            onClick={() => setKitManual(!kitVisible)}
+            className={cn(
+              "shrink-0 rounded-lg border px-3 py-1.5 transition",
+              kitVisible ? "border-teal/60 bg-teal/15 text-teal" : "border-line bg-panel/60 text-muted hover:text-teal",
+            )}
+            aria-expanded={kitVisible}
+            aria-label="Kit de herramientas"
+          >
+            🧰 {kitVisible ? "Kit" : "Herramientas"}
+          </button>
+          {kitVisible ? (
+            <div className="rise flex min-w-0 items-center gap-1.5 overflow-x-auto">
+              {DIP_KIT.map((h) => (
+                <a
+                  key={h.id}
+                  href={h.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded-lg border border-line bg-panel/70 px-2.5 py-1.5 text-xs text-foreground transition hover:border-teal/60 hover:text-teal"
+                >
+                  <span>{h.emoji}</span>
+                  {h.label}
+                </a>
+              ))}
+            </div>
+          ) : (
+            <span className="hidden min-w-0 truncate lg:block">{DIP_AUTOR} · Laboratorio de IA · Facultad de Derecho y Ciencias Sociales, UNT</span>
+          )}
+        </div>
+        <div className="ml-auto flex shrink-0 items-center gap-3">
+          {idx === 0 && <span className="hidden md:block">← → para avanzar</span>}
+          {parteActual && (
+            <span
+              className={cn(
+                "hidden rounded-full border border-line bg-panel/60 px-2.5 py-1 font-mono text-[11px] text-muted",
+                kitVisible ? "2xl:block" : "md:block",
+              )}
+            >
+              {parteActual}
+            </span>
+          )}
+          <button
+            onClick={() => go(idx - 1)}
+            className="rounded-lg border border-line bg-panel/60 px-3 py-1.5 text-muted transition hover:text-teal"
+            aria-label="Anterior"
+          >
+            ◀
+          </button>
+          <span className="font-mono">
+            {idx + 1} / {DIP_SLIDES.length}
+          </span>
+          <button
+            onClick={() => go(idx + 1)}
+            className="rounded-lg border border-line bg-panel/60 px-3 py-1.5 text-muted transition hover:text-teal"
+            aria-label="Siguiente"
+          >
+            ▶
+          </button>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+// --- Placas -----------------------------------------------------------------------
+
+function Logos({ alto = 64 }: { alto?: number }) {
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8">
+      {DIP_LOGOS.map((l) => (
+        <img
+          key={l.src}
+          src={l.src}
+          alt={l.alt}
+          style={{ height: alto, maxHeight: "9vw" }}
+          className={cn("w-auto", l.fondo && "rounded-xl bg-white p-1.5")}
+        />
+      ))}
+    </div>
+  );
+}
+
+function Slide({ slide, revelada, onRevelar }: { slide: JusSlide; revelada: boolean; onRevelar: () => void }) {
+  switch (slide.t) {
+    case "portada":
+      return (
+        <div className="relative flex flex-col items-center text-center">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[420px] w-[720px] -translate-x-1/2 -translate-y-1/4 opacity-40 blur-3xl"
+            style={{
+              background:
+                "radial-gradient(ellipse at 30% 40%, rgba(94,234,212,0.5), transparent 60%), radial-gradient(ellipse at 70% 60%, rgba(139,92,246,0.5), transparent 60%)",
+            }}
+          />
+          <Constelacion />
+          <Logos alto={62} />
+          <h1 className="text-gradient mt-8 max-w-full break-words font-mono text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+            {DIP_TITLE}
+          </h1>
+          <p className="rise mt-4 max-w-3xl text-lg text-muted sm:text-2xl" style={{ animationDelay: "0.2s" }}>
+            {DIP_SUBTITLE}
+          </p>
+          <p className="rise mt-2 text-sm text-faint" style={{ animationDelay: "0.3s" }}>
+            {DIP_EVENTO} · {DIP_FECHA}
+          </p>
+          <p className="rise mt-5 text-lg font-medium" style={{ animationDelay: "0.4s" }}>
+            {DIP_AUTOR}
+          </p>
+          <p className="rise text-sm text-muted" style={{ animationDelay: "0.45s" }}>
+            {DIP_CARGO}
+          </p>
+          <div className="rise mt-8 flex flex-wrap items-center justify-center gap-6 sm:gap-10" style={{ animationDelay: "0.6s" }}>
+            <div className="flex flex-wrap items-center justify-center gap-5">
+              <div className="pulse-ring rounded-2xl border-gradient px-5 py-4 text-left sm:px-7 sm:py-5">
+                <p className="text-xs uppercase tracking-widest text-faint">Entrá desde tu computadora o tu celular</p>
+                <p className="text-gradient mt-1 break-all font-mono text-xl font-bold sm:text-2xl">{DIP_LINK}</p>
+                <p className="mt-1 text-xs text-faint">el enlace está en el chat de Zoom</p>
+              </div>
+            </div>
+            <a href={COM_INSTAGRAM_URL} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-1.5">
+              <img src={COM_QR_SRC} alt="Código QR a Instagram" width={110} height={110} className="rounded-xl border border-line bg-white p-2" />
+              <span className="text-xs text-faint">@marquitorossi</span>
+            </a>
+          </div>
+        </div>
+      );
+
+    case "ingreso":
+      return <IngresoZoom />;
+
+    case "placa":
+      return <PlacaVista slide={slide} />;
+
+    case "actividad": {
+      const act = getDipActividad(slide.activa);
+      if (!act) return null;
+      return <SlideActividad act={act} escena={slide.escena} revelada={revelada} onRevelar={onRevelar} />;
+    }
+
+    case "simulador":
+      return (
+        <div>
+          {slide.parte && <Parte texto={slide.parte} />}
+          <SimuladorConflicto slug={DIP_SLUG} activity={slide.activa} intervalo={DIP_CONFIG.poll.deck} />
+        </div>
+      );
+
+    case "final":
+      return (
+        <div className="flex flex-col items-center text-center">
+          <Logos alto={54} />
+          <h1 className="text-gradient mt-8 font-mono text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">Gracias</h1>
+          <p className="rise mt-5 rounded-full border border-teal/40 bg-teal/10 px-5 py-2 text-lg text-foreground sm:text-xl" style={{ animationDelay: "0.2s" }}>
+            👏 Mandá tu aplauso desde la página de la clase
+          </p>
+          <p className="mt-4 text-lg text-muted">{DIP_EVENTO}</p>
+          <p className="mt-5 text-lg font-medium">{DIP_AUTOR}</p>
+          <p className="text-sm text-muted">{DIP_CARGO}</p>
+          <a href={COM_INSTAGRAM_URL} target="_blank" rel="noreferrer" className="mt-8 flex flex-col items-center gap-3">
+            <img src={COM_QR_SRC} alt="Código QR a Instagram" width={190} height={190} className="rounded-2xl border border-line bg-white p-3" />
+            <span className="font-mono text-lg text-teal">@marquitorossi</span>
+          </a>
+        </div>
+      );
+  }
+}
+
+/** Ingreso por Zoom: la dirección enorme y el contador de quienes ya entraron. */
+function IngresoZoom() {
+  const { data } = useLive<{ participants: number }>(`/api/session/${DIP_SLUG}`, 3000);
+  return (
+    <div className="flex flex-col items-center text-center">
+      <p className="text-sm uppercase tracking-[0.3em] text-faint">Abrí en tu navegador · el enlace está en el chat de Zoom</p>
+      <p className="text-gradient pulse-ring mt-8 break-all rounded-3xl border-gradient px-8 py-6 font-mono text-4xl font-bold sm:text-6xl">{DIP_LINK}</p>
+      <p className="mt-6 max-w-2xl text-lg text-muted sm:text-xl">Escribí tu nombre (o un apodo) y dejá la pestaña abierta: las actividades aparecen solas.</p>
+      <p className="mt-8 font-mono text-6xl font-bold text-teal">{data?.participants ?? 0}</p>
+      <p className="text-sm uppercase tracking-widest text-faint">ya entraron</p>
+    </div>
+  );
+}
+
+/** Recordatorio de dónde responder, en cada placa de actividad. */
+function LinkResponda() {
+  return (
+    <div className="pulse-ring flex shrink-0 flex-col rounded-xl border-gradient px-4 py-3 text-left">
+      <p className="text-[10px] uppercase tracking-widest text-faint">Respondé en</p>
+      <p className="text-gradient font-mono text-base font-bold sm:text-lg">{DIP_LINK}</p>
+    </div>
+  );
+}
+
+function Parte({ texto }: { texto: string }) {
+  return (
+    <p className="mb-4 flex items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-violet">
+      <span className="size-1.5 rounded-full bg-current" />
+      {texto}
+    </p>
+  );
+}
+
+const NOMBRE_CAPTURA: Record<CapturaId, string> = {
+  memoria: "Memoria",
+  proyecto: "Proyecto",
+  skill: "Skill",
+  tarea: "Tarea programada",
+};
+
+/**
+ * Placa de contenido. Si trae capturas, un botón las muestra en el lugar del
+ * diagrama (respaldo ilustrativo por si no se puede abrir la herramienta en vivo).
+ */
+function PlacaVista({ slide }: { slide: JusPlaca & { parte?: string } }) {
+  const [captura, setCaptura] = useState<CapturaId | null>(null);
+  return (
+    <div>
+      {slide.parte && <Parte texto={slide.parte} />}
+      <h1 className="max-w-4xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">{slide.titulo}</h1>
+      <p className="rise mt-3 max-w-3xl text-lg leading-snug text-muted sm:text-2xl" style={{ animationDelay: "0.12s" }}>
+        {slide.bajada}
+      </p>
+      {slide.capturas && (
+        <div className="rise mt-4 flex flex-wrap gap-2" style={{ animationDelay: "0.18s" }}>
+          {slide.capturas.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCaptura(captura === c ? null : c)}
+              {...rem(`📸 Así se ve: ${NOMBRE_CAPTURA[c]}`, captura === c)}
+              className={cn(
+                "rounded-xl border px-3 py-1.5 text-sm font-medium transition",
+                captura === c ? "border-teal/60 bg-teal/15 text-teal" : "border-line bg-panel/60 text-muted hover:border-teal/60 hover:text-teal",
+              )}
+            >
+              📸 {captura === c ? "Volver a la placa" : `Así se ve: ${NOMBRE_CAPTURA[c]}`}
+            </button>
+          ))}
+        </div>
+      )}
+      {captura ? (
+        <div className="rise mt-6 grid items-start gap-6 lg:grid-cols-[1.6fr_1fr] lg:gap-8">
+          <div className="pl-3">
+            <Captura id={captura} />
+          </div>
+          <Leyenda items={LEYENDAS[captura]} />
+        </div>
+      ) : (
+        <PlacaCuerpo slide={slide} />
+      )}
+    </div>
+  );
+}
+
+function PlacaCuerpo({ slide }: { slide: JusPlaca }) {
+  return (
+    <>
+          {slide.diagrama && slide.explora ? (
+            // Diagrama y tarjetas explorables lado a lado; apilados en pantallas angostas.
+            <div className="mt-6 grid items-start gap-5 lg:grid-cols-[1.1fr_1fr] lg:gap-6">
+              <div className="rise glass rounded-2xl p-3 sm:p-5" style={{ animationDelay: "0.25s" }}>
+                <DiagramaJus id={slide.diagrama} />
+              </div>
+              <Explorables items={slide.explora} columnas={slide.explora.length > 4 ? 1 : 2} renderDemo={verDemo} />
+            </div>
+          ) : slide.diagrama ? (
+            <div className="rise mx-auto mt-7 w-full max-w-3xl" style={{ animationDelay: "0.25s" }}>
+              <div className="glass rounded-2xl p-3 sm:p-5">
+                <DiagramaJus id={slide.diagrama} />
+              </div>
+            </div>
+          ) : slide.explora ? (
+            <div className="mt-6">
+              <Explorables items={slide.explora} renderDemo={verDemo} lado={slide.explora.some((e) => e.demo)} />
+            </div>
+          ) : null}
+          {slide.interactivo === "pdfs" && <BuscadorExpediente />}
+          {slide.interactivo === "cotio" && <ConstructorCotio />}
+          {slide.interactivo === "dictado" && <DemoDictado />}
+          {slide.herramientas && <TarjetasHerramientas ids={slide.herramientas} />}
+          {slide.pills && (
+            <div className="mt-5 flex flex-wrap justify-center gap-2">
+              {slide.pills.map((p, i) => (
+                <span
+                  key={p}
+                  className="rise rounded-full border border-teal/40 bg-teal/10 px-4 py-1.5 text-base text-foreground"
+                  style={{ animationDelay: `${0.35 + i * 0.1}s` }}
+                >
+                  {p}
+                </span>
+              ))}
+            </div>
+          )}
+          {slide.lede && (
+            <p className="rise mx-auto mt-5 max-w-3xl text-center text-xl italic leading-relaxed text-muted" style={{ animationDelay: "0.4s" }}>
+              {slide.lede}
+            </p>
+          )}
+    </>
+  );
+}
+
+/** "Veámoslo en vivo": tarjetas grandes que abren cada herramienta en otra pestaña. */
+const QUE_MOSTRAR: Record<string, string> = {
+  claude: "proyectos, skills y memoria",
+  chatgpt: "prompt de sistema y tareas programadas",
+  gemini: "gems y búsqueda con fuentes",
+  notebooklm: "RAG: respuestas desde sus documentos",
+  pinpoint: "búsqueda en grandes volúmenes de documentos",
+};
+
+function TarjetasHerramientas({ ids }: { ids: string[] }) {
+  const items = DIP_KIT.filter((h) => ids.includes(h.id));
+  return (
+    <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {items.map((h, i) => (
+        <a
+          key={h.id}
+          href={h.url}
+          target="_blank"
+          rel="noreferrer"
+          className="rise glass group flex items-center gap-4 rounded-2xl p-5 transition hover:brightness-125"
+          style={{ animationDelay: `${0.15 + i * 0.08}s` }}
+        >
+          <span className="text-3xl">{h.emoji}</span>
+          <span className="min-w-0">
+            <span className="block text-xl font-semibold group-hover:text-teal">{h.label} ↗</span>
+            <span className="block text-sm text-muted">{QUE_MOSTRAR[h.id]}</span>
+          </span>
+        </a>
+      ))}
+      <div className="rise flex items-center gap-4 rounded-2xl border border-dashed border-violet/50 p-5" style={{ animationDelay: `${0.15 + items.length * 0.08}s` }}>
+        <span className="text-3xl">🛠️</span>
+        <span>
+          <span className="block text-xl font-semibold text-violet">Herramientas propias</span>
+          <span className="block text-sm text-muted">las vemos más adelante</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// --- Placa de actividad ---------------------------------------------------------------
+
+function SlideActividad({
+  act,
+  escena,
+  revelada,
+  onRevelar,
+}: {
+  act: ActividadVivo;
+  escena: string;
+  revelada: boolean;
+  onRevelar: () => void;
+}) {
+  const nube = act.kind === "palabra";
+  return (
+    <div className="flex h-full flex-col">
+      <div className="flex flex-col-reverse items-start gap-5 md:flex-row md:justify-between md:gap-6">
+        <div className="min-w-0">
+          <p className="mb-3 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-yellow-400 sm:text-sm">
+            <span className="size-1.5 shrink-0 rounded-full bg-current" />
+            {escena} · en vivo
+          </p>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">{act.titulo}</h1>
+          <p className="mt-3 max-w-3xl text-base italic leading-snug text-muted sm:text-xl">{act.bajada}</p>
+        </div>
+        <LinkResponda />
+      </div>
+
+      <div className={cn("rise mt-5 flex flex-1 flex-col", nube && "[&>div]:min-h-[48vh]")} style={{ animationDelay: "0.25s" }}>
+        <ResultadosVivo slug={DIP_SLUG} act={act} intervalo={DIP_CONFIG.poll.deck} revelada={revelada} />
+      </div>
+
+      {act.correcta && (
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={onRevelar}
+            {...rem("✓ Ver respuesta", revelada)}
+            className={cn(
+              "rounded-xl border px-4 py-2 text-sm font-medium transition",
+              revelada
+                ? "border-emerald-400/60 bg-emerald-400/15 text-emerald-300"
+                : "border-line bg-panel/60 text-muted hover:border-teal/60 hover:text-teal",
+            )}
+          >
+            {revelada ? "Ocultar respuesta" : "Ver respuesta"} <span className="ml-1 font-mono text-xs text-faint">V</span>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
