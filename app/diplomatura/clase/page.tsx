@@ -19,7 +19,7 @@ import { DiagramaJus } from "@/components/justicia/diagramas";
 import { BuscadorExpediente } from "@/components/justicia/buscador";
 import { Captura, Leyenda, LEYENDAS, type CapturaId } from "@/components/justicia/capturas";
 import { SimuladorConflicto } from "@/components/justicia/simulador";
-import { ConstructorCotio } from "@/components/justicia/cotio";
+import { ConstructorCotio, TEXTOS_TUCUMAN, VACIOS_TUCUMAN } from "@/components/justicia/cotio";
 import { DemoSistema, type DemoId } from "@/components/justicia/demos";
 import { DemoDictado } from "@/components/justicia/dictado";
 import { Explorables } from "@/components/clase/explorables";
@@ -496,7 +496,7 @@ function PlacaVista({ slide }: { slide: JusPlaca & { parte?: string } }) {
       {captura ? (
         <div className="rise mt-6 grid items-start gap-6 lg:grid-cols-[1.6fr_1fr] lg:gap-8">
           <div className="pl-3">
-            <Captura id={captura} />
+            <Captura id={captura} variante="ar" />
           </div>
           <Leyenda items={LEYENDAS[captura]} />
         </div>
@@ -530,7 +530,7 @@ function PlacaCuerpo({ slide }: { slide: JusPlaca }) {
             </div>
           ) : null}
           {slide.interactivo === "pdfs" && <BuscadorExpediente />}
-          {slide.interactivo === "cotio" && <ConstructorCotio />}
+          {slide.interactivo === "cotio" && <ConstructorCotio textos={TEXTOS_TUCUMAN} vacios={VACIOS_TUCUMAN} />}
           {slide.interactivo === "dictado" && <DemoDictado />}
           {slide.herramientas && <TarjetasHerramientas ids={slide.herramientas} />}
           {slide.pills && (

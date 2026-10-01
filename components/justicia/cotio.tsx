@@ -20,7 +20,9 @@ const PIEZAS: { id: Pieza; letra: string; nombre: string; que: string; color: st
   { id: "s", letra: "O", nombre: "Output", que: "Cómo tiene que entregar el resultado.", color: "text-rose-300", borde: "border-rose-300" },
 ];
 
-const TEXTOS: Record<Modo, Record<Pieza, string>> = {
+export type TextosCotio = Record<Modo, Record<Pieza, string>>;
+
+const TEXTOS: TextosCotio = {
   usuario: {
     c: "Soy defensora pública de la PGR en un proceso de familia por cuota alimenticia. La audiencia es mañana.",
     o: "Necesito preparar la audiencia sin omitir ningún dato relevante.",
@@ -52,7 +54,27 @@ const MODOS: Record<Modo, { label: string; emoji: string; nota: string; vacio: s
   },
 };
 
-export function ConstructorCotio() {
+/** Ejemplo de la Diplomatura (Argentina): litigante civil y comercial en Tucumán. */
+export const TEXTOS_TUCUMAN: TextosCotio = {
+  usuario: {
+    c: "Soy abogado litigante del fuero civil y comercial de la provincia de Tucumán. Represento a la actora en un juicio de daños y perjuicios por un accidente de tránsito. La audiencia preliminar es la semana que viene.",
+    o: "Necesito preparar la audiencia sin omitir ningún hecho ni prueba relevante.",
+    t: "1) Armá una cronología de los hechos. 2) Señalá las contradicciones entre la demanda y la contestación. 3) Listá la prueba ofrecida y la que falta producir.",
+    i: "Usá solo los documentos adjuntos: la demanda, la contestación y el acta de la audiencia anterior. No uses información de otros casos.",
+    s: "Entregá una tabla (fecha · hecho · documento) y una lista de la prueba. Si falta un dato, indicalo; no lo completes.",
+  },
+  sistema: {
+    c: "Asistís a un estudio jurídico que litiga en el fuero civil y comercial de la provincia de Tucumán.",
+    o: "Tu objetivo es ayudar a preparar escritos y audiencias con información verificable.",
+    t: "Podés ordenar hechos, resumir escritos, detectar contradicciones y proponer borradores. No decidís la estrategia ni firmás nada.",
+    i: "Trabajá solo con los documentos de cada consulta y con el Código Procesal Civil y Comercial de Tucumán cargado en el proyecto. No inventes jurisprudencia.",
+    s: "Respondé en lenguaje claro, citá el documento o el artículo de cada dato y avisá cuando algo falte.",
+  },
+};
+
+export const VACIOS_TUCUMAN: Record<Modo, string> = { usuario: "Resumime este expediente.", sistema: "Sé un asistente útil." };
+
+export function ConstructorCotio({ textos = TEXTOS, vacios }: { textos?: TextosCotio; vacios?: Record<Modo, string> } = {}) {
   const [modo, setModo] = useState<Modo>("usuario");
   const [elegidas, setElegidas] = useState<Pieza[]>([]);
   const orden = PIEZAS.filter((p) => elegidas.includes(p.id));
@@ -134,7 +156,7 @@ export function ConstructorCotio() {
 
         {orden.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
-            <p className="rounded-xl border border-dashed border-line px-5 py-3 font-mono text-xl text-muted">«{MODOS[modo].vacio}»</p>
+            <p className="rounded-xl border border-dashed border-line px-5 py-3 font-mono text-xl text-muted">«{vacios?.[modo] ?? MODOS[modo].vacio}»</p>
             <p className="max-w-sm text-sm text-faint">Así pide casi todo el mundo. Toque las piezas para ver cómo cambia el pedido.</p>
           </div>
         ) : (
@@ -144,7 +166,7 @@ export function ConstructorCotio() {
                 <p className={cn("font-mono text-[11px] font-bold uppercase tracking-wider", p.color)}>
                   {p.letra} · {p.nombre}
                 </p>
-                <p className="text-[15px] leading-snug xl:text-base">{TEXTOS[modo][p.id]}</p>
+                <p className="text-[15px] leading-snug xl:text-base">{textos[modo][p.id]}</p>
               </div>
             ))}
             {orden.length === PIEZAS.length && (

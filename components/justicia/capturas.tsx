@@ -10,10 +10,54 @@ import { cn } from "@/lib/utils";
 
 export type CapturaId = "proyecto" | "skill" | "tarea" | "memoria";
 
-export function Captura({ id }: { id: CapturaId }) {
+/** "sv": El Salvador (masterclass /justicia). "ar": litigante civil y comercial en Tucumán (/diplomatura). */
+export type VarianteCaptura = "sv" | "ar";
+
+export function Captura({ id, variante = "sv" }: { id: CapturaId; variante?: VarianteCaptura }) {
   const C = { proyecto: CapturaProyecto, skill: CapturaSkill, tarea: CapturaTarea, memoria: CapturaMemoria }[id];
-  return <C />;
+  return <C v={variante} />;
 }
+
+const TXT = {
+  sv: {
+    ruta: "claude.ai/project/pgr-familia",
+    proyectos: ["PGR · Familia", "Mediación comunitaria", "Capacitación interna"],
+    titulo: "PGR · Familia — cuotas alimenticias",
+    instrucciones:
+      "Usted asiste a defensores públicos de familia. Responda solo con base en los archivos del proyecto. Si falta información, indíquelo. Use lenguaje claro.",
+    archivos: ["Código de Familia (extracto).pdf", "Criterios internos de cuota.docx", "Modelo de solicitud.docx", "Tabla de gastos 2026.xlsx"],
+    charlas: ["Cálculo de cuota — caso ficticio A", "Preparación de audiencia conciliatoria"],
+    recuerdos: [
+      "Trabaja como defensora pública en la PGR, área de familia.",
+      "Prefiere respuestas en lenguaje claro y con viñetas.",
+      "Redacta los escritos en tercera persona.",
+      "Caso de la señora R. G.: cuota de US$ 150, domicilio en…",
+    ],
+    pedidoMemoria: "Recuerde que trabajo en el área de familia.",
+    pedidoTarea:
+      "Cada lunes a las 7:00, busque las resoluciones nuevas sobre cuota alimenticia y resúmalas en cinco puntos, con su enlace.",
+    tareas: ["Resumen semanal de jurisprudencia de familia", "Audiencias del día", "Vencimientos de la semana"],
+  },
+  ar: {
+    ruta: "claude.ai/project/danos-tucuman",
+    proyectos: ["Daños · Civil y Comercial", "Ejecuciones", "Sucesiones"],
+    titulo: "Daños y perjuicios — fuero civil y comercial, Tucumán",
+    instrucciones:
+      "Asistís a un estudio que litiga en el fuero civil y comercial de Tucumán. Respondé solo con base en los archivos del proyecto. Si falta información, indicalo. No inventes jurisprudencia.",
+    archivos: ["CPCC Tucumán (extracto).pdf", "Criterios del estudio.docx", "Modelo de demanda de daños.docx", "Liquidación de rubros 2026.xlsx"],
+    charlas: ["Cronología — caso ficticio A", "Preparación de la audiencia preliminar"],
+    recuerdos: [
+      "Es abogado litigante en el fuero civil y comercial de Tucumán.",
+      "Prefiere respuestas en lenguaje claro y con viñetas.",
+      "Redacta los escritos en primera persona del plural.",
+      "Caso del Sr. J. P.: accidente en Av. Mate de Luna, reclamo de $ 18 millones…",
+    ],
+    pedidoMemoria: "Recordá que litigo en el fuero civil y comercial de Tucumán.",
+    pedidoTarea:
+      "Cada lunes a las 7:00, buscá los fallos nuevos de la Cámara Civil y Comercial de Tucumán sobre daños y resumilos en cinco puntos, con su enlace.",
+    tareas: ["Resumen semanal de fallos sobre daños", "Audiencias del día", "Vencimientos de la semana"],
+  },
+} as const;
 
 // --- Piezas comunes ------------------------------------------------------------
 
@@ -77,7 +121,7 @@ export const LEYENDAS: Record<CapturaId, { titulo: string; texto: string }[]> = 
     { titulo: "Se sube y se activa", texto: "Se comprime en .zip y se carga en Configuración → Capacidades. La herramienta la usa cuando el pedido coincide con la descripción." },
   ],
   tarea: [
-    { titulo: "Se crea desde el chat", texto: "Basta con pedirlo: «cada lunes a las 7, resuma…»." },
+    { titulo: "Se crea desde el chat", texto: "Basta con pedirlo: «cada lunes a las 7, un resumen de…»." },
     { titulo: "Frecuencia y próxima ejecución", texto: "Se puede pausar, editar o borrar en cualquier momento." },
     { titulo: "Avisa cuando termina", texto: "El resultado llega como notificación; la persona lo revisa antes de usarlo." },
   ],
@@ -90,13 +134,14 @@ export const LEYENDAS: Record<CapturaId, { titulo: string; texto: string }[]> = 
 
 // --- Proyecto -------------------------------------------------------------------------
 
-function CapturaProyecto() {
+function CapturaProyecto({ v }: { v: VarianteCaptura }) {
+  const x = TXT[v];
   return (
-    <Ventana app="Claude" ruta="claude.ai/project/pgr-familia">
+    <Ventana app="Claude" ruta={x.ruta}>
       <div className="grid min-h-[20rem] grid-cols-[9.5rem_1fr] text-[13px] sm:grid-cols-[11rem_1fr]">
         <aside className="border-r border-zinc-200 bg-zinc-50 p-3">
           <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Proyectos</p>
-          {["PGR · Familia", "Mediación comunitaria", "Capacitación interna"].map((p, i) => (
+          {x.proyectos.map((p, i) => (
             <p
               key={p}
               className={cn("mb-1 truncate rounded-md px-2 py-1.5", i === 0 ? "bg-orange-100 font-semibold text-orange-900" : "text-zinc-600")}
@@ -107,22 +152,19 @@ function CapturaProyecto() {
         </aside>
         <div className="space-y-3 p-4">
           <div>
-            <p className="text-base font-semibold">PGR · Familia — cuotas alimenticias</p>
+            <p className="text-base font-semibold">{x.titulo}</p>
             <p className="text-xs text-zinc-500">Proyecto de trabajo · 3 personas</p>
           </div>
           <div className="rise relative rounded-lg border border-zinc-200 bg-zinc-50 p-3" style={{ animationDelay: "0.15s" }}>
             <Marca n={1} className="absolute -left-3 -top-3" />
             <p className="mb-1 text-[11px] font-semibold text-zinc-500">Instrucciones del proyecto</p>
-            <p className="leading-relaxed text-zinc-700">
-              Usted asiste a defensores públicos de familia. Responda solo con base en los archivos del proyecto. Si falta
-              información, indíquelo. Use lenguaje claro.
-            </p>
+            <p className="leading-relaxed text-zinc-700">{x.instrucciones}</p>
           </div>
           <div className="rise relative rounded-lg border border-zinc-200 p-3" style={{ animationDelay: "0.3s" }}>
             <Marca n={2} className="absolute -left-3 -top-3" />
             <p className="mb-1.5 text-[11px] font-semibold text-zinc-500">Archivos del proyecto · 4</p>
             <div className="grid grid-cols-2 gap-1.5">
-              {["Código de Familia (extracto).pdf", "Criterios internos de cuota.docx", "Modelo de solicitud.docx", "Tabla de gastos 2026.xlsx"].map(
+              {x.archivos.map(
                 (f) => (
                   <span key={f} className="truncate rounded-md bg-zinc-100 px-2 py-1 text-[11px] text-zinc-600">
                     📄 {f}
@@ -134,8 +176,9 @@ function CapturaProyecto() {
           <div className="rise relative rounded-lg border border-zinc-200 p-3" style={{ animationDelay: "0.45s" }}>
             <Marca n={3} className="absolute -left-3 -top-3" />
             <p className="mb-1 text-[11px] font-semibold text-zinc-500">Conversaciones</p>
-            <p className="text-zinc-700">💬 Cálculo de cuota — caso ficticio A</p>
-            <p className="text-zinc-700">💬 Preparación de audiencia conciliatoria</p>
+            {x.charlas.map((c) => (
+              <p key={c} className="text-zinc-700">💬 {c}</p>
+            ))}
           </div>
         </div>
       </div>
@@ -145,7 +188,7 @@ function CapturaProyecto() {
 
 // --- Skill ------------------------------------------------------------------------------
 
-function CapturaSkill() {
+function CapturaSkill(_: { v: VarianteCaptura }) {
   const lineas = [
     { t: "---", c: "text-zinc-400" },
     { t: "name: oficio-lenguaje-claro", c: "text-violet-700" },
@@ -195,20 +238,20 @@ function CapturaSkill() {
 
 // --- Tarea programada ------------------------------------------------------------------
 
-function CapturaTarea() {
+function CapturaTarea({ v }: { v: VarianteCaptura }) {
+  const x = TXT[v];
   return (
     <Ventana app="ChatGPT" ruta="chatgpt.com/tasks">
       <div className="relative min-h-[20rem] space-y-3 p-4 text-[13px]">
         <div className="rise relative ml-auto max-w-[85%] rounded-2xl rounded-br-sm bg-zinc-100 px-3 py-2 text-zinc-700">
           <Marca n={1} className="absolute -left-3 -top-3" />
-          Cada lunes a las 7:00, busque las resoluciones nuevas sobre cuota alimenticia y resúmalas en cinco puntos, con su
-          enlace.
+          {x.pedidoTarea}
         </div>
         <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Tareas programadas</p>
         {[
-          { t: "Resumen semanal de jurisprudencia de familia", f: "Cada lunes · 7:00", p: "Próxima: lun 21/09, 7:00", on: true },
-          { t: "Audiencias del día", f: "Todos los días · 6:30", p: "Próxima: mañana, 6:30", on: true },
-          { t: "Vencimientos de la semana", f: "Cada viernes · 16:00", p: "En pausa", on: false },
+          { t: x.tareas[0], f: "Cada lunes · 7:00", p: "Próxima: lun 21/09, 7:00", on: true },
+          { t: x.tareas[1], f: "Todos los días · 6:30", p: "Próxima: mañana, 6:30", on: true },
+          { t: x.tareas[2], f: "Cada viernes · 16:00", p: "En pausa", on: false },
         ].map((k, i) => (
           <div key={k.t} className="rise relative flex items-center gap-3 rounded-xl border border-zinc-200 p-3" style={{ animationDelay: `${0.2 + i * 0.12}s` }}>
             {i === 0 && <Marca n={2} className="absolute -left-3 -top-3" />}
@@ -240,13 +283,9 @@ function CapturaTarea() {
 
 // --- Memoria ----------------------------------------------------------------------------
 
-function CapturaMemoria() {
-  const recuerdos = [
-    { t: "Trabaja como defensora pública en la PGR, área de familia.", riesgo: false },
-    { t: "Prefiere respuestas en lenguaje claro y con viñetas.", riesgo: false },
-    { t: "Redacta los escritos en tercera persona.", riesgo: false },
-    { t: "Caso de la señora R. G.: cuota de US$ 150, domicilio en…", riesgo: true },
-  ];
+function CapturaMemoria({ v }: { v: VarianteCaptura }) {
+  const x = TXT[v];
+  const recuerdos = x.recuerdos.map((t, i) => ({ t, riesgo: i === 3 }));
   return (
     <Ventana app="ChatGPT" ruta="Configuración › Personalización › Memoria">
       <div className="min-h-[20rem] space-y-3 p-4 text-[13px]">
@@ -279,7 +318,7 @@ function CapturaMemoria() {
           ))}
         </div>
         <div className="rise flex justify-end" style={{ animationDelay: "0.8s" }}>
-          <div className="rounded-2xl rounded-br-sm bg-zinc-100 px-3 py-2 text-zinc-700">Recuerde que trabajo en el área de familia.</div>
+          <div className="rounded-2xl rounded-br-sm bg-zinc-100 px-3 py-2 text-zinc-700">{x.pedidoMemoria}</div>
         </div>
         <p className="rise text-[11px] font-medium text-zinc-500" style={{ animationDelay: "1s" }}>
           ✓ Memoria actualizada
