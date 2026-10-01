@@ -224,15 +224,13 @@ export const CASO_TEXTO =
 export const DIP_SLIDES: JusSlide[] = [
   { t: "portada", activa: "lobby" },
   { t: "ingreso", activa: "lobby" },
-  { t: "actividad", activa: "dip_encuesta", escena: "Para empezar" },
-  { t: "actividad", activa: "dip_antes", escena: "Nube 1 · la guardamos para el final" },
   {
     t: "placa",
     titulo: "La puerta de entrada no es el destino",
     bajada: "Si mañana incorporaras IA en serio, ¿qué parte de tu trabajo le darías y qué parte conservarías para vos?",
     lede: "La redacción fue nuestra puerta de entrada a la IA. No necesariamente es su uso más interesante.",
     pills: ["preguntar", "dar contexto", "organizar un entorno", "descomponer", "confrontar", "trabajar con fuentes propias", "poner límites", "controlar"],
-    nota: "Leé la nube: seguramente gana «redactar». Planteá la pregunta generadora; vuelve al final. Mostrá las pills: es el recorrido de la clase, de lo general a lo particular.",
+    nota: "Preguntá a mano alzada (o en el chat de Zoom) para qué la usan hoy: seguramente gana «redactar». Planteá la pregunta generadora; vuelve al final. Las pills son el recorrido de la clase, de lo general a lo particular.",
   },
 
   // --- 1 · Qué es lo que estamos usando ------------------------------------
@@ -480,11 +478,9 @@ export const DIP_SLIDES: JusSlide[] = [
       { emoji: "🧠", label: "Razonar o decidir", texto: "Hipótesis, argumentos contrarios, estrategia. La IA puede discutir con vos; la decisión es tuya." },
       { emoji: "✍️", label: "Producir un resultado", texto: "Redactar y controlar citas. El borrador puede ser de la IA; la firma y la responsabilidad, no." },
     ],
-    nota: "Lo mismo vale para «resolver un expediente». Concepto de llegada: antes de automatizar, hay que entender el trabajo.",
+    nota: "Lo mismo vale para «resolver un expediente». Después de la actividad, agrupá en voz alta lo que escribieron en las 4 categorías y preguntá dónde dejarían intervenir más a la IA. Concepto de llegada: antes de automatizar, hay que entender el trabajo.",
   },
   { t: "actividad", activa: "dip_audiencia", escena: "Armemos el mapa entre todos" },
-  { t: "actividad", activa: "dip_categoria", escena: "¿Dónde entra la IA?" },
-  { t: "actividad", activa: "dip_x_delegar", escena: "Que pueda no significa que deba" },
 
   // --- 4 · Analizar antes que redactar -----------------------------------------
   {
@@ -635,7 +631,6 @@ export const DIP_SLIDES: JusSlide[] = [
       },
     ],
   },
-  { t: "actividad", activa: "dip_nunca", escena: "Nube 2 · los límites" },
   {
     t: "placa",
     titulo: "Que pueda no significa que deba",
@@ -651,9 +646,9 @@ export const DIP_SLIDES: JusSlide[] = [
   },
 
   // --- Cierre -------------------------------------------------------------------------
-  { t: "actividad", activa: "dip_despues", escena: "Nube 3 · ¿y ahora?", parte: "Cierre" },
   {
     t: "placa",
+    parte: "Cierre",
     titulo: "Mañana",
     bajada: "Analizar. Descomponer. Confrontar. Construir. Autorrestringir.",
     lede: "Cinco operaciones profesionales, no cinco herramientas.",
@@ -664,7 +659,7 @@ export const DIP_SLIDES: JusSlide[] = [
       { emoji: "📚", label: "Construir conocimiento", texto: "Transformar archivos dispersos en un corpus consultable y verificable." },
       { emoji: "⛓️", label: "Autorrestringir", texto: "Diseñar antes los límites, las fuentes, los criterios y la revisión." },
     ],
-    nota: "Volvé (←) a la nube 1 y compará con la nube 3. «Hace dos horas les pregunté para qué usaban IA… ahora la pregunta es qué lugar queremos darle en nuestro trabajo.»",
+    nota: "«Hace dos horas les pregunté para qué usaban IA: redactar, resumir, buscar. Todo sigue valiendo. Pero ahora la pregunta es qué lugar queremos darle en nuestro trabajo.»",
   },
   {
     t: "placa",
