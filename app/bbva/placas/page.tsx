@@ -14,6 +14,8 @@ export default function PlacasImprimibles() {
       <style>{`
         html:has(.placas-pdf) { font-size: 16px; }
         .placas-pdf *, .placas-pdf *::before, .placas-pdf *::after { animation: none !important; transition: none !important; }
+        /* Sin la textura de ruido del papel: en PDF se rasteriza y el archivo pesa 30 MB. */
+        .placas-pdf, .placas-pdf .bbva-papel { background-image: none !important; background-color: #f2eee6 !important; }
         @page { size: 1440px 900px; margin: 0; }
         @media print { html, body { background: #f2eee6; } .placas-pdf, .placas-pdf * { visibility: visible !important; } .placas-pdf .no-print { display: none; } }
         .placas-pdf .hoja-pdf { width: 90rem; height: 56.25rem; break-after: page; page-break-after: always; overflow: hidden; }
