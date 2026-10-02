@@ -15,7 +15,7 @@ export default function PlacasImprimibles() {
         html:has(.placas-pdf) { font-size: 16px; }
         .placas-pdf *, .placas-pdf *::before, .placas-pdf *::after { animation: none !important; transition: none !important; }
         @page { size: 1440px 900px; margin: 0; }
-        @media print { html, body { background: #f2eee6; } .placas-pdf .no-print { display: none; } }
+        @media print { html, body { background: #f2eee6; } .placas-pdf, .placas-pdf * { visibility: visible !important; } .placas-pdf .no-print { display: none; } }
         .placas-pdf .hoja-pdf { width: 90rem; height: 56.25rem; break-after: page; page-break-after: always; overflow: hidden; }
         @media screen { .placas-pdf .hoja-pdf { margin: 0 auto 2rem; box-shadow: 0 10px 30px -18px rgba(0,0,0,.5); } }
       `}</style>
