@@ -7,7 +7,7 @@
 // con la placa. La 03 lee resultados en vivo; la 06 es interactiva (rem).
 
 import { useId, useState, type ComponentType, type CSSProperties, type ReactNode } from "react";
-import { BBVA_ACTIVIDADES, BBVA_AREAS, type AreaId, type IlusId, type ResultadosBbva } from "@/lib/bbva-clase";
+import { BBVA_ACTIVIDADES_C1 as BBVA_ACTIVIDADES, BBVA_AREAS, type AreaId, type IlusId, type ResultadosBbva } from "@/lib/bbva-clase";
 import { porc, suma, useResultadosBbva } from "@/components/bbva/use-resultados";
 import { rem } from "@/lib/remoto";
 
@@ -772,7 +772,7 @@ function P02Credencial() {
 // qué operaciones eligió cada área.
 // ============================================================================
 
-const ACT1 = BBVA_ACTIVIDADES.find((a) => a.key === "bbva_a1")!;
+const ACT1 = BBVA_ACTIVIDADES_C1.find((a) => a.key === "bbva_a1")!;
 const OPCIONES_A1 = ACT1.items[0].opciones;
 const OPS_DEFECTO = ["leer", "buscar", "comparar", "clasificar", "decidir", "redactar"];
 const CONEX_DEFECTO: Record<AreaId, string[]> = {
