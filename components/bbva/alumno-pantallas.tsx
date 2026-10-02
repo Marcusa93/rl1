@@ -82,7 +82,7 @@ export function Ingreso({
           <br />
           de IA
         </h1>
-        <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.2em] text-grafito">Clase inicial · {BBVA_AUTOR}</p>
+        <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.2em] text-grafito">Clase 2 · Tu asistente · {BBVA_AUTOR}</p>
       </div>
 
       <section className="mt-7" aria-labelledby="pregunta-nombre">
