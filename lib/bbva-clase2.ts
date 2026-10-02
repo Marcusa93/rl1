@@ -22,7 +22,7 @@ export const C2_GEM_URL = "https://gemini.google.com/gems/create";
 export const C2_ETAPAS = [
   { id: "tarea", label: "Tarea", acts: ["bbva2_a1"] },
   { id: "metodo", label: "Método", acts: ["bbva2_a2"] },
-  { id: "info", label: "Información", acts: ["bbva2_a3", "bbva2_a4"] },
+  { id: "info", label: "Info", acts: ["bbva2_a3", "bbva2_a4"] },
   { id: "limites", label: "Límites", acts: ["bbva2_a5"] },
   { id: "borrador", label: "Borrador", acts: ["bbva2_a6"] },
   { id: "prueba", label: "Prueba", acts: ["bbva2_a7"] },

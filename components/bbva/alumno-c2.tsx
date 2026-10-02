@@ -97,14 +97,14 @@ export function Recorrido2({ respuestas, actual, acts }: { respuestas: Respuesta
             <li key={e.id} className="flex min-w-0 flex-1 items-center gap-1">
               <span
                 className={cx(
-                  "min-w-0 flex-1 truncate rounded-[2px] border px-1 py-1 text-center font-mono text-[8.5px] font-semibold uppercase tracking-[0.06em]",
+                  "min-w-0 flex-1 truncate rounded-[2px] border px-0.5 py-1 text-center font-mono text-[8px] font-semibold uppercase tracking-normal",
                   ahora ? "border-naranja bg-naranja text-blanco" : lista ? "border-tinta bg-tinta text-papel" : "border-dashed border-gris text-gris",
                 )}
               >
-                {lista && !ahora ? "✓ " : ""}
+                {lista && !ahora ? "✓" : ""}
                 {e.label}
               </span>
-              {i < C2_ETAPAS.length - 1 && <span aria-hidden className="font-mono text-[9px] text-gris">→</span>}
+
             </li>
           );
         })}
