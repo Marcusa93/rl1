@@ -207,7 +207,7 @@ function PlacaBbvai() {
         </div>
 
         {/* El celular: dónde se toca y cómo responde. */}
-        <div className="relative w-[22rem] shrink-0">
+        <div className="relative mt-[3rem] w-[25rem] shrink-0">
           <div className="bbva-cae relative rounded-[2.4rem] border-[0.35rem] border-tinta bg-papel px-[1rem] pb-[1.4rem] pt-[1.2rem] shadow-[0_24px_40px_-24px_rgba(0,0,0,0.6)]" style={vars({ "--rot": "2deg", animationDelay: "0.2s" })}>
             <div className="flex items-center justify-between border-b border-tinta/10 pb-[0.6rem]">
               <span className="relative rounded-full border border-[#004481]/40 bg-blanco px-[0.6rem] py-[0.3rem]">
@@ -217,19 +217,19 @@ function PlacaBbvai() {
               <span className="font-mono text-[0.6rem] uppercase tracking-[0.16em] text-gris">Tu asistente</span>
             </div>
             <div className="mt-[0.9rem] space-y-[0.6rem]">
-              <p className="ml-[3rem] rounded-[0.7rem] rounded-br-[0.2rem] bg-tinta px-[0.8rem] py-[0.55rem] text-[0.85rem] leading-snug text-papel">
+              <p className="ml-[3rem] rounded-[0.7rem] rounded-br-[0.2rem] bg-tinta px-[0.8rem] py-[0.55rem] text-[1rem] leading-snug text-papel">
                 ¿“Respondé siempre en 150 palabras” es instrucción o contexto?
               </p>
-              <p className="mr-[1.5rem] rounded-[0.7rem] rounded-bl-[0.2rem] border border-tinta/10 bg-blanco px-[0.8rem] py-[0.55rem] text-[0.85rem] leading-snug text-tinta">
+              <p className="mr-[1.5rem] rounded-[0.7rem] rounded-bl-[0.2rem] border border-tinta/10 bg-blanco px-[0.8rem] py-[0.55rem] text-[1rem] leading-snug text-tinta">
                 Instrucción: vale para todos los casos, así que va en el system prompt de tu Gem.
               </p>
             </div>
           </div>
-          <div className="absolute -left-[9.5rem] -top-[1.6rem] flex items-end gap-[0.3rem]">
+          <div className="absolute -top-[3.6rem] left-[0.4rem] flex items-end gap-[0.3rem]">
+            <FlechaMano hacia="abajo" className="h-[2.6rem] w-auto" demora={0.7} />
             <p className="bbva-mano text-[2rem] leading-none text-naranja">tocá el logo</p>
-            <FlechaMano hacia="derecha" className="h-[2.4rem] w-auto" demora={0.7} />
           </div>
-          <div className="bbva-postit bbva-cae absolute -bottom-[3.4rem] -left-[2rem] w-[15rem] px-[1rem] pb-[1rem] pt-[0.8rem]" style={vars({ "--rot": "-3deg", animationDelay: "0.9s" })}>
+          <div className="bbva-postit bbva-cae relative mx-auto mt-[1.6rem] w-[17rem] px-[1rem] pb-[1rem] pt-[0.8rem]" style={vars({ "--rot": "-3deg", animationDelay: "0.9s" })}>
             <p className="bbva-mano text-[1.55rem] leading-[1] text-tinta">Nunca pegues datos reales de clientes: usá ejemplos.</p>
           </div>
         </div>
