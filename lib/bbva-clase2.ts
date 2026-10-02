@@ -862,3 +862,47 @@ export const SLIDES_C2: SlideBbva[] = [
     nota: "\"Un asistente no se especializa porque le escribimos un prompt largo. Se especializa cuando entendemos el trabajo, diseñamos cómo debe hacerlo, le damos la información correcta, decidimos sus límites y somos capaces de probar si realmente hace aquello para lo que lo construimos.\" UN ASISTENTE NO SE ENCUENTRA. SE DISEÑA, SE PRUEBA Y SE CORRIGE.",
   },
 ];
+
+// --- El kit para llevarse ----------------------------------------------------------------
+
+/** Kit del asistente: system prompt + qué subir + casos de prueba + control (texto plano / Markdown). */
+export function armarKit(d: DatosBorrador & { borrador?: string; nombrePersona?: string }): string {
+  const a4 = d.resp.bbva2_a4 ?? {};
+  const fuentes = lista(a4.fuentes).map((f) => FUENTE[f]).filter(Boolean);
+  const fuentesTxt = texto(a4.txt_fuentes);
+  const sp = d.borrador?.trim() || armarBorrador(d);
+  const l: string[] = [];
+  l.push(`KIT DEL ASISTENTE · Laboratorio de IA · BBVA · Clase 2 (02/10/2026)`);
+  if (d.nombrePersona) l.push(`Armado por: ${d.nombrePersona}${d.area ? ` · ${d.area}` : ""}`);
+  l.push("");
+  l.push("════════ 1. SYSTEM PROMPT (pegalo en Instrucciones de la Gem) ════════");
+  l.push("");
+  l.push(sp);
+  l.push("");
+  l.push("════════ 2. CONOCIMIENTO (archivos para subir) ════════");
+  l.push("");
+  (fuentes.length ? fuentes : ["[qué documentos necesita]"]).forEach((f) => l.push(`[ ] ${f.charAt(0).toUpperCase() + f.slice(1)}`));
+  if (fuentesTxt) l.push(`    Concretamente: ${fuentesTxt}`);
+  l.push("Antes de subir: versión vigente, nombre claro, una cosa por archivo, sacá lo que no sirve.");
+  l.push("");
+  l.push("════════ 3. ROMPELO: tres casos de prueba ════════");
+  l.push("");
+  l.push("CASO NORMAL (un ejemplo típico): ……………………………………");
+  l.push("CASO INCOMPLETO (le falta información necesaria): ……………………………………");
+  l.push("CASO DIFÍCIL (excepción o ambigüedad donde debería detenerse): ……………………………………");
+  l.push("");
+  l.push("════════ 4. CONTROL después de cada prueba ════════");
+  l.push("");
+  [
+    "¿Siguió el método?",
+    "¿Usó la información correcta?",
+    "¿Inventó algo?",
+    "¿Respetó los límites?",
+    "¿Pidió datos cuando correspondía?",
+    "¿Produjo la salida esperada?",
+  ].forEach((q) => l.push(`[ ] ${q}`));
+  l.push("");
+  l.push("Cada falla es una instrucción que falta: volvé a la decisión de diseño (método, conocimiento, límites o salida), corregí y volvé a probar.");
+  l.push("Un asistente no se encuentra. Se diseña, se prueba y se corrige.");
+  return l.join("\n");
+}

@@ -7,7 +7,7 @@
 
 import { useMemo, useState } from "react";
 import { getActividadBbva, type ActividadBbva, type Item } from "@/lib/bbva-clase";
-import { armarBorrador, C2_ETAPAS, C2_GEM_URL } from "@/lib/bbva-clase2";
+import { armarBorrador, armarKit, C2_ETAPAS, C2_GEM_URL } from "@/lib/bbva-clase2";
 import { BotonOpcion, EnPantalla, ListoCartel, comoLista, comoTexto, cx, respondido, type PropsActividad, type Valor } from "./alumno-ui";
 
 type Props = PropsActividad<ActividadBbva>;
@@ -19,6 +19,19 @@ const libre = (it: Item) => it.id.startsWith("txt_");
 export function actividadCompleta(act: ActividadBbva, resp: Record<string, Valor> | undefined): boolean {
   return act.items.filter((it) => !libre(it) && it.id !== "copiado").every((it) => respondido(resp?.[it.id])) &&
     (act.tipo !== "borrador" || respondido(resp?.copiado));
+}
+
+/** Descarga un texto como archivo (sin servidor). */
+export function bajarTexto(texto: string, archivo: string) {
+  const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = archivo;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
 }
 
 // =====================================================================================
@@ -315,15 +328,10 @@ export function ActividadBorrador({
   }
 
   function descargar() {
-    const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "asistente-borrador-v0.1.txt";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    bajarTexto(
+      armarKit({ resp: respuestas as Record<string, Record<string, string | string[]>>, area, borrador: texto }),
+      "kit-asistente-v0.1.txt",
+    );
     guardar("txt_borrador", texto.slice(0, 8000));
   }
 
@@ -383,7 +391,7 @@ export function ActividadBorrador({
           onClick={descargar}
           className="alu-boton min-h-11 font-mono text-[11.5px] uppercase tracking-[0.14em] text-grafito underline decoration-niebla underline-offset-4"
         >
-          ↓ Descargar como .txt
+          ↓ Descargar el kit (prompt + archivos + pruebas)
         </button>
       </div>
 
@@ -406,7 +414,7 @@ export function ActividadBorrador({
 }
 
 /** El borrador para volver a copiarlo cuando la etapa ya pasó (pantalla de espera). */
-export function BorradorGuardado({ respuestas, area }: { respuestas: Respuestas; area?: string }) {
+export function BorradorGuardado({ respuestas, area, enConstruccion = false }: { respuestas: Respuestas; area?: string; enConstruccion?: boolean }) {
   const [abierto, setAbierto] = useState(false);
   const [copiado, setCopiado] = useState(false);
   const texto =
@@ -414,7 +422,14 @@ export function BorradorGuardado({ respuestas, area }: { respuestas: Respuestas;
     armarBorrador({ resp: respuestas as Record<string, Record<string, string | string[]>>, area });
   return (
     <div className="bbva-recorte mb-6 w-full rounded-[3px] px-4 pb-4 pt-4 text-left">
-      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-naranja">Tu asistente · borrador V0.1</p>
+      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-naranja">
+        {enConstruccion ? "Tu system prompt, hasta ahora" : "Tu asistente · borrador V0.1"}
+      </p>
+      {enConstruccion && (
+        <p className="bbva-serif mt-1 text-[1rem] italic leading-snug text-grafito">
+          Cada decisión que tomás lo completa. Lo que está entre [corchetes] todavía falta.
+        </p>
+      )}
       <div className="mt-3 flex gap-2">
         <button
           type="button"
@@ -439,8 +454,138 @@ export function BorradorGuardado({ respuestas, area }: { respuestas: Respuestas;
           {abierto ? "Ocultar" : "Ver"}
         </button>
       </div>
+      <button
+        type="button"
+        onClick={() =>
+          bajarTexto(
+            armarKit({ resp: respuestas as Record<string, Record<string, string | string[]>>, area, borrador: comoTexto(respuestas.bbva2_a6?.txt_borrador) }),
+            "kit-asistente-v0.1.txt",
+          )
+        }
+        className="alu-boton mt-2 min-h-10 w-full font-mono text-[11px] uppercase tracking-[0.14em] text-grafito underline decoration-niebla underline-offset-4"
+      >
+        ↓ Descargar el kit (prompt + archivos + pruebas)
+      </button>
       {abierto && (
         <pre className="mt-3 max-h-[50dvh] overflow-auto whitespace-pre-wrap font-mono text-[11.5px] leading-[1.5] text-tinta">{texto}</pre>
+      )}
+    </div>
+  );
+}
+
+// =====================================================================================
+// Actividad 3 · ¿Dónde va esto? — guiada con dos preguntas y devolución al instante
+//   ¿Cambia de un caso a otro? → sí: CONTEXTO
+//   no → ¿Le dice CÓMO trabajar o es MATERIAL para consultar? → INSTRUCCIÓN / CONOCIMIENTO
+// =====================================================================================
+
+const DONDE_LABEL: Record<string, string> = { instruccion: "Instrucción", contexto: "Contexto", conocimiento: "Conocimiento" };
+const DONDE_POR_QUE: Record<string, string> = {
+  instruccion: "Es una regla que vale siempre: va en las instrucciones (el system prompt de la Gem).",
+  contexto: "Cambia en cada caso: se lo das en el mensaje de ese momento, no en las instrucciones.",
+  conocimiento: "Es material para consultar: se sube como archivo de conocimiento (la Gem o NotebookLM).",
+};
+
+export function ActividadDonde({ act, resp, guardar, enPantalla }: Props) {
+  const items = act.items;
+  const primero = items.findIndex((it) => !respondido(resp[it.id]));
+  const [i, setI] = useState(() => (primero < 0 ? items.length : primero));
+  const [paso, setPaso] = useState<1 | 2>(1);
+
+  if (i >= items.length) {
+    const bien = items.filter((it) => comoTexto(resp[it.id]) === it.correcta).length;
+    return (
+      <div className="alu-entra">
+        <ListoCartel bajada={`Acertaste ${bien} de ${items.length}. Mirá dónde se confundió el grupo.`} />
+        <ul className="mt-6 flex flex-col gap-2">
+          {items.map((it) => {
+            const v = comoTexto(resp[it.id]);
+            const ok = v === it.correcta;
+            return (
+              <li key={it.id} className="bbva-recorte rounded-[3px] px-3.5 py-2.5">
+                <p className="bbva-serif text-[1rem] leading-snug text-grafito">{it.texto}</p>
+                <p className={cx("mt-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em]", ok ? "text-tinta" : "text-naranja")}>
+                  {ok ? "✓" : "✗"} {DONDE_LABEL[it.correcta ?? ""]}
+                </p>
+              </li>
+            );
+          })}
+        </ul>
+        <EnPantalla titulo={enPantalla} className="mt-7" />
+      </div>
+    );
+  }
+
+  const it = items[i];
+  const v = comoTexto(resp[it.id]);
+  const responder = (x: string) => guardar(it.id, x);
+  const siguiente = () => {
+    setPaso(1);
+    setI((n) => n + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    <div>
+      <p className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-gris">
+        Pieza {i + 1} de {items.length}
+      </p>
+      <h1 className="bbva-titular mt-1 text-[1.9rem] text-tinta">{act.pregunta}</h1>
+      <article key={it.id} className="alu-desliza bbva-recorte mt-3 rounded-[3px] px-4 pb-4 pt-3">
+        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-gris">La pieza</p>
+        <p className="bbva-serif mt-1.5 text-[1.5rem] leading-[1.15] text-tinta">{it.texto}</p>
+      </article>
+
+      {v ? (
+        <div className="alu-entra mt-5">
+          <p className={cx("bbva-titular text-[2rem] leading-none", v === it.correcta ? "text-tinta" : "text-naranja")}>
+            {v === it.correcta ? "✓ " : "Ojo: "}
+            {DONDE_LABEL[it.correcta ?? ""]}
+          </p>
+          <p className="bbva-serif mt-2 text-[1.15rem] italic leading-snug text-grafito">{DONDE_POR_QUE[it.correcta ?? ""]}</p>
+          <button
+            type="button"
+            onClick={siguiente}
+            className="alu-boton alu-sombra mt-5 flex min-h-14 w-full items-center justify-center gap-2 rounded-[4px] bg-tinta font-mono text-[13px] font-semibold uppercase tracking-[0.18em] text-papel"
+          >
+            {i + 1 < items.length ? "Siguiente pieza →" : "Ver mi resumen →"}
+          </button>
+        </div>
+      ) : paso === 1 ? (
+        <div className="mt-5">
+          <p className="bbva-titular text-[1.45rem] leading-tight text-tinta">¿Cambia de un caso a otro?</p>
+          <div className="mt-3 flex flex-col gap-2">
+            <BotonOpcion activa={false} onClick={() => responder("contexto")} className="min-h-14 flex-col items-start gap-0.5">
+              <span className="bbva-titular text-[1.25rem] leading-none">Sí, es de este caso</span>
+              <span className="bbva-serif text-[0.98rem] italic text-grafito">el reclamo de hoy, los datos de esta solicitud</span>
+            </BotonOpcion>
+            <BotonOpcion activa={false} onClick={() => setPaso(2)} className="min-h-14 flex-col items-start gap-0.5">
+              <span className="bbva-titular text-[1.25rem] leading-none">No, vale para todos los casos</span>
+              <span className="bbva-serif text-[0.98rem] italic text-grafito">es igual siempre</span>
+            </BotonOpcion>
+          </div>
+        </div>
+      ) : (
+        <div className="alu-entra mt-5">
+          <p className="bbva-titular text-[1.45rem] leading-tight text-tinta">Vale siempre. ¿Qué es?</p>
+          <div className="mt-3 flex flex-col gap-2">
+            <BotonOpcion activa={false} onClick={() => responder("instruccion")} className="min-h-14 flex-col items-start gap-0.5">
+              <span className="bbva-titular text-[1.25rem] leading-none">Una regla de cómo trabajar</span>
+              <span className="bbva-serif text-[0.98rem] italic text-grafito">“hacé…”, “siempre…”, “si pasa X, …”</span>
+            </BotonOpcion>
+            <BotonOpcion activa={false} onClick={() => responder("conocimiento")} className="min-h-14 flex-col items-start gap-0.5">
+              <span className="bbva-titular text-[1.25rem] leading-none">Material para consultar</span>
+              <span className="bbva-serif text-[0.98rem] italic text-grafito">un manual, una política, un documento</span>
+            </BotonOpcion>
+          </div>
+          <button
+            type="button"
+            onClick={() => setPaso(1)}
+            className="alu-boton mt-3 min-h-10 font-mono text-[11px] uppercase tracking-[0.14em] text-grafito underline decoration-niebla underline-offset-4"
+          >
+            ← Volver
+          </button>
+        </div>
       )}
     </div>
   );

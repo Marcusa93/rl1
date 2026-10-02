@@ -29,7 +29,7 @@ import { Actividad1, Actividad3, ActividadCasos } from "./alumno-actividades";
 import { Actividad5 } from "./alumno-candidato";
 import { AvisoGuardado, Cargando, Encabezado, Espera, Ingreso, PedirNombre, type EstadoGuardado } from "./alumno-pantallas";
 import { BotonGuia } from "./descargar-guia";
-import { ActividadBorrador, ActividadEleccion, ActividadMetodo, BorradorGuardado, Recorrido2, actividadCompleta } from "./alumno-c2";
+import { ActividadBorrador, ActividadDonde, ActividadEleccion, ActividadMetodo, BorradorGuardado, Recorrido2, actividadCompleta } from "./alumno-c2";
 import { EstilosAlumno, Girando, esperar, respondido, type Valor } from "./alumno-ui";
 
 const BASE = `/api/session/${BBVA_SLUG}`;
@@ -380,6 +380,28 @@ export function AlumnoBbva() {
     };
   }, [sincronizar, reintentar, volcar]);
 
+  /** Mismo nombre y apellido que en otra clase u otro dispositivo → recupera lo respondido antes. */
+  const recuperar = useCallback(
+    async (nombre: string) => {
+      try {
+        const r = await pedir(
+          "/api/bbva/recuperar",
+          { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nombre }) },
+          10000,
+        );
+        const d = (await r.json().catch(() => ({}))) as { recuperadas?: number };
+        if (r.ok && (d.recuperadas ?? 0) > 0) {
+          escrituras.current++;
+          await sincronizar();
+          setAviso(`Te reconocimos, ${nombre.split(" ")[0]}: recuperamos tus respuestas anteriores.`);
+        }
+      } catch {
+        /* sin red: sigue sin lo anterior */
+      }
+    },
+    [sincronizar],
+  );
+
   const entrar = useCallback(
     async (area: Area, nombre: string) => {
       setEntrando(area.id);
@@ -407,6 +429,8 @@ export function AlumnoBbva() {
           vibrar(20);
           window.scrollTo(0, 0);
           void sincronizar();
+          // El nombre tiene que estar guardado antes de buscar coincidencias.
+          if (nombre) setTimeout(() => void recuperar(nombre), 1500);
         } else {
           setErrorIngreso("No pudimos conectarte. Probá de nuevo.");
         }
@@ -416,7 +440,7 @@ export function AlumnoBbva() {
         setEntrando(null);
       }
     },
-    [ponerMe, sincronizar, guardar],
+    [ponerMe, sincronizar, guardar, recuperar],
   );
 
   const reconectando = fallos >= 2;
@@ -458,6 +482,7 @@ export function AlumnoBbva() {
   const nombrePropio = typeof respuestas.perfil?.nombre === "string" ? respuestas.perfil.nombre : "";
   const guardarNombre = (n: string) => {
     guardar("perfil", "nombre", n);
+    setTimeout(() => void recuperar(n), 1500);
     try {
       localStorage.setItem("bbva-nombre", n);
     } catch {
@@ -473,7 +498,9 @@ export function AlumnoBbva() {
         <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-naranja">Clase 2 · Del proceso al asistente</p>
         <p className="bbva-titular mt-1 text-[2.1rem] leading-[0.92] text-tinta">Hoy vamos a construir tu asistente</p>
       </div>
-      {conBorrador && <BorradorGuardado respuestas={respuestas} area={area?.label} />}
+      {(conBorrador || hechas.has("bbva2_a1")) && (
+        <BorradorGuardado respuestas={respuestas} area={area?.label} enConstruccion={!conBorrador} />
+      )}
       {tarjetaLista && <BotonGuia nombre={nombrePropio} area={me.name} respuestas={respuestas} />}
     </>
   );
@@ -500,7 +527,7 @@ export function AlumnoBbva() {
       case "metodo":
         return <ActividadMetodo {...props} />;
       case "donde":
-        return <ActividadCasos {...props} variante="tecno" />;
+        return <ActividadDonde {...props} />;
       case "borrador":
         return <ActividadBorrador {...props} respuestas={respuestas} area={area?.label} />;
     }
@@ -516,6 +543,15 @@ export function AlumnoBbva() {
         className="alu-entra mx-auto w-full max-w-md flex-1 overflow-x-clip px-4 pb-[calc(env(safe-area-inset-bottom)+7.5rem)] pt-5"
       >
         {vista !== "carga" && !nombrePropio && <PedirNombre onGuardar={guardarNombre} />}
+        {aviso && vista !== "carga" && (
+          <button
+            type="button"
+            onClick={() => setAviso(null)}
+            className="alu-aparece mb-4 w-full rounded-[4px] border-[1.5px] border-naranja bg-blanco px-3.5 py-2.5 text-left font-mono text-[11.5px] uppercase leading-snug tracking-[0.1em] text-naranja"
+          >
+            {aviso} <span aria-hidden="true">✕</span>
+          </button>
+        )}
         {vista !== "carga" && vista !== "tarjeta" && <Recorrido2 respuestas={respuestas} actual={act?.key} acts={BBVA_ACTIVIDADES} />}
         {vista === "carga" ? (
           <div className="grid min-h-[60dvh] place-items-center">

@@ -669,7 +669,18 @@ function Anticipo({ act }: { act: ActividadBbva }) {
           </li>
         ))}
       </ol>
-      <div className="mt-[1.6rem] flex flex-wrap gap-[0.6rem] pl-[3.1rem]">
+      {act.tipo === "donde" && (
+        <div className="bbva-recorte mt-[1.4rem] ml-[3.1rem] inline-flex max-w-[60rem] flex-wrap items-baseline gap-x-[0.8rem] gap-y-[0.3rem] px-[1.2rem] py-[0.8rem]">
+          <span className="bbva-titular text-[1.5rem] text-tinta">¿Cambia de un caso a otro?</span>
+          <span className="bbva-mano text-[1.6rem] text-naranja">sí →</span>
+          <span className="font-mono text-[1rem] uppercase tracking-[0.14em] text-pizarra">contexto</span>
+          <span className="bbva-mano text-[1.6rem] text-naranja">· no → ¿regla o material?</span>
+          <span className="font-mono text-[1rem] uppercase tracking-[0.14em] text-tinta">instrucción</span>
+          <span className="bbva-mano text-[1.6rem] text-naranja">/</span>
+          <span className="font-mono text-[1rem] uppercase tracking-[0.14em] text-naranja">conocimiento</span>
+        </div>
+      )}
+      <div className={cn("mt-[1.6rem] flex flex-wrap gap-[0.6rem] pl-[3.1rem]", act.tipo === "donde" && "hidden")}>
         {item.opciones.map((o) => (
           <span key={o.id} className="rounded-full border border-grafito/35 px-[1rem] py-[0.35rem] font-mono text-[0.85rem] uppercase tracking-[0.14em] text-grafito">
             {o.label}
