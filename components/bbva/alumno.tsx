@@ -570,7 +570,7 @@ export function AlumnoBbva() {
           <Espera
             area={area}
             enPantalla={enPantalla}
-            conectados={sesion?.conectados ?? 0}
+            conectados={0 /* el total de la sesión incluye a la clase 1: no se muestra */}
             hechas={hechas}
             onVerTarjeta={undefined}
             extra={guia}
