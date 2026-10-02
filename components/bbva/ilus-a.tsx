@@ -772,7 +772,7 @@ function P02Credencial() {
 // qué operaciones eligió cada área.
 // ============================================================================
 
-const ACT1 = BBVA_ACTIVIDADES_C1.find((a) => a.key === "bbva_a1")!;
+const ACT1 = BBVA_ACTIVIDADES.find((a) => a.key === "bbva_a1")!;
 const OPCIONES_A1 = ACT1.items[0].opciones;
 const OPS_DEFECTO = ["leer", "buscar", "comparar", "clasificar", "decidir", "redactar"];
 const CONEX_DEFECTO: Record<AreaId, string[]> = {
