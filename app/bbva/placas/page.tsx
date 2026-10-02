@@ -13,6 +13,7 @@ export default function PlacasImprimibles() {
     <div className="placas-pdf bbva bbva-papel">
       <style>{`
         html:has(.placas-pdf) { font-size: 16px; }
+        .placas-pdf *, .placas-pdf *::before, .placas-pdf *::after { animation: none !important; transition: none !important; }
         @page { size: 1440px 900px; margin: 0; }
         @media print { html, body { background: #f2eee6; } .placas-pdf .no-print { display: none; } }
         .placas-pdf .hoja-pdf { width: 90rem; height: 56.25rem; break-after: page; page-break-after: always; overflow: hidden; }

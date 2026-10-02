@@ -29,8 +29,10 @@ import { Actividad1, Actividad3, ActividadCasos } from "./alumno-actividades";
 import { Actividad5 } from "./alumno-candidato";
 import { AvisoGuardado, Cargando, Encabezado, Espera, Ingreso, PedirNombre, type EstadoGuardado } from "./alumno-pantallas";
 import { RespuestasClase1 } from "./alumno-c2";
+import { BBVAI } from "./bbvai";
+import { armarBorrador } from "@/lib/bbva-clase2";
 import { ActividadBorrador, ActividadDonde, ActividadEleccion, ActividadMetodo, BorradorGuardado, Recorrido2, actividadCompleta } from "./alumno-c2";
-import { EstilosAlumno, Girando, esperar, respondido, type Valor } from "./alumno-ui";
+import { EstilosAlumno, Girando, comoTexto, esperar, respondido, type Valor } from "./alumno-ui";
 
 const BASE = `/api/session/${BBVA_SLUG}`;
 /** Desde la placa 27 (borrador V0.1) el borrador queda siempre a mano en la espera. */
@@ -502,6 +504,13 @@ export function AlumnoBbva() {
         <BorradorGuardado respuestas={respuestas} area={area?.label} enConstruccion={!conBorrador} />
       )}
       <RespuestasClase1 respuestas={respuestas} />
+      <a
+        href="/bbva/placas-clase-2.pdf"
+        download
+        className="alu-boton mb-6 flex min-h-12 w-full items-center justify-center rounded-[4px] border-[1.5px] border-tinta bg-blanco font-mono text-[12px] font-semibold uppercase tracking-[0.14em] text-tinta"
+      >
+        ↓ Las placas de la clase (PDF)
+      </a>
     </>
   );
 
@@ -582,6 +591,13 @@ export function AlumnoBbva() {
         ) : null}
       </main>
       <BotoneraReacciones />
+      <BBVAI
+        enPantalla={enPantalla}
+        borrador={
+          comoTexto(respuestas.bbva2_a6?.txt_borrador as Valor | undefined) ||
+          (hechas.has("bbva2_a1") ? armarBorrador({ resp: respuestas as Record<string, Record<string, string | string[]>>, area: area?.label }) : "")
+        }
+      />
     </>
   );
 }
