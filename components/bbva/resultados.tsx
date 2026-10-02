@@ -26,6 +26,7 @@ import {
   type ResultadosBbva,
 } from "@/lib/bbva-clase";
 import { porc, suma } from "./use-resultados";
+import { Distribuciones } from "./resultados-c2";
 
 // --- Paleta (mismos valores que @theme en globals.css) ---------------------------
 
@@ -410,6 +411,31 @@ function notaA2(filas: Fila[]): Nota | null {
     }
   }
   return mejor ? { item: mejor.item.id, serie: "depende", texto: "¿de qué depende?" } : null;
+}
+
+/** Clase 2 · ¿Dónde va esto? (instrucción · contexto · conocimiento). */
+const SERIES_DONDE: Serie[] = [
+  { id: "instruccion", label: "Instrucción", fondo: TINTA, texto: BLANCO },
+  { id: "contexto", label: "Contexto", fondo: PIZARRA, texto: BLANCO },
+  { id: "conocimiento", label: "Conocimiento", fondo: NARANJA, texto: BLANCO },
+];
+
+/** La pieza con más confusión: la de menor proporción de respuestas en su cajón correcto. */
+function notaDonde(filas: Fila[]): Nota | null {
+  let peor: Fila | null = null;
+  let acierto = 1;
+  for (const f of filas) {
+    const ok = f.item.correcta;
+    if (!f.total || !ok) continue;
+    const s = (f.c[ok] ?? 0) / f.total;
+    if (s < acierto) {
+      acierto = s;
+      peor = f;
+    }
+  }
+  if (!peor || acierto > 0.85) return null;
+  const otra = SERIES_DONDE.filter((se) => se.id !== peor!.item.correcta).sort((a, b) => (peor!.c[b.id] ?? 0) - (peor!.c[a.id] ?? 0))[0];
+  return otra && (peor.c[otra.id] ?? 0) > 0 ? { item: peor.item.id, serie: otra.id, texto: "acá aparece la confusión" } : null;
 }
 
 /** A4: el caso 4 es ambiguo a propósito; "No alcanza la información" es la respuesta interesante. */
@@ -943,7 +969,10 @@ export function ResultadoActividad({
   if (!act) return null;
   const props: VizProps = { act, data, porArea, compacto };
   let viz: ReactNode;
-  switch (activity) {
+  if (act.tipo === "donde")
+    viz = <Apiladas act={act} data={data} compacto={compacto} series={SERIES_DONDE} colTexto="24rem" anotar={notaDonde} />;
+  else if (act.tipo) viz = <Distribuciones act={act} data={data} compacto={compacto} />;
+  else switch (activity) {
     case "bbva_a1":
       viz = <Nube {...props} />;
       break;

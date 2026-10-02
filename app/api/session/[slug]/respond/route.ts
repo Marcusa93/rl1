@@ -25,9 +25,12 @@ export async function POST(
   // se puede terminar de escribir y guardar después.
   if (
     slug === BBVA_SLUG &&
-    activity.startsWith("bbva_") &&
+    activity.startsWith("bbva") &&
     activity !== session.current_activity &&
-    item_key !== HIPOTESIS_ITEM
+    item_key !== HIPOTESIS_ITEM &&
+    // Clase 2: los textos propios y el borrador V0.1 se pueden terminar después.
+    !item_key.startsWith("txt_") &&
+    activity !== "bbva2_a6"
   )
     return fail("Esta actividad ya está cerrada", 409);
 

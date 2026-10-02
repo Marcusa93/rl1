@@ -15,6 +15,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { BotoneraReacciones } from "@/components/bbva/reacciones";
 import {
   BBVA_ACTIVIDADES,
+  BBVA_ACTIVIDADES_C1,
   BBVA_SLIDES,
   BBVA_SLUG,
   getActividadBbva,
@@ -28,11 +29,12 @@ import { Actividad1, Actividad3, ActividadCasos } from "./alumno-actividades";
 import { Actividad5 } from "./alumno-candidato";
 import { AvisoGuardado, Cargando, Encabezado, Espera, Ingreso, PedirNombre, type EstadoGuardado } from "./alumno-pantallas";
 import { BotonGuia } from "./descargar-guia";
+import { ActividadBorrador, ActividadEleccion, ActividadMetodo, BorradorGuardado, Recorrido2, actividadCompleta } from "./alumno-c2";
 import { EstilosAlumno, Girando, esperar, respondido, type Valor } from "./alumno-ui";
 
 const BASE = `/api/session/${BBVA_SLUG}`;
-/** Desde la placa 20 en adelante se ofrece la guía de la clase para descargar. */
-const IDX_FINAL = BBVA_SLIDES.findIndex((s) => s.t === "placa" && s.numero === 20);
+/** Desde la placa 27 (borrador V0.1) el borrador queda siempre a mano en la espera. */
+const IDX_BORRADOR = BBVA_SLIDES.findIndex((s) => s.t === "placa" && s.numero === 27);
 const POLL_MS = 2500;
 /** Cada cuántos ciclos (~30 s) se verifica que la sesión siga y se refrescan las respuestas propias. */
 const VERIFICAR_CADA = 12;
@@ -441,18 +443,17 @@ export function AlumnoBbva() {
   const act = sesion ? getActividadBbva(sesion.actividad) : undefined;
   const slide = sesion?.placaIdx != null ? BBVA_SLIDES[sesion.placaIdx] : undefined;
   const enPantalla = slide ? tituloSlide(slide) : null;
-  const hechas = new Set(
-    BBVA_ACTIVIDADES.filter((a) => a.items.every((it) => respondido(respuestas[a.key]?.[it.id]))).map((a) => a.key),
-  );
-  const a5 = BBVA_ACTIVIDADES.find((a) => a.key === "bbva_a5");
-  const tarjetaLista = hechas.has("bbva_a5");
+  const hechas = new Set(BBVA_ACTIVIDADES.filter((a) => actividadCompleta(a, respuestas[a.key])).map((a) => a.key));
+  // La tarjeta del candidato de la clase 1 (si vino la semana pasada).
+  const a5 = BBVA_ACTIVIDADES_C1.find((a) => a.key === "bbva_a5");
+  const tarjetaLista = !!a5 && a5.items.every((it) => respondido(respuestas.bbva_a5?.[it.id]));
   const mostrarTarjeta = verTarjeta && tarjetaLista && act?.key !== "bbva_a5";
   const vista = !sesion || !restaurado ? "carga" : mostrarTarjeta ? "tarjeta" : act ? act.key : "espera";
   const centro = mostrarTarjeta
     ? "Tu tarjeta"
     : act
       ? `Actividad ${act.numero} de ${BBVA_ACTIVIDADES.length}`
-      : "Laboratorio de IA";
+      : "Tu asistente";
 
   const nombrePropio = typeof respuestas.perfil?.nombre === "string" ? respuestas.perfil.nombre : "";
   const guardarNombre = (n: string) => {
@@ -463,9 +464,19 @@ export function AlumnoBbva() {
       /* sin almacenamiento */
     }
   };
-  // Al final de la clase (placa 20 y "Lo que sigue") aparece la guía para descargar.
-  const alFinal = sesion?.placaIdx != null && sesion.placaIdx >= IDX_FINAL;
-  const guia = alFinal ? <BotonGuia nombre={nombrePropio} area={me.name} respuestas={respuestas} /> : null;
+  // Desde el borrador V0.1, el borrador queda a mano; la guía de la clase 1 sigue disponible para quien la tenga.
+  const conBorrador =
+    (sesion?.placaIdx != null && sesion.placaIdx >= IDX_BORRADOR) || respondido(respuestas.bbva2_a6?.copiado);
+  const guia = (
+    <>
+      <div className="mb-6 w-full text-left">
+        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-naranja">Clase 2 · Del proceso al asistente</p>
+        <p className="bbva-titular mt-1 text-[2.1rem] leading-[0.92] text-tinta">Hoy vamos a construir tu asistente</p>
+      </div>
+      {conBorrador && <BorradorGuardado respuestas={respuestas} area={area?.label} />}
+      {tarjetaLista && <BotonGuia nombre={nombrePropio} area={me.name} respuestas={respuestas} />}
+    </>
+  );
 
   const guardarEn = (a: string) => (item: string, v: Valor, demora?: number) => guardar(a, item, v, demora);
 
@@ -483,6 +494,16 @@ export function AlumnoBbva() {
       case "bbva_a5":
         return <Actividad5 {...props} meId={participante.id} area={area} />;
     }
+    switch (a.tipo) {
+      case "eleccion":
+        return <ActividadEleccion {...props} />;
+      case "metodo":
+        return <ActividadMetodo {...props} />;
+      case "donde":
+        return <ActividadCasos {...props} variante="tecno" />;
+      case "borrador":
+        return <ActividadBorrador {...props} respuestas={respuestas} area={area?.label} />;
+    }
   }
 
   return (
@@ -495,6 +516,7 @@ export function AlumnoBbva() {
         className="alu-entra mx-auto w-full max-w-md flex-1 overflow-x-clip px-4 pb-[calc(env(safe-area-inset-bottom)+7.5rem)] pt-5"
       >
         {vista !== "carga" && !nombrePropio && <PedirNombre onGuardar={guardarNombre} />}
+        {vista !== "carga" && vista !== "tarjeta" && <Recorrido2 respuestas={respuestas} actual={act?.key} acts={BBVA_ACTIVIDADES} />}
         {vista === "carga" ? (
           <div className="grid min-h-[60dvh] place-items-center">
             <Girando texto={reconectando ? "reconectando…" : "conectando…"} />

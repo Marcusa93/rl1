@@ -35,6 +35,7 @@ import {
   BBVA_RECORRIDO,
   BBVA_SLIDES,
   BBVA_URL,
+  contadosActividad,
   getActividadBbva,
   type ActividadBbva,
   type BbvaActivityKey,
@@ -52,21 +53,32 @@ export const CON_POR_AREA: BbvaActivityKey[] = ["bbva_a1", "bbva_a3"];
 
 /** La anotación a mano de cada título (una por placa, nunca más). */
 const MARCAS: Partial<Record<number, MarcaTitulo>> = {
-  1: { texto: "ayer", tipo: "subraya" },
-  2: { texto: "cargo", tipo: "tacha" },
-  3: { texto: "Operaciones parecidas.", tipo: "subraya" },
-  4: { texto: "tiempo", tipo: "circula" },
-  6: { texto: "“Depende”", tipo: "subraya" },
-  8: { texto: "equivoca", tipo: "subraya" },
-  9: { texto: "revisar", tipo: "circula" },
-  11: { texto: "vos", tipo: "circula" },
-  13: { texto: "no es una tarea", tipo: "subraya" },
-  14: { texto: "anatomía", tipo: "subraya" },
-  15: { texto: "IA", tipo: "circula" },
-  16: { texto: "Tres formas.", tipo: "subraya" },
-  17: { texto: "autonomía", tipo: "subraya" },
-  19: { texto: "tu trabajo", tipo: "subraya" },
-  20: { texto: "proceso", tipo: "subraya" },
+  1: { texto: "el lugar", tipo: "subraya" },
+  2: { texto: "funcionar", tipo: "circula" },
+  3: { texto: "trabajo", tipo: "subraya" },
+  4: { texto: "Achicalo", tipo: "subraya" },
+  6: { texto: "trabajar", tipo: "subraya" },
+  7: { texto: "falta", tipo: "circula" },
+  9: { texto: "Propósito", tipo: "subraya" },
+  10: { texto: "Entradas", tipo: "subraya" },
+  11: { texto: "Método", tipo: "subraya" },
+  12: { texto: "Salida", tipo: "subraya" },
+  13: { texto: "“que ayude”", tipo: "tacha" },
+  14: { texto: "esqueleto", tipo: "circula" },
+  15: { texto: "No todo", tipo: "subraya" },
+  16: { texto: "Instrucciones", tipo: "subraya" },
+  17: { texto: "Contexto", tipo: "subraya" },
+  18: { texto: "Conocimiento", tipo: "subraya" },
+  20: { texto: "“sabe”", tipo: "circula" },
+  21: { texto: "conocimiento", tipo: "subraya" },
+  23: { texto: "el tuyo", tipo: "circula" },
+  24: { texto: "no sabe", tipo: "subraya" },
+  25: { texto: "termina", tipo: "subraya" },
+  26: { texto: "parche", tipo: "tacha" },
+  27: { texto: "system prompt", tipo: "subraya" },
+  28: { texto: "vive", tipo: "circula" },
+  29: { texto: "Rompelo", tipo: "subraya" },
+  30: { texto: "V0.1", tipo: "circula" },
 };
 
 const CURVAS = BBVA_SLIDES.filter((s): s is SlideCurva => s.t === "curva");
@@ -110,35 +122,34 @@ function Portada() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={BBVA_LOGO} alt="BBVA" className="h-[2.3rem] w-auto mix-blend-multiply" />
         <span className="h-[1.9rem] w-px bg-grafito/30" />
-        <p className="font-mono text-[0.85rem] uppercase tracking-[0.3em] text-grafito">Laboratorio de IA · Clase inicial</p>
+        <p className="font-mono text-[0.85rem] uppercase tracking-[0.3em] text-grafito">Laboratorio de IA · Clase 2 · Del proceso al asistente</p>
       </header>
 
       <div className="relative flex min-h-0 flex-1 items-center">
         <div className="relative z-10 max-w-[58rem]">
-          <h1 className="bbva-titular text-[7rem] text-tinta">
-            <span className="block">¿En qué parte</span>
+          <h1 className="bbva-titular text-[6.4rem] text-tinta">
+            <span className="block">Un asistente es</span>
+            <span className="block">una IA a la que</span>
             <span className="block">
-              de mi <Marca tipo="subraya">trabajo</Marca>
+              le <Marca tipo="subraya">diseñamos</Marca>
             </span>
-            <span className="block">tiene sentido</span>
             <span className="block">
-              la{" "}
+              un{" "}
               <span
                 className="bbva-cae relative inline-block border-[0.05em] border-pizarra px-[0.12em] align-[0.06em] text-[0.78em] text-pizarra"
                 style={vars({ "--rot": "-4deg", animationDelay: "1.1s" })}
               >
-                IA
+                trabajo
               </span>
-              ?
             </span>
           </h1>
 
           <dl className="mt-[2.4rem] grid grid-cols-[auto_1fr] items-baseline gap-x-[1.4rem] gap-y-[0.5rem]">
-            <dt className="font-mono text-[0.75rem] uppercase tracking-[0.28em] text-gris">Chumbita</dt>
-            <dd className="bbva-serif text-[1.85rem] italic leading-tight text-gris">¿Cómo trabajar con la IA?</dd>
-            <dt className="font-mono text-[0.75rem] uppercase tracking-[0.28em] text-naranja">Ahora</dt>
+            <dt className="font-mono text-[0.75rem] uppercase tracking-[0.28em] text-gris">Clase 1</dt>
+            <dd className="bbva-serif text-[1.85rem] italic leading-tight text-gris">¿Dónde pongo la IA?</dd>
+            <dt className="font-mono text-[0.75rem] uppercase tracking-[0.28em] text-naranja">Hoy</dt>
             <dd className="bbva-serif text-[1.85rem] italic leading-tight text-tinta">
-              ¿<span className="bbva-subrayado">Dónde</span> tiene sentido usarla?
+              ¿<span className="bbva-subrayado">Cómo</span> construyo la IA que va ahí?
             </dd>
           </dl>
         </div>
@@ -147,7 +158,7 @@ function Portada() {
       </div>
 
       <div className="flex items-end justify-between font-mono text-[0.85rem] uppercase tracking-[0.26em] text-grafito">
-        <p>Marco Rossi · 25.09.2026</p>
+        <p>Marco Rossi · 02.10.2026</p>
         <p className="text-[0.7rem] tracking-[0.2em] text-gris">→ avanzar · F pantalla completa</p>
       </div>
     </div>
@@ -157,11 +168,11 @@ function Portada() {
 /** Una página de agenda y un post-it: rastros de una jornada. Sin IA. */
 function CollageAgenda() {
   const filas: { h: string; t: string; hecho?: boolean; hoy?: boolean }[] = [
-    { h: "09:00", t: "mails pendientes (43)", hecho: true },
-    { h: "10:30", t: "revisar solicitudes", hecho: true },
-    { h: "12:00", t: "planilla de reclamos" },
-    { h: "15:00", t: "Laboratorio de IA", hoy: true },
-    { h: "17:30", t: "cerrar incidente" },
+    { h: "09:00", t: "elegir el candidato", hecho: true },
+    { h: "10:30", t: "traer un caso real", hecho: true },
+    { h: "12:00", t: "juntar documentos" },
+    { h: "15:00", t: "construir el asistente", hoy: true },
+    { h: "17:30", t: "probarlo y corregir" },
   ];
   return (
     <div aria-hidden className="absolute right-0 top-1/2 h-[33rem] w-[22rem] -translate-y-1/2">
@@ -171,8 +182,8 @@ function CollageAgenda() {
       >
         <span className="bbva-cinta absolute -top-[0.8rem] left-1/2 h-[1.7rem] w-[6.5rem] -translate-x-1/2 -rotate-2" />
         <div className="flex items-baseline justify-between border-b-2 border-tinta pb-[0.5rem] font-mono uppercase">
-          <span className="text-[1.05rem] tracking-[0.14em] text-tinta">Vie 25</span>
-          <span className="text-[0.7rem] tracking-[0.24em] text-gris">Septiembre</span>
+          <span className="text-[1.05rem] tracking-[0.14em] text-tinta">Vie 2</span>
+          <span className="text-[0.7rem] tracking-[0.24em] text-gris">Octubre</span>
         </div>
         <ul className="mt-[0.3rem]">
           {filas.map((f) => (
@@ -196,8 +207,8 @@ function CollageAgenda() {
         className="bbva-postit bbva-cae absolute bottom-[1.5rem] left-[-1rem] w-[12rem] px-[1.2rem] pb-[1.3rem] pt-[1rem]"
         style={vars({ "--rot": "-5deg", animationDelay: "0.7s" })}
       >
-        <p className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-tinta/60">Reclamo #4127</p>
-        <p className="bbva-mano mt-[0.3rem] text-[1.6rem] leading-[1.05] text-tinta">responder hoy, antes de las 18</p>
+        <p className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-tinta/60">Asistente · v0.1</p>
+        <p className="bbva-mano mt-[0.3rem] text-[1.6rem] leading-[1.05] text-tinta">diseñar → construir → probar → corregir</p>
       </div>
 
       {/* Un cursor: también trabajamos con ventanas. */}
@@ -255,7 +266,7 @@ function Ingreso() {
           <AreasConectadas data={data} />
         </div>
 
-        <p className="bbva-serif mt-[1.2rem] text-[1.6rem] italic text-grafito">Un solo código para toda la clase: nombre, área y listo.</p>
+        <p className="bbva-serif mt-[1.2rem] text-[1.6rem] italic text-grafito">El mismo código de la clase pasada: si ya entraste, entrás directo.</p>
       </div>
     </div>
   );
@@ -296,7 +307,7 @@ function PlacaContenido({ s, onReiniciar }: { s: SlidePlaca; onReiniciar: (activ
     );
 
   // "lado": título a la izquierda, ilustración a la derecha.
-  const cierre = s.numero === 20;
+  const cierre = s.numero === 30;
   return (
     <Hoja folio={folio}>
       <div className="flex h-full items-center gap-[3.5%]">
@@ -317,6 +328,7 @@ function TarjetasEnVivo({ activa, onReiniciar }: { activa: BbvaActivityKey; onRe
   const data = useVivo(activa, 2000);
   const n = contados(activa, data);
   const total = data?.participantes ?? 0;
+  const act = getActividadBbva(activa);
   return (
     <div className="mt-[2.2rem]">
       <ChipCelular />
@@ -327,7 +339,7 @@ function TarjetasEnVivo({ activa, onReiniciar }: { activa: BbvaActivityKey; onRe
         <span className="bbva-serif pb-[0.1rem] text-[1.5rem] italic leading-[1.05] text-grafito">
           de {total}
           <br />
-          {activa === "bbva_a5" ? "ya tienen su tarjeta" : "respondieron"}
+          {activa === "bbva_a5" ? "ya tienen su tarjeta" : (act?.contador ?? "respondieron")}
         </span>
       </div>
       <Casillas n={n} total={total} className="mt-[0.9rem]" />
@@ -338,8 +350,7 @@ function TarjetasEnVivo({ activa, onReiniciar }: { activa: BbvaActivityKey; onRe
 
 /** Cuántas personas "completaron": en la actividad 5, las que llegaron a la tarjeta. */
 function contados(activity: BbvaActivityKey, data: ResultadosBbva | null) {
-  if (!data) return 0;
-  return activity === "bbva_a5" ? (data.respondieronItem?.q4 ?? 0) : data.respondieron;
+  return contadosActividad(getActividadBbva(activity), data);
 }
 
 // --- Curvas ------------------------------------------------------------------------------
@@ -452,7 +463,7 @@ function PlacaActividad({ s, revelado, porArea, onRevelar, onPorArea, onReinicia
             <Anticipo act={act} />
           </div>
         </div>
-        <Lateral n={n} total={total} texto="respondieron" botones={botones} />
+        <Lateral n={n} total={total} texto={act.contador ?? "respondieron"} botones={botones} />
       </div>
     </Hoja>
   );
@@ -466,7 +477,7 @@ function PlacaResultado({ s, revelado, porArea, onRevelar, onPorArea, onReinicia
   const total = data?.participantes ?? 0;
   const conArea = CON_POR_AREA.includes(s.de);
   const folio = <Folio rotulo="Resultado" numero={String(act.numero)} acento extra={act.nombre} />;
-  const texto = s.de === "bbva_a5" ? "tienen su tarjeta" : "respondieron";
+  const texto = s.de === "bbva_a5" ? "tienen su tarjeta" : (act.contador ?? "respondieron");
   const botones = (
     <BotonesResultados
       revelado={revelado}
@@ -620,6 +631,33 @@ function Anticipo({ act }: { act: ActividadBbva }) {
     );
   }
 
+  // Clase 2: las preguntas de la etapa, como una ficha técnica a completar.
+  if (act.tipo === "eleccion" || act.tipo === "metodo") {
+    const preguntas = act.items.filter((it) => !it.id.startsWith("txt_"));
+    return (
+      <div className="flex flex-col">
+        <ol className="grid max-w-[60rem] gap-[1.2rem]" style={{ gridTemplateColumns: `repeat(${Math.min(preguntas.length, 4)}, minmax(0, 1fr))` }}>
+          {preguntas.map((it, i) => (
+            <li
+              key={it.id}
+              className="bbva-recorte bbva-cae relative px-[1.2rem] pb-[1.4rem] pt-[1rem]"
+              style={vars({ "--rot": `${[-1.2, 0.9, -0.6, 1.4][i % 4]}deg`, animationDelay: `${0.15 + i * 0.1}s` })}
+            >
+              <span className="bbva-cinta absolute -top-[0.7rem] left-1/2 h-[1.3rem] w-[4.5rem] -translate-x-1/2" />
+              <p className="font-mono text-[0.8rem] uppercase tracking-[0.22em] text-naranja">
+                {dos(i + 1)} · {it.rotulo}
+              </p>
+              <p className="bbva-serif mt-[0.5rem] text-[1.5rem] leading-[1.15] text-tinta">{it.texto}</p>
+            </li>
+          ))}
+        </ol>
+        {act.tipo === "metodo" && (
+          <p className="bbva-mano mt-[1.8rem] text-[2.1rem] leading-none text-naranja">recibir → … → … → entregar</p>
+        )}
+      </div>
+    );
+  }
+
   // Actividades 2 y 4: los casos que el grupo está respondiendo.
   return (
     <div className="flex flex-col">
@@ -654,7 +692,7 @@ function Cierre() {
         <div className="flex min-h-0 flex-1 items-center">
         <ol className="relative grid w-full grid-cols-4 gap-[2.4rem]">
           <span aria-hidden className="absolute left-[0.9rem] right-[8%] top-[0.9rem] border-t-2 border-dashed border-grafito/30" />
-          <span aria-hidden className="absolute left-[0.9rem] top-[0.9rem] w-[calc(25%-0.6rem)] border-t-2 border-naranja" />
+          <span aria-hidden className="absolute left-[0.9rem] top-[0.9rem] w-[calc(50%-0.6rem)] border-t-2 border-naranja" />
           {BBVA_RECORRIDO.map((r, i) => (
             <li key={r.etapa} className="bbva-cae relative" style={vars({ animationDelay: `${0.2 + i * 0.15}s` })}>
               <span
@@ -675,18 +713,17 @@ function Cierre() {
 
         <div className="flex shrink-0 items-end justify-between gap-[3rem] pb-[0.6rem]">
           <p className="bbva-serif text-[2.7rem] italic leading-[1.15] text-grafito">
-            Hoy sabés <span className="bbva-titular not-italic text-[1.15em] text-tinta">qué</span> querés intervenir.
+            Un asistente no se <span className="bbva-titular not-italic text-[1.15em] text-tinta">encuentra</span>.
             <br />
-            Todavía no <span className="bbva-titular not-italic text-[1.15em] text-tinta">cómo</span>.{" "}
-            <span className="bbva-subrayado text-tinta">Eso es correcto.</span>
+            Se diseña, se prueba y <span className="bbva-subrayado text-tinta">se corrige.</span>
           </p>
 
           <div className="bbva-postit bbva-cae relative w-[27rem] shrink-0 px-[1.8rem] pb-[1.8rem] pt-[1.4rem]" style={vars({ "--rot": "2deg", animationDelay: "0.9s" })}>
             <span className="bbva-cinta absolute -top-[0.8rem] left-1/2 h-[1.6rem] w-[6rem] -translate-x-1/2 rotate-2" />
             <p className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-tinta/70">Para el próximo encuentro</p>
-            <p className="bbva-mano mt-[0.5rem] text-[2.6rem] leading-[1] text-tinta">Traé un caso real de tu candidato.</p>
+            <p className="bbva-mano mt-[0.5rem] text-[2.4rem] leading-[1] text-tinta">Rompé tu asistente con 5 casos reales y anotá cada falla.</p>
             <p className="mt-[0.9rem] border-t border-tinta/20 pt-[0.7rem] font-mono text-[0.78rem] uppercase tracking-[0.18em] text-tinta">
-              ↓ Descargá la guía de hoy en tu celular o compu
+              ↓ Tu borrador V0.1 queda en tu celular o compu
             </p>
           </div>
         </div>

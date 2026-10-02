@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { fail, getSession, ok } from "@/lib/api";
 import { getAdmin } from "@/lib/supabase/server";
 import { isTeacher } from "@/lib/teacher";
-import { armarTarjeta, BBVA_SLUG, getArea, HIPOTESIS_ITEM } from "@/lib/bbva-clase";
+import { armarTarjeta, BBVA_SLUG, getActividadBbva, getArea, HIPOTESIS_ITEM, labelOpcion } from "@/lib/bbva-clase";
 
 // Asistentes del Laboratorio BBVA para la próxima clase (solo docente):
 //   GET                → { participantes: [{ nombre, area, entro, candidato, hipotesis }] }
@@ -21,7 +21,7 @@ export async function GET(req: Request) {
       .from("responses")
       .select("participant_id, activity, item_key, payload")
       .eq("session_id", session.id)
-      .in("activity", ["perfil", "bbva_a5"])
+      .in("activity", ["perfil", "bbva_a5", "bbva2_a1", "bbva2_a6"])
       .limit(5000),
   ]);
   if (e1 || e2) return fail((e1 ?? e2)!.message, 503);
@@ -40,20 +40,25 @@ export async function GET(req: Request) {
     const q = { q1: m["bbva_a5.q1"], q2: m["bbva_a5.q2"], q3: m["bbva_a5.q3"], q4: m["bbva_a5.q4"] };
     const completo = q.q1 && q.q2 && q.q3 && q.q4;
     const t = completo ? armarTarjeta(q) : null;
+    const a1 = getActividadBbva("bbva2_a1");
+    const trabajo = a1 && m["bbva2_a1.op"] ? `${labelOpcion(a1, "op", m["bbva2_a1.op"])} → ${m["bbva2_a1.salida"] ? labelOpcion(a1, "salida", m["bbva2_a1.salida"]) : "?"}` : "";
     return {
       nombre: m["perfil.nombre"] ?? "",
       area: getArea(p.name as string)?.label ?? (p.name as string),
       entro: new Date(p.created_at as string).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Argentina/Buenos_Aires" }),
       candidato: t ? `${t.busca} ${t.hipotesis}` : "",
       hipotesis: m[`bbva_a5.${HIPOTESIS_ITEM}`] ?? "",
+      asistente: m["bbva2_a1.txt_nombre"] ?? "",
+      trabajo: [trabajo, m["bbva2_a1.txt_tarea"]].filter(Boolean).join(" · "),
+      borrador: m["bbva2_a6.copiado"] ? "copiado" : "",
     };
   });
 
   if (new URL(req.url).searchParams.get("formato") === "csv") {
     const esc = (x: string) => `"${x.replace(/"/g, '""')}"`;
     const filas = [
-      ["Nombre y apellido", "Área", "Ingresó", "Candidato (actividad 5)", "Hipótesis escrita"],
-      ...participantes.map((p) => [p.nombre || "(sin nombre)", p.area, p.entro, p.candidato, p.hipotesis]),
+      ["Nombre y apellido", "Área", "Ingresó", "Candidato (clase 1)", "Hipótesis escrita", "Asistente (clase 2)", "Trabajo (clase 2)", "Borrador V0.1"],
+      ...participantes.map((p) => [p.nombre || "(sin nombre)", p.area, p.entro, p.candidato, p.hipotesis, p.asistente, p.trabajo, p.borrador]),
     ];
     const csv = "﻿" + filas.map((f) => f.map(esc).join(";")).join("\r\n");
     return new NextResponse(csv, {

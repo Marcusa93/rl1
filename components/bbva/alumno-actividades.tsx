@@ -188,6 +188,10 @@ const ICONO_TECNO: Record<string, ComponentType<{ className?: string }>> = {
   automatizacion: IconoFlujo,
   agente: IconoObjetivo,
   falta_info: IconoFalta,
+  // Clase 2 · ¿Dónde va esto?
+  instruccion: IconoFlujo,
+  contexto: IconoSobre,
+  conocimiento: IconoObjetivo,
 };
 
 export function ActividadCasos({ act, resp, guardar, enPantalla, variante }: Props & { variante: "snd" | "tecno" }) {
@@ -227,7 +231,7 @@ export function ActividadCasos({ act, resp, guardar, enPantalla, variante }: Pro
   if (actual === "resumen") {
     return (
       <div className="alu-entra">
-        <ListoCartel bajada={variante === "snd" ? "Tus cinco respuestas ya cuentan." : "Tus cuatro respuestas ya cuentan."} />
+        <ListoCartel bajada={variante === "snd" ? "Tus cinco respuestas ya cuentan." : n === 4 ? "Tus cuatro respuestas ya cuentan." : `Tus ${n} respuestas ya cuentan.`} />
         <p className="mt-7 font-mono text-[10.5px] uppercase tracking-[0.18em] text-gris">Tus respuestas · tocá una para cambiarla</p>
         <ol className="mt-3 flex flex-col gap-2">
           {items.map((it, i) => {
@@ -276,7 +280,7 @@ export function ActividadCasos({ act, resp, guardar, enPantalla, variante }: Pro
       {/* El caso: una ficha/ticket de trabajo que entra desde el costado */}
       <article key={it.id} className="alu-desliza bbva-recorte relative mt-4 rounded-[3px] px-4 pb-5 pt-3.5">
         <header className="flex items-center justify-between border-b border-dashed border-niebla pb-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-gris">
-          <span>{variante === "snd" ? "La situación" : "El pedido"}</span>
+          <span>{variante === "snd" ? "La situación" : act.tipo === "donde" ? "La pieza" : "El pedido"}</span>
           <span>
             {String(actual + 1).padStart(2, "0")}/{String(n).padStart(2, "0")}
           </span>
@@ -328,7 +332,7 @@ export function ActividadCasos({ act, resp, guardar, enPantalla, variante }: Pro
                 <span className="block">
                   <span className="bbva-titular block text-[1.2rem] leading-[0.95]">{o.label}</span>
                   <span className={cx("bbva-serif mt-1 block text-[0.98rem] italic leading-tight", activa ? "text-niebla" : "text-grafito")}>
-                    {DETALLE_TECNO[o.id]}
+                    {DETALLE_TECNO[o.id] ?? o.detalle}
                   </span>
                 </span>
               </BotonOpcion>

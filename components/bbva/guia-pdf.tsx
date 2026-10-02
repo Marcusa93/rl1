@@ -10,9 +10,7 @@ import {
   armarTarjeta,
   BBVA_FORMULA,
   BBVA_RECORRIDO,
-  BBVA_ACTIVIDADES,
-  BBVA_TESIS,
-  BBVA_FECHA,
+  BBVA_ACTIVIDADES_C1 as BBVA_ACTIVIDADES,
   getArea,
   labelOpcion,
   type ResultadosBbva,
@@ -214,7 +212,7 @@ function Portada({ nombre, area, logo }: { nombre: string; area?: string; logo: 
         </Text>
 
         <View style={{ marginTop: 54, alignSelf: "flex-start" }}>
-          <Text style={{ fontFamily: F.regular, fontWeight: 700, fontSize: 20, color: C.tinta }}>{t(BBVA_TESIS)}</Text>
+          <Text style={{ fontFamily: F.regular, fontWeight: 700, fontSize: 20, color: C.tinta }}>{t("Antes del prompt está el proceso")}</Text>
           <View style={{ height: 4, backgroundColor: C.naranja, marginTop: 5 }} />
         </View>
       </View>
@@ -225,7 +223,7 @@ function Portada({ nombre, area, logo }: { nombre: string; area?: string; logo: 
           {t(nombre)}
           {area ? <Text style={{ fontFamily: F.regular, color: C.grafito }}>{`  ·  ${t(area)}`}</Text> : null}
         </Text>
-        <Text style={{ fontFamily: F.mono, fontSize: 9, color: C.grafito, marginTop: 6 }}>{BBVA_FECHA}</Text>
+        <Text style={{ fontFamily: F.mono, fontSize: 9, color: C.grafito, marginTop: 6 }}>{"Viernes 25 de septiembre de 2026"}</Text>
       </View>
       <Pie />
     </Page>
@@ -465,7 +463,7 @@ function Cierre({ grupo }: { grupo?: ResultadosBbva | null }) {
       <View wrap={false}>
         <Text style={[s.kicker, { marginBottom: 4 }]}>El recorrido del laboratorio</Text>
         <Text style={[s.h3, { fontSize: 16, marginBottom: 16 }]}>Dónde estamos</Text>
-        {BBVA_RECORRIDO.map((e, i) => (
+        {BBVA_RECORRIDO.map((e0, i) => { const e = { ...e0, hoy: i === 0 }; return (
           <View key={i} style={{ flexDirection: "row", marginBottom: 0 }}>
             <View style={{ width: 28, alignItems: "center" }}>
               <View
@@ -496,14 +494,14 @@ function Cierre({ grupo }: { grupo?: ResultadosBbva | null }) {
               <Text style={[s.p, { fontSize: 10, marginTop: 2 }]}>{t(e.pregunta)}</Text>
             </View>
           </View>
-        ))}
+        ); })}
       </View>
 
       <View style={[s.ficha, { marginTop: 14 }]} wrap={false}>
         <Text style={[s.kicker, s.kickerNaranja, { marginBottom: 6 }]}>Para el próximo encuentro</Text>
         <Text style={[s.fichaTxt, { lineHeight: 1.55 }]}>{t(proximo.charAt(0).toUpperCase() + proximo.slice(1))}</Text>
         <View style={{ marginTop: 14, alignItems: "flex-start" }}>
-          <Text style={{ fontFamily: F.regular, fontWeight: 700, fontSize: 13, color: C.tinta }}>{t(BBVA_TESIS)}.</Text>
+          <Text style={{ fontFamily: F.regular, fontWeight: 700, fontSize: 13, color: C.tinta }}>{t("Antes del prompt está el proceso")}.</Text>
           <View style={{ height: 3, width: 60, backgroundColor: C.naranja, marginTop: 4 }} />
         </View>
       </View>

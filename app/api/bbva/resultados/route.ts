@@ -57,6 +57,13 @@ export async function GET(req: Request) {
       if (texto) hipotesis.push({ area, texto: texto.slice(0, 1200) });
       continue;
     }
+    if (item.startsWith("txt_")) continue; // textos propios de la clase 2: no se proyectan
+    // Clase 2, "Armá el método": además de cada paso, la cadena completa en orden.
+    if (item === "metodo" && Array.isArray(v) && v.length) {
+      const cadena = v.filter((x): x is string => typeof x === "string").join(">");
+      const c = (items.cadena ??= {});
+      c[cadena] = (c[cadena] ?? 0) + 1;
+    }
     const valores = (Array.isArray(v) ? v : [v]).filter((x): x is string => typeof x === "string" && x.length > 0);
     if (!valores.length) continue;
     quienes.add(pid);

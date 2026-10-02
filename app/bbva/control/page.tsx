@@ -15,6 +15,7 @@ import {
   actividadDeSlide,
   BBVA_SLIDES,
   BBVA_SLUG,
+  contadosActividad,
   getActividadBbva,
   getArea,
   resultadosDeSlide,
@@ -64,9 +65,9 @@ function VistaDocente({ idx }: { idx: number }) {
           <div>
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-naranja">{nombreActividad(key)}</p>
             <p className="mt-1 flex items-baseline gap-2">
-              <span className="bbva-titular text-5xl">{key === "bbva_a5" ? (data.respondieronItem?.q4 ?? 0) : data.respondieron}</span>
+              <span className="bbva-titular text-5xl">{contadosActividad(getActividadBbva(key), data)}</span>
               <span className="bbva-serif text-xl italic text-grafito">
-                de {data.participantes} {key === "bbva_a5" ? "tienen su tarjeta" : "respondieron"}
+                de {data.participantes} {key === "bbva_a5" ? "tienen su tarjeta" : (getActividadBbva(key)?.contador ?? "respondieron")}
               </span>
             </p>
             {/* Solo en las placas que abren la actividad: en la del mapa del grupo ya está cerrada a propósito. */}

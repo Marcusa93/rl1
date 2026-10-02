@@ -278,8 +278,8 @@ export function Espera({
           className="alu-boton alu-sombra mt-8 flex min-h-14 w-full items-center justify-between gap-3 rounded-[4px] border-[1.5px] border-tinta bg-blanco px-4 py-3 text-left"
         >
           <span>
-            <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-gris">Actividad 5</span>
-            <span className="bbva-titular block text-[1.45rem] leading-none text-tinta">Mi tarjeta y mi hipótesis</span>
+            <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-gris">Clase 1</span>
+            <span className="bbva-titular block text-[1.45rem] leading-none text-tinta">Mi candidato y mi hipótesis</span>
           </span>
           <span aria-hidden="true" className="font-mono text-[1.1rem] text-naranja">
             →

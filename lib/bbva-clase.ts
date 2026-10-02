@@ -15,12 +15,18 @@
 // El área de cada participante se guarda como su "name" al unirse.
 // ============================================================
 
+import { ACTIVIDADES_C2, C2_FECHA, C2_TESIS, SLIDES_C2 } from "./bbva-clase2";
+
+// Clase 2 (02/10/2026): las placas y actividades vigentes vienen de lib/bbva-clase2.ts.
+// Lo de la clase 1 queda acá (BBVA_ACTIVIDADES_C1, BBVA_SLIDES_C1) para la guía
+// descargable, el listado de asistentes y la tarjeta del candidato.
+
 export const BBVA_SLUG = "bbva-lab";
 export const BBVA_TITLE = "Laboratorio de IA";
-export const BBVA_SUBTITLE = "¿En qué parte de mi trabajo tiene sentido la IA?";
-export const BBVA_TESIS = "Antes del prompt está el proceso";
-export const BBVA_EVENTO = "Laboratorio de IA · BBVA · Clase inicial";
-export const BBVA_FECHA = "Viernes 25 de septiembre de 2026";
+export const BBVA_SUBTITLE = "Del proceso al asistente especializado";
+export const BBVA_TESIS = C2_TESIS;
+export const BBVA_EVENTO = "Laboratorio de IA · BBVA · Clase 2";
+export const BBVA_FECHA = C2_FECHA;
 export const BBVA_AUTOR = "Marco Rossi";
 export const BBVA_COAUTOR = "Sebastián Chumbita";
 /** Dirección que se muestra para escribir a mano (el QR apunta a la misma). */
@@ -57,7 +63,22 @@ export function getArea(id: string | null | undefined): Area | undefined {
 
 // --- Actividades ---------------------------------------------------------------
 
-export type BbvaActivityKey = "bbva_a1" | "bbva_a2" | "bbva_a3" | "bbva_a4" | "bbva_a5";
+export type BbvaActivityKey =
+  | "bbva_a1"
+  | "bbva_a2"
+  | "bbva_a3"
+  | "bbva_a4"
+  | "bbva_a5"
+  | "bbva2_a1"
+  | "bbva2_a2"
+  | "bbva2_a3"
+  | "bbva2_a4"
+  | "bbva2_a5"
+  | "bbva2_a6"
+  | "bbva2_a7";
+
+/** Cómo se responde y se visualiza una actividad de la clase 2. */
+export type TipoActividad = "eleccion" | "metodo" | "donde" | "borrador";
 
 export interface Opcion {
   id: string;
@@ -76,6 +97,10 @@ export interface Item {
   opciones: Opcion[];
   /** Cuántas opciones se pueden elegir (1 = una sola; >1 = hasta N). */
   max: number;
+  /** Texto libre (ítems "txt_*"): el placeholder. No se cuenta ni se proyecta. */
+  libre?: string;
+  /** Respuesta esperada (actividad "¿Dónde va esto?"). */
+  correcta?: string;
 }
 
 export interface ActividadBbva {
@@ -88,6 +113,12 @@ export interface ActividadBbva {
   items: Item[];
   /** Nombre de la visualización colectiva. */
   resultado: string;
+  /** Clase 2: cómo se responde y se visualiza. */
+  tipo?: TipoActividad;
+  /** Ítem que marca "terminó" (el contador cuenta a quienes lo respondieron). */
+  completa?: string;
+  /** Texto del contador (por defecto "respondieron"). */
+  contador?: string;
 }
 
 const SND: Opcion[] = [
@@ -103,7 +134,7 @@ const TECNO: Opcion[] = [
   { id: "falta_info", label: "No alcanza la información" },
 ];
 
-export const BBVA_ACTIVIDADES: ActividadBbva[] = [
+export const BBVA_ACTIVIDADES_C1: ActividadBbva[] = [
   {
     key: "bbva_a1",
     numero: 1,
@@ -275,8 +306,18 @@ export const BBVA_ACTIVIDADES: ActividadBbva[] = [
 /** item_key donde la actividad 5 guarda el texto libre de la hipótesis (opcional). */
 export const HIPOTESIS_ITEM = "hipotesis";
 
+/** Actividades de la clase en curso (clase 2). */
+export const BBVA_ACTIVIDADES: ActividadBbva[] = ACTIVIDADES_C2;
+
 export function getActividadBbva(key: string | null | undefined): ActividadBbva | undefined {
-  return BBVA_ACTIVIDADES.find((a) => a.key === key);
+  return BBVA_ACTIVIDADES.find((a) => a.key === key) ?? BBVA_ACTIVIDADES_C1.find((a) => a.key === key);
+}
+
+/** Cuántas personas "terminaron" una actividad (su ítem `completa`, o cualquier respuesta). */
+export function contadosActividad(act: ActividadBbva | undefined, data: ResultadosBbva | null): number {
+  if (!data) return 0;
+  const k = act?.completa ?? (act?.key === "bbva_a5" ? "q4" : undefined);
+  return k ? (data.respondieronItem?.[k] ?? 0) : data.respondieron;
 }
 
 export function labelOpcion(act: ActividadBbva, itemId: string, opcionId: string): string {
@@ -417,9 +458,11 @@ export type IlusId =
   | "p16-tres-formas"
   | "p17-autonomia"
   | "p19-desarma"
-  | "p20-escritorio-ordenado";
+  | "p20-escritorio-ordenado"
+  | `c2-${string}`;
 
 export type Bloque =
+  | string
   | "Apertura"
   | "¿Qué hacemos realmente?"
   | "¿Qué estamos dispuestos a delegar?"
@@ -486,7 +529,7 @@ export interface SlideCierre extends Base {
 
 export type SlideBbva = SlidePortada | SlideIngreso | SlidePlaca | SlideCurva | SlideActividad | SlideResultado | SlideCierre;
 
-export const BBVA_SLIDES: SlideBbva[] = [
+export const BBVA_SLIDES_C1: SlideBbva[] = [
   {
     t: "portada",
     bloque: "Apertura",
@@ -744,6 +787,9 @@ export const BBVA_SLIDES: SlideBbva[] = [
   },
 ];
 
+/** Placas de la clase en curso (clase 2). */
+export const BBVA_SLIDES: SlideBbva[] = SLIDES_C2;
+
 /** Nombre corto de una placa (índice del control remoto y del celular). */
 export function tituloSlide(s: SlideBbva): string {
   switch (s.t) {
@@ -781,8 +827,8 @@ export function resultadosDeSlide(s: SlideBbva): BbvaActivityKey | undefined {
 
 /** Recorrido del programa (placa de cierre). */
 export const BBVA_RECORRIDO = [
-  { etapa: "Clase inicial", pregunta: "¿Qué parte de mi trabajo quiero transformar?", hoy: true },
-  { etapa: "Clase de construcción", pregunta: "¿Cómo convierto ese problema en un asistente especializado?", hoy: false },
+  { etapa: "Clase inicial", pregunta: "¿Dónde pongo la IA?", hoy: false },
+  { etapa: "Clase de construcción", pregunta: "¿Cómo construyo la IA que va ahí?", hoy: true },
   { etapa: "Desarrollo posterior", pregunta: "¿Cómo lo pruebo, corrijo, integro y eventualmente aumento su autonomía?", hoy: false },
   { etapa: "Proyecto final", pregunta: "¿La solución realmente mejora el proceso que originalmente quería transformar?", hoy: false },
 ];
