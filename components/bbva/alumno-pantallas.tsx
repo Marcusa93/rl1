@@ -155,11 +155,35 @@ export function Ingreso({
 
 // --- Encabezado fijo ---------------------------------------------------------------------
 
-export function Encabezado({ centro, area, reconectando }: { centro: string; area?: Area; reconectando: boolean }) {
+export function Encabezado({
+  centro,
+  area,
+  reconectando,
+  onBBVAI,
+}: {
+  centro: string;
+  area?: Area;
+  reconectando: boolean;
+  /** Abre BBV(AI): el logo del encabezado es el acceso al acompañante. */
+  onBBVAI?: () => void;
+}) {
   return (
     <header className="sticky top-0 z-30 border-b border-tinta/10 bg-papel/90 pt-[env(safe-area-inset-top)] backdrop-blur-sm">
       <div className="mx-auto flex h-12 w-full max-w-md items-center justify-between gap-3 px-4">
-        <Logo alto={17} />
+        {onBBVAI ? (
+          <button
+            type="button"
+            onClick={onBBVAI}
+            aria-label="Abrir BBV(AI), tu acompañante de la clase"
+            className="alu-boton relative -ml-1.5 flex shrink-0 items-center gap-[3px] rounded-full border border-[#004481]/40 bg-blanco px-2 py-1.5"
+          >
+            <Logo alto={14} />
+            <span className="font-mono text-[12px] font-semibold leading-none tracking-tight text-[#004481]">(AI)</span>
+            <span aria-hidden="true" className="alu-latido absolute -right-0.5 -top-0.5 size-2 rounded-full bg-naranja" />
+          </button>
+        ) : (
+          <Logo alto={17} />
+        )}
         <p className="min-w-0 flex-1 truncate text-center font-mono text-[10.5px] uppercase tracking-[0.16em] text-grafito">
           {reconectando ? <Reconectando /> : centro}
         </p>

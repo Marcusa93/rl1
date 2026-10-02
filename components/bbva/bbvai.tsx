@@ -31,8 +31,18 @@ function Marca({ className }: { className?: string }) {
   );
 }
 
-export function BBVAI({ enPantalla, borrador }: { enPantalla: string | null; borrador: string }) {
-  const [abierto, setAbierto] = useState(false);
+export function BBVAI({
+  abierto,
+  onCerrar,
+  enPantalla,
+  borrador,
+}: {
+  abierto: boolean;
+  onCerrar: () => void;
+  enPantalla: string | null;
+  borrador: string;
+}) {
+  const setAbierto = (v: boolean) => !v && onCerrar();
   const [msgs, setMsgs] = useState<Msg[]>(() => {
     try {
       const g = sessionStorage.getItem(GUARDA);
@@ -83,33 +93,22 @@ export function BBVAI({ enPantalla, borrador }: { enPantalla: string | null; bor
     }
   }
 
-  if (!abierto)
-    return (
-      <button
-        type="button"
-        onClick={() => setAbierto(true)}
-        aria-label="Abrir BBV(AI), tu acompañante de la clase"
-        className="alu-boton fixed bottom-[calc(env(safe-area-inset-bottom)+5.4rem)] right-3 z-50 flex items-center gap-2 rounded-full border-[1.5px] border-[#004481] bg-blanco px-3.5 py-2.5 shadow-[0_8px_20px_-10px_rgba(0,0,0,0.5)]"
-      >
-        <Marca className="text-[1.05rem]" />
-        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-grafito">Preguntame</span>
-      </button>
-    );
+  if (!abierto) return null;
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-end justify-center bg-tinta/30" onClick={() => setAbierto(false)}>
+    // Celular: hoja desde abajo (deja ver el encabezado y lo de arriba). Compu: panel lateral, la actividad queda a la vista.
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[70] flex justify-center xl:inset-x-auto xl:inset-y-0 xl:right-0">
       <section
         role="dialog"
         aria-label="BBV(AI)"
-        onClick={(e) => e.stopPropagation()}
-        className="alu-entra flex h-[86dvh] w-full max-w-md flex-col rounded-t-[14px] bg-papel shadow-2xl"
+        className="alu-entra pointer-events-auto flex h-[72dvh] w-full max-w-md flex-col rounded-t-[14px] border-t-[1.5px] border-[#004481]/30 bg-papel shadow-[0_-18px_40px_-20px_rgba(0,0,0,0.55)] xl:h-full xl:w-[25rem] xl:rounded-none xl:border-l-[1.5px] xl:border-t-0 xl:shadow-[-18px_0_40px_-24px_rgba(0,0,0,0.5)]"
       >
         <header className="flex items-center justify-between border-b border-tinta/10 px-4 py-3">
           <div>
             <Marca className="text-[1.35rem]" />
             <p className="mt-0.5 font-mono text-[9.5px] uppercase tracking-[0.16em] text-gris">Tu acompañante de la clase · solo sobre esta clase</p>
           </div>
-          <button type="button" onClick={() => setAbierto(false)} className="alu-boton grid size-10 place-items-center rounded-full font-mono text-lg text-grafito" aria-label="Cerrar">
+          <button type="button" onClick={() => setAbierto(false)} className="alu-boton grid size-11 place-items-center rounded-full font-mono text-lg text-grafito" aria-label="Cerrar">
             ✕
           </button>
         </header>

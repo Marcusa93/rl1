@@ -107,6 +107,8 @@ export function AlumnoBbva() {
   const [verTarjeta, setVerTarjeta] = useState(false);
   /** Sube cada vez que Marco reinicia una actividad: la pantalla se vuelve a montar vacía. */
   const [reinicios, setReinicios] = useState(0);
+  /** BBV(AI) abierto (se abre desde el logo del encabezado). */
+  const [chatAbierto, setChatAbierto] = useState(false);
 
   const meRef = useRef<Participante | null | undefined>(undefined);
   /** Respuestas todavía no confirmadas por el servidor (activity|item → valor). */
@@ -545,7 +547,7 @@ export function AlumnoBbva() {
   return (
     <>
       <EstilosAlumno />
-      <Encabezado centro={centro} area={area} reconectando={reconectando} />
+      <Encabezado centro={centro} area={area} reconectando={reconectando} onBBVAI={() => setChatAbierto(true)} />
       <AvisoGuardado estado={guardado} onReintentar={reintentar} />
       <main
         key={`${vista}-${reinicios}`}
@@ -592,6 +594,8 @@ export function AlumnoBbva() {
       </main>
       <BotoneraReacciones />
       <BBVAI
+        abierto={chatAbierto}
+        onCerrar={() => setChatAbierto(false)}
         enPantalla={enPantalla}
         borrador={
           comoTexto(respuestas.bbva2_a6?.txt_borrador as Valor | undefined) ||
