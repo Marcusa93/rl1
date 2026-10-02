@@ -526,8 +526,12 @@ export interface SlideResultado extends Base {
 export interface SlideCierre extends Base {
   t: "cierre";
 }
+/** Clase 2: presentación de BBV(AI), el acompañante del celular. */
+export interface SlideBbvai extends Base {
+  t: "bbvai";
+}
 
-export type SlideBbva = SlidePortada | SlideIngreso | SlidePlaca | SlideCurva | SlideActividad | SlideResultado | SlideCierre;
+export type SlideBbva = SlidePortada | SlideIngreso | SlidePlaca | SlideCurva | SlideActividad | SlideResultado | SlideCierre | SlideBbvai;
 
 export const BBVA_SLIDES_C1: SlideBbva[] = [
   {
@@ -808,6 +812,8 @@ export function tituloSlide(s: SlideBbva): string {
       return `Resultado · ${s.titulo}`;
     case "cierre":
       return "Lo que sigue";
+    case "bbvai":
+      return "BBV(AI) · tu acompañante";
   }
 }
 

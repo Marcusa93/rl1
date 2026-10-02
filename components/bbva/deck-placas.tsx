@@ -110,7 +110,88 @@ export function Placa(p: PropsPlaca) {
       return <PlacaResultado s={s} {...p} />;
     case "cierre":
       return <Cierre />;
+    case "bbvai":
+      return <PlacaBbvai />;
   }
+}
+
+// --- BBV(AI): el acompañante del celular ---------------------------------------------------
+
+const USOS_BBVAI = [
+  { cuando: "Durante la clase", texto: "Si un concepto pasó rápido: ¿qué es el contexto?, ¿por qué el método va antes del prompt?" },
+  { cuando: "Mientras decidís", texto: "¿Esto va en instrucción, contexto o conocimiento? ¿Qué salida le pido?" },
+  { cuando: "Con tu borrador", texto: "Lo lee y te propone cambios concretos: método, reglas, límites, formato." },
+  { cuando: "En el taller con Gemini", texto: "Te guía para crear la Gem, cargar los documentos y armar los casos de prueba." },
+];
+
+function LogoBbvai({ className }: { className?: string }) {
+  return (
+    <span className={cn("inline-flex items-center gap-[0.12em]", className)}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={BBVA_LOGO} alt="BBV" className="h-[0.78em] w-auto mix-blend-multiply" />
+      <span className="font-mono font-semibold leading-none tracking-tight text-[#004481]">(AI)</span>
+    </span>
+  );
+}
+
+function PlacaBbvai() {
+  return (
+    <Hoja folio={<Folio rotulo="Antes de empezar" acento extra="Tu acompañante en el celular" />}>
+      <div className="flex h-full items-center gap-[4rem]">
+        <div className="flex min-w-0 flex-1 flex-col">
+          <LogoBbvai className="bbva-cae text-[5.4rem]" />
+          <h1 className="bbva-titular mt-[1.2rem] text-[3.6rem] leading-[0.95] text-tinta">
+            Te acompaña durante <Marca tipo="subraya">toda la clase</Marca>
+          </h1>
+          <p className="bbva-serif mt-[0.9rem] max-w-[46rem] text-[1.75rem] italic leading-snug text-grafito">
+            Conoce la clase y el asistente que estás armando. Solo responde sobre esto.
+          </p>
+          <ol className="mt-[2rem] grid grid-cols-2 gap-[1.2rem]">
+            {USOS_BBVAI.map((u, i) => (
+              <li
+                key={u.cuando}
+                className="bbva-recorte bbva-cae relative px-[1.3rem] pb-[1.2rem] pt-[1rem]"
+                style={vars({ "--rot": `${[-0.8, 0.7, 0.5, -0.6][i]}deg`, animationDelay: `${0.25 + i * 0.12}s` })}
+              >
+                <p className="font-mono text-[0.85rem] uppercase tracking-[0.2em] text-naranja">
+                  {dos(i + 1)} · {u.cuando}
+                </p>
+                <p className="bbva-serif mt-[0.4rem] text-[1.4rem] leading-[1.2] text-tinta">{u.texto}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        {/* El celular: dónde se toca y cómo responde. */}
+        <div className="relative w-[22rem] shrink-0">
+          <div className="bbva-cae relative rounded-[2.4rem] border-[0.35rem] border-tinta bg-papel px-[1rem] pb-[1.4rem] pt-[1.2rem] shadow-[0_24px_40px_-24px_rgba(0,0,0,0.6)]" style={vars({ "--rot": "2deg", animationDelay: "0.2s" })}>
+            <div className="flex items-center justify-between border-b border-tinta/10 pb-[0.6rem]">
+              <span className="relative rounded-full border border-[#004481]/40 bg-blanco px-[0.6rem] py-[0.3rem]">
+                <LogoBbvai className="text-[1.05rem]" />
+                <span className="absolute -right-[0.15rem] -top-[0.15rem] size-[0.55rem] rounded-full bg-naranja" />
+              </span>
+              <span className="font-mono text-[0.6rem] uppercase tracking-[0.16em] text-gris">Tu asistente</span>
+            </div>
+            <div className="mt-[0.9rem] space-y-[0.6rem]">
+              <p className="ml-[3rem] rounded-[0.7rem] rounded-br-[0.2rem] bg-tinta px-[0.8rem] py-[0.55rem] text-[0.85rem] leading-snug text-papel">
+                ¿“Respondé siempre en 150 palabras” es instrucción o contexto?
+              </p>
+              <p className="mr-[1.5rem] rounded-[0.7rem] rounded-bl-[0.2rem] border border-tinta/10 bg-blanco px-[0.8rem] py-[0.55rem] text-[0.85rem] leading-snug text-tinta">
+                Instrucción: vale para todos los casos, así que va en el system prompt de tu Gem.
+              </p>
+            </div>
+          </div>
+          <div className="absolute -left-[9.5rem] -top-[1.6rem] flex items-end gap-[0.3rem]">
+            <p className="bbva-mano text-[2rem] leading-none text-naranja">tocá el logo</p>
+            <FlechaMano hacia="derecha" className="h-[2.4rem] w-auto" demora={0.7} />
+          </div>
+          <div className="bbva-postit bbva-cae absolute -bottom-[3.4rem] -left-[2rem] w-[15rem] px-[1rem] pb-[1rem] pt-[0.8rem]" style={vars({ "--rot": "-3deg", animationDelay: "0.9s" })}>
+            <p className="bbva-mano text-[1.55rem] leading-[1] text-tinta">Nunca pegues datos reales de clientes: usá ejemplos.</p>
+          </div>
+        </div>
+      </div>
+    </Hoja>
+  );
 }
 
 // --- Portada ------------------------------------------------------------------------

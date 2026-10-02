@@ -512,6 +512,11 @@ export const SLIDES_C2: SlideBbva[] = [
     nota: "Mismo QR y mismo link que la semana pasada. Quien ya entró, entra directo con su nombre. Quien no vino: nombre y área. Hoy el celular no es una encuesta: es donde se va a construir su asistente, etapa por etapa.",
   },
   {
+    t: "bbvai",
+    bloque: "Apertura",
+    nota: "Presentar BBV(AI): está en el logo de arriba a la izquierda de la app (BBVA (AI)). Conoce toda la clase y el borrador que cada uno va armando. Sirve para: entender un concepto que se pasó rápido, preguntar dónde va algo (instrucción, contexto o conocimiento), mejorar el borrador y, en el taller con Gemini, crear la Gem y diseñar las pruebas. Solo responde sobre esta clase. Nunca pegar datos reales de clientes. Invitar a que lo abran ahora y le pregunten algo.",
+  },
+  {
     t: "placa",
     numero: 1,
     bloque: "Apertura",
