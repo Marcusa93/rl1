@@ -28,7 +28,7 @@ import {
 import { Actividad1, Actividad3, ActividadCasos } from "./alumno-actividades";
 import { Actividad5 } from "./alumno-candidato";
 import { AvisoGuardado, Cargando, Encabezado, Espera, Ingreso, PedirNombre, type EstadoGuardado } from "./alumno-pantallas";
-import { BotonGuia } from "./descargar-guia";
+import { RespuestasClase1 } from "./alumno-c2";
 import { ActividadBorrador, ActividadDonde, ActividadEleccion, ActividadMetodo, BorradorGuardado, Recorrido2, actividadCompleta } from "./alumno-c2";
 import { EstilosAlumno, Girando, esperar, respondido, type Valor } from "./alumno-ui";
 
@@ -501,7 +501,7 @@ export function AlumnoBbva() {
       {(conBorrador || hechas.has("bbva2_a1")) && (
         <BorradorGuardado respuestas={respuestas} area={area?.label} enConstruccion={!conBorrador} />
       )}
-      {tarjetaLista && <BotonGuia nombre={nombrePropio} area={me.name} respuestas={respuestas} />}
+      <RespuestasClase1 respuestas={respuestas} />
     </>
   );
 
@@ -563,7 +563,7 @@ export function AlumnoBbva() {
             enPantalla={enPantalla}
             conectados={sesion?.conectados ?? 0}
             hechas={hechas}
-            onVerTarjeta={tarjetaLista ? () => setVerTarjeta(true) : undefined}
+            onVerTarjeta={undefined}
             extra={guia}
           />
         ) : vista === "tarjeta" && a5 ? (

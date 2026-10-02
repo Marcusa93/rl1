@@ -6,7 +6,7 @@
 // toque y al final se combinan en el system prompt BORRADOR V0.1 (lib/bbva-clase2.ts).
 
 import { useMemo, useState } from "react";
-import { getActividadBbva, type ActividadBbva, type Item } from "@/lib/bbva-clase";
+import { armarTarjeta, BBVA_ACTIVIDADES_C1, getActividadBbva, HIPOTESIS_ITEM, labelOpcion, type ActividadBbva, type Item } from "@/lib/bbva-clase";
 import { armarBorrador, armarKit, C2_ETAPAS, C2_GEM_URL } from "@/lib/bbva-clase2";
 import { BotonOpcion, EnPantalla, ListoCartel, comoLista, comoTexto, cx, respondido, type PropsActividad, type Valor } from "./alumno-ui";
 
@@ -32,6 +32,51 @@ export function bajarTexto(texto: string, archivo: string) {
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+/** Descarga el kit del asistente: PDF con el logo del banco (y el mismo contenido en .txt). */
+export function BotonesKit({ respuestas, area, borrador }: { respuestas: Respuestas; area?: string; borrador?: string }) {
+  const [estado, setEstado] = useState<"listo" | "armando" | "error">("listo");
+  const resp = respuestas as Record<string, Record<string, string | string[]>>;
+  const nombre = comoTexto(respuestas.perfil?.nombre);
+  async function pdf() {
+    setEstado("armando");
+    try {
+      const { buildKitBlob } = await import("./kit-pdf");
+      const blob = await buildKitBlob({ nombre, area, respuestas: resp, borrador });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Kit-asistente-BBVA-clase-2${nombre ? `-${nombre.replace(/\s+/g, "_")}` : ""}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      setEstado("listo");
+    } catch {
+      setEstado("error");
+    }
+  }
+  return (
+    <div className="mt-2 flex flex-col gap-1">
+      <button
+        type="button"
+        onClick={pdf}
+        disabled={estado === "armando"}
+        className="alu-boton flex min-h-12 w-full items-center justify-center rounded-[4px] border-[1.5px] border-tinta bg-blanco font-mono text-[12px] font-semibold uppercase tracking-[0.14em] text-tinta disabled:opacity-60"
+      >
+        {estado === "armando" ? "Armando el PDF…" : "↓ Kit del asistente (PDF)"}
+      </button>
+      {estado === "error" && <p className="font-mono text-[11px] text-rojo">No se pudo armar. Probá de nuevo.</p>}
+      <button
+        type="button"
+        onClick={() => bajarTexto(armarKit({ resp, area, borrador, nombrePersona: nombre }), "kit-asistente-v0.1.txt")}
+        className="alu-boton min-h-10 w-full font-mono text-[11px] uppercase tracking-[0.14em] text-grafito underline decoration-niebla underline-offset-4"
+      >
+        ↓ También en .txt
+      </button>
+    </div>
+  );
 }
 
 // =====================================================================================
@@ -327,14 +372,6 @@ export function ActividadBorrador({
     setTimeout(() => setCopiado(false), 2500);
   }
 
-  function descargar() {
-    bajarTexto(
-      armarKit({ resp: respuestas as Record<string, Record<string, string | string[]>>, area, borrador: texto }),
-      "kit-asistente-v0.1.txt",
-    );
-    guardar("txt_borrador", texto.slice(0, 8000));
-  }
-
   return (
     <div>
       <p className="inline-block -rotate-2 border-[1.5px] border-naranja px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-naranja">
@@ -386,13 +423,7 @@ export function ActividadBorrador({
         >
           Abrir Gemini · nueva Gem ↗
         </a>
-        <button
-          type="button"
-          onClick={descargar}
-          className="alu-boton min-h-11 font-mono text-[11.5px] uppercase tracking-[0.14em] text-grafito underline decoration-niebla underline-offset-4"
-        >
-          ↓ Descargar el kit (prompt + archivos + pruebas)
-        </button>
+        <BotonesKit respuestas={respuestas} area={area} borrador={texto} />
       </div>
 
       <ol className="bbva-recorte mt-6 list-none rounded-[3px] px-4 py-3.5">
@@ -454,18 +485,7 @@ export function BorradorGuardado({ respuestas, area, enConstruccion = false }: {
           {abierto ? "Ocultar" : "Ver"}
         </button>
       </div>
-      <button
-        type="button"
-        onClick={() =>
-          bajarTexto(
-            armarKit({ resp: respuestas as Record<string, Record<string, string | string[]>>, area, borrador: comoTexto(respuestas.bbva2_a6?.txt_borrador) }),
-            "kit-asistente-v0.1.txt",
-          )
-        }
-        className="alu-boton mt-2 min-h-10 w-full font-mono text-[11px] uppercase tracking-[0.14em] text-grafito underline decoration-niebla underline-offset-4"
-      >
-        ↓ Descargar el kit (prompt + archivos + pruebas)
-      </button>
+      <BotonesKit respuestas={respuestas} area={area} borrador={comoTexto(respuestas.bbva2_a6?.txt_borrador) || undefined} />
       {abierto && (
         <pre className="mt-3 max-h-[50dvh] overflow-auto whitespace-pre-wrap font-mono text-[11.5px] leading-[1.5] text-tinta">{texto}</pre>
       )}
@@ -585,6 +605,67 @@ export function ActividadDonde({ act, resp, guardar, enPantalla }: Props) {
           >
             ← Volver
           </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// =====================================================================================
+// Lo que respondiste en la clase 1 (solo lectura: no se vuelve a la clase 1)
+// =====================================================================================
+
+export function RespuestasClase1({ respuestas }: { respuestas: Respuestas }) {
+  const [abierto, setAbierto] = useState(false);
+  const a5 = respuestas.bbva_a5 ?? {};
+  const q = { q1: comoTexto(a5.q1), q2: comoTexto(a5.q2), q3: comoTexto(a5.q3), q4: comoTexto(a5.q4) };
+  const tarjeta = q.q1 && q.q2 && q.q3 && q.q4 ? armarTarjeta(q) : null;
+  const hipotesis = comoTexto(a5[HIPOTESIS_ITEM]);
+  const act1 = BBVA_ACTIVIDADES_C1.find((a) => a.key === "bbva_a1");
+  const act3 = BBVA_ACTIVIDADES_C1.find((a) => a.key === "bbva_a3");
+  const ops = act1 ? comoLista(respuestas.bbva_a1?.ops).map((o) => labelOpcion(act1, "ops", o)) : [];
+  const nivel = act3 && comoTexto(respuestas.bbva_a3?.nivel) ? labelOpcion(act3, "nivel", comoTexto(respuestas.bbva_a3?.nivel)) : "";
+  if (!tarjeta && !hipotesis && !ops.length && !nivel) return null;
+
+  return (
+    <div className="bbva-recorte mb-6 w-full rounded-[3px] px-4 pb-4 pt-4 text-left">
+      <button type="button" onClick={() => setAbierto((a) => !a)} className="alu-boton flex w-full items-center justify-between gap-3 text-left">
+        <span>
+          <span className="block font-mono text-[10px] uppercase tracking-[0.2em] text-gris">De la clase pasada</span>
+          <span className="bbva-titular block text-[1.4rem] leading-none text-tinta">Tu candidato y tu hipótesis</span>
+        </span>
+        <span aria-hidden="true" className="font-mono text-[12px] uppercase tracking-[0.14em] text-naranja">
+          {abierto ? "Ocultar" : "Ver"}
+        </span>
+      </button>
+      {abierto && (
+        <div className="alu-entra mt-3 flex flex-col gap-3">
+          {tarjeta && (
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-naranja">{tarjeta.titulo}</p>
+              <p className="bbva-serif mt-1 text-[1.05rem] leading-snug text-tinta">{tarjeta.busca}</p>
+              <p className="bbva-serif mt-1 text-[1.05rem] leading-snug text-tinta">{tarjeta.hipotesis}</p>
+              <p className="bbva-serif mt-1 text-[1.05rem] italic leading-snug text-grafito">{tarjeta.humano}</p>
+            </div>
+          )}
+          {hipotesis && (
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-naranja">Tu hipótesis escrita</p>
+              <p className="bbva-serif mt-1 whitespace-pre-wrap text-[1.05rem] leading-snug text-tinta">{hipotesis}</p>
+            </div>
+          )}
+          {ops.length > 0 && (
+            <p className="text-[0.95rem] text-grafito">
+              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-gris">Lo que más hacés · </span>
+              {ops.join(" · ")}
+            </p>
+          )}
+          {nivel && (
+            <p className="text-[0.95rem] text-grafito">
+              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-gris">Hasta dónde la dejarías llegar · </span>
+              {nivel}
+            </p>
+          )}
         </div>
       )}
     </div>
