@@ -530,8 +530,12 @@ export interface SlideCierre extends Base {
 export interface SlideBbvai extends Base {
   t: "bbvai";
 }
+/** Clase 2: qué es prompting avanzado (placa sin número). */
+export interface SlidePrompting extends Base {
+  t: "prompting";
+}
 
-export type SlideBbva = SlidePortada | SlideIngreso | SlidePlaca | SlideCurva | SlideActividad | SlideResultado | SlideCierre | SlideBbvai;
+export type SlideBbva = SlidePortada | SlideIngreso | SlidePlaca | SlideCurva | SlideActividad | SlideResultado | SlideCierre | SlideBbvai | SlidePrompting;
 
 export const BBVA_SLIDES_C1: SlideBbva[] = [
   {
@@ -814,6 +818,8 @@ export function tituloSlide(s: SlideBbva): string {
       return "Lo que sigue";
     case "bbvai":
       return "BBV(AI) · tu acompañante";
+    case "prompting":
+      return "¿Qué es prompting avanzado?";
   }
 }
 

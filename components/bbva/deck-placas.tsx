@@ -112,7 +112,51 @@ export function Placa(p: PropsPlaca) {
       return <Cierre />;
     case "bbvai":
       return <PlacaBbvai />;
+    case "prompting":
+      return <PlacaPrompting />;
   }
+}
+
+// --- ¿Qué es prompting avanzado? (sin número) ----------------------------------------------
+
+const PROMPTING = [
+  { de: "Un pedido suelto", a: "Instrucciones persistentes", detalle: "System prompt: cómo trabaja siempre, con contexto y conocimiento bien separados." },
+  { de: "Un chat general", a: "Un asistente especializado", detalle: "Gems y sus equivalentes: una IA con un solo trabajo, bien definido." },
+  { de: "Lo que el modelo “sabe”", a: "Una base de conocimiento", detalle: "NotebookLM y archivos: fuentes elegidas, vigentes y citables." },
+];
+
+function PlacaPrompting() {
+  return (
+    <Hoja folio={<Folio rotulo="Laboratorio" acento extra="Prompting avanzado y asistentes a medida" />}>
+      <div className="flex h-full flex-col">
+        <h1 className="bbva-titular text-[5rem] leading-[0.92] text-tinta">
+          ¿Qué es prompting <Marca tipo="subraya">avanzado</Marca>?
+        </h1>
+        <p className="bbva-serif mt-[1rem] max-w-[62rem] text-[2rem] italic leading-snug text-grafito">
+          No es escribir prompts más largos. Es lograr que una IA trabaje <span className="text-tinta">igual, bien, todas las veces</span>.
+        </p>
+        <ol className="mt-auto grid grid-cols-3 gap-[1.8rem] pb-[1.2rem]">
+          {PROMPTING.map((x, i) => (
+            <li
+              key={x.a}
+              className="bbva-recorte bbva-cae relative flex flex-col px-[1.4rem] pb-[1.4rem] pt-[1.1rem]"
+              style={vars({ "--rot": `${[-1, 0.8, -0.5][i]}deg`, animationDelay: `${0.25 + i * 0.15}s` })}
+            >
+              <span className="bbva-cinta absolute -top-[0.7rem] left-1/2 h-[1.4rem] w-[5rem] -translate-x-1/2" />
+              <p className="font-mono text-[0.85rem] uppercase tracking-[0.2em] text-gris">{dos(i + 1)}</p>
+              <p className="bbva-serif mt-[0.5rem] text-[1.5rem] italic leading-tight text-gris line-through decoration-grafito/40">{x.de}</p>
+              <p className="bbva-titular mt-[0.3rem] text-[2.3rem] leading-[0.95] text-tinta">
+                <span className="text-naranja">→ </span>
+                {x.a}
+              </p>
+              <p className="bbva-serif mt-[0.7rem] text-[1.3rem] leading-[1.2] text-grafito">{x.detalle}</p>
+            </li>
+          ))}
+        </ol>
+        <p className="bbva-mano text-[2rem] leading-none text-naranja">y todo empieza por el trabajo, no por el prompt</p>
+      </div>
+    </Hoja>
+  );
 }
 
 // --- BBV(AI): el acompañante del celular ---------------------------------------------------

@@ -537,6 +537,11 @@ export const SLIDES_C2: SlideBbva[] = [
     nota: "Es una clase de construcción. La meta no es un producto perfecto: es atravesar por primera vez el ciclo DISEÑAR → CONSTRUIR → PROBAR → OBSERVAR → CORREGIR. Tesis: un asistente es una IA a la que le diseñamos un trabajo.",
   },
   {
+    t: "prompting",
+    bloque: "Apertura",
+    nota: "El laboratorio es de prompting avanzado. No es escribir prompts más largos ni conocer trucos: es pasar de un pedido suelto a un sistema que trabaja igual, bien, todas las veces. Tres piezas del programa: instrucciones persistentes (system prompt) con manejo de contexto y conocimiento; asistentes especializados (Gems y equivalentes); base de conocimiento (NotebookLM). Todo eso lo construimos hoy, empezando por el trabajo.",
+  },
+  {
     t: "placa",
     numero: 3,
     bloque: "La tarea",

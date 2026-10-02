@@ -15,6 +15,7 @@ const CLASE = SLIDES_C2.map((s) => {
     const a = ACTIVIDADES_C2.find((x) => x.key === s.activa);
     return a ? `Actividad en el celular · ${a.nombre}: ${a.pregunta} ${a.consigna}` : "";
   }
+  if (s.t === "prompting") return `Qué es prompting avanzado: ${s.nota}`;
   if (s.t === "bbvai") return `Presentación de BBV(AI): ${s.nota}`;
   if (s.t === "portada" || s.t === "cierre") return `${s.t === "portada" ? "Apertura" : "Cierre"}: ${s.nota}`;
   return "";
