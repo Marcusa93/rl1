@@ -25,6 +25,8 @@ export const TF_EQUIPO = "Dr. Marco Rossi · Dr. Franco Orellana";
 /** Dirección que se escribe a mano; el QR apunta a la misma. */
 export const TF_LINK = "taller.rossi-ia.com/tribunal";
 export const TF_QR = "/tribunal/qr.svg";
+/** Material descargable del encuentro (se anuncia en la última placa). */
+export const TF_MATERIAL = "/tribunal/material";
 
 /** Los seis encuentros del ciclo (para la continuidad entre clases). */
 export const TF_ENCUENTROS = [
@@ -89,6 +91,8 @@ export interface TfPlaca {
   banner?: string;
   /** Franja con el resultado de una actividad anterior (ej.: los perfiles de la sala). */
   recuerda?: string;
+  /** Desde esta placa el celular ofrece el material descargable del encuentro. */
+  material?: boolean;
 }
 
 export type TfSlide =
@@ -115,6 +119,8 @@ export interface TfClase {
   bajada: string[];
   expositor: string;
   tramos: TfTramo[];
+  /** Encargo del expositor para la próxima charla (va en el material descargable). */
+  encargo?: string;
   slides: TfSlide[];
   actividades: TfActividad[];
   config: ClaseVivoConfig;
@@ -192,4 +198,66 @@ export function lineasPlaca(p: TfPlaca, clase: TfClase): TfLinea[] {
     case "ideas":
       return [...items(c.items), { tipo: "par", k: c.proxima.k, texto: c.proxima.v }];
   }
+}
+
+// --- Material descargable ---------------------------------------------------------
+
+/** Resultados de una actividad tal como los entrega /api/session/<slug>/material. */
+export interface TfMaterialActividad {
+  key: string;
+  respondieron: number;
+  /** Respuestas abiertas que el equipo no revisó: no se incluyen. */
+  pendiente?: boolean;
+  summary?: Record<string, unknown>;
+}
+
+export interface TfMaterial {
+  participantes: number;
+  actividades: TfMaterialActividad[];
+  generado: string;
+}
+
+export type TfFilaBarra = { label: string; n: number; pct: number };
+
+/** Un resultado listo para dibujar (en la página del material y en el PDF). */
+export type TfBloque =
+  | { tipo: "barras"; pregunta?: string; filas: TfFilaBarra[] }
+  | { tipo: "acn"; filas: { tarea: string; a: number; c: number; n: number; total: number }[] }
+  | { tipo: "palabras"; palabras: { palabra: string; n: number }[] }
+  | { tipo: "textos"; textos: string[] };
+
+const porcentaje = (n: number, total: number) => (total ? Math.round((n / total) * 100) : 0);
+
+function barras(opciones: { id: string; label: string }[], counts: Record<string, number>, total: number, ordenar: boolean): TfFilaBarra[] {
+  const filas = opciones.map((o) => ({ label: o.label, n: counts[o.id] ?? 0, pct: porcentaje(counts[o.id] ?? 0, total) }));
+  return ordenar ? filas.sort((a, b) => b.n - a.n) : filas;
+}
+
+export function bloquesMaterial(act: TfActividad, summary: Record<string, unknown>): TfBloque[] {
+  if (act.kind === "encuesta") {
+    const byQ = (summary.byQuestion as Record<string, Record<string, number>>) ?? {};
+    if (act.acn)
+      return [
+        {
+          tipo: "acn",
+          filas: (act.preguntas ?? []).map((q) => {
+            const c = byQ[q.id] ?? {};
+            return { tarea: q.q, a: c.a ?? 0, c: c.c ?? 0, n: c.n ?? 0, total: (c.a ?? 0) + (c.c ?? 0) + (c.n ?? 0) };
+          }),
+        },
+      ];
+    return (act.preguntas ?? []).map((q) => {
+      const c = byQ[q.id] ?? {};
+      const total = Object.values(c).reduce((x, y) => x + y, 0);
+      return { tipo: "barras", pregunta: q.q, filas: barras(q.opciones, c, total, false) };
+    });
+  }
+  if (act.kind === "opciones" || act.kind === "chips") {
+    const counts = (summary.counts as Record<string, number>) ?? {};
+    const total = act.kind === "chips" ? Number(summary.total ?? 0) : Object.values(counts).reduce((x, y) => x + y, 0);
+    return [{ tipo: "barras", filas: barras(act.opciones ?? [], counts, total, act.kind === "chips") }];
+  }
+  if (act.kind === "texto")
+    return [{ tipo: "textos", textos: ((summary.respuestas as { respuesta: string }[]) ?? []).map((r) => r.respuesta) }];
+  return [{ tipo: "palabras", palabras: (summary.palabras as { palabra: string; n: number }[]) ?? [] }];
 }

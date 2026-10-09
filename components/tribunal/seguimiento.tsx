@@ -7,7 +7,7 @@
 // arriba y debajo la actividad que sigue abierta (para quien llegó tarde).
 
 import { Component, useState, type ReactNode } from "react";
-import { getActividadTf, lineasPlaca, TF_INSTITUCION, type TfClase, type TfSlide } from "@/lib/tribunal";
+import { getActividadTf, lineasPlaca, TF_INSTITUCION, TF_MATERIAL, type TfClase, type TfSlide } from "@/lib/tribunal";
 import type { PlacaVivo } from "@/lib/remoto";
 import type { SessionRow } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -53,6 +53,17 @@ export function SeguimientoTribunal({
     <Blindaje fallback={panel}>
       <Seguimiento clase={clase} placa={placa} actividad={panel} />
     </Blindaje>
+  );
+}
+
+/** Al llegar al cierre: lleva al material del encuentro (contenido + resultados, en PDF). */
+function TarjetaMaterial() {
+  return (
+    <a href={TF_MATERIAL} target="_blank" rel="noreferrer" className="mb-6 block rounded-2xl bg-tf-azul p-5 text-white shadow-sm">
+      <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-tf-agua">Material del encuentro</p>
+      <p className="tf-serif mt-1 text-2xl leading-tight">Contenido de la charla y resultados de la sala</p>
+      <p className="mt-3 text-sm font-semibold">↓ Ver y descargar en PDF</p>
+    </a>
   );
 }
 
@@ -121,11 +132,14 @@ function Seguimiento({ clase, placa, actividad }: { clase: TfClase; placa: Placa
   const ir = (n: number) => setViendo(vivo !== null && n >= vivo ? null : Math.max(0, n));
 
   const nav = i !== null && vivo !== null ? <Navegacion i={i} total={total} vivo={vivo} enVivo={enVivo} onIr={ir} /> : null;
+  const desde = clase.slides.findIndex((x) => x.t === "placa" && x.material);
+  const material = desde >= 0 && vivo !== null && vivo >= desde;
 
   // Misma estructura siempre (tres lugares fijos) para que la actividad no se
   // vuelva a montar al cambiar de placa y no pierda lo que se escribió.
   return (
     <>
+      {material && <TarjetaMaterial />}
       {placaArriba && slide && i !== null ? (
         <div className="rise">
           {nav}

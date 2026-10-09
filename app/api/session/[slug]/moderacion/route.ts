@@ -30,7 +30,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
     const activity = String(body.activity ?? "");
     if (!activity) return fail("Falta activity");
     const actual = { ...(moderacion[activity] ?? {}) };
-    if (typeof body.proyectar === "boolean") actual.proyectar = body.proyectar;
+    if (typeof body.proyectar === "boolean") {
+      actual.proyectar = body.proyectar;
+      if (body.proyectar) actual.revisada = true;
+    }
     if (typeof body.valor === "string" && typeof body.oculta === "boolean") {
       const ocultas = new Set(actual.ocultas ?? []);
       if (body.oculta) ocultas.add(body.valor);

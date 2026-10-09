@@ -7,7 +7,7 @@
 import { useLive } from "@/components/use-live";
 import { FranjaRecuerdo, ResultadosTf } from "@/components/tribunal/resultados";
 import type { Moderacion } from "@/lib/moderacion";
-import { getActividadTf, TF_EQUIPO, TF_INSTITUCION, TF_LINK, TF_QR, type TfClase, type TfCuerpo, type TfPlaca, type TfSlide } from "@/lib/tribunal";
+import { getActividadTf, TF_EQUIPO, TF_INSTITUCION, TF_LINK, TF_MATERIAL, TF_QR, type TfClase, type TfCuerpo, type TfPlaca, type TfSlide } from "@/lib/tribunal";
 import { cn } from "@/lib/utils";
 
 export type Proyectar = (activity: string, proyectar: boolean) => void;
@@ -33,22 +33,23 @@ export function PlacaTf({ clase, placa, intervalo }: { clase: TfClase; placa: Tf
       <div className="mt-8 flex flex-1 flex-col justify-center">
         <Cuerpo c={placa.cuerpo} clase={clase} tramoActual={placa.tramo} />
       </div>
-      {(recuerdo || placa.banner) && (
+      {(recuerdo || placa.banner || placa.material) && (
         <div className="mt-6 flex flex-wrap items-end justify-between gap-4">
           {recuerdo ? <FranjaRecuerdo slug={clase.slug} act={recuerdo} intervalo={intervalo} /> : <span />}
           {placa.banner && <Banner texto={placa.banner} />}
+          {placa.material && <Banner rotulo="Material del encuentro" texto={`En su celular · ${TF_LINK.split("/")[0]}${TF_MATERIAL}`} />}
         </div>
       )}
     </article>
   );
 }
 
-/** Banner complementario: anuncia la actividad que sigue, sin competir con la placa. */
-function Banner({ texto }: { texto: string }) {
+/** Banner complementario: anuncia la actividad que sigue (o el material), sin competir con la placa. */
+function Banner({ texto, rotulo = "Actividad en vivo" }: { texto: string; rotulo?: string }) {
   return (
     <div className="tf-sube flex items-center gap-3 rounded-full border border-tf-ocre/50 bg-tf-ocre-claro px-5 py-2.5" style={retraso(0.6)}>
       <span className="size-2 animate-pulse rounded-full bg-tf-ocre" />
-      <span className="tf-rotulo text-[0.65rem] text-tf-ocre">Actividad en vivo</span>
+      <span className="tf-rotulo text-[0.65rem] text-tf-ocre">{rotulo}</span>
       <span className="text-base font-medium text-tf-tinta">{texto}</span>
     </div>
   );

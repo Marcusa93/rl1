@@ -60,7 +60,9 @@ function ModerarActividad({
       <p className="text-[11px] font-bold uppercase tracking-widest text-amber-300">🛡️ Revisar antes de proyectar</p>
       <p className="mt-1 text-base font-semibold">{act.titulo}</p>
       <p className="mt-1 text-xs text-faint">
-        {proyectada ? "● En pantalla. Lo que oculte desaparece al instante." : "Todavía no se ve en la pantalla. Revise y toque «👁 Proyectar» arriba."}
+        {proyectada
+          ? "● En pantalla. Lo que oculte desaparece al instante (y no va al material)."
+          : "Todavía no se ve en la pantalla. Revise y toque «👁 Proyectar» arriba: así también queda revisada para el material descargable."}
       </p>
       {!items.length ? (
         <p className="mt-3 text-sm text-faint">Sin respuestas todavía.</p>

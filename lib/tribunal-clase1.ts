@@ -584,7 +584,8 @@ const SLIDES: TfSlide[] = [
       ],
       proxima: { k: "Próxima charla", v: "Cómo formular instrucciones y verificar resultados" },
     },
-    nota: "Cierre con las cinco ideas y encargue observar una tarea habitual: qué parte admitiría asistencia, qué información debe excluirse y quién valida.",
+    material: true,
+    nota: "Cierre con las cinco ideas y encargue observar una tarea habitual: qué parte admitiría asistencia, qué información debe excluirse y quién valida.\n\n▶ En los celulares aparece el material del encuentro para descargar (PDF).",
   },
 ];
 
@@ -612,6 +613,8 @@ export const TF1: TfClase = {
   bajada: ["Primera charla del ciclo", "Duración 120 minutos"],
   expositor: TF_EXPOSITOR,
   tramos: TRAMOS,
+  // De las notas de la placa 19: lo que el Dr. Leal encarga para la próxima charla.
+  encargo: "Observar una tarea habitual: qué parte admitiría asistencia, qué información debe excluirse y quién valida.",
   slides: SLIDES,
   actividades: ACTIVIDADES,
   config: CONFIG,

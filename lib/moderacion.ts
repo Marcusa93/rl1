@@ -8,6 +8,8 @@ export interface ModeracionActividad {
   ocultas?: string[];
   /** true: la pantalla muestra las respuestas (ya revisadas). */
   proyectar?: boolean;
+  /** Se proyectaron alguna vez: quedan revisadas para el material descargable. */
+  revisada?: boolean;
 }
 
 export type Moderacion = Record<string, ModeracionActividad>;

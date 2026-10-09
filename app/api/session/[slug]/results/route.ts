@@ -5,6 +5,7 @@ import { getJusActividad } from "@/lib/justicia-clase";
 import { getDipActividad } from "@/lib/diplo-clase";
 import { getTalActividad } from "@/lib/taller-clase";
 import { getTf1Actividad } from "@/lib/tribunal-clase1";
+import { resumenVivo } from "@/lib/resumen-vivo";
 import { getAdmin } from "@/lib/supabase/server";
 import type { CotioVar } from "@/lib/types";
 
@@ -231,55 +232,7 @@ export async function GET(
       responders: [],
       config: session.activity_config ?? {},
     };
-    if (w3.kind === "encuesta") {
-      const byQuestion: Record<string, Record<string, number>> = {};
-      for (const r of list) {
-        const ans = (r.payload?.answers as Record<string, string>) ?? {};
-        for (const [q, opt] of Object.entries(ans)) {
-          byQuestion[q] ??= {};
-          byQuestion[q][String(opt)] = (byQuestion[q][String(opt)] ?? 0) + 1;
-        }
-      }
-      return ok({ ...base, summary: { total: list.length, byQuestion } });
-    }
-    if (w3.kind === "opciones") {
-      const counts: Record<string, number> = {};
-      for (const r of list) {
-        const op = String(r.payload?.opcion ?? "");
-        if (op) counts[op] = (counts[op] ?? 0) + 1;
-      }
-      return ok({ ...base, summary: { total: list.length, counts } });
-    }
-    if (w3.kind === "chips") {
-      const counts: Record<string, number> = {};
-      for (const r of list)
-        for (const id of (r.payload?.selected as string[]) ?? [])
-          counts[id] = (counts[id] ?? 0) + 1;
-      return ok({ ...base, summary: { total: list.length, counts } });
-    }
-    if (w3.kind === "texto") {
-      const respuestas = list
-        .map((r) => ({
-          name: (r.participants?.name as string) ?? "—",
-          respuesta: String(r.payload?.respuesta ?? "").slice(0, 300),
-        }))
-        .filter((r) => r.respuesta.trim())
-        .slice(-40);
-      return ok({ ...base, summary: { total: list.length, respuestas } });
-    }
-    // "palabra"
-    const counts: Record<string, number> = {};
-    for (const r of list) {
-      const w = String(r.payload?.palabra ?? "")
-        .trim()
-        .toLowerCase();
-      if (w) counts[w] = (counts[w] ?? 0) + 1;
-    }
-    const palabras = Object.entries(counts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 60)
-      .map(([palabra, n]) => ({ palabra, n }));
-    return ok({ ...base, summary: { total: list.length, palabras } });
+    return ok({ ...base, summary: resumenVivo(w3.kind, list) });
   }
 
   if (activity === "emp_cierre") {
