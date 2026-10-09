@@ -542,3 +542,29 @@ html:has(.tf), body:has(.tf) { background: var(--color-tf-papel); color-scheme: 
 @media (prefers-reduced-motion: reduce) {
   .tf-sube, .tf-traza, .tf-marca { animation: none; }
 }
+
+/* Tribunal · revelado paso a paso y foco (components/tribunal/revelado.tsx). */
+.tf-unidad { transition: opacity 0.5s ease, transform 0.5s ease, filter 0.5s ease; }
+.tf-unidad[data-oculta] { opacity: 0; transform: translateY(0.7rem); pointer-events: none; }
+.tf-unidad[data-atenuada] { opacity: 0.22; filter: grayscale(0.7); }
+.tf-unidad[data-foco] { position: relative; z-index: 1; transform: scale(1.015); }
+@media (prefers-reduced-motion: reduce) { .tf-unidad { transition: none; } }
+
+/* Tribunal · alto contraste (tecla C en /tribunal/clase): salas muy iluminadas
+   donde el proyector lava los grises y el celeste. Papel blanco, tinta negra,
+   secundarios más oscuros. */
+.tf-contraste {
+  --color-tf-papel: #ffffff;
+  --color-tf-tinta: #000000;
+  --color-tf-azul: #0b2442;
+  --color-tf-petroleo: #005861;
+  --color-tf-celeste: #bfd5e3;
+  --color-tf-pizarra: #2b3540;
+  --color-tf-niebla: #4f5a65;
+  --color-tf-linea: #9fb1bf;
+  --color-tf-ocre: #7f4f00;
+  --color-tf-ocre-claro: #f3dfb8;
+  --color-tf-lacre: #8f1f18;
+}
+.tf-contraste .tf-renglon { background: #c3ced7; }
+.tf-contraste .tf-hoja { box-shadow: 0 0 0 1px #9fb1bf; }

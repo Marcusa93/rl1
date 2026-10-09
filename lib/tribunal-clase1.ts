@@ -4,9 +4,11 @@
 // texto literal (19 placas) y, entre ellas, las actividades en vivo:
 //
 //   portada · ingreso ─ perfil (abogado/a, contador/a, administrativo/a)
-//   04 Diagnóstico inicial ─ tareas frecuentes · ¿usa IA? ¿cuál? ·
-//                            ¿para qué tarea? · ¿cómo verificó?
+//   04 Diagnóstico inicial ─ ¿usa IA? ¿cuál? (su primera pregunta)
+//   05 Inteligencia artificial ─ ¿para qué tarea la utilizó? (la segunda)
+//   09 La fluidez puede ocultar errores ─ ¿cómo verificó? (la tercera)
 //   10 Dos formas de pedir ayuda ─ ¿qué le falta a este pedido?
+//   11 Usos jurídicos ─ ¿qué tareas realiza con mayor frecuencia?
 //   12 Usos contables ─ ¿qué le gustaría delegar?
 //   13 Interdisciplinario ─ franja con los perfiles de la sala
 //   14 Riesgos ─ ¿qué riesgo le preocupa más?
@@ -14,8 +16,9 @@
 //   18 Clasificación A/C/N ─ diez tareas + riesgo y control por grupo
 //   síntesis: delegaría / no delegaría ─ 19 Cinco ideas de cierre
 //
-// Las placas de contenido no cambian la actividad abierta: quien llegó
-// tarde puede terminar de responder mientras el Dr. Leal sigue.
+// Nunca dos preguntas seguidas (salvo el taller A/C/N y su riesgo y
+// control, que son un mismo ejercicio). Las placas de contenido no cambian
+// la actividad abierta: quien llegó tarde puede terminar de responder.
 // ============================================================
 
 import type { ClaseVivoConfig } from "./clase-vivo";
@@ -71,24 +74,6 @@ const ACTIVIDADES: TfActividad[] = [
       { id: "contador", emoji: "📊", label: "Contador/a" },
       { id: "administrativo", emoji: "🗂️", label: "Personal administrativo" },
       { id: "otro", emoji: "✨", label: "Otro perfil" },
-    ],
-  },
-  {
-    key: "tf1_tareas",
-    kind: "chips",
-    titulo: "¿Qué tareas realiza con mayor frecuencia?",
-    bajada: "Marque todas las que correspondan.",
-    opciones: [
-      { id: "expedientes", emoji: "📂", label: "Estudiar expedientes y recursos" },
-      { id: "proyectos", emoji: "✍️", label: "Redactar proyectos de sentencia o resolución" },
-      { id: "prueba", emoji: "📑", label: "Analizar prueba y documentación" },
-      { id: "calculos", emoji: "🧮", label: "Revisar liquidaciones, cálculos o pericias" },
-      { id: "normativa", emoji: "🔎", label: "Buscar normativa y jurisprudencia" },
-      { id: "tramite", emoji: "📨", label: "Proveer escritos y notificar" },
-      { id: "plazos", emoji: "🗓️", label: "Controlar plazos y registrar actuaciones" },
-      { id: "mesa", emoji: "🛎️", label: "Atender mesa de entradas y consultas" },
-      { id: "informes", emoji: "📊", label: "Preparar informes, planillas o estadísticas" },
-      { id: "notas", emoji: "✉️", label: "Redactar notas, oficios y comunicaciones" },
     ],
   },
   {
@@ -151,6 +136,24 @@ const ACTIVIDADES: TfActividad[] = [
     bajada: "«Decime quién tiene razón y redactá la decisión». Una o dos palabras.",
     maxChars: 24,
     moderada: true,
+  },
+  {
+    key: "tf1_tareas",
+    kind: "chips",
+    titulo: "¿Qué tareas realiza con mayor frecuencia?",
+    bajada: "Marque todas las que correspondan.",
+    opciones: [
+      { id: "expedientes", emoji: "📂", label: "Estudiar expedientes y recursos" },
+      { id: "proyectos", emoji: "✍️", label: "Redactar proyectos de sentencia o resolución" },
+      { id: "prueba", emoji: "📑", label: "Analizar prueba y documentación" },
+      { id: "calculos", emoji: "🧮", label: "Revisar liquidaciones, cálculos o pericias" },
+      { id: "normativa", emoji: "🔎", label: "Buscar normativa y jurisprudencia" },
+      { id: "tramite", emoji: "📨", label: "Proveer escritos y notificar" },
+      { id: "plazos", emoji: "🗓️", label: "Controlar plazos y registrar actuaciones" },
+      { id: "mesa", emoji: "🛎️", label: "Atender mesa de entradas y consultas" },
+      { id: "informes", emoji: "📊", label: "Preparar informes, planillas o estadísticas" },
+      { id: "notas", emoji: "✉️", label: "Redactar notas, oficios y comunicaciones" },
+    ],
   },
   {
     key: "tf1_delegar",
@@ -248,36 +251,15 @@ const SLIDES: TfSlide[] = [
       preguntas: ["¿Qué herramienta de IA utilizó?", "¿Para qué tarea?", "¿Cómo verificó la respuesta?"],
       cierre: "Escuchar tres experiencias breves",
     },
-    banner: "¿Para qué utiliza la inteligencia artificial?",
-    nota: "Pida tres respuestas. Registre tarea solicitada y control efectuado. Evite corregir de inmediato y use los errores como oportunidades de aprendizaje.\n\n▶ Siguen cuatro pantallas de diagnóstico en el celular: tareas frecuentes, ¿usa IA?, ¿para qué?, ¿cómo verificó?",
-  },
-  {
-    t: "actividad",
-    activa: "tf1_tareas",
-    escena: "Diagnóstico inicial",
-    tramo: 0,
-    nota: "Antes de hablar de IA: qué hace cada uno todos los días. Leer las tres tareas más marcadas.",
+    banner: "¿Utiliza inteligencia artificial? ¿Cuál?",
+    nota: "Pida tres respuestas. Registre tarea solicitada y control efectuado. Evite corregir de inmediato y use los errores como oportunidades de aprendizaje.\n\n▶ En el celular, solo su primera pregunta: ¿usa IA y qué herramienta? «¿Para qué?» llega después de la placa 05 y «¿cómo verificó?» después de la 09.",
   },
   {
     t: "actividad",
     activa: "tf1_uso",
     escena: "Diagnóstico inicial",
     tramo: 0,
-    nota: "Quiénes usan IA y con qué herramienta (la primera pregunta de la placa 04). Comentar cuántos nunca la usaron: nadie queda afuera.",
-  },
-  {
-    t: "actividad",
-    activa: "tf1_para_que",
-    escena: "Diagnóstico inicial",
-    tramo: 0,
-    nota: "Respuesta abierta: revisen las palabras en este celular (abajo) y ocúltenlas si hace falta. Después toquen «Proyectar respuestas». El Dr. Leal toma tres experiencias de la nube.",
-  },
-  {
-    t: "actividad",
-    activa: "tf1_verifico",
-    escena: "Diagnóstico inicial",
-    tramo: 0,
-    nota: "El control efectuado. Si muchos marcan «No la verifiqué», es el puente a las placas 08 y 09. Sin corregir: es diagnóstico.",
+    nota: "La primera pregunta del Dr. Leal: quiénes usan IA y con qué herramienta. Comentar cuántos nunca la usaron: nadie queda afuera.",
   },
   {
     t: "placa",
@@ -294,7 +276,15 @@ const SLIDES: TfSlide[] = [
         "La utilidad depende de los datos, la instrucción y el control",
       ],
     },
-    nota: "Distinga IA como expresión amplia. Mencione sistemas de clasificación, predicción y generación. No use metáforas que atribuyan conciencia a la herramienta.",
+    banner: "¿Para qué utiliza la inteligencia artificial?",
+    nota: "Distinga IA como expresión amplia. Mencione sistemas de clasificación, predicción y generación. No use metáforas que atribuyan conciencia a la herramienta.\n\n▶ Después de «cada sistema sirve para tareas determinadas»: ¿para qué tarea la utilizó? (nube, se modera).",
+  },
+  {
+    t: "actividad",
+    activa: "tf1_para_que",
+    escena: "Diagnóstico inicial · ¿para qué?",
+    tramo: 0,
+    nota: "La segunda pregunta del Dr. Leal. Respuesta abierta: revisen las palabras en este celular (abajo) y ocúltenlas si hace falta; después toquen «Proyectar respuestas». Si en la placa 04 no surgieron las tres experiencias, el Dr. Leal puede tomarlas de esta nube.",
   },
   {
     t: "placa",
@@ -355,7 +345,15 @@ const SLIDES: TfSlide[] = [
         "El tono seguro no equivale a certeza",
       ],
     },
-    nota: "Explique por qué los modelos producen secuencias plausibles. Cada hecho, cita, cifra, cálculo y conclusión relevante necesita verificación independiente.",
+    banner: "¿Cómo verificó la respuesta?",
+    nota: "Explique por qué los modelos producen secuencias plausibles. Cada hecho, cita, cifra, cálculo y conclusión relevante necesita verificación independiente.\n\n▶ Sigue la tercera pregunta de la placa 04: ¿cómo verificó la respuesta?",
+  },
+  {
+    t: "actividad",
+    activa: "tf1_verifico",
+    escena: "La fluidez puede ocultar errores",
+    tramo: 1,
+    nota: "La tercera pregunta del Dr. Leal, justo después de hablar de verificación. Si muchos marcan «No la verifiqué», él lo retoma. Sin corregir: es diagnóstico.",
   },
   {
     t: "placa",
@@ -397,7 +395,15 @@ const SLIDES: TfSlide[] = [
       ],
       cierre: "Jurisprudencia y normas siempre se comprueban en la publicación oficial",
     },
-    nota: "Aclare que estos son usos auxiliares. El profesional debe controlar vigencia normativa, fuente, cita, razonamiento y congruencia.",
+    banner: "¿Qué tareas realiza con mayor frecuencia?",
+    nota: "Aclare que estos son usos auxiliares. El profesional debe controlar vigencia normativa, fuente, cita, razonamiento y congruencia.\n\n▶ Sigue: ¿qué tareas realiza con mayor frecuencia? (varias opciones).",
+  },
+  {
+    t: "actividad",
+    activa: "tf1_tareas",
+    escena: "Usos jurídicos y contables",
+    tramo: 1,
+    nota: "Después de los usos jurídicos: qué hace cada uno todos los días. Leer las tres tareas más marcadas; sirven de puente a los usos contables y a «¿qué le gustaría delegar?».",
   },
   {
     t: "placa",

@@ -31,7 +31,45 @@ export function PanelTribunal({ clase, idx }: { clase: TfClase; idx: number }) {
         />
       ))}
       <Exportar clase={clase} />
+      <Reiniciar clase={clase} idx={idx} onModeracion={() => cambiar({ reiniciar: true })} />
     </div>
+  );
+}
+
+/** Reiniciar la sesión desde el celular (después de ensayar; nunca después de la clase real). */
+function Reiniciar({ clase, idx, onModeracion }: { clase: TfClase; idx: number; onModeracion: () => Promise<void> }) {
+  const [estado, setEstado] = useState<"" | "reiniciando" | "ok" | "error">("");
+
+  async function reiniciar() {
+    if (!confirm("¿Reiniciar la sesión? Se borran los participantes, sus respuestas y la moderación. Solo después de ensayar: nunca después de la clase real.")) return;
+    setEstado("reiniciando");
+    try {
+      const r = await fetch(`/api/session/${clase.slug}/reset`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ all: true }),
+      });
+      await onModeracion();
+      // La pantalla que se proyecta vuelve a abrir su actividad en los celulares.
+      const s = clase.slides[idx];
+      if (s && "activa" in s)
+        await fetch(`/api/session/${clase.slug}/activity`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ current_activity: s.activa }),
+        });
+      setEstado(r.ok ? "ok" : "error");
+    } catch {
+      setEstado("error");
+    }
+  }
+
+  return (
+    <button onClick={reiniciar} disabled={estado === "reiniciando"} className="rounded-2xl border border-magenta/40 bg-magenta/5 px-4 py-3 text-left text-sm text-magenta">
+      ⟲ {estado === "reiniciando" ? "Reiniciando…" : "Reiniciar la sesión (después de ensayar)"}
+      {estado === "ok" && <span className="ml-2 text-faint">listo: sesión vacía</span>}
+      {estado === "error" && <span className="ml-2">no se pudo: reintente</span>}
+    </button>
   );
 }
 

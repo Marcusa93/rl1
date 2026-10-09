@@ -6,8 +6,9 @@
 
 import { useLive } from "@/components/use-live";
 import { FranjaRecuerdo, ResultadosTf } from "@/components/tribunal/resultados";
+import { Unidad } from "@/components/tribunal/revelado";
 import type { Moderacion } from "@/lib/moderacion";
-import { getActividadTf, TF_EQUIPO, TF_INSTITUCION, TF_LINK, TF_MATERIAL, TF_QR, type TfClase, type TfCuerpo, type TfPlaca, type TfSlide } from "@/lib/tribunal";
+import { getActividadTf, pasosPlaca, TF_EQUIPO, TF_INSTITUCION, TF_LINK, TF_MATERIAL, TF_QR, type TfClase, type TfCuerpo, type TfPlaca, type TfSlide } from "@/lib/tribunal";
 import { cn } from "@/lib/utils";
 
 export type Proyectar = (activity: string, proyectar: boolean) => void;
@@ -18,6 +19,8 @@ const retraso = (s: number) => ({ animationDelay: `${s}s` });
 
 export function PlacaTf({ clase, placa, intervalo }: { clase: TfClase; placa: TfPlaca; intervalo: number }) {
   const recuerdo = placa.recuerda ? getActividadTf(clase, placa.recuerda) : undefined;
+  // Los banners aparecen junto con la última parte de la placa (revelado paso a paso).
+  const ultimo = Math.max(0, pasosPlaca(placa) - 1);
   return (
     <article className="flex flex-1 flex-col">
       <header className="flex items-start justify-between gap-10">
@@ -36,8 +39,16 @@ export function PlacaTf({ clase, placa, intervalo }: { clase: TfClase; placa: Tf
       {(recuerdo || placa.banner || placa.material) && (
         <div className="mt-6 flex flex-wrap items-end justify-between gap-4">
           {recuerdo ? <FranjaRecuerdo slug={clase.slug} act={recuerdo} intervalo={intervalo} /> : <span />}
-          {placa.banner && <Banner texto={placa.banner} />}
-          {placa.material && <Banner rotulo="Material del encuentro" texto={`En su celular · ${TF_LINK.split("/")[0]}${TF_MATERIAL}`} />}
+          {placa.banner && (
+            <Unidad i={ultimo}>
+              <Banner texto={placa.banner} />
+            </Unidad>
+          )}
+          {placa.material && (
+            <Unidad i={ultimo}>
+              <Banner rotulo="Material del encuentro" texto={`En su celular · ${TF_LINK.split("/")[0]}${TF_MATERIAL}`} />
+            </Unidad>
+          )}
         </div>
       )}
     </article>
@@ -94,18 +105,17 @@ function Cuerpo({ c, clase, tramoActual }: { c: TfCuerpo; clase: TfClase; tramoA
   }
 }
 
-/** Conclusión de una placa: separada de los componentes, con una regla a la izquierda. */
-function Conclusion({ texto, delay = 0.7, grande }: { texto: string; delay?: number; grande?: boolean }) {
+/** Conclusión de una placa: separada de los componentes, con una regla a la izquierda. Aparece en su paso. */
+function Conclusion({ texto, paso, grande }: { texto: string; paso: number; grande?: boolean }) {
   return (
-    <p
-      className={cn(
-        "tf-serif tf-sube mt-12 border-l-[0.35rem] border-tf-petroleo pl-6 leading-snug text-tf-azul",
-        grande ? "text-[2.3rem]" : "text-[1.9rem]",
-      )}
-      style={retraso(delay)}
+    <Unidad
+      as="p"
+      i={paso}
+      label={texto}
+      className={cn("tf-serif mt-12 border-l-[0.35rem] border-tf-petroleo pl-6 leading-snug text-tf-azul", grande ? "text-[2.3rem]" : "text-[1.9rem]")}
     >
       {texto}
-    </p>
+    </Unidad>
   );
 }
 
@@ -119,13 +129,13 @@ function Lema({ lema, items, kickers }: { lema: string; items: string[]; kickers
       <div className="relative mt-14 grid grid-cols-3 gap-6 pt-10">
         <span aria-hidden className="tf-marca absolute left-[16%] right-[16%] top-[2.5rem] h-px bg-tf-petroleo/40" style={retraso(0.5)} />
         {items.map((it, i) => (
-          <div key={it} className="tf-sube relative rounded-2xl border border-tf-linea bg-white p-6" style={retraso(0.35 + i * 0.12)}>
+          <Unidad key={it} i={i} label={it} className="relative rounded-2xl border border-tf-linea bg-white p-6">
             <span className="absolute -top-3 left-6 flex size-6 items-center justify-center rounded-full bg-tf-petroleo text-xs font-semibold text-white">
               {i + 1}
             </span>
             <p className="tf-rotulo text-[0.65rem] text-tf-petroleo">{kickers[i]}</p>
             <p className="mt-3 text-[1.45rem] leading-snug text-tf-tinta">{it}</p>
-          </div>
+          </Unidad>
         ))}
       </div>
     </div>
@@ -168,18 +178,18 @@ function Preguntas({ preguntas, cierre }: { preguntas: string[]; cierre: string 
     <div className="flex flex-col">
       <ol className="relative ml-4 grid gap-7 border-l border-tf-petroleo/30 pl-10">
         {preguntas.map((p, i) => (
-          <li key={p} className="tf-sube relative" style={retraso(0.2 + i * 0.15)}>
+          <Unidad as="li" key={p} i={i} label={p} className="relative">
             <span className="absolute -left-[3.2rem] top-1 flex size-8 items-center justify-center rounded-full border border-tf-petroleo bg-white text-sm font-semibold text-tf-petroleo">
               {i + 1}
             </span>
             <p className="tf-titular text-[2.8rem] text-tf-tinta">{p}</p>
-          </li>
+          </Unidad>
         ))}
       </ol>
-      <p className="tf-sube mt-12 flex items-center gap-3 text-[1.35rem] italic text-tf-pizarra" style={retraso(0.75)}>
+      <Unidad as="p" i={preguntas.length} label={cierre} className="mt-12 flex items-center gap-3 text-[1.35rem] italic text-tf-pizarra">
         <span className="h-px w-10 bg-tf-pizarra/50" />
         {cierre}
-      </p>
+      </Unidad>
     </div>
   );
 }
@@ -225,9 +235,9 @@ function Verbos({ definicion, verbos, items }: { definicion: string; verbos: str
       </div>
       <ul className="mt-12 grid grid-cols-3 gap-6">
         {items.map((it, i) => (
-          <li key={it} className="tf-sube border-t-2 border-tf-azul pt-4 text-[1.5rem] leading-snug text-tf-tinta" style={retraso(0.8 + i * 0.1)}>
+          <Unidad as="li" key={it} i={i} label={it} className="border-t-2 border-tf-azul pt-4 text-[1.5rem] leading-snug text-tf-tinta">
             {it}
-          </li>
+          </Unidad>
         ))}
       </ul>
     </div>
@@ -242,16 +252,16 @@ function Generativa({ definicion, imita, cierre }: { definicion: string; imita: 
         <p className="tf-titular tf-sube text-[2.45rem] text-tf-tinta" style={retraso(0.1)}>
           {definicion}
         </p>
-        <div className="tf-sube relative" style={retraso(0.35)}>
+        <Unidad i={0} label={imita} className="relative">
           <DocumentoSimulado filas={9} className="rotate-[1.2deg]" />
           {/* Lupa: el contenido hay que examinarlo */}
           <div className="absolute -bottom-5 -left-6 flex items-center gap-3 rounded-xl border border-tf-ocre/50 bg-tf-ocre-claro px-4 py-3 shadow-sm">
             <GlifoLupa className="size-7 shrink-0 text-tf-ocre" />
             <span className="text-[1.15rem] font-medium text-tf-tinta">{imita}</span>
           </div>
-        </div>
+        </Unidad>
       </div>
-      <Conclusion texto={cierre} grande />
+      <Conclusion texto={cierre} paso={1} grande />
     </div>
   );
 }
@@ -268,27 +278,25 @@ function Flujo({ pares, cierre }: { pares: { k: string; v: string }[]; cierre: s
             const ultimo = i === pares.length - 1;
             return [
               i > 0 && (
-                <span key={`s${i}`} className="tf-sube self-center text-center text-[2rem] font-light text-tf-niebla" style={retraso(0.2 + i * 0.15)}>
+                <Unidad as="span" key={`s${i}`} i={i} className="self-center text-center text-[2rem] font-light text-tf-niebla">
                   {ultimo ? "→" : "+"}
-                </span>
+                </Unidad>
               ),
-              <div
+              <Unidad
                 key={p.k}
-                className={cn(
-                  "tf-sube flex flex-col gap-4 rounded-2xl px-6 py-7",
-                  ultimo ? "border-2 border-dashed border-tf-petroleo bg-white" : "border border-tf-linea bg-white",
-                )}
-                style={retraso(0.2 + i * 0.15)}
+                i={i}
+                label={`${p.k} · ${p.v}`}
+                className={cn("flex flex-col gap-4 rounded-2xl px-6 py-7", ultimo ? "border-2 border-dashed border-tf-petroleo bg-white" : "border border-tf-linea bg-white")}
               >
                 <G className={cn("size-11", ultimo ? "text-tf-petroleo" : "text-tf-azul")} />
                 <p className={cn("tf-rotulo text-[0.8rem]", ultimo ? "text-tf-petroleo" : "text-tf-azul")}>{p.k}</p>
                 <p className="tf-serif text-[1.6rem] leading-tight text-tf-tinta">{p.v}</p>
-              </div>,
+              </Unidad>,
             ];
           })}
         </div>
       </div>
-      <Conclusion texto={cierre} delay={0.9} />
+      <Conclusion texto={cierre} paso={pares.length} />
     </div>
   );
 }
@@ -302,7 +310,7 @@ function BuscarGenerar({ c }: { c: Extract<TfCuerpo, { forma: "columnas" }> }) {
         {c.columnas.map((col, i) => {
           const G = glifos[i];
           return (
-            <div key={col.k} className="tf-sube rounded-2xl border border-tf-linea bg-white p-8" style={retraso(0.2 + i * 0.2)}>
+            <Unidad key={col.k} i={i} label={col.k} className="rounded-2xl border border-tf-linea bg-white p-8">
               <div className="flex items-center gap-4">
                 <G className="size-12 text-tf-azul" />
                 <p className="tf-titular text-[2.4rem] tracking-[0.04em] text-tf-azul">{col.k}</p>
@@ -314,17 +322,17 @@ function BuscarGenerar({ c }: { c: Extract<TfCuerpo, { forma: "columnas" }> }) {
                   </p>
                 ))}
               </div>
-            </div>
+            </Unidad>
           );
         })}
       </div>
       {/* Las dos columnas desembocan en la misma advertencia. */}
-      <svg aria-hidden viewBox="0 0 100 10" preserveAspectRatio="none" className="h-14 w-full text-tf-petroleo/60">
-        <path d="M25 0 V5 H75 V0 M50 5 V10" fill="none" stroke="currentColor" strokeWidth="0.25" vectorEffect="non-scaling-stroke" className="tf-traza" style={{ "--largo": 120 } as React.CSSProperties} />
-      </svg>
-      <p className="tf-serif tf-sube mx-auto rounded-2xl bg-tf-azul px-10 py-6 text-center text-[2.1rem] leading-snug text-white" style={retraso(0.8)}>
-        {c.cierre}
-      </p>
+      <Unidad i={c.columnas.length} label={c.cierre} className="flex flex-col">
+        <svg aria-hidden viewBox="0 0 100 10" preserveAspectRatio="none" className="h-14 w-full text-tf-petroleo/60">
+          <path d="M25 0 V5 H75 V0 M50 5 V10" fill="none" stroke="currentColor" strokeWidth="0.25" vectorEffect="non-scaling-stroke" />
+        </svg>
+        <p className="tf-serif mx-auto rounded-2xl bg-tf-azul px-10 py-6 text-center text-[2.1rem] leading-snug text-white">{c.cierre}</p>
+      </Unidad>
     </div>
   );
 }
@@ -335,20 +343,20 @@ function Pedidos({ c }: { c: Extract<TfCuerpo, { forma: "columnas" }> }) {
   return (
     <div className="flex flex-col">
       <div className="grid min-h-[20rem] grid-cols-2 items-stretch gap-8">
-        <div className="tf-sube flex flex-col rounded-2xl border-2 border-dashed border-tf-niebla bg-white/60 p-8" style={retraso(0.2)}>
+        <Unidad i={0} label={abierto.k} className="flex flex-col rounded-2xl border-2 border-dashed border-tf-niebla bg-white/60 p-8">
           <p className="tf-rotulo text-tf-pizarra">{abierto.k}</p>
           <p className="tf-titular mt-auto pb-4 pt-6 text-[2.6rem] italic text-tf-tinta">{abierto.lineas[0]}</p>
-        </div>
-        <div className="tf-sube relative flex flex-col rounded-2xl border border-tf-petroleo bg-white p-8" style={retraso(0.4)}>
+        </Unidad>
+        <Unidad i={1} label={controlable.k} className="relative flex flex-col rounded-2xl border border-tf-petroleo bg-white p-8">
           {/* esquinas: un pedido delimitado */}
           {["left-3 top-3 border-l-2 border-t-2", "right-3 top-3 border-r-2 border-t-2", "left-3 bottom-3 border-b-2 border-l-2", "right-3 bottom-3 border-b-2 border-r-2"].map((p) => (
             <span key={p} aria-hidden className={cn("absolute size-5 border-tf-petroleo", p)} />
           ))}
           <p className="tf-rotulo text-tf-petroleo">{controlable.k}</p>
           <p className="mt-auto pb-4 pt-6 text-[2rem] leading-snug text-tf-tinta">{controlable.lineas[0]}</p>
-        </div>
+        </Unidad>
       </div>
-      <Conclusion texto={c.cierre} delay={0.75} />
+      <Conclusion texto={c.cierre} paso={2} />
     </div>
   );
 }
@@ -362,29 +370,26 @@ function Documento({ items }: { items: string[] }) {
       <div className="tf-sube relative" style={retraso(0.1)}>
         <DocumentoSimulado filas={13} />
         {zonas.map((top, i) => (
-          <span
+          <Unidad
+            as="span"
             key={top}
-            className="tf-sube absolute -right-4 flex size-9 items-center justify-center rounded-full border-2 border-white bg-tf-ocre text-sm font-bold text-white shadow"
-            style={{ top: `${top}%`, ...retraso(0.45 + i * 0.15) }}
+            i={i}
+            className="absolute -right-4 flex size-9 items-center justify-center rounded-full border-2 border-white bg-tf-ocre text-sm font-bold text-white shadow"
+            style={{ top: `${top}%` }}
           >
             {i + 1}
-          </span>
+          </Unidad>
         ))}
         {zonas.map((top, i) => (
-          <span
-            key={`z${top}`}
-            aria-hidden
-            className="tf-marca absolute left-6 right-10 h-[1.4rem] rounded-md bg-tf-ocre/15"
-            style={{ top: `calc(${top}% - 0.2rem)`, ...retraso(0.45 + i * 0.15) }}
-          />
+          <Unidad as="span" key={`z${top}`} i={i} className="absolute left-6 right-10 h-[1.4rem] rounded-md bg-tf-ocre/15" style={{ top: `calc(${top}% - 0.2rem)` }} />
         ))}
       </div>
       <ol className="grid gap-6">
         {items.map((it, i) => (
-          <li key={it} className="tf-sube flex items-baseline gap-5" style={retraso(0.45 + i * 0.15)}>
+          <Unidad as="li" key={it} i={i} label={it} className="flex items-baseline gap-5">
             <span className="tf-serif text-[1.6rem] text-tf-ocre tabular-nums">{i + 1}</span>
             <span className="tf-titular text-[2.2rem] text-tf-tinta">{it}</span>
-          </li>
+          </Unidad>
         ))}
       </ol>
     </div>
@@ -398,14 +403,14 @@ function Expediente({ items, cierre }: { items: string[]; cierre: string }) {
       <div className="tf-hoja tf-sube relative rounded-2xl border border-tf-linea px-8 py-3" style={retraso(0.1)}>
         <span aria-hidden className="absolute -top-4 left-10 h-4 w-40 rounded-t-lg border border-b-0 border-tf-linea bg-white" />
         {items.map((it, i) => (
-          <div key={it} className="tf-sube flex items-center gap-6 border-b border-tf-linea/70 py-4 last:border-b-0" style={retraso(0.25 + i * 0.1)}>
+          <Unidad key={it} i={i} label={it} className="flex items-center gap-6 border-b border-tf-linea/70 py-4 last:border-b-0">
             <span className="w-14 shrink-0 text-right font-medium text-tf-niebla tabular-nums">{["I", "II", "III", "IV", "V", "VI"][i]}</span>
             <span className="h-8 w-1 shrink-0 rounded-full bg-tf-petroleo/70" />
             <span className="text-[1.6rem] leading-snug text-tf-tinta">{it}</span>
-          </div>
+          </Unidad>
         ))}
       </div>
-      <Sello texto={cierre} delay={0.85} />
+      <Sello texto={cierre} paso={items.length} />
     </div>
   );
 }
@@ -421,27 +426,27 @@ function Planilla({ items, cierre }: { items: string[]; cierre: string }) {
           <span className="px-5 py-2 text-center">B</span>
         </div>
         {items.map((it, i) => (
-          <div key={it} className="tf-sube grid grid-cols-[3.5rem_1fr_7rem] border-t border-tf-linea" style={retraso(0.25 + i * 0.1)}>
+          <Unidad key={it} i={i} label={it} className="grid grid-cols-[3.5rem_1fr_7rem] border-t border-tf-linea">
             <span className="flex items-center justify-center border-r border-tf-linea bg-tf-celeste/30 text-sm text-tf-pizarra tabular-nums">{i + 1}</span>
             <span className="border-r border-tf-linea px-5 py-4 text-[1.55rem] leading-snug text-tf-tinta">{it}</span>
             <span className="flex items-center justify-center">
               <span className="size-6 rounded border-2 border-tf-petroleo/60" />
             </span>
-          </div>
+          </Unidad>
         ))}
       </div>
-      <Sello texto={cierre} delay={0.8} />
+      <Sello texto={cierre} paso={items.length} />
     </div>
   );
 }
 
-/** Regla de control al pie de una lista de usos. */
-function Sello({ texto, delay }: { texto: string; delay: number }) {
+/** Regla de control al pie de una lista de usos. Aparece en su paso. */
+function Sello({ texto, paso }: { texto: string; paso: number }) {
   return (
-    <div className="tf-sube mt-10 flex items-center gap-5 rounded-2xl border border-tf-azul/20 bg-tf-celeste/50 px-7 py-5" style={retraso(delay)}>
+    <Unidad i={paso} label={texto} className="mt-10 flex items-center gap-5 rounded-2xl border border-tf-azul/20 bg-tf-celeste/50 px-7 py-5">
       <GlifoSello className="size-10 shrink-0 text-tf-azul" />
       <p className="tf-serif text-[1.75rem] leading-snug text-tf-azul">{texto}</p>
-    </div>
+    </Unidad>
   );
 }
 
@@ -451,28 +456,31 @@ function Perfiles({ pares, cierre }: { pares: { k: string; v: string }[]; cierre
     <div className="flex flex-col">
       <div className="grid grid-cols-3 gap-6">
         {pares.map((p, i) => (
-          <div key={p.k} className="tf-sube rounded-2xl border border-tf-linea bg-white px-6 py-5 text-center" style={retraso(0.2 + i * 0.12)}>
+          <Unidad key={p.k} i={i} label={`${p.k} · ${p.v}`} className="rounded-2xl border border-tf-linea bg-white px-6 py-5 text-center">
             <p className="tf-rotulo text-[0.8rem] text-tf-petroleo">{p.k}</p>
             <p className="tf-serif mt-2 text-[1.6rem] leading-snug text-tf-tinta">{p.v}</p>
-          </div>
+          </Unidad>
         ))}
       </div>
-      <div className="relative h-20">
-        <svg aria-hidden viewBox="0 0 300 40" preserveAspectRatio="none" className="absolute inset-0 h-full w-full text-tf-petroleo/45">
-          {[50, 150, 250].map((x) => (
-            <path key={x} d={`M${x} 0 C ${x} 22, 150 18, 150 40`} fill="none" stroke="currentColor" strokeWidth="1.2" vectorEffect="non-scaling-stroke" className="tf-traza" />
-          ))}
-        </svg>
-      </div>
-      <div className="tf-sube mx-auto flex items-center gap-4 rounded-xl border border-tf-linea bg-white px-6 py-3 shadow-sm" style={retraso(0.6)}>
-        <GlifoDocumento className="size-9 text-tf-azul" />
-        <div className="grid w-40 gap-1.5">
-          <span className="tf-renglon w-full" />
-          <span className="tf-renglon w-4/5" />
-          <span className="tf-renglon w-3/5" />
+      {/* Las tres miradas convergen en el mismo documento (aparece con la conclusión). */}
+      <Unidad i={pares.length} className="flex flex-col">
+        <div className="relative h-20">
+          <svg aria-hidden viewBox="0 0 300 40" preserveAspectRatio="none" className="absolute inset-0 h-full w-full text-tf-petroleo/45">
+            {[50, 150, 250].map((x) => (
+              <path key={x} d={`M${x} 0 C ${x} 22, 150 18, 150 40`} fill="none" stroke="currentColor" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
+            ))}
+          </svg>
         </div>
-      </div>
-      <Conclusion texto={cierre} delay={0.8} />
+        <div className="mx-auto flex items-center gap-4 rounded-xl border border-tf-linea bg-white px-6 py-3 shadow-sm">
+          <GlifoDocumento className="size-9 text-tf-azul" />
+          <div className="grid w-40 gap-1.5">
+            <span className="tf-renglon w-full" />
+            <span className="tf-renglon w-4/5" />
+            <span className="tf-renglon w-3/5" />
+          </div>
+        </div>
+      </Unidad>
+      <Conclusion texto={cierre} paso={pares.length} />
     </div>
   );
 }
@@ -482,11 +490,11 @@ function Matriz({ pares }: { pares: { k: string; v: string }[] }) {
   return (
     <div className="grid grid-cols-3 grid-rows-2 gap-5">
       {pares.map((p, i) => (
-        <div key={p.k} className="tf-sube flex min-h-[13rem] flex-col rounded-2xl border border-tf-linea bg-white p-6" style={retraso(0.15 + i * 0.08)}>
+        <Unidad key={p.k} i={i} label={`${p.k} · ${p.v}`} className="flex min-h-[13rem] flex-col rounded-2xl border border-tf-linea bg-white p-6">
           <span className="tf-serif text-[1.1rem] text-tf-niebla tabular-nums">0{i + 1}</span>
           <p className="tf-rotulo mt-auto text-[0.95rem] text-tf-azul">{p.k}</p>
           <p className="tf-serif mt-2 text-[1.8rem] leading-tight text-tf-tinta">{p.v}</p>
-        </div>
+        </Unidad>
       ))}
     </div>
   );
@@ -503,21 +511,21 @@ function Reserva({ encabezado, items, cierre }: { encabezado: string; items: str
         </p>
         <ul className="mt-7 grid gap-4">
           {items.map((it, i) => (
-            <li key={it} className="tf-sube flex items-center gap-4 border-b border-tf-linea pb-4 text-[1.6rem] text-tf-tinta" style={retraso(0.3 + i * 0.1)}>
+            <Unidad as="li" key={it} i={i} label={it} className="flex items-center gap-4 border-b border-tf-linea pb-4 text-[1.6rem] text-tf-tinta">
               <GlifoCandado className="size-7 shrink-0 text-tf-azul" />
               {it}
-            </li>
+            </Unidad>
           ))}
         </ul>
       </div>
-      <div className="tf-sube" style={retraso(0.6)}>
+      <Unidad i={items.length} label={cierre}>
         {/* Ficha: el nombre está tachado, pero los demás datos juntos siguen identificando. */}
         <div className="tf-hoja rounded-2xl border border-tf-linea p-6">
           {["Nombre", "Domicilio", "Actividad", "Período"].map((campo, i) => (
             <div key={campo} className="grid grid-cols-[6.5rem_1fr] items-center gap-4 border-b border-tf-linea/70 py-3 last:border-b-0">
               <span className="text-sm text-tf-niebla">{campo}</span>
               {i === 0 ? (
-                <span className="tf-marca h-5 rounded-sm bg-tf-tinta" style={retraso(0.9)} />
+                <span className="h-5 rounded-sm bg-tf-tinta" />
               ) : (
                 <span className="flex items-center gap-2">
                   <span className="tf-renglon flex-1 bg-tf-ocre/35" />
@@ -528,7 +536,7 @@ function Reserva({ encabezado, items, cierre }: { encabezado: string; items: str
           ))}
         </div>
         <p className="tf-serif mt-6 border-l-[0.35rem] border-tf-ocre pl-5 text-[1.75rem] leading-snug text-tf-azul">{cierre}</p>
-      </div>
+      </Unidad>
     </div>
   );
 }
@@ -560,10 +568,10 @@ function Caso({ c }: { c: Extract<TfCuerpo, { forma: "caso" }> }) {
       </div>
       <ul className="grid content-center gap-5 border-l border-tf-linea pl-10">
         {c.items.map((it, i) => (
-          <li key={it} className="tf-sube flex gap-4 text-[1.55rem] leading-snug text-tf-tinta" style={retraso(0.4 + i * 0.12)}>
+          <Unidad as="li" key={it} i={i} label={it} className="flex gap-4 text-[1.55rem] leading-snug text-tf-tinta">
             <span className="mt-3 size-2 shrink-0 rounded-full bg-tf-petroleo" />
             {it}
-          </li>
+          </Unidad>
         ))}
       </ul>
     </div>
@@ -608,19 +616,21 @@ function Acn({ pares, cierre }: { pares: { k: string; v: string }[]; cierre: str
     <div className="flex flex-col">
       <div className="grid min-h-[22rem] grid-cols-3 gap-6">
         {pares.map((p, i) => (
-          <div
+          <Unidad
             key={p.k}
-            className="tf-sube flex flex-col items-center justify-center rounded-2xl border-t-[0.5rem] bg-white px-6 py-8 text-center shadow-sm"
-            style={{ borderTopColor: ACN_PLACA[p.k], ...retraso(0.2 + i * 0.15) }}
+            i={i}
+            label={`${p.k} · ${p.v}`}
+            className="flex flex-col items-center justify-center rounded-2xl border-t-[0.5rem] bg-white px-6 py-8 text-center shadow-sm"
+            style={{ borderTopColor: ACN_PLACA[p.k] }}
           >
             <span className="tf-serif text-[8rem] font-medium leading-[0.9]" style={{ color: ACN_PLACA[p.k] }}>
               {p.k}
             </span>
             <span className="mt-3 text-[1.8rem] text-tf-tinta">{p.v}</span>
-          </div>
+          </Unidad>
         ))}
       </div>
-      <Conclusion texto={cierre} delay={0.8} />
+      <Conclusion texto={cierre} paso={pares.length} />
     </div>
   );
 }
@@ -631,16 +641,16 @@ function Ideas({ items, proxima }: { items: string[]; proxima: { k: string; v: s
     <div className="flex flex-col">
       <ol className="grid gap-3.5">
         {items.map((it, i) => (
-          <li key={it} className="tf-sube flex items-baseline gap-6 border-b border-tf-linea pb-3.5" style={retraso(0.15 + i * 0.12)}>
+          <Unidad as="li" key={it} i={i} label={it} className="flex items-baseline gap-6 border-b border-tf-linea pb-3.5">
             <span className="tf-serif w-8 text-[1.7rem] text-tf-petroleo tabular-nums">{i + 1}</span>
             <span className="tf-titular text-[2.15rem] text-tf-tinta">{it}</span>
-          </li>
+          </Unidad>
         ))}
       </ol>
-      <p className="tf-sube mt-8 self-end text-right text-[1.2rem] text-tf-pizarra" style={retraso(0.9)}>
+      <Unidad as="p" i={items.length - 1} className="mt-8 self-end text-right text-[1.2rem] text-tf-pizarra">
         <span className="tf-rotulo mr-3 text-tf-petroleo">{proxima.k}</span>
         {proxima.v}
-      </p>
+      </Unidad>
     </div>
   );
 }

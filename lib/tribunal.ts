@@ -153,6 +153,43 @@ export function actividadesDeSlide(s: TfSlide): string[] {
   return [];
 }
 
+/**
+ * Revelado paso a paso: cuántas partes de la placa aparecen de a una con →
+ * (ítems y, al final, la conclusión). 0 = la placa se muestra entera
+ * (la agenda y la instrucción de la demostración, que se leen completas).
+ */
+export function pasosPlaca(p: TfPlaca): number {
+  const c = p.cuerpo;
+  switch (c.forma) {
+    case "recorrido":
+    case "instruccion":
+      return 0;
+    case "lema":
+    case "verbos":
+    case "caso":
+      return c.items.length;
+    case "preguntas":
+      return c.preguntas.length + 1;
+    case "generativa":
+      return 2;
+    case "flujo":
+    case "perfiles":
+    case "acn":
+      return c.pares.length + 1;
+    case "matriz":
+      return c.pares.length;
+    case "columnas":
+      return c.columnas.length + 1;
+    case "documento":
+    case "ideas":
+      return c.items.length;
+    case "expediente":
+    case "planilla":
+    case "reserva":
+      return c.items.length + 1;
+  }
+}
+
 /** Una línea de texto de la placa, para leerla en el celular (sin diagramas). */
 export type TfLinea = { tipo: "lema" | "item" | "par" | "cierre" | "dato"; texto: string; k?: string };
 
