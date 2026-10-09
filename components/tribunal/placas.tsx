@@ -4,11 +4,27 @@
 // una composición editorial (una por forma de placa), la portada, el ingreso,
 // las pantallas de actividad y la síntesis. Todo en rem: el deck escala.
 
+import { useState } from "react";
 import { useLive } from "@/components/use-live";
 import { FranjaRecuerdo, ResultadosTf } from "@/components/tribunal/resultados";
 import { Unidad } from "@/components/tribunal/revelado";
 import type { Moderacion } from "@/lib/moderacion";
-import { getActividadTf, pasosPlaca, TF_EQUIPO, TF_INSTITUCION, TF_LINK, TF_MATERIAL, TF_QR, type TfClase, type TfCuerpo, type TfPlaca, type TfSlide } from "@/lib/tribunal";
+import { rem } from "@/lib/remoto";
+import {
+  getActividadTf,
+  pasosPlaca,
+  TF_EQUIPO,
+  TF_INSTITUCION,
+  TF_LINK,
+  TF_MATERIAL,
+  TF_QR,
+  TF_RESPUESTA_IA,
+  type TfClase,
+  type TfCuerpo,
+  type TfPlaca,
+  type TfRespuestaIa,
+  type TfSlide,
+} from "@/lib/tribunal";
 import { cn } from "@/lib/utils";
 
 export type Proyectar = (activity: string, proyectar: boolean) => void;
@@ -97,7 +113,7 @@ function Cuerpo({ c, clase, tramoActual }: { c: TfCuerpo; clase: TfClase; tramoA
     case "caso":
       return <Caso c={c} />;
     case "instruccion":
-      return <Instruccion encabezado={c.encabezado} items={c.items} />;
+      return <Instruccion encabezado={c.encabezado} items={c.items} respuesta={c.respuesta} />;
     case "acn":
       return <Acn pares={c.pares} cierre={c.cierre} />;
     case "ideas":
@@ -579,20 +595,27 @@ function Caso({ c }: { c: Extract<TfCuerpo, { forma: "caso" }> }) {
 }
 
 // 17 · La instrucción, como una consulta dirigida a la herramienta
-function Instruccion({ encabezado, items }: { encabezado: string; items: string[] }) {
+function Instruccion({ encabezado, items, respuesta }: { encabezado: string; items: string[]; respuesta?: TfRespuestaIa }) {
+  // La respuesta preparada aparece con un botón (también desde el celular de control).
+  const [ver, setVer] = useState(false);
+  const lado = ver && respuesta;
   return (
-    <div className="flex items-center">
+    <div className={cn("grid items-start gap-8", lado ? "grid-cols-[0.8fr_1.2fr]" : "grid-cols-1")}>
       <div className="tf-hoja tf-sube w-full rounded-[1.5rem] border border-tf-linea p-9" style={retraso(0.1)}>
         <div className="flex items-center gap-3 text-tf-niebla">
           <GlifoInstruccion className="size-7" />
           <span className="h-px flex-1 bg-tf-linea" />
         </div>
-        <p className="tf-titular mt-5 text-[2.3rem] text-tf-azul">{encabezado}</p>
+        <p className={cn("tf-titular mt-5 text-tf-azul", lado ? "text-[1.8rem]" : "text-[2.3rem]")}>{encabezado}</p>
         <ul className="mt-5 grid gap-3">
           {items.map((it, i) => (
             <li
               key={it}
-              className={cn("tf-sube flex items-baseline gap-4 text-[1.65rem] leading-snug", i === items.length - 1 ? "font-medium text-tf-lacre" : "text-tf-tinta")}
+              className={cn(
+                "tf-sube flex items-baseline gap-4 leading-snug",
+                lado ? "text-[1.3rem]" : "text-[1.65rem]",
+                i === items.length - 1 ? "font-medium text-tf-lacre" : "text-tf-tinta",
+              )}
               style={retraso(0.3 + i * 0.1)}
             >
               <span className="text-tf-niebla">•</span>
@@ -600,10 +623,54 @@ function Instruccion({ encabezado, items }: { encabezado: string; items: string[
             </li>
           ))}
         </ul>
-        <div className="mt-6 flex justify-end">
+        <div className="mt-6 flex items-center justify-end gap-4">
+          {respuesta && (
+            <button
+              onClick={() => setVer((v) => !v)}
+              {...rem(TF_RESPUESTA_IA, ver)}
+              className={cn(
+                "rounded-xl border px-4 py-2 text-sm font-semibold transition",
+                ver ? "border-tf-linea bg-white text-tf-pizarra" : "border-tf-petroleo bg-tf-petroleo/10 text-tf-petroleo hover:bg-tf-petroleo/15",
+              )}
+            >
+              {ver ? "Ocultar la respuesta" : "Ver la respuesta de la IA"}
+            </button>
+          )}
           <span className="flex size-12 items-center justify-center rounded-full bg-tf-azul text-xl text-white">↑</span>
         </div>
       </div>
+      {lado && <RespuestaIa r={respuesta} />}
+    </div>
+  );
+}
+
+/** La respuesta preparada de la IA: aparece por partes, como si se estuviera generando. */
+function RespuestaIa({ r }: { r: TfRespuestaIa }) {
+  return (
+    <div className="tf-hoja rounded-[1.5rem] border border-tf-linea border-l-[0.35rem] border-l-tf-petroleo px-7 py-6">
+      <p className="tf-rotulo flex items-center gap-2 text-tf-petroleo">
+        <span className="size-2 animate-pulse rounded-full bg-tf-petroleo" />
+        Respuesta de la IA
+      </p>
+      <div className="mt-4 grid grid-cols-2 gap-x-8 gap-y-4">
+        {r.secciones.map((sec, i) => (
+          <div key={sec.k} className="tf-sube" style={retraso(0.25 + i * 0.45)}>
+            <p className="text-[0.85rem] font-semibold uppercase tracking-[0.12em] text-tf-azul">{sec.k}</p>
+            <ul className="mt-1.5 grid gap-1">
+              {sec.lineas.map((l) => (
+                <li key={l} className="flex gap-2.5 text-[1.12rem] leading-snug text-tf-tinta">
+                  <span className="text-tf-petroleo">–</span>
+                  {l}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+        <p className="tf-sube tf-serif col-span-2 border-t border-tf-linea pt-3 text-[1.2rem] italic text-tf-azul" style={retraso(0.25 + r.secciones.length * 0.45)}>
+          {r.cierre}
+        </p>
+      </div>
+      <p className="mt-3 text-xs text-tf-niebla">{r.nota}</p>
     </div>
   );
 }

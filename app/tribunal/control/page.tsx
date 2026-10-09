@@ -22,7 +22,9 @@ export default function TribunalControlPage() {
         titulos={TITULOS}
         nombre={`Tribunal Fiscal · ${TF1.titulo}`}
         panel={(e) => <PanelTribunal clase={TF1} idx={e.idx} />}
-        vista={(e) => <VistaParticipante clase={TF1} idx={e.idx} />}
+        vista={(e) => (
+          <VistaParticipante clase={TF1} idx={e.idx} abiertas={(e.botones ?? []).filter((b) => b.activo).map((b) => b.label)} />
+        )}
       />
     </AccesoDocente>
   );

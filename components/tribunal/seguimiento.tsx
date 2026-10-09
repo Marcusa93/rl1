@@ -8,7 +8,7 @@
 
 import { Component, useState, type ReactNode } from "react";
 import { descargarMaterial } from "@/components/tribunal/descarga";
-import { getActividadTf, lineasPlaca, TF_INSTITUCION, TF_MATERIAL, type TfClase, type TfSlide } from "@/lib/tribunal";
+import { getActividadTf, lineasPlaca, TF_INSTITUCION, TF_MATERIAL, TF_RESPUESTA_IA, type TfClase, type TfSlide } from "@/lib/tribunal";
 import type { PlacaVivo } from "@/lib/remoto";
 import type { SessionRow } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -99,12 +99,12 @@ function Espera() {
 }
 
 /** Para el control del equipo: la placa tal como la ve el participante (solo lectura). */
-export function VistaParticipante({ clase, idx }: { clase: TfClase; idx: number }) {
+export function VistaParticipante({ clase, idx, abiertas = [] }: { clase: TfClase; idx: number; abiertas?: string[] }) {
   const slide = clase.slides[idx];
   if (!slide) return null;
   return (
     <Blindaje fallback={null}>
-      <VistaPlaca clase={clase} slide={slide} />
+      <VistaPlaca clase={clase} slide={slide} abiertas={abiertas} />
       {(slide.t === "actividad" || slide.t === "ingreso") && <PreviaActividad clase={clase} activa={slide.activa} />}
     </Blindaje>
   );
@@ -166,7 +166,7 @@ function Seguimiento({ clase, placa, actividad }: { clase: TfClase; placa: Placa
       {placaArriba && slide && i !== null ? (
         <div className="rise">
           {nav}
-          <VistaPlaca key={i} clase={clase} slide={slide} />
+          <VistaPlaca key={i} clase={clase} slide={slide} abiertas={enVivo && placa ? placa.abiertas : []} />
           <div className="mt-6">{nav}</div>
         </div>
       ) : null}
@@ -205,7 +205,7 @@ function Navegacion({ i, total, vivo, enVivo, onIr }: { i: number; total: number
   );
 }
 
-function VistaPlaca({ clase, slide }: { clase: TfClase; slide: TfSlide }) {
+function VistaPlaca({ clase, slide, abiertas }: { clase: TfClase; slide: TfSlide; abiertas: string[] }) {
   if (slide.t === "portada")
     return (
       <Marco>
@@ -269,6 +269,23 @@ function VistaPlaca({ clase, slide }: { clase: TfClase; slide: TfSlide }) {
           ),
         )}
       </div>
+      {slide.cuerpo.forma === "instruccion" && slide.cuerpo.respuesta && abiertas.includes(TF_RESPUESTA_IA) && (
+        <div className="mt-5 rounded-2xl border-l-4 border-teal bg-panel/60 p-4">
+          <p className="text-xs font-bold uppercase tracking-widest text-teal">🤖 Respuesta de la IA · en pantalla</p>
+          {slide.cuerpo.respuesta.secciones.map((sec) => (
+            <div key={sec.k} className="mt-3">
+              <p className="text-sm font-semibold uppercase tracking-wide text-muted">{sec.k}</p>
+              {sec.lineas.map((l) => (
+                <p key={l} className="mt-1 text-base leading-snug">
+                  – {l}
+                </p>
+              ))}
+            </div>
+          ))}
+          <p className="mt-3 text-base italic">{slide.cuerpo.respuesta.cierre}</p>
+          <p className="mt-2 text-xs text-faint">{slide.cuerpo.respuesta.nota}</p>
+        </div>
+      )}
     </Marco>
   );
 }

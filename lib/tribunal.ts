@@ -50,6 +50,20 @@ export interface TfColumna {
   lineas: string[];
 }
 
+/**
+ * Respuesta de una IA preparada antes de la clase para la demostración: se
+ * muestra con un botón (también desde el celular) al lado de la instrucción.
+ */
+export interface TfRespuestaIa {
+  secciones: TfColumna[];
+  cierre: string;
+  /** Aclaración de origen: preparada antes de la clase, no generada en vivo. */
+  nota: string;
+}
+
+/** Etiqueta del botón que muestra la respuesta preparada (deck y celulares). */
+export const TF_RESPUESTA_IA = "🤖 Respuesta de la IA";
+
 /** Tramo de la agenda de la clase (la línea de tiempo del pie de cada placa). */
 export interface TfTramo {
   rango: string;
@@ -74,7 +88,7 @@ export type TfCuerpo =
   | { forma: "matriz"; pares: TfPar[] }
   | { forma: "reserva"; encabezado: string; items: string[]; cierre: string }
   | { forma: "caso"; nombre: string; asunto: string[]; montosTitulo: string; montos: string[]; items: string[] }
-  | { forma: "instruccion"; encabezado: string; items: string[] }
+  | { forma: "instruccion"; encabezado: string; items: string[]; respuesta?: TfRespuestaIa }
   | { forma: "acn"; pares: TfPar[]; cierre: string }
   | { forma: "ideas"; items: string[]; proxima: TfPar };
 

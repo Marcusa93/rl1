@@ -533,8 +533,42 @@ const SLIDES: TfSlide[] = [
         "Marque las cuestiones que requieren comprobación",
         "No decida ni cite normas o jurisprudencia",
       ],
+      // Respuesta preparada antes de la clase (para que el Dr. Leal la revise o la reemplace).
+      respuesta: {
+        secciones: [
+          {
+            k: "Hechos informados",
+            lineas: [
+              "Norte Azul SA tiene un ajuste de ingresos brutos por enero a marzo de 2025.",
+              "Se discuten dos transferencias: una de $18 millones y otra de $12 millones.",
+            ],
+          },
+          {
+            k: "Afirmaciones de cada parte",
+            lineas: [
+              "La empresa: las transferencias son aportes de socios.",
+              "La administración: cuestiona la documentación que respaldaría esa explicación.",
+            ],
+          },
+          {
+            k: "Documentos mencionados",
+            lineas: ["«La documentación» de las transferencias. El caso no dice cuáles son esos documentos."],
+          },
+          {
+            k: "Requieren comprobación",
+            lineas: [
+              "Qué documentos respaldan cada transferencia.",
+              "Quién hizo cada transferencia y en qué fecha.",
+              "Cómo se registraron en la contabilidad de la empresa.",
+              "Cuáles son los datos y comprobaciones pendientes que menciona el caso.",
+            ],
+          },
+        ],
+        cierre: "No indico quién tiene razón ni cito normas o jurisprudencia: la instrucción lo excluye.",
+        nota: "Respuesta preparada antes de la clase con una herramienta de IA, a partir del caso ficticio y de esta instrucción.",
+      },
     },
-    nota: "Ejecute la consulta y someta el resultado a control por perfiles. Si el sistema agrega información, muestre por qué no puede incorporarse.",
+    nota: "Ejecute la consulta y someta el resultado a control por perfiles. Si el sistema agrega información, muestre por qué no puede incorporarse.\n\n▶ Tocá «🤖 Respuesta de la IA»: aparece la respuesta preparada al lado de la instrucción. La sala la revisa por perfil: abogados, ¿decidió o citó normas?; contadores, ¿respetó montos y período?; administrativos, ¿se entiende?; todos, ¿agregó algo que no estaba en el caso?",
   },
   {
     t: "placa",
