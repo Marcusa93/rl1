@@ -568,3 +568,143 @@ html:has(.tf), body:has(.tf) { background: var(--color-tf-papel); color-scheme: 
 }
 .tf-contraste .tf-renglon { background: #c3ced7; }
 .tf-contraste .tf-hoja { box-shadow: 0 0 0 1px #9fb1bf; }
+
+/* ============================================================
+   UNCA · La arquitectura de la confianza digital (/unca) — Módulo III
+   de la Diplomatura en Instrumentos Públicos y Privados. Editorial y
+   documental: papel cálido, tinta, verde oscuro y salvia para lo jurídico;
+   azules fríos para lo criptográfico; lacre para alertas y sellos. El ocre
+   señala solo lo participativo. Vive bajo .uc.
+   ============================================================ */
+@theme {
+  --color-uc-papel: #f4efe4;
+  --color-uc-hoja: #fffdf8;
+  --color-uc-tinta: #1d2629;
+  --color-uc-pizarra: #545f63;
+  --color-uc-niebla: #949c9c;
+  --color-uc-linea: #ddd4c2;
+  --color-uc-verde: #2c5a4b;
+  --color-uc-salvia: #8fa999;
+  --color-uc-salvia-claro: #e4ebe3;
+  --color-uc-azul: #34536b;
+  --color-uc-cian: #1f7891;
+  --color-uc-hielo: #e1ebef;
+  --color-uc-lacre: #a3392a;
+  --color-uc-lacre-claro: #f4dfd9;
+  --color-uc-ocre: #b07a1f;
+  --color-uc-ocre-claro: #f3e5c6;
+}
+
+/* La app del participante reusa las piezas del motor (paleta RL1): se
+   reasignan sus colores a la paleta documental. */
+.uc {
+  --color-ink: #f4efe4;
+  --color-ink-2: #fffdf8;
+  --color-panel: #ece5d6;
+  --color-panel-2: #e3dac7;
+  --color-line: #ddd4c2;
+  --color-teal: #2c5a4b;
+  --color-aqua: #3b6f5f;
+  --color-cyan: #1f7891;
+  --color-violet: #34536b;
+  --color-magenta: #a3392a;
+  --color-muted: #4a5457;
+  --color-faint: #7f8787;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --foreground: #1d2629;
+  background-color: var(--color-uc-papel);
+  color: var(--foreground);
+  color-scheme: light;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+html:has(.uc), body:has(.uc) { background: var(--color-uc-papel); color-scheme: light; }
+.uc .bg-grid { background-image: none; }
+.uc .glass {
+  background: #fffdf8;
+  border: 1px solid var(--color-uc-linea);
+  backdrop-filter: none;
+  box-shadow: 0 1px 2px rgba(29, 38, 41, 0.05), 0 14px 30px -18px rgba(29, 38, 41, 0.25);
+}
+.uc .glow-teal { box-shadow: 0 0 0 1px rgba(44, 90, 75, 0.3), 0 10px 26px -14px rgba(44, 90, 75, 0.45); }
+.uc .text-gradient {
+  background: linear-gradient(100deg, #2c5a4b 0%, #1f7891 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.uc .pulse-ring { animation-name: tf-pulso; }
+.uc ::selection { background: rgba(31, 120, 145, 0.2); }
+
+/* Papel: una textura muy suave (fibras), sin imágenes externas. */
+.uc-papel {
+  background-color: var(--color-uc-papel);
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(176, 122, 31, 0.05), transparent 38%),
+    radial-gradient(circle at 85% 90%, rgba(44, 90, 75, 0.05), transparent 40%),
+    repeating-linear-gradient(0deg, rgba(29, 38, 41, 0.012) 0 1px, transparent 1px 3px);
+}
+.uc-serif { font-family: var(--font-fraunces), Georgia, serif; }
+.uc-titular {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.04;
+}
+.uc-rotulo {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.uc-mono { font-family: var(--font-geist-mono), ui-monospace, monospace; letter-spacing: 0.02em; }
+.uc-hoja {
+  background: #fffdf8;
+  box-shadow: 0 1px 0 rgba(29, 38, 41, 0.04), 0 18px 36px -20px rgba(29, 38, 41, 0.38);
+}
+.uc-renglon { height: 0.5rem; border-radius: 999px; background: #e6dfd0; }
+/* Superficie fría: lo criptográfico. */
+.uc-frio {
+  background-color: #eef4f6;
+  background-image: linear-gradient(rgba(31, 120, 145, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(31, 120, 145, 0.06) 1px, transparent 1px);
+  background-size: 1.6rem 1.6rem;
+}
+@keyframes uc-giro { to { transform: rotate(360deg); } }
+.uc-giro { animation: uc-giro 38s linear infinite; transform-origin: 50% 50%; }
+@keyframes uc-flujo { to { stroke-dashoffset: -24; } }
+.uc-flujo { stroke-dasharray: 6 6; animation: uc-flujo 1s linear infinite; }
+@keyframes uc-pulso-suave { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+.uc-latido { animation: uc-pulso-suave 1.6s ease-in-out infinite; }
+@keyframes uc-escaneo { from { top: 0%; } to { top: 100%; } }
+.uc-escaneo { animation: uc-escaneo 2.4s ease-in-out infinite alternate; }
+@keyframes uc-cambio { 0% { transform: translateY(-0.35em); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.uc-cambio { display: inline-block; animation: uc-cambio 0.35s ease-out both; }
+@keyframes uc-viaja { 0% { left: 0%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { left: 100%; opacity: 0; } }
+.uc-viaja { position: absolute; animation: uc-viaja 2.6s ease-in-out infinite; }
+@keyframes uc-glitch {
+  0%, 92%, 100% { transform: none; filter: none; }
+  93% { transform: translateX(-3px) skewX(-4deg); filter: hue-rotate(40deg) saturate(1.6); }
+  95% { transform: translateX(3px); filter: contrast(1.4); }
+  97% { transform: translateX(-1px) skewX(3deg); }
+}
+.uc-glitch { animation: uc-glitch 3.2s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .uc-giro, .uc-flujo, .uc-latido, .uc-escaneo, .uc-cambio, .uc-viaja, .uc-glitch { animation: none; }
+}
+
+/* Alto contraste para proyectores lavados (tecla C). */
+.uc-contraste {
+  --color-uc-papel: #ffffff;
+  --color-uc-hoja: #ffffff;
+  --color-uc-tinta: #000000;
+  --color-uc-pizarra: #262e31;
+  --color-uc-niebla: #4b5354;
+  --color-uc-linea: #a99f8b;
+  --color-uc-verde: #173f32;
+  --color-uc-azul: #1c3447;
+  --color-uc-cian: #0b5469;
+  --color-uc-lacre: #7f1e12;
+  --color-uc-ocre: #714b00;
+}
+.uc-contraste.uc-papel { background-image: none; }
+.uc-contraste .uc-renglon { background: #cfc6b4; }

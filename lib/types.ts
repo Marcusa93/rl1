@@ -93,7 +93,16 @@ export type ActivityKey =
   | "tf1_riesgo"
   | "tf1_no_delegar"
   | "tf1_acn"
-  | "tf1_control";
+  | "tf1_control"
+  // UNCA · La arquitectura de la confianza digital (/unca) — prefijo uc_
+  | "uc_confianza"
+  | "uc_tres_docs"
+  | "uc_huella"
+  | "uc_firma_prueba"
+  | "uc_testimonio"
+  | "uc_blockchain"
+  | "uc_real_ia"
+  | "uc_decision";
 
 export type SessionStatus = "lobby" | "live" | "ended";
 

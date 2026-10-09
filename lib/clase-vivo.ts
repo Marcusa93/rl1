@@ -32,6 +32,10 @@ export interface ActividadVivo {
   opciones?: ActOpcion[];
   /** kind "chips": opción que deselecciona a las demás */
   exclusiva?: string;
+  /** kind "palabra": hasta cuántas palabras puede mandar cada participante (por defecto, 1). */
+  palabras?: number;
+  /** kind "palabra": agrupar sin distinguir mayúsculas, tildes ni espacios. */
+  normalizar?: boolean;
   /** kind "texto" */
   placeholder?: string;
   maxChars?: number;
@@ -77,4 +81,6 @@ export interface ClaseVivoConfig {
   nombre?: { etiqueta: string; placeholder: string };
   /** Aviso debajo del ingreso (ej.: qué se hace con las respuestas). */
   aviso?: string;
+  /** Participación anónima: se ingresa sin escribir nombre (se asigna un alias). */
+  anonimo?: boolean;
 }

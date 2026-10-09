@@ -33,7 +33,7 @@ export function ActividadParticipante({
     case "texto":
       return <Texto act={act} responder={responder} />;
     case "palabra":
-      return <Palabra act={act} responder={responder} />;
+      return (act.palabras ?? 1) > 1 ? <Palabras act={act} responder={responder} /> : <Palabra act={act} responder={responder} />;
   }
 }
 
@@ -369,6 +369,60 @@ function Palabra({ act, responder }: { act: ActividadVivo; responder: Responder 
         </div>
       ) : (
         <Enviado onEdit={() => setSent(false)}>✓ Enviada. Observe la pantalla.</Enviado>
+      )}
+    </div>
+  );
+}
+
+/** Nube con varias palabras por participante (ej.: hasta tres). */
+function Palabras({ act, responder }: { act: ActividadVivo; responder: Responder }) {
+  const cupo = act.palabras ?? 3;
+  const [valores, setValores] = useState<string[]>(() => Array(cupo).fill(""));
+  const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const max = act.maxChars ?? 22;
+  useReinicio(act.key, () => {
+    setValores(Array(cupo).fill(""));
+    setSent(false);
+    setErr("");
+  });
+  const listas = valores.map((v) => v.trim()).filter((v) => v.length >= 2);
+
+  async function send() {
+    setBusy(true);
+    setErr("");
+    try {
+      await responder({ palabras: listas });
+      setSent(true);
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="rise">
+      <Cabecera act={act} />
+      {!sent ? (
+        <div className="mt-4 grid gap-2.5">
+          {valores.map((v, i) => (
+            <input
+              key={i}
+              value={v}
+              onChange={(e) => setValores((xs) => xs.map((x, j) => (j === i ? e.target.value.slice(0, max) : x)))}
+              placeholder={i === 0 ? "una palabra o expresión" : "otra (opcional)"}
+              className="w-full rounded-xl border border-line bg-ink-2/70 px-4 py-3 text-center text-lg outline-none placeholder:text-faint focus:border-teal/60"
+            />
+          ))}
+          {err && <p className="text-center text-sm text-magenta">{err}</p>}
+          <Button onClick={send} disabled={busy || listas.length === 0} className="mt-1 w-full">
+            {busy ? <Spinner /> : "Enviar"}
+          </Button>
+        </div>
+      ) : (
+        <Enviado onEdit={() => setSent(false)}>✓ {listas.length === 1 ? "Enviada" : "Enviadas"}. Mirá la pantalla.</Enviado>
       )}
     </div>
   );

@@ -70,22 +70,34 @@ export function AlumnoApp({
     };
   }, [config.slug, config.poll.alumnoMe]);
 
-  async function join(e: React.FormEvent) {
-    e.preventDefault();
+  async function entrar(nombre: string) {
     setBusy(true);
     setErr("");
     const res = await fetch(`/api/session/${config.slug}/join`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name }),
-    });
-    const d = await res.json().catch(() => ({ error: "Error de red" }));
+      body: JSON.stringify({ name: nombre }),
+    }).catch(() => null);
+    const d = res ? await res.json().catch(() => ({ error: "Error de red" })) : { error: "Sin conexión. Revisá la señal y probá de nuevo." };
     setBusy(false);
-    if (res.ok) setMe(d.participant);
+    if (res?.ok) setMe(d.participant);
     else setErr(d.error || "Error");
   }
 
-  if (me === undefined || !data)
+  function join(e: React.FormEvent) {
+    e.preventDefault();
+    entrar(name);
+  }
+
+  // Participación anónima: se entra sin escribir nada, con un alias al azar.
+  const [intentoAnonimo, setIntentoAnonimo] = useState(false);
+  useEffect(() => {
+    if (!config.anonimo || me !== null || intentoAnonimo) return;
+    setIntentoAnonimo(true);
+    entrar(`Participante ${Math.random().toString(36).slice(2, 6).toUpperCase()}`);
+  }, [config.anonimo, me, intentoAnonimo]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (me === undefined || !data || (config.anonimo && !me && (busy || !intentoAnonimo)))
     return (
       <main className="bg-grid flex min-h-dvh items-center justify-center px-5">
         <Spinner />
@@ -116,6 +128,16 @@ export function AlumnoApp({
               {config.autor} · {config.cargo}
             </p>
           </div>
+          {config.anonimo ? (
+            // Si el ingreso automático falló (sin señal): un botón para reintentar, sin pedir datos.
+            <div className="glass glow-teal rounded-2xl p-6 text-center">
+              <p className="text-sm text-muted">La participación es anónima: no hace falta escribir nada.</p>
+              {err && <p className="mt-2 text-sm text-magenta">{err}</p>}
+              <Button onClick={() => entrar(`Participante ${Math.random().toString(36).slice(2, 6).toUpperCase()}`)} disabled={busy} className="mt-4 w-full">
+                {busy ? <Spinner /> : "Ingresar"}
+              </Button>
+            </div>
+          ) : (
           <form onSubmit={join} className="glass glow-teal rounded-2xl p-6">
             <label className="text-sm text-muted">{config.nombre?.etiqueta ?? "Su nombre"}</label>
             <input
@@ -130,6 +152,7 @@ export function AlumnoApp({
               {busy ? <Spinner /> : "Ingresar"}
             </Button>
           </form>
+          )}
           {config.aviso && <p className="mt-4 text-center text-xs leading-relaxed text-faint">{config.aviso}</p>}
         </div>
       </main>
@@ -149,7 +172,7 @@ export function AlumnoApp({
               {data.participants} conectados
             </span>
             <div className="min-w-0 text-right">
-              <p className="truncate text-xs text-faint">{me.name.split(/\s+/)[0]}</p>
+              <p className="truncate text-xs text-faint">{config.anonimo ? "Anónimo" : me.name.split(/\s+/)[0]}</p>
               <p className="truncate text-xs font-medium text-teal">{act ? act.titulo : "En espera"}</p>
             </div>
           </div>

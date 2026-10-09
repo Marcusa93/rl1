@@ -98,6 +98,15 @@ const VALID: ActivityKey[] = [
   "tf1_no_delegar",
   "tf1_acn",
   "tf1_control",
+  // UNCA · La arquitectura de la confianza digital (/unca)
+  "uc_confianza",
+  "uc_tres_docs",
+  "uc_huella",
+  "uc_firma_prueba",
+  "uc_testimonio",
+  "uc_blockchain",
+  "uc_real_ia",
+  "uc_decision",
 ];
 
 export async function POST(
