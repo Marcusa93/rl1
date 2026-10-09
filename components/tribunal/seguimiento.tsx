@@ -7,6 +7,7 @@
 // arriba y debajo la actividad que sigue abierta (para quien llegó tarde).
 
 import { Component, useState, type ReactNode } from "react";
+import { descargarMaterial } from "@/components/tribunal/descarga";
 import { getActividadTf, lineasPlaca, TF_INSTITUCION, TF_MATERIAL, type TfClase, type TfSlide } from "@/lib/tribunal";
 import type { PlacaVivo } from "@/lib/remoto";
 import type { SessionRow } from "@/lib/types";
@@ -56,14 +57,36 @@ export function SeguimientoTribunal({
   );
 }
 
-/** Al llegar al cierre: lleva al material del encuentro (contenido + resultados, en PDF). */
-function TarjetaMaterial() {
+/** Al llegar al cierre: el material del encuentro (contenido + resultados) se baja en PDF con un toque. */
+function TarjetaMaterial({ clase }: { clase: TfClase }) {
+  const [estado, setEstado] = useState<"listo" | "armando" | "error">("listo");
+
+  async function bajar() {
+    setEstado("armando");
+    try {
+      await descargarMaterial(clase);
+      setEstado("listo");
+    } catch {
+      setEstado("error");
+    }
+  }
+
   return (
-    <a href={TF_MATERIAL} target="_blank" rel="noreferrer" className="mb-6 block rounded-2xl bg-tf-azul p-5 text-white shadow-sm">
-      <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-tf-agua">Material del encuentro</p>
+    <div className="mb-6 rounded-2xl bg-tf-azul p-5 text-white shadow-sm">
+      <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-tf-agua">Material de estudio</p>
       <p className="tf-serif mt-1 text-2xl leading-tight">Contenido de la charla y resultados de la sala</p>
-      <p className="mt-3 text-sm font-semibold">↓ Ver y descargar en PDF</p>
-    </a>
+      <button
+        onClick={bajar}
+        disabled={estado === "armando"}
+        className="mt-4 flex min-h-14 w-full items-center justify-center rounded-xl bg-white px-4 text-base font-semibold text-tf-azul active:scale-[0.99] disabled:opacity-60"
+      >
+        {estado === "armando" ? "Armando el PDF…" : "↓ Descargar el material (PDF)"}
+      </button>
+      {estado === "error" && <p className="mt-2 text-sm text-tf-agua">No se pudo armar el PDF. Pruebe de nuevo.</p>}
+      <a href={TF_MATERIAL} target="_blank" rel="noreferrer" className="mt-3 block text-center text-sm text-tf-agua underline-offset-2 hover:underline">
+        o verlo en el celular
+      </a>
+    </div>
   );
 }
 
@@ -139,7 +162,7 @@ function Seguimiento({ clase, placa, actividad }: { clase: TfClase; placa: Placa
   // vuelva a montar al cambiar de placa y no pierda lo que se escribió.
   return (
     <>
-      {material && <TarjetaMaterial />}
+      {material && <TarjetaMaterial clase={clase} />}
       {placaArriba && slide && i !== null ? (
         <div className="rise">
           {nav}

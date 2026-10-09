@@ -6,6 +6,7 @@
 
 import { useState } from "react";
 import { useLive } from "@/components/use-live";
+import { descargarMaterial } from "@/components/tribunal/descarga";
 import { MarcaTribunal } from "@/components/tribunal/seguimiento";
 import {
   bloquesMaterial,
@@ -138,16 +139,7 @@ function Descargar({ clase, datos }: { clase: TfClase; datos: TfMaterial | null 
     if (!datos) return;
     setEstado("armando");
     try {
-      const { buildMaterialBlob } = await import("./material-pdf");
-      const blob = await buildMaterialBlob(clase, datos);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `Tribunal-Fiscal-IA-charla-${clase.numero}-material.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      await descargarMaterial(clase, datos);
       setEstado("listo");
     } catch {
       setEstado("error");
