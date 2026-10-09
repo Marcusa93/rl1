@@ -2,13 +2,15 @@
 
 // Panel del celular del equipo (Marco o Franco) en /tribunal/control:
 // revisar las respuestas abiertas de la placa actual antes de proyectarlas
-// (ocultar palabras inapropiadas o datos reales) y exportar todas las
+// (ocultar palabras inapropiadas o datos reales), enviar a todos el box de
+// expectativas y leer sus respuestas con nombre, y exportar todas las
 // respuestas de la clase en CSV para el material pedagógico.
 
 import { useState } from "react";
 import { useResultados } from "@/components/clase/vivo";
+import { useLive } from "@/components/use-live";
 import { useModeracion } from "@/components/tribunal/resultados";
-import { actividadesDeSlide, getActividadTf, type TfActividad, type TfClase } from "@/lib/tribunal";
+import { actividadesDeSlide, getActividadTf, type TfActividad, type TfBox, type TfClase } from "@/lib/tribunal";
 import { cn } from "@/lib/utils";
 
 export function PanelTribunal({ clase, idx }: { clase: TfClase; idx: number }) {
@@ -30,8 +32,78 @@ export function PanelTribunal({ clase, idx }: { clase: TfClase; idx: number }) {
           onOcultar={(valor, oculta) => cambiar({ activity: act.key, valor, oculta })}
         />
       ))}
+      {clase.box && <BoxEquipo slug={clase.slug} box={clase.box} />}
       <Exportar clase={clase} />
       <Reiniciar clase={clase} idx={idx} onModeracion={() => cambiar({ reiniciar: true })} />
+    </div>
+  );
+}
+
+// --- Box de expectativas y devolución ---------------------------------------------------
+
+type FilaBox = { name: string; activity: string; payload: Record<string, string>; created_at: string; updated_at?: string };
+
+/** Enviar el box a todos los celulares y leer las respuestas, con nombre, a medida que llegan. */
+function BoxEquipo({ slug, box }: { slug: string; box: TfBox }) {
+  const { data: ses, refresh } = useLive<{ participants: number; avisos?: string[] }>(`/api/session/${slug}`, 4000);
+  const { data: todas } = useLive<{ rows: FilaBox[] }>(`/api/session/${slug}/all-responses`, 8000);
+  const [abierto, setAbierto] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+  const enviado = Boolean(ses?.avisos?.includes(box.key));
+  const respuestas = (todas?.rows ?? [])
+    .filter((r) => r.activity === box.key)
+    .sort((a, b) => String(b.updated_at ?? b.created_at).localeCompare(String(a.updated_at ?? a.created_at)));
+
+  async function alternar() {
+    if (enviado && !confirm("¿Retirar el box de los celulares? Las respuestas ya enviadas se conservan.")) return;
+    setEnviando(true);
+    await fetch(`/api/session/${slug}/avisos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: box.key, abierto: !enviado }),
+    }).catch(() => {});
+    await refresh();
+    setEnviando(false);
+  }
+
+  return (
+    <div className="rounded-2xl border border-violet/50 bg-violet/10 p-4">
+      <p className="text-[11px] font-bold uppercase tracking-widest text-violet">📨 Box de expectativas y devolución</p>
+      <button
+        onClick={alternar}
+        disabled={enviando || !ses}
+        className={cn(
+          "mt-3 flex min-h-12 w-full items-center justify-center rounded-xl px-4 text-base font-semibold transition active:scale-[0.99]",
+          enviado ? "border border-line bg-panel/60 text-muted" : "bg-gradient-to-r from-teal to-cyan text-ink",
+        )}
+      >
+        {enviando ? "…" : enviado ? "● Enviado a todos · tocar para retirarlo" : "Enviar el box a todos los celulares"}
+      </button>
+      <button onClick={() => setAbierto((v) => !v)} className="mt-3 flex w-full items-center text-left text-sm">
+        <span className="flex-1">
+          <b className="text-teal">{respuestas.length}</b> {respuestas.length === 1 ? "respuesta" : "respuestas"}
+          {ses ? <span className="text-faint"> · {ses.participants} conectados</span> : null}
+        </span>
+        <span className="text-faint">{abierto ? "▲ ocultar" : "▼ ver quién y qué"}</span>
+      </button>
+      {abierto && (
+        <div className="mt-3 grid gap-2">
+          {!respuestas.length && <p className="text-sm text-faint">Todavía no llegó ninguna.</p>}
+          {respuestas.map((r, i) => (
+            <div key={`${r.name}-${i}`} className="rounded-xl border border-line bg-panel/60 p-3">
+              <p className="text-sm font-semibold text-teal">{r.name}</p>
+              {box.preguntas.map((p) =>
+                r.payload?.[p.id] ? (
+                  <p key={p.id} className="mt-1.5 text-sm leading-snug">
+                    <span className="block text-[11px] uppercase tracking-wide text-faint">{p.q}</span>
+                    {r.payload[p.id]}
+                  </p>
+                ) : null,
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -134,7 +206,8 @@ function ModerarActividad({
 type Fila = { name: string; activity: string; item_key: string; payload: Record<string, unknown>; created_at: string };
 
 /** Texto legible de una respuesta (las opciones con su etiqueta, no con su id). */
-function respuestaLegible(act: TfActividad | undefined, p: Record<string, unknown>): string {
+function respuestaLegible(act: TfActividad | undefined, p: Record<string, unknown>, box?: TfBox): string {
+  if (box) return box.preguntas.map((q) => `${q.q} ${String(p[q.id] ?? "").trim() || "—"}`).join(" | ");
   const etiqueta = (id: string, opciones = act?.opciones ?? []) => opciones.find((o) => o.id === id)?.label ?? id;
   if (typeof p.opcion === "string") return etiqueta(p.opcion);
   if (Array.isArray(p.selected)) return (p.selected as string[]).map((id) => etiqueta(id)).join(" | ");
@@ -157,13 +230,19 @@ function Exportar({ clase }: { clase: TfClase }) {
       const res = await fetch(`/api/session/${clase.slug}/all-responses`, { cache: "no-store" });
       if (!res.ok) throw new Error();
       const { rows } = (await res.json()) as { rows: Fila[] };
-      const orden = clase.actividades.map((a) => a.key as string);
+      const orden = [...clase.actividades.map((a) => a.key as string), ...(clase.box ? [clase.box.key] : [])];
       const filas = rows
         .filter((r) => orden.includes(r.activity))
         .sort((a, b) => orden.indexOf(a.activity) - orden.indexOf(b.activity) || a.created_at.localeCompare(b.created_at))
         .map((r) => {
           const act = getActividadTf(clase, r.activity);
-          return [act?.titulo ?? r.activity, r.name, respuestaLegible(act, r.payload ?? {}), new Date(r.created_at).toLocaleString("es-AR")];
+          const box = clase.box?.key === r.activity ? clase.box : undefined;
+          return [
+            box ? "Expectativas y devolución" : (act?.titulo ?? r.activity),
+            r.name,
+            respuestaLegible(act, r.payload ?? {}, box),
+            new Date(r.created_at).toLocaleString("es-AR"),
+          ];
         });
       const celda = (v: string) => `"${v.replace(/"/g, '""')}"`;
       const csv = [["Actividad", "Participante", "Respuesta", "Fecha"], ...filas].map((f) => f.map(celda).join(";")).join("\r\n");

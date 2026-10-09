@@ -61,6 +61,19 @@ export interface TfRespuestaIa {
   nota: string;
 }
 
+/**
+ * Box de preguntas para todos los conectados (expectativas y devolución): el
+ * equipo lo envía desde el celular de control y lee las respuestas con nombre.
+ * No se proyecta ni va al material.
+ */
+export interface TfBox {
+  /** Clave con la que se guardan las respuestas (ej.: "tf1_box"). */
+  key: string;
+  titulo: string;
+  aviso: string;
+  preguntas: { id: string; q: string; placeholder: string; obligatoria?: boolean }[];
+}
+
 /** Etiqueta del botón que muestra la respuesta preparada (deck y celulares). */
 export const TF_RESPUESTA_IA = "🤖 Respuesta de la IA";
 
@@ -135,6 +148,8 @@ export interface TfClase {
   tramos: TfTramo[];
   /** Encargo del expositor para la próxima charla (va en el material descargable). */
   encargo?: string;
+  /** Box de expectativas y devolución que el equipo envía a todos los celulares. */
+  box?: TfBox;
   slides: TfSlide[];
   actividades: TfActividad[];
   config: ClaseVivoConfig;

@@ -14,7 +14,7 @@ import type { PlacaVivo } from "@/lib/remoto";
 import { cn } from "@/lib/utils";
 import type { ParticipantRow, SessionRow } from "@/lib/types";
 
-type SessionResp = { session: SessionRow; participants: number; placa?: PlacaVivo | null };
+type SessionResp = { session: SessionRow; participants: number; placa?: PlacaVivo | null; avisos?: string[] };
 
 export function AlumnoApp({
   config,
@@ -36,6 +36,8 @@ export function AlumnoApp({
     actividad: React.ReactNode;
     me?: ParticipantRow;
     participantes?: number;
+    /** Avisos abiertos por el docente para todos (ver lib/avisos.ts). */
+    avisos?: string[];
   }>;
   /** "amplio": la app ocupa el monitor (taller en computadoras). */
   ancho?: "normal" | "amplio";
@@ -167,6 +169,7 @@ export function AlumnoApp({
             me={me}
             participantes={data.participants}
             placa={data.placa ?? null}
+            avisos={data.avisos ?? []}
             actividad={<ActividadParticipante config={config} session={data.session} me={me} />}
           />
         ) : (

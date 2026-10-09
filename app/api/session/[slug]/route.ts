@@ -1,4 +1,5 @@
 import { fail, getSession, ok } from "@/lib/api";
+import { filaAvisos } from "@/lib/avisos";
 import { filaEstado, type EstadoRemoto, type PlacaVivo } from "@/lib/remoto";
 import { getAdmin } from "@/lib/supabase/server";
 
@@ -11,7 +12,7 @@ export async function GET(
   if (!session) return fail("Sesión no encontrada", 404);
 
   const db = getAdmin();
-  const [{ data: rows, count }, { data: fila }] = await Promise.all([
+  const [{ data: rows, count }, { data: fila }, { data: filaAv }] = await Promise.all([
     db
       .from("participants")
       .select("name", { count: "exact" })
@@ -20,6 +21,8 @@ export async function GET(
       .limit(60),
     // placa que proyecta el deck, para que los celulares la sigan (sin la nota del docente)
     db.from("sessions").select("activity_config").eq("slug", filaEstado(slug)).maybeSingle(),
+    // avisos abiertos para todos los celulares (ej.: box de expectativas)
+    db.from("sessions").select("activity_config").eq("slug", filaAvisos(slug)).maybeSingle(),
   ]);
 
   const estado = fila?.activity_config?.estado as EstadoRemoto | undefined;
@@ -28,5 +31,6 @@ export async function GET(
     : null;
 
   const names = (rows ?? []).map((r) => r.name as string);
-  return ok({ session, participants: count ?? names.length, names, placa });
+  const avisos = (filaAv?.activity_config?.abiertos as string[] | undefined) ?? [];
+  return ok({ session, participants: count ?? names.length, names, placa, avisos });
 }

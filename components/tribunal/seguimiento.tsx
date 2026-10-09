@@ -7,6 +7,7 @@
 // arriba y debajo la actividad que sigue abierta (para quien llegó tarde).
 
 import { Component, useState, type ReactNode } from "react";
+import { BoxTribunal } from "@/components/tribunal/box";
 import { descargarMaterial } from "@/components/tribunal/descarga";
 import { getActividadTf, lineasPlaca, TF_INSTITUCION, TF_MATERIAL, TF_RESPUESTA_IA, type TfClase, type TfSlide } from "@/lib/tribunal";
 import type { PlacaVivo } from "@/lib/remoto";
@@ -42,18 +43,28 @@ export function SeguimientoTribunal({
   session,
   placa,
   actividad,
+  avisos = [],
 }: {
   clase: TfClase;
   session: SessionRow;
   placa: PlacaVivo | null;
   actividad: ReactNode;
+  avisos?: string[];
 }) {
   const abierta = getActividadTf(clase, session.current_activity);
   const panel = abierta ? actividad : <Espera />;
   return (
-    <Blindaje fallback={panel}>
-      <Seguimiento clase={clase} placa={placa} actividad={panel} />
-    </Blindaje>
+    <>
+      {/* Box de expectativas: llega a todos cuando el equipo lo envía desde el control. */}
+      {clase.box && avisos.includes(clase.box.key) && (
+        <Blindaje fallback={null}>
+          <BoxTribunal slug={clase.slug} box={clase.box} />
+        </Blindaje>
+      )}
+      <Blindaje fallback={panel}>
+        <Seguimiento clase={clase} placa={placa} actividad={panel} />
+      </Blindaje>
+    </>
   );
 }
 

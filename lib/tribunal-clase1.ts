@@ -655,6 +655,24 @@ export const TF1: TfClase = {
   tramos: TRAMOS,
   // De las notas de la placa 19: lo que el Dr. Leal encarga para la próxima charla.
   encargo: "Observar una tarea habitual: qué parte admitiría asistencia, qué información debe excluirse y quién valida.",
+  box: {
+    key: "tf1_box",
+    titulo: "Dos preguntas para el equipo",
+    aviso: "Lo lee solo el equipo docente, con el nombre que ingresó. No se proyecta ni se publica.",
+    preguntas: [
+      {
+        id: "expectativas",
+        q: "¿Qué espera de este ciclo de capacitación?",
+        placeholder: "Ej.: aprender a usar la IA en mis tareas sin riesgos…",
+        obligatoria: true,
+      },
+      {
+        id: "devolucion",
+        q: "¿Alguna devolución o comentario para el equipo?",
+        placeholder: "Lo que quiera contarnos",
+      },
+    ],
+  },
   slides: SLIDES,
   actividades: ACTIVIDADES,
   config: CONFIG,

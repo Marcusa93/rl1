@@ -10,7 +10,7 @@ import { TF1 } from "@/lib/tribunal-clase1";
 import type { PlacaVivo } from "@/lib/remoto";
 import type { SessionRow } from "@/lib/types";
 
-function Seguimiento(p: { session: SessionRow; placa: PlacaVivo | null; actividad: React.ReactNode }) {
+function Seguimiento(p: { session: SessionRow; placa: PlacaVivo | null; actividad: React.ReactNode; avisos?: string[] }) {
   return <SeguimientoTribunal clase={TF1} {...p} />;
 }
 
