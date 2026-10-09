@@ -78,12 +78,13 @@ function Expediente() {
 }
 
 // 15 · Un QR no es una firma digital — dos códigos, dos destinos
-function DocQr({ letra, qr, url, bueno, visibles }: { letra: string; qr: string; url: string; bueno: boolean; visibles: number }) {
+function DocQr({ letra, qr, url, visibles }: { letra: string; qr: string; url: string; visibles: number }) {
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="uc-hoja relative w-full rounded-2xl border border-uc-linea p-5">
         <span className="uc-serif absolute -left-3 -top-3 flex size-11 items-center justify-center rounded-full bg-uc-tinta text-[1.4rem] text-white">{letra}</span>
         <p className="text-center text-[0.95rem] text-uc-pizarra">Testimonio VE-2026-0417 · Juzgado Civil N.º 9 de Villa Esperanza (ficticio)</p>
+        <p className="text-center text-[0.85rem] font-semibold text-uc-verde">Escaneá para validar este documento</p>
         <div className="mt-3 flex items-center justify-center gap-6">
           <img src={qr} alt={`Código QR ${letra} de la demostración`} className="size-[11.5rem] rounded-lg border border-uc-linea" />
           <div className="grid w-28 gap-2">
@@ -95,15 +96,10 @@ function DocQr({ letra, qr, url, bueno, visibles }: { letra: string; qr: string;
         </div>
       </div>
       {visibles > 0 && (
-        <div className={cn("tf-sube w-full rounded-xl border px-4 py-3 text-center", bueno ? "border-uc-verde/40 bg-uc-salvia-claro" : "border-uc-lacre/40 bg-uc-lacre-claro")}>
+        <div className="tf-sube w-full rounded-xl border border-uc-lacre/40 bg-uc-lacre-claro px-4 py-3 text-center">
           <p className="uc-rotulo text-[0.6rem] text-uc-pizarra">Lo que realmente dice el código</p>
-          <p className="uc-mono mt-1 text-[1.05rem] text-uc-tinta">
-            {url.split(/(va1idar)/).map((p, i) => (
-              <span key={i} className={cn(p === "va1idar" && "rounded bg-uc-lacre px-0.5 font-bold text-white")}>
-                {p}
-              </span>
-            ))}
-          </p>
+          <p className="uc-mono mt-1 text-[1.05rem] text-uc-tinta">{url}</p>
+          <p className="mt-1 text-[0.9rem] font-semibold text-uc-lacre">No lleva a ningún validador</p>
         </div>
       )}
     </div>
@@ -114,8 +110,8 @@ function Qr() {
   const { visibles } = useRevelado();
   return (
     <div className="grid flex-1 grid-cols-[1fr_1fr_0.8fr] items-start gap-7">
-      <DocQr letra="A" qr="/unca/qr-validar.svg" url="taller.rossi-ia.com/unca/validar?c=VE-2026-0417" bueno visibles={visibles} />
-      <DocQr letra="B" qr="/unca/qr-senuelo.svg" url="taller.rossi-ia.com/unca/va1idar?c=VE-2026-0417" bueno={false} visibles={visibles} />
+      <DocQr letra="A" qr="/unca/qr-a.svg" url="instagram.com/marquitorossi" visibles={visibles} />
+      <DocQr letra="B" qr="/unca/qr-b.svg" url="instagram.com/laviejaescuelatuc" visibles={visibles} />
       <div className="grid gap-4 self-center">
         <p className="tf-sube flex items-center gap-3 rounded-2xl border border-uc-ocre/50 bg-uc-ocre-claro px-5 py-4 text-[1.2rem] text-uc-tinta">
           <span className="text-[1.8rem]">📱</span> Escaneá los dos desde la pantalla
@@ -234,38 +230,36 @@ function Imprimir() {
 
 // 18 · El tiempo también importa — una página que existía y dejó de existir
 const LINEA = [
-  { fecha: "06/12/2025", t: "Archivo histórico", v: "Wayback: la publicación ya existía", http: 200, fuente: "wayback", x: 4 },
-  { fecha: "12/03/2026", t: "Archivo histórico", v: "Wayback: seguía publicada", http: 200, fuente: "wayback", x: 33 },
-  { fecha: "05/07/2026 · 16:31 UTC", t: "Certificado N.º 700128", v: "Página con fotografía", http: 200, fuente: "cert", x: 71 },
-  { fecha: "10/07/2026 · 17:42 UTC", t: "Certificado N.º 700204", v: "La página ya no existe", http: 404, fuente: "cert", x: 94 },
+  { fecha: "06/12/2025", t: "Archivo histórico", v: "Wayback: la publicación ya existía", http: 200, fuente: "wayback" },
+  { fecha: "12/03/2026", t: "Archivo histórico", v: "Wayback: seguía publicada", http: 200, fuente: "wayback" },
+  { fecha: "05/07/2026 · 16:31 UTC", t: "Certificado N.º 700128", v: "Página con fotografía", http: 200, fuente: "cert" },
+  { fecha: "10/07/2026 · 17:42 UTC", t: "Certificado N.º 700204", v: "La página ya no existe", http: 404, fuente: "cert" },
 ];
 
 function Tiempo() {
   return (
     <div className="flex flex-1 flex-col justify-center gap-7">
-      <div className="uc-hoja relative rounded-[1.5rem] border border-uc-linea px-10 pb-8 pt-9">
+      <div className="uc-hoja rounded-[1.5rem] border border-uc-linea px-8 pb-6 pt-6">
         <p className="uc-mono text-[0.95rem] text-uc-pizarra">tienda-aurora.example/productos/campera-brisa · caso ficticio</p>
-        <div className="relative mt-24 h-2 rounded-full bg-uc-linea">
+        <div className="relative mt-5 grid grid-cols-4 gap-5">
+          <span className="absolute left-[12.5%] right-[12.5%] top-[7.1rem] h-2 rounded-full bg-uc-linea" />
           {LINEA.map((e) => (
-            <Unidad key={e.fecha} i={e.fuente === "cert" ? 0 : 1} label={e.t} className="absolute -translate-x-1/2" style={{ left: `${e.x}%`, top: "-0.55rem" }}>
-              <span
-                className={cn(
-                  "block size-[1.35rem] rounded-full border-[3px] border-uc-hoja shadow",
-                  e.http === 200 ? (e.fuente === "cert" ? "bg-uc-verde" : "bg-uc-salvia") : "bg-uc-lacre",
-                )}
-              />
-              <div className="absolute bottom-8 w-[13rem] text-center" style={{ left: "50%", transform: `translateX(-${e.x > 85 ? 80 : e.x < 10 ? 20 : 50}%)` }}>
+            <Unidad key={e.fecha} i={e.fuente === "cert" ? 0 : 1} label={e.t} className="relative flex flex-col items-center text-center">
+              <div className="flex h-[6.2rem] flex-col items-center justify-end">
                 <span className={cn("rounded-md px-2 py-0.5 text-[0.85rem] font-bold text-white", e.http === 200 ? "bg-uc-verde" : "bg-uc-lacre")}>HTTP {e.http}</span>
                 <p className="mt-1.5 text-[1.05rem] font-semibold leading-tight text-uc-tinta">{e.t}</p>
                 <p className="text-[0.92rem] leading-snug text-uc-pizarra">{e.v}</p>
               </div>
-              <p className="uc-mono absolute top-7 w-[12rem] -translate-x-1/2 text-center text-[0.8rem] text-uc-niebla" style={{ left: "50%" }}>
-                {e.fecha}
-              </p>
+              <span
+                className={cn(
+                  "relative z-10 mt-2 block size-[1.35rem] rounded-full border-[3px] border-uc-hoja shadow",
+                  e.http === 200 ? (e.fuente === "cert" ? "bg-uc-verde" : "bg-uc-salvia") : "bg-uc-lacre",
+                )}
+              />
+              <p className="uc-mono mt-2 text-[0.8rem] text-uc-niebla">{e.fecha}</p>
             </Unidad>
           ))}
         </div>
-        <div className="h-8" />
       </div>
       <Unidad i={2} label="Tres relojes" className="grid grid-cols-3 gap-5">
         {[

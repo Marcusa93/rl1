@@ -7,7 +7,6 @@
 // /unca         → app del participante (celular o computadora; anónima)
 // /unca/clase   → presentación (se comparte por la videollamada)
 // /unca/notas   → notas del orador en otra ventana (no se comparte)
-// /unca/validar · /unca/va1idar → destinos de los dos QR de la placa 15
 //
 // La placa manda: al llegar a una placa con intervención, la actividad se
 // abre sola en los dispositivos de la sala. Las placas sin intervención no
@@ -681,7 +680,7 @@ const SLIDES: UcSlide[] = [
       "Lo que verifica no es el código: es el sitio oficial y el mecanismo al que conduce",
     ],
     nota:
-      "DEMOSTRACIÓN DE QR (entorno exclusivamente demostrativo, institución ficticia). Pedí que escaneen los dos códigos con el celular, desde la pantalla de la videollamada.\n\nLos dos muestran «documento válido». Con → aparece lo que dice cada código: el B lleva a «va1idar», con un uno en lugar de la ele. El señuelo se delata solo a los pocos segundos.\n\nMensaje: distinguir el código, el sitio al que conduce y el mecanismo que efectivamente verifica. La presencia de un QR no acredita autenticidad.",
+      "DEMOSTRACIÓN DE QR. Dos códigos en un testimonio ficticio que dice «Escaneá para validar este documento». Pedí que los escaneen con el celular, desde la pantalla de la videollamada: ¿a dónde los llevó?\n\nNinguno lleva a un validador: llevan a dos perfiles de Instagram. Con → aparece lo que realmente dice cada código.\n\nMensaje: distinguir el código, el sitio al que conduce y el mecanismo que efectivamente verifica. La presencia de un QR no acredita autenticidad: cualquiera puede generar uno o pegar otro encima.",
   },
   {
     t: "placa",
