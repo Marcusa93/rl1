@@ -75,4 +75,6 @@ export interface ClaseVivoConfig {
   reacciones?: boolean;
   /** Texto del campo de ingreso (por defecto, "Su nombre"). Ej.: ingresar como grupo. */
   nombre?: { etiqueta: string; placeholder: string };
+  /** Aviso debajo del ingreso (ej.: qué se hace con las respuestas). */
+  aviso?: string;
 }

@@ -81,7 +81,19 @@ export type ActivityKey =
   | "dip_hip1"
   | "dip_hip2"
   | "dip_nunca"
-  | "dip_despues";
+  | "dip_despues"
+  // Tribunal Fiscal de Tucumán · Primera charla (/tribunal) — prefijo tf1_
+  | "tf1_perfil"
+  | "tf1_tareas"
+  | "tf1_uso"
+  | "tf1_para_que"
+  | "tf1_verifico"
+  | "tf1_falta"
+  | "tf1_delegar"
+  | "tf1_riesgo"
+  | "tf1_no_delegar"
+  | "tf1_acn"
+  | "tf1_control";
 
 export type SessionStatus = "lobby" | "live" | "ended";
 

@@ -1,4 +1,5 @@
 import { fail, ok } from "@/lib/api";
+import { leerFila } from "@/lib/filas";
 import { getAdmin } from "@/lib/supabase/server";
 import { isTeacher } from "@/lib/teacher";
 import { filaCmd, filaEstado, type CmdConSeq, type CmdRemoto, type EstadoRemoto } from "@/lib/remoto";
@@ -10,21 +11,6 @@ import { filaCmd, filaEstado, type CmdConSeq, type CmdRemoto, type EstadoRemoto 
 //   POST { cmd }           → el celular manda un comando
 
 const MAX_CMDS = 30;
-
-async function leerFila(slug: string) {
-  const db = getAdmin();
-  const { data } = await db.from("sessions").select("id, activity_config").eq("slug", slug).maybeSingle();
-  if (data) return data as { id: string; activity_config: Record<string, unknown> };
-  const { data: creada } = await db
-    .from("sessions")
-    .insert({ slug, title: "control remoto", current_activity: "lobby", status: "lobby" })
-    .select("id, activity_config")
-    .single();
-  if (creada) return creada as { id: string; activity_config: Record<string, unknown> };
-  // carrera: la creó otro request
-  const { data: otra } = await db.from("sessions").select("id, activity_config").eq("slug", slug).single();
-  return otra as { id: string; activity_config: Record<string, unknown> };
-}
 
 export async function GET(req: Request, { params }: { params: Promise<{ slug: string }> }) {
   if (!(await isTeacher())) return fail("No autorizado", 401);

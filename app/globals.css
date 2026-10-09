@@ -421,3 +421,124 @@ html:has(.deck-escala) {
   --color-cg-ocre: #b07f18;
 }
 .cg-contraste.cg-papel, .cg-contraste .cg-papel { background-image: none; background-color: #ffffff; }
+
+/* ============================================================
+   Tribunal Fiscal de la Provincia de Tucumán (/tribunal) — ciclo de
+   capacitación del Dr. Mario Rodolfo Leal. Editorial e institucional:
+   la paleta de sus placas (azul tinta, azul profundo, petróleo, gris
+   pizarra) sobre papel claro. El ocre señala solo lo participativo
+   (banners, actividades en vivo), para no confundirlo con el contenido
+   académico. Vive bajo .tf.
+   ============================================================ */
+@theme {
+  --color-tf-papel: #f6f8f9;
+  --color-tf-blanco: #ffffff;
+  --color-tf-tinta: #17212b;
+  --color-tf-azul: #173b63;
+  --color-tf-petroleo: #007a87;
+  --color-tf-agua: #8fd3d8;
+  --color-tf-celeste: #ddeaf2;
+  --color-tf-pizarra: #5e6974;
+  --color-tf-niebla: #9aa5af;
+  --color-tf-linea: #d6dfe6;
+  --color-tf-ocre: #b7791f;
+  --color-tf-ocre-claro: #f7ecd7;
+  --color-tf-lacre: #b4372f;
+}
+
+/* La app del participante y el deck reusan las piezas del motor (que usan
+   la paleta RL1): acá se reasignan sus colores a la paleta del Tribunal. */
+.tf {
+  --color-ink: #f6f8f9;
+  --color-ink-2: #ffffff;
+  --color-panel: #edf2f5;
+  --color-panel-2: #e2eaf0;
+  --color-line: #d6dfe6;
+  --color-teal: #007a87;
+  --color-aqua: #0b8f9c;
+  --color-cyan: #1d6d93;
+  --color-violet: #173b63;
+  --color-magenta: #b4372f;
+  --color-muted: #4b5662;
+  --color-faint: #7d8893;
+  --font-mono: var(--font-newsreader), Georgia, serif;
+  --foreground: #17212b;
+  background-color: var(--color-tf-papel);
+  color: var(--foreground);
+  color-scheme: light;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+html:has(.tf), body:has(.tf) { background: var(--color-tf-papel); color-scheme: light; }
+.tf .bg-grid { background-image: none; }
+.tf .glass {
+  background: #ffffff;
+  border: 1px solid var(--color-tf-linea);
+  backdrop-filter: none;
+  box-shadow: 0 1px 2px rgba(23, 33, 43, 0.05), 0 14px 30px -18px rgba(23, 33, 43, 0.25);
+}
+.tf .glow-teal { box-shadow: 0 0 0 1px rgba(0, 122, 135, 0.28), 0 10px 26px -14px rgba(0, 122, 135, 0.45); }
+.tf .text-gradient {
+  background: linear-gradient(100deg, #173b63 0%, #007a87 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.tf .border-gradient {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(#ffffff, #ffffff) padding-box,
+    linear-gradient(120deg, #173b63, #007a87) border-box;
+}
+@keyframes tf-pulso {
+  0% { box-shadow: 0 0 0 0 rgba(0, 122, 135, 0.35); }
+  70% { box-shadow: 0 0 0 12px rgba(0, 122, 135, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 122, 135, 0); }
+}
+.tf .pulse-ring { animation-name: tf-pulso; }
+.tf ::selection { background: rgba(0, 122, 135, 0.2); }
+
+/* Titulares: serif editorial (Newsreader). */
+.tf-serif { font-family: var(--font-newsreader), Georgia, serif; }
+.tf-titular {
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+}
+/* Rótulos: versalitas espaciadas. */
+.tf-rotulo {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+/* Hoja: documento apoyado sobre la mesa. */
+.tf-hoja {
+  background: #ffffff;
+  box-shadow: 0 1px 0 rgba(23, 33, 43, 0.04), 0 18px 36px -20px rgba(23, 33, 43, 0.35);
+}
+/* Renglón de texto simulado (documentos sin contenido inventado). */
+.tf-renglon { height: 0.5rem; border-radius: 999px; background: #dfe6ec; }
+/* Trama de pausa en la línea de tiempo. */
+.tf-trama {
+  background-image: repeating-linear-gradient(135deg, rgba(94, 105, 116, 0.18) 0 6px, transparent 6px 12px);
+}
+@keyframes tf-sube {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.tf-sube { animation: tf-sube 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes tf-traza {
+  from { stroke-dashoffset: var(--largo, 400); }
+  to { stroke-dashoffset: 0; }
+}
+.tf-traza { stroke-dasharray: var(--largo, 400); animation: tf-traza 1.2s ease-out both; }
+@keyframes tf-marca {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.tf-marca { transform-origin: left; animation: tf-marca 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .tf-sube, .tf-traza, .tf-marca { animation: none; }
+}

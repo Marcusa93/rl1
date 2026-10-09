@@ -145,10 +145,13 @@ export function ControlRemoto({
   nombre,
   vista,
   vistaTitulo = "👀 Así lo ven en el celular",
+  panel,
 }: {
   slug: string;
   titulos: string[];
   nombre: string;
+  /** Herramientas propias de la clase para la placa actual (se pueden tocar; ej.: moderar respuestas). */
+  panel?: (estado: EstadoRemoto) => React.ReactNode;
   /** Cómo ven la placa actual los participantes en su celular (panel plegable). */
   vista?: (estado: EstadoRemoto) => React.ReactNode;
   /** Título del panel plegable (por defecto, la vista del participante). */
@@ -294,6 +297,7 @@ export function ControlRemoto({
             {estado ? "Esta placa no tiene botones: explíquela y avance." : "Esperando la presentación…"}
           </p>
         )}
+        {panel && estado && <div className="pt-4">{panel(estado)}</div>}
         {vista && estado && (
           <div className="pt-4">
             <button

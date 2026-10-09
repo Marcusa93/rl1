@@ -4,6 +4,7 @@ import { getW3Actividad } from "@/lib/web3-clase";
 import { getJusActividad } from "@/lib/justicia-clase";
 import { getDipActividad } from "@/lib/diplo-clase";
 import { getTalActividad } from "@/lib/taller-clase";
+import { getTf1Actividad } from "@/lib/tribunal-clase1";
 import { getAdmin } from "@/lib/supabase/server";
 import type { CotioVar } from "@/lib/types";
 
@@ -215,12 +216,13 @@ export async function GET(
     });
   }
 
-  // --- Clases en vivo (/web3, /justicia, /taller-ia) — agregación por tipo de actividad
+  // --- Clases en vivo (/web3, /justicia, /taller-ia, /tribunal) — agregación por tipo de actividad
   const w3 =
     getW3Actividad(activity) ??
     getJusActividad(activity) ??
     getDipActividad(activity) ??
-    getTalActividad(activity);
+    getTalActividad(activity) ??
+    getTf1Actividad(activity);
   if (w3) {
     const base = {
       activity,

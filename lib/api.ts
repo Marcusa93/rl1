@@ -11,6 +11,7 @@ import { JUS_SLUG, JUS_TITLE } from "./justicia-clase";
 import { TAL_SLUG, TAL_TITLE } from "./taller-clase";
 import { BBVA_SLUG, BBVA_TITLE } from "./bbva-clase";
 import { DIP_SLUG, DIP_TITLE } from "./diplo-clase";
+import { TF1_SLUG, TF1_TITULO } from "./tribunal-clase1";
 import type { SessionRow } from "./types";
 
 // Clases que la app puede auto-crear la primera vez que alguien entra.
@@ -26,6 +27,7 @@ const AUTO_SESSIONS: Record<string, string> = {
   [TAL_SLUG]: TAL_TITLE,
   [BBVA_SLUG]: BBVA_TITLE,
   [DIP_SLUG]: DIP_TITLE,
+  [TF1_SLUG]: TF1_TITULO,
 };
 
 export function ok<T>(data: T, init?: number) {

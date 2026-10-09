@@ -23,6 +23,7 @@ export function AlumnoApp({
   seguimiento: Seguimiento,
   ancho = "normal",
   sinEncabezado = false,
+  marca,
 }: {
   config: ClaseVivoConfig;
   logos?: { src: string; alt: string; fondo?: boolean }[];
@@ -40,6 +41,8 @@ export function AlumnoApp({
   ancho?: "normal" | "amplio";
   /** La clase dibuja su propio encabezado. */
   sinEncabezado?: boolean;
+  /** Marca propia de la clase en lugar del logo RL1 (ingreso y encabezado). */
+  marca?: React.ReactNode;
 }) {
   const [me, setMe] = useState<ParticipantRow | null | undefined>(undefined);
   const [name, setName] = useState("");
@@ -104,7 +107,7 @@ export function AlumnoApp({
                 ))}
               </div>
             )}
-            <LogoRL1 size={44} wordmark={false} className="mb-3" />
+            {marca ? <div className="mb-5">{marca}</div> : <LogoRL1 size={44} wordmark={false} className="mb-3" />}
             <h1 className="text-gradient font-mono text-3xl font-bold tracking-tight">{config.titulo}</h1>
             <p className="mt-2 text-xs text-faint">{config.materia}</p>
             <p className="mt-3 text-xs text-faint">
@@ -125,6 +128,7 @@ export function AlumnoApp({
               {busy ? <Spinner /> : "Ingresar"}
             </Button>
           </form>
+          {config.aviso && <p className="mt-4 text-center text-xs leading-relaxed text-faint">{config.aviso}</p>}
         </div>
       </main>
     );
@@ -136,7 +140,7 @@ export function AlumnoApp({
       {!sinEncabezado && (
       <header className="sticky top-0 z-10 border-b border-line/60 bg-ink/80 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
-          <LogoRL1 size={24} className="shrink-0" />
+          {marca ?? <LogoRL1 size={24} className="shrink-0" />}
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-teal/10 px-2.5 py-1 text-xs text-teal">
               <span className="size-1.5 shrink-0 animate-pulse rounded-full bg-teal" />
