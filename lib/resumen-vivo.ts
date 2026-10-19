@@ -23,7 +23,7 @@ const clavePalabra = (w: string) =>
     .trim()
     .toLowerCase();
 
-export function resumenVivo(kind: ActKind, list: Fila[], act?: Pick<ActividadVivo, "normalizar">): Record<string, unknown> {
+export function resumenVivo(kind: ActKind, list: Fila[], act?: Pick<ActividadVivo, "normalizar" | "sinonimos">): Record<string, unknown> {
   if (kind === "encuesta") {
     const byQuestion: Record<string, Record<string, number>> = {};
     for (const r of list) {
@@ -64,6 +64,8 @@ export function resumenVivo(kind: ActKind, list: Fila[], act?: Pick<ActividadViv
   const counts: Record<string, number> = {};
   // Con `normalizar`, las variantes se agrupan y se muestra la forma más usada.
   const formas: Record<string, Record<string, number>> = {};
+  // Con `sinonimos`, la forma que se muestra es la canónica.
+  const canon: Record<string, string> = {};
   for (const r of list) {
     const varias = Array.isArray(r.payload?.palabras) ? (r.payload.palabras as unknown[]) : [r.payload?.palabra];
     const vistas = new Set<string>();
@@ -73,7 +75,11 @@ export function resumenVivo(kind: ActKind, list: Fila[], act?: Pick<ActividadViv
         .trim()
         .toLowerCase();
       if (!w) continue;
-      const k = act?.normalizar ? clavePalabra(w) : w;
+      const base = act?.normalizar ? clavePalabra(w) : w;
+      // Variantes evidentes de una misma expresión (ej.: «redactar escritos» → «redacción»).
+      const sinonimo = act?.sinonimos?.[base];
+      const k = sinonimo ? clavePalabra(sinonimo) : base;
+      if (sinonimo) canon[k] = sinonimo;
       if (vistas.has(k)) continue; // la misma palabra dos veces cuenta una
       vistas.add(k);
       counts[k] = (counts[k] ?? 0) + 1;
@@ -81,7 +87,7 @@ export function resumenVivo(kind: ActKind, list: Fila[], act?: Pick<ActividadViv
       formas[k][w] = (formas[k][w] ?? 0) + 1;
     }
   }
-  const forma = (k: string) => Object.entries(formas[k] ?? {}).sort((a, b) => b[1] - a[1])[0]?.[0] ?? k;
+  const forma = (k: string) => canon[k] ?? Object.entries(formas[k] ?? {}).sort((a, b) => b[1] - a[1])[0]?.[0] ?? k;
   const palabras = Object.entries(counts)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 60)

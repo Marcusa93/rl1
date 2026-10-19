@@ -708,3 +708,133 @@ html:has(.uc), body:has(.uc) { background: var(--color-uc-papel); color-scheme: 
 }
 .uc-contraste.uc-papel { background-image: none; }
 .uc-contraste .uc-renglon { background: #cfc6b4; }
+
+/* ============================================================
+   Doing Global · Redacción de escritos jurídicos con IA (/doing).
+   Arqueología tecnológica en clave jurídica: papel cálido, tinta de
+   máquina de escribir, verdes grisáceos y azules suaves; el rojo de la
+   cinta bicolor marca saltos, errores y alertas. El ocre señala solo lo
+   participativo. Vive bajo .dg.
+   ============================================================ */
+@theme {
+  --color-dg-papel: #f2ebdf;
+  --color-dg-hoja: #fffcf4;
+  --color-dg-tinta: #22272a;
+  --color-dg-pizarra: #545c5f;
+  --color-dg-niebla: #8d938f;
+  --color-dg-linea: #dad0bd;
+  --color-dg-verde: #3e5d51;
+  --color-dg-salvia: #94a99b;
+  --color-dg-salvia-claro: #e3eadf;
+  --color-dg-azul: #48667f;
+  --color-dg-azul-claro: #e1e8ee;
+  --color-dg-lacre: #ad4630;
+  --color-dg-lacre-claro: #f4ded5;
+  --color-dg-ocre: #a9761f;
+  --color-dg-ocre-claro: #f3e4c4;
+}
+
+/* La app del participante reusa las piezas del motor (paleta RL1): se
+   reasignan sus colores a la paleta de la clase. */
+.dg {
+  --color-ink: #f2ebdf;
+  --color-ink-2: #fffcf4;
+  --color-panel: #ebe3d3;
+  --color-panel-2: #e2d8c4;
+  --color-line: #dad0bd;
+  --color-teal: #3e5d51;
+  --color-aqua: #4d6f62;
+  --color-cyan: #48667f;
+  --color-violet: #48667f;
+  --color-magenta: #ad4630;
+  --color-muted: #4b5357;
+  --color-faint: #7c827f;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --foreground: #22272a;
+  background-color: var(--color-dg-papel);
+  color: var(--foreground);
+  color-scheme: light;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+html:has(.dg), body:has(.dg) { background: var(--color-dg-papel); color-scheme: light; }
+.dg .bg-grid { background-image: none; }
+.dg .glass {
+  background: #fffcf4;
+  border: 1px solid var(--color-dg-linea);
+  backdrop-filter: none;
+  box-shadow: 0 1px 2px rgba(34, 39, 42, 0.05), 0 14px 30px -18px rgba(34, 39, 42, 0.25);
+}
+.dg .glow-teal { box-shadow: 0 0 0 1px rgba(62, 93, 81, 0.3), 0 10px 26px -14px rgba(62, 93, 81, 0.45); }
+.dg .text-gradient {
+  background: linear-gradient(100deg, #3e5d51 0%, #48667f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.dg .pulse-ring { animation-name: tf-pulso; }
+.dg ::selection { background: rgba(173, 70, 48, 0.18); }
+
+/* Papel con fibras muy suaves, sin imágenes externas. */
+.dg-papel {
+  background-color: var(--color-dg-papel);
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(169, 118, 31, 0.06), transparent 36%),
+    radial-gradient(circle at 88% 92%, rgba(72, 102, 127, 0.06), transparent 42%),
+    repeating-linear-gradient(90deg, rgba(34, 39, 42, 0.011) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(0deg, rgba(34, 39, 42, 0.013) 0 1px, transparent 1px 3px);
+}
+.dg-serif { font-family: var(--font-instrument), Georgia, serif; }
+.dg-titular {
+  font-family: var(--font-instrument), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.012em;
+  line-height: 1.02;
+}
+.dg-rotulo {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+/* Tipografía de máquina de escribir: documentos, prompts y expedientes. */
+.dg-maquina { font-family: var(--font-courier), "Courier New", ui-monospace, monospace; letter-spacing: 0.01em; }
+.dg-hoja {
+  background: #fffcf4;
+  box-shadow: 0 1px 0 rgba(34, 39, 42, 0.04), 0 18px 36px -20px rgba(34, 39, 42, 0.38);
+}
+.dg-renglon { height: 0.5rem; border-radius: 999px; background: #e5ddcd; }
+/* Papel carbónico: la copia azulada de las máquinas de escribir. */
+.dg-carbonico { background-color: #eef2f5; background-image: repeating-linear-gradient(0deg, rgba(72, 102, 127, 0.07) 0 1px, transparent 1px 1.6rem); }
+/* Superficie de pantalla actual (las interfaces de IA). */
+.dg-pantalla { background: #fbfbf9; box-shadow: 0 0 0 1px #d9d6cd, 0 22px 44px -26px rgba(34, 39, 42, 0.5); }
+/* Resaltado de marcador (afirmaciones a verificar, campos variables). */
+.dg-marca { background: linear-gradient(transparent 52%, rgba(173, 70, 48, 0.22) 52%); }
+.dg-campo { background: rgba(169, 118, 31, 0.16); border-bottom: 2px solid rgba(169, 118, 31, 0.55); border-radius: 0.2em; padding: 0 0.15em; }
+@keyframes dg-giro { to { transform: rotate(360deg); } }
+.dg-giro { animation: dg-giro 40s linear infinite; transform-origin: 50% 50%; }
+@keyframes dg-flujo { to { stroke-dashoffset: -24; } }
+.dg-flujo { stroke-dasharray: 6 6; animation: dg-flujo 1.1s linear infinite; }
+@keyframes dg-cursor { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.dg-cursor::after { content: "▍"; margin-left: 0.05em; color: var(--color-dg-lacre); animation: dg-cursor 1s steps(1) infinite; }
+@keyframes dg-latido { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.dg-latido { animation: dg-latido 1.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .dg-giro, .dg-flujo, .dg-latido, .dg-cursor::after { animation: none; }
+}
+
+/* Alto contraste para proyectores lavados (tecla C). */
+.dg-contraste {
+  --color-dg-papel: #ffffff;
+  --color-dg-hoja: #ffffff;
+  --color-dg-tinta: #000000;
+  --color-dg-pizarra: #252b2e;
+  --color-dg-niebla: #4a504d;
+  --color-dg-linea: #a79d89;
+  --color-dg-verde: #1f3a2f;
+  --color-dg-azul: #233f56;
+  --color-dg-lacre: #842611;
+  --color-dg-ocre: #6f4900;
+}
+.dg-contraste.dg-papel { background-image: none; }
+.dg-contraste .dg-renglon { background: #cfc5b2; }

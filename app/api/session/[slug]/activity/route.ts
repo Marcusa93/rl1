@@ -107,6 +107,13 @@ const VALID: ActivityKey[] = [
   "uc_blockchain",
   "uc_real_ia",
   "uc_decision",
+  // Doing Global · Redacción de escritos jurídicos con IA (/doing)
+  "dg_usos",
+  "dg_automatizar",
+  "dg_controles",
+  "dg_sabemos",
+  "dg_salto",
+  "dg_flujo",
 ];
 
 export async function POST(

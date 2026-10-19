@@ -6,6 +6,7 @@ import { getDipActividad } from "@/lib/diplo-clase";
 import { getTalActividad } from "@/lib/taller-clase";
 import { getTf1Actividad } from "@/lib/tribunal-clase1";
 import { getUcActividad } from "@/lib/unca-clase";
+import { getDgActividad } from "@/lib/doing-clase";
 import { resumenVivo } from "@/lib/resumen-vivo";
 import { getAdmin } from "@/lib/supabase/server";
 import type { CotioVar } from "@/lib/types";
@@ -218,14 +219,15 @@ export async function GET(
     });
   }
 
-  // --- Clases en vivo (/web3, /justicia, /taller-ia, /tribunal, /unca) — agregación por tipo de actividad
+  // --- Clases en vivo (/web3, /justicia, /taller-ia, /tribunal, /unca, /doing) — agregación por tipo de actividad
   const w3 =
     getW3Actividad(activity) ??
     getJusActividad(activity) ??
     getDipActividad(activity) ??
     getTalActividad(activity) ??
     getTf1Actividad(activity) ??
-    getUcActividad(activity);
+    getUcActividad(activity) ??
+    getDgActividad(activity);
   if (w3) {
     const base = {
       activity,
@@ -234,7 +236,8 @@ export async function GET(
       responders: [],
       config: session.activity_config ?? {},
     };
-    return ok({ ...base, summary: resumenVivo(w3.kind, list, { normalizar: (w3 as { normalizar?: boolean }).normalizar }) });
+    const palabra = w3 as { normalizar?: boolean; sinonimos?: Record<string, string> };
+    return ok({ ...base, summary: resumenVivo(w3.kind, list, { normalizar: palabra.normalizar, sinonimos: palabra.sinonimos }) });
   }
 
   if (activity === "emp_cierre") {

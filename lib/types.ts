@@ -102,7 +102,14 @@ export type ActivityKey =
   | "uc_testimonio"
   | "uc_blockchain"
   | "uc_real_ia"
-  | "uc_decision";
+  | "uc_decision"
+  // Doing Global · Redacción de escritos jurídicos con IA (/doing) — prefijo dg_
+  | "dg_usos"
+  | "dg_automatizar"
+  | "dg_controles"
+  | "dg_sabemos"
+  | "dg_salto"
+  | "dg_flujo";
 
 export type SessionStatus = "lobby" | "live" | "ended";
 

@@ -32,10 +32,14 @@ export interface ActividadVivo {
   opciones?: ActOpcion[];
   /** kind "chips": opción que deselecciona a las demás */
   exclusiva?: string;
+  /** kind "chips": cuántas opciones se pueden marcar como máximo. */
+  max?: number;
   /** kind "palabra": hasta cuántas palabras puede mandar cada participante (por defecto, 1). */
   palabras?: number;
   /** kind "palabra": agrupar sin distinguir mayúsculas, tildes ni espacios. */
   normalizar?: boolean;
+  /** kind "palabra" con `normalizar`: variantes evidentes de una misma expresión (clave sin tildes, en minúscula) → forma que se muestra. */
+  sinonimos?: Record<string, string>;
   /** kind "texto" */
   placeholder?: string;
   maxChars?: number;

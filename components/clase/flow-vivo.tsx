@@ -222,7 +222,9 @@ function Chips({ act, responder }: { act: ActividadVivo; responder: Responder })
     setSel((prev) => {
       if (act.exclusiva && id === act.exclusiva) return prev.includes(id) ? [] : [id];
       const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
-      return act.exclusiva ? next.filter((x) => x !== act.exclusiva) : next;
+      const sinExclusiva = act.exclusiva ? next.filter((x) => x !== act.exclusiva) : next;
+      // Con tope (ej.: «elegí dos»), marcar una más desmarca la más antigua.
+      return act.max && sinExclusiva.length > act.max ? sinExclusiva.slice(-act.max) : sinExclusiva;
     });
   }
 
@@ -262,6 +264,11 @@ function Chips({ act, responder }: { act: ActividadVivo; responder: Responder })
           );
         })}
       </div>
+      {act.max && !sent && (
+        <p className="mt-3 text-center text-sm text-muted">
+          Elegí {act.max === 2 ? "dos" : `hasta ${act.max}`} · marcadas: {sel.length}
+        </p>
+      )}
       {err && <p className="mt-3 text-center text-sm text-magenta">{err}</p>}
       {!sent ? (
         <Button onClick={send} disabled={busy || sel.length === 0} className="mt-3 w-full">
