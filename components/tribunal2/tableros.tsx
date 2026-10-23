@@ -569,7 +569,7 @@ export function TableroA4({ slug, intervalo, revelado, planB }: { slug: string; 
             <div key={t.id} className="relative flex min-h-0 flex-col" style={{ rotate: `${[-0.8, 0.5, -0.4][k]}deg` }}>
               <Hoja className="relative min-h-0 flex-1 overflow-hidden p-7">
                 <span className="tf2-titular text-[54px] leading-none">{t.id.toUpperCase()}</span>
-                <p className="tf2-serif mt-4 text-[23px] leading-[1.48]">{t.texto}</p>
+                <p className="tf2-serif mt-4 text-[26px] leading-[1.5]">{t.texto}</p>
                 {revelado && (
                   <div className="absolute right-[24px] top-[22px] rotate-[-9deg]">
                     <Sello tono={t.autoria === "humano" ? "musgo" : "rojo"} tam={30} d={k * 220}>

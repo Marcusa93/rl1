@@ -139,36 +139,40 @@ export interface Tf2Texto {
   rasgos: string;
 }
 
-/** PENDIENTE: el texto humano lo escribe una persona del equipo (con su consentimiento). */
-export const TF2_TEXTO_HUMANO_PENDIENTE = true;
+/** El texto humano ya está cargado (si se reemplaza por otro, debe ser con consentimiento de quien lo escribió). */
+export const TF2_TEXTO_HUMANO_PENDIENTE = false;
 
-export const TF2_A4_TEMA = "Un lunes a la mañana en la mesa de entradas de un tribunal";
+/**
+ * Los tres textos son del mismo género y extensión: el relato del trámite de una
+ * causa hasta el llamado a sentencia (el «resulta»), como los que se escriben en
+ * el Tribunal. El humano es un fragmento real aportado por el equipo; los otros
+ * dos los escribió una IA imitando ese registro. Fechas y fojas: sin datos de partes.
+ */
+export const TF2_A4_TEMA = "El trámite de una causa hasta el llamado a sentencia";
 export const TF2_A4: Tf2Texto[] = [
   {
     id: "a",
     autoria: "ia",
-    origen: "Escrito por una IA (Claude) con la consigna «tono natural, primera persona, 80 palabras».",
-    rasgos: "Ritmo parejo, imágenes previsibles y un cierre redondo: suena natural, pero nada en el texto prueba quién lo escribió.",
+    origen: "Escrito por una IA (Claude) con la consigna «relato del trámite de una causa del Tribunal hasta el llamado a sentencia, registro técnico, 50 palabras».",
+    rasgos: "Vocabulario procesal correcto y bien ordenado: imita el estilo, pero ninguna de esas actuaciones existió.",
     texto:
-      "El lunes empezó con la fila armada antes de abrir: un contador con tres carpetas, una señora que venía por la cédula que le había llegado el viernes, un cadete que solo necesitaba un sello. Abrí el sistema, que tardó lo de siempre, y fui atendiendo de a uno. A media mañana se cortó la luz y seguimos con el libro de entradas, a mano, como antes. Fue raro, pero no se perdió ningún escrito.",
-
+      "Corrido traslado del recurso a la Dirección General de Rentas, el organismo lo contestó por escrito del 14/07/26. Producida la prueba ofrecida, por decreto del 04/08/26 se clausuró el período probatorio y pasaron los autos a despacho para resolver, providencia que notificada a las partes quedó firme, y",
   },
   {
     id: "b",
     autoria: "humano",
-    origen: "PENDIENTE · texto de una persona del equipo, escrito con su consentimiento.",
-    rasgos: "Comparar con los otros dos: ¿qué rasgo nos hizo pensar que era humano o artificial?",
+    origen: "Escrito por una persona: fragmento de una resolución, aportado por el equipo.",
+    rasgos: "Fórmulas del oficio («alegó la accionada», «pasaron los autos a despacho»): las aprendemos las personas y también las imita la IA.",
     texto:
-      "[PENDIENTE: párrafo de 70 a 85 palabras, en primera persona, escrito por una persona del equipo sobre «un lunes a la mañana en la mesa de entradas de un tribunal». Reemplazar antes de la clase.]",
+      "Por presentación de fecha 30/07/26 alegó la parte actora y por escrito del 31/07/26 alegó la accionada. Mediante decreto del 07/08/26 pasaron los autos a despacho para el dictado de sentencia definitiva, providencia que notificada a las partes dejó la causa en estado de ser resuelta, y",
   },
   {
     id: "c",
     autoria: "ia",
-    origen: "Escrito por una IA (Claude) a la que se le pidió imitar a una persona común, «con alguna imperfección menor».",
-    rasgos: "La imperfección también se puede imitar: el humor y los detalles concretos no garantizan autoría humana.",
+    origen: "Escrito por una IA (Claude) a la que se le pidió imitar a un relator del Tribunal, con fojas y fórmulas habituales.",
+    rasgos: "Copia hasta las fojas y el «en término»: el registro técnico se puede imitar, y no prueba que alguien haya hecho el trámite.",
     texto:
-      "Llegué tarde, obvio, porque el colectivo no pasó. Me encontré con la fila hasta la puerta y la impresora en paro. Un señor quería saber de su recurso «del año pasado o del anterior», sin número, sin nada. Le pedí el CUIT y me dio el del cuñado. La foliadora se trabó dos veces. Al final me salvó una compañera que sabe el truco de golpearla de costado. Nadie sabe por qué anda así.",
-
+      "A fs. 112 la recurrente presentó su alegato y a fs. 118 hizo lo propio la Dirección General de Rentas, ambos en término. Por decreto de fecha 12/08/26 se llamaron autos para sentencia, el que fue notificado a las partes y se encuentra firme, quedando la causa en condiciones de ser resuelta, y",
   },
 ];
 
