@@ -3,6 +3,7 @@ import { leerFila } from "@/lib/filas";
 import { getAdmin } from "@/lib/supabase/server";
 import { isTeacher } from "@/lib/teacher";
 import { filaCmd, filaEstado, type CmdConSeq, type CmdRemoto, type EstadoRemoto } from "@/lib/remoto";
+import { TF2_SLIDES, TF2_SLUG } from "@/lib/tribunal-clase2";
 
 // Control remoto del deck (ver lib/remoto.ts). Solo con la cookie docente:
 //   GET ?que=estado        → estado publicado por el deck (lo lee el celular)
@@ -37,6 +38,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
   const db = getAdmin();
 
   if (body.estado) {
+    // Tribunal · clase 2: una presentación de una versión anterior que quedó abierta no pisa a la
+    // actual (se turnaban para publicar y los celulares saltaban de placa).
+    if (slug === TF2_SLUG && (body.estado as EstadoRemoto).total !== TF2_SLIDES.length) return ok({ ok: true, ignorado: true });
     const fila = await leerFila(filaEstado(slug));
     const { error } = await db.from("sessions").update({ activity_config: { estado: body.estado } }).eq("id", fila.id);
     if (error) return fail(error.message, 500);

@@ -325,8 +325,14 @@ export function SeguimientoTf2({
         </Blindaje>
       )}
 
-      {/* Si se proyecta la actividad, va primero; si no, la placa arriba y la actividad abierta debajo. */}
-      {proyectaActividad && !alFinal && panel}
+      {/* La actividad abierta va siempre arriba y en el mismo lugar: cambiar de placa no la mueve
+          ni la reinicia (antes saltaba de posición y el celular "subía" solo). */}
+      {!alFinal && panel && (
+        <div className="mb-6">
+          <Rotulo className="mb-2 text-tf2-gris">{proyectaActividad ? "En pantalla ahora" : "Sigue abierta"}</Rotulo>
+          {panel}
+        </div>
+      )}
 
       {slide && (
         <Blindaje>
@@ -340,12 +346,6 @@ export function SeguimientoTf2({
         </Tarjeta>
       )}
 
-      {!proyectaActividad && !alFinal && panel && (
-        <div className="mt-6">
-          <Rotulo className="mb-2 text-tf2-gris">Sigue abierta</Rotulo>
-          {panel}
-        </div>
-      )}
 
       <Recorrido mias={mias} actual={actual?.key} />
 
@@ -754,7 +754,7 @@ function ComparaA3({ slug, previa, revelado, onGuardado }: PropsAct & { previa?:
           </button>
         ))}
       </div>
-      <Salida texto={ver === "A" ? TF2_A3.A : TF2_A3.B} className="max-h-[50dvh] overflow-auto" />
+      <Salida texto={ver === "A" ? TF2_A3.A : TF2_A3.B} className="max-h-[22rem] overflow-auto" />
       {preguntas.map((q) => (
         <div key={q.id}>
           <Rotulo className="mb-2">{q.q}</Rotulo>
@@ -838,7 +838,7 @@ function ProbaPerfiles() {
               </button>
             ))}
           </div>
-          <Salida texto={salidas[ver] ?? ""} className="max-h-[50dvh] overflow-auto" />
+          <Salida texto={salidas[ver] ?? ""} className="max-h-[22rem] overflow-auto" />
         </>
       )}
     </div>
@@ -1032,7 +1032,7 @@ function DesafioA5({ slug, previa, onGuardado }: PropsAct & { previa?: Tf2A5 }) 
       {pantalla === total + 2 && (
         <>
           <Rotulo>Salida de prueba · sin verificar</Rotulo>
-          <Salida texto={d.prueba?.salida ?? "(sin prueba todavía: probala cuando el chatbot esté disponible; mientras, la ficha la marca como pendiente)"} className="max-h-[45dvh] overflow-auto" />
+          <Salida texto={d.prueba?.salida ?? "(sin prueba todavía: probala cuando el chatbot esté disponible; mientras, la ficha la marca como pendiente)"} className="max-h-[22rem] overflow-auto" />
           <Rotulo className="mt-1">Verificá cada tipo de dato</Rotulo>
           <div className="grid gap-2">
             {TF2_CONTROLES.map((c) => {
