@@ -142,7 +142,7 @@ export interface Tf2Texto {
 /** PENDIENTE: el texto humano lo escribe una persona del equipo (con su consentimiento). */
 export const TF2_TEXTO_HUMANO_PENDIENTE = true;
 
-export const TF2_A4_TEMA = "Un lunes a la mañana en una oficina pública";
+export const TF2_A4_TEMA = "Un lunes a la mañana en la mesa de entradas de un tribunal";
 export const TF2_A4: Tf2Texto[] = [
   {
     id: "a",
@@ -150,7 +150,8 @@ export const TF2_A4: Tf2Texto[] = [
     origen: "Escrito por una IA (Claude) con la consigna «tono natural, primera persona, 80 palabras».",
     rasgos: "Ritmo parejo, imágenes previsibles y un cierre redondo: suena natural, pero nada en el texto prueba quién lo escribió.",
     texto:
-      "El lunes empezó con el café todavía tibio y una bandeja de correo que parecía haberse reproducido durante el fin de semana. Abrí el primero, después el segundo, y para el tercero ya había perdido la cuenta. A media mañana se cortó la luz en todo el piso y nos quedamos mirándonos, sin pantallas, como en otra época. Fue raro: sin el sistema, alguien sacó un cuaderno y anotamos los pendientes a mano. Terminamos más ordenados que nunca.",
+      "El lunes empezó con la fila armada antes de abrir: un contador con tres carpetas, una señora que venía por la cédula que le había llegado el viernes, un cadete que solo necesitaba un sello. Abrí el sistema, que tardó lo de siempre, y fui atendiendo de a uno. A media mañana se cortó la luz y seguimos con el libro de entradas, a mano, como antes. Fue raro, pero no se perdió ningún escrito.",
+
   },
   {
     id: "b",
@@ -158,7 +159,7 @@ export const TF2_A4: Tf2Texto[] = [
     origen: "PENDIENTE · texto de una persona del equipo, escrito con su consentimiento.",
     rasgos: "Comparar con los otros dos: ¿qué rasgo nos hizo pensar que era humano o artificial?",
     texto:
-      "[PENDIENTE: párrafo de 70 a 85 palabras, en primera persona, escrito por una persona del equipo sobre «un lunes a la mañana en una oficina pública». Reemplazar antes de la clase.]",
+      "[PENDIENTE: párrafo de 70 a 85 palabras, en primera persona, escrito por una persona del equipo sobre «un lunes a la mañana en la mesa de entradas de un tribunal». Reemplazar antes de la clase.]",
   },
   {
     id: "c",
@@ -166,7 +167,8 @@ export const TF2_A4: Tf2Texto[] = [
     origen: "Escrito por una IA (Claude) a la que se le pidió imitar a una persona común, «con alguna imperfección menor».",
     rasgos: "La imperfección también se puede imitar: el humor y los detalles concretos no garantizan autoría humana.",
     texto:
-      "Llegué tarde, obvio, porque el colectivo decidió no pasar. Saludé a todos con cara de que nada pasaba y me encontré con cuarenta y tres correos, de los cuales cuarenta decían «reitero». La impresora, fiel a su estilo, imprimió la mitad de una hoja y se quedó pensando. Le hablé con cariño, como a una planta. No funcionó. Al final me salvó un compañero que sabía el truco de abrir la tapa dos veces. Nadie sabe por qué anda así.",
+      "Llegué tarde, obvio, porque el colectivo no pasó. Me encontré con la fila hasta la puerta y la impresora en paro. Un señor quería saber de su recurso «del año pasado o del anterior», sin número, sin nada. Le pedí el CUIT y me dio el del cuñado. La foliadora se trabó dos veces. Al final me salvó una compañera que sabe el truco de golpearla de costado. Nadie sabe por qué anda así.",
+
   },
 ];
 
@@ -191,14 +193,14 @@ export const TF2_CAMPOS: Tf2Campo[] = [
     id: "tarea",
     etiqueta: "Tarea concreta",
     ayuda: "Qué hay que hacer. Una tarea propia, permitida y sin datos reales.",
-    ejemplo: "preparar una lista de pendientes de mesa de entradas para la reunión del lunes",
+    ejemplo: "ordenar los expedientes que entraron en la semana para la reunión de secretaría",
     vacio: "[tarea concreta]",
   },
   {
     id: "proposito",
     etiqueta: "¿Con qué objetivo?",
     ayuda: "Para qué sirve el resultado (empezá con «de…»).",
-    ejemplo: "de que la jefatura vea de un vistazo qué falta resolver",
+    ejemplo: "de que cada vocalía sepa qué tiene pendiente y qué plazos vencen",
     vacio: "[propósito]",
     junto: true,
   },
@@ -206,42 +208,42 @@ export const TF2_CAMPOS: Tf2Campo[] = [
     id: "rol",
     etiqueta: "Rol del asistente y destinatario",
     ayuda: "Qué función cumple el asistente (una función, no una autoridad) y para quién trabaja.",
-    ejemplo: "apoyo administrativo de mesa de entradas",
+    ejemplo: "apoyo de la secretaría del Tribunal",
     vacio: "[rol funcional y destinatario]",
   },
   {
     id: "contexto",
     etiqueta: "Contexto permitido",
     ayuda: "Solo información no sensible y relevante. Nada de expedientes reales ni datos personales.",
-    ejemplo: "que la oficina recibe consultas por correo y por mostrador, con tres personas por turno",
+    ejemplo: "que el Tribunal recibe recursos contra resoluciones de Rentas y los distribuye entre las vocalías",
     vacio: "[información no sensible y relevante]",
   },
   {
     id: "fuentes",
     etiqueta: "Fuentes permitidas",
     ayuda: "Con qué material puede trabajar: el texto que le pegues, fuentes públicas o autorizadas.",
-    ejemplo: "el listado ficticio que te pego a continuación",
+    ejemplo: "el listado ficticio de expedientes que te pego a continuación",
     vacio: "[fuentes disponibles o autorizadas]",
   },
   {
     id: "etapas",
     etiqueta: "Etapas",
     ayuda: "En qué pasos conviene dividir la tarea.",
-    ejemplo: "1) agrupar por tema, 2) ordenar por urgencia, 3) señalar lo que falta",
+    ejemplo: "1) agrupar por vocalía, 2) ordenar por vencimiento, 3) señalar los datos que faltan",
     vacio: "[pasos]",
   },
   {
     id: "formato",
     etiqueta: "Formato de salida",
     ayuda: "Cómo querés recibir el resultado para poder revisarlo.",
-    ejemplo: "una tabla con tema, pendiente, urgencia y dato faltante",
+    ejemplo: "una tabla con expediente, vocalía, próximo vencimiento y dato faltante",
     vacio: "[formato]",
   },
   {
     id: "verificaciones",
     etiqueta: "Verificaciones",
     ayuda: "Qué hay que controlar antes de usar el resultado.",
-    ejemplo: "fechas, nombres de áreas y que no agregue pendientes que no estaban",
+    ejemplo: "números de expediente, fechas de notificación y que no agregue expedientes que no estaban",
     vacio: "[elementos a verificar]",
   },
 ];
@@ -323,6 +325,17 @@ export function productoFinal(a: Tf2A5, perfilNombre: string): string {
   ].join("\n");
 }
 
+/** Texto de una respuesta del chatbot para leer en pantalla: sin marcas de markdown (#, **, ---). */
+export function textoPlano(t: string): string {
+  return t
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/^\s*(-{3,}|\*{3,}|_{3,})\s*$/gm, "")
+    .replace(/^(\s*)[-*]\s+/gm, "$1• ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 // --- Actividad 2: laboratorio de prompts --------------------------------------------------------
 
 export interface Tf2TareaA2 {
@@ -337,22 +350,22 @@ export interface Tf2TareaA2 {
 /** Tareas ficticias para el laboratorio (el participante también puede escribir la suya). */
 export const TF2_A2_TAREAS: Tf2TareaA2[] = [
   {
-    id: "horario",
-    label: "Aviso de cambio de horario",
-    simple: "Escribí un aviso sobre el cambio de horario de mesa de entradas.",
-    datos: "desde el lunes 3 de noviembre, mesa de entradas atiende de 8 a 13 (datos ficticios)",
+    id: "feria",
+    label: "Aviso de la feria de enero",
+    simple: "Escribí un aviso sobre la feria de enero del Tribunal.",
+    datos: "feria del 2 al 31 de enero; los plazos se suspenden; hay guardia en mesa de entradas de 8 a 12 (datos ficticios)",
   },
   {
-    id: "informe",
-    label: "Correo pidiendo un informe a otra área",
-    simple: "Escribí un correo para pedirle un informe a otra área.",
-    datos: "falta el informe de notificaciones de octubre; lo necesitamos antes del viernes 7 (datos ficticios)",
+    id: "rentas",
+    label: "Nota pidiendo un informe a Rentas",
+    simple: "Escribí una nota para pedirle un informe a la Dirección General de Rentas.",
+    datos: "Expte. 1234/2026 (ficticio); se necesita el informe de deuda actualizado; plazo para contestar: 10 días hábiles (datos ficticios)",
   },
   {
-    id: "pasos",
-    label: "Pasos para presentar un escrito por correo",
-    simple: "Explicá cómo se presenta un escrito por correo electrónico.",
-    datos: "la casilla es [casilla oficial]; se adjunta en PDF firmado; se recibe acuse automático (datos ficticios)",
+    id: "escrito",
+    label: "Cómo presentar un escrito ante el Tribunal",
+    simple: "Explicá cómo se presenta un escrito ante el Tribunal.",
+    datos: "se presenta en mesa de entradas o por [canal oficial]; con una copia para el traslado; firmado por el contribuyente o su apoderado (datos ficticios)",
   },
 ];
 
@@ -364,14 +377,14 @@ export const TF2_A2_CAMPOS: { id: Tf2CampoA2Id; etiqueta: string; ayuda: string;
     id: "rol",
     etiqueta: "Rol",
     ayuda: "Qué función cumple (no quién es).",
-    chips: ["asistente de apoyo administrativo", "asistente de redacción", "asistente para ordenar información"],
+    chips: ["asistente de la mesa de entradas del Tribunal", "asistente de la secretaría", "asistente para ordenar expedientes"],
   },
   { id: "tarea", etiqueta: "Tarea", ayuda: "Qué tiene que hacer, con precisión.", chips: [] },
   {
     id: "contexto",
     etiqueta: "Contexto",
     ayuda: "Para quién es y en qué situación.",
-    chips: ["lo lee el público que llega a mostrador", "lo leen colegas de otra área", "se publica en la cartelera y en la web"],
+    chips: ["lo lee el contribuyente que llega a mesa de entradas", "lo lee el personal de las vocalías", "va dirigido a la Dirección General de Rentas"],
   },
   {
     id: "fuentes",
@@ -383,7 +396,7 @@ export const TF2_A2_CAMPOS: { id: Tf2CampoA2Id; etiqueta: string; ayuda: string;
     id: "limites",
     etiqueta: "Límites",
     ayuda: "Lo que no tiene que hacer.",
-    chips: ["no inventes fechas, horarios ni normas", "no prometas plazos", "máximo 120 palabras"],
+    chips: ["no inventes fechas, plazos ni normas", "no anticipes decisiones del Tribunal", "máximo 120 palabras"],
   },
   {
     id: "formato",
@@ -429,37 +442,37 @@ export interface Tf2A2 {
  * pedido simple y con uno estructurado. Texto generado con IA y revisado.
  */
 export const TF2_A2_EJEMPLO: Required<Pick<Tf2A2, "tarea" | "pedidoA" | "salidaA" | "pedidoB" | "salidaB">> = {
-  tarea: "Aviso de cambio de horario",
-  pedidoA: "Escribí un aviso sobre el cambio de horario de mesa de entradas.",
+  tarea: "Aviso de la feria de enero",
+  pedidoA: "Escribí un aviso sobre la feria de enero del Tribunal.",
   salidaA: `AVISO IMPORTANTE
 
-Se informa al público en general que, a partir del próximo lunes, la Mesa de Entradas modificará su horario de atención.
+Se comunica a contribuyentes, profesionales y público en general que el Tribunal Fiscal permanecerá en feria desde el 1 hasta el 31 de enero inclusive.
 
-Nuevo horario: lunes a viernes de 7:30 a 14:00 horas.
+Durante ese período quedan suspendidos todos los plazos procesales y no se recibirán escritos.
 
-Las presentaciones realizadas fuera de este horario se considerarán ingresadas el día hábil siguiente.
+La actividad se reanudará normalmente el lunes 2 de febrero.
 
 Agradecemos su comprensión.
-La Dirección`,
-  pedidoB: `Rol: asistente de apoyo administrativo
-Tarea: escribí un aviso sobre el cambio de horario de mesa de entradas
-Contexto: lo lee el público que llega a mostrador
-Fuentes y datos: usá solo estos datos: desde el lunes 3 de noviembre, mesa de entradas atiende de 8 a 13 (datos ficticios)
-Límites: no inventes fechas, horarios ni normas
+La Presidencia`,
+  pedidoB: `Rol: asistente de la mesa de entradas del Tribunal
+Tarea: escribí un aviso sobre la feria de enero del Tribunal
+Contexto: lo lee el contribuyente que llega a mesa de entradas
+Fuentes y datos: usá solo estos datos: feria del 2 al 31 de enero; los plazos se suspenden; hay guardia en mesa de entradas de 8 a 12 (datos ficticios)
+Límites: no inventes fechas, plazos ni normas
 Formato: título y tres puntos breves; al final, qué hay que verificar`,
-  salidaB: `Nuevo horario de Mesa de Entradas
+  salidaB: `Feria de enero en el Tribunal
 
-• Desde el lunes 3 de noviembre, Mesa de Entradas atiende de 8 a 13.
-• Días de atención: [completar: ¿de lunes a viernes?]
-• Presentaciones fuera de horario: [completar según la norma vigente]
+• Del 2 al 31 de enero el Tribunal está en feria y los plazos se suspenden.
+• Mesa de entradas atiende una guardia de 8 a 12.
+• Norma que dispone la feria: [completar con la acordada o resolución vigente]
 
-Para verificar antes de publicar: la fecha de inicio, el horario y qué pasa con lo presentado fuera de hora.`,
+Para verificar antes de publicar: las fechas de la feria, el horario de la guardia y la norma que la dispone.`,
 };
 
 /** Qué conviene mirar al comparar el ejemplo preparado (lo dice el docente). */
 export const TF2_A2_EJEMPLO_MARCAS = [
-  "La primera inventó un horario (7:30 a 14) y una regla sobre presentaciones fuera de hora.",
-  "La segunda usó solo el dato que le dimos y dejó entre corchetes lo que no sabía.",
+  "La primera inventó las fechas, dijo que no se reciben escritos y firmó como «La Presidencia».",
+  "La segunda usó solo los datos que le dimos y dejó entre corchetes la norma que no conocía.",
   "Ninguna de las dos está verificada: la mejora es que ahora se puede controlar.",
 ];
 

@@ -25,6 +25,7 @@ import {
   camposVacios,
   getTf2Actividad,
   productoFinal,
+  textoPlano,
   TF2_A2_CAMBIOS,
   TF2_A2_CAMPOS,
   TF2_A2_EJEMPLO,
@@ -261,7 +262,7 @@ function Salida({ texto, de = "ia", className }: { texto: string; de?: "ia" | "p
         className,
       )}
     >
-      {texto.replace(/\*\*/g, "")}
+      {de === "ia" ? textoPlano(texto) : texto}
     </div>
   );
 }
@@ -886,7 +887,7 @@ function HumanoA4({ slug, previa, revelado, onGuardado }: PropsAct & { previa?: 
 /** Pantallas del asistente: la tarea va con su propósito; después, la instrucción, la prueba y la ficha. */
 const PANTALLAS_CAMPOS = TF2_CAMPOS.filter((c) => !c.junto);
 const MATERIAL_EJEMPLO =
-  "Listado ficticio de pendientes: 1) reclamo por demora en una notificación; 2) pedido de copia de un escrito; 3) consulta por el nuevo horario; 4) falta firma en una presentación; 5) llamado de otra área por un informe.";
+  "Listado ficticio de expedientes: Expte. 101/2026, recurso contra una multa, notificado el 2/10; Expte. 115/2026, ingresos brutos, falta el informe de Rentas; Expte. 120/2026, sellos, venció el traslado; Expte. 131/2026, pedido de copias del contribuyente; Expte. 140/2026, recurso presentado sin firma del apoderado.";
 
 function DesafioA5({ slug, previa, onGuardado }: PropsAct & { previa?: Tf2A5 }) {
   const clave = `${slug}-a5`;
@@ -1002,7 +1003,7 @@ function DesafioA5({ slug, previa, onGuardado }: PropsAct & { previa?: Tf2A5 }) 
           <Rotulo>Material de prueba (solo ficticio)</Rotulo>
           <Campo valor={material} onCambio={setMaterial} placeholder="Pegá o escribí un ejemplo inventado…" filas={5} max={1500} />
           <div className="flex flex-wrap gap-2">
-            <Chip onClick={() => setMaterial(MATERIAL_EJEMPLO)}>+ usar un listado ficticio</Chip>
+            <Chip onClick={() => setMaterial(MATERIAL_EJEMPLO)}>+ usar un listado ficticio de expedientes</Chip>
             <Chip onClick={() => setMaterial("")}>sin material: que invente uno marcado</Chip>
           </div>
           <SoloFicticios />

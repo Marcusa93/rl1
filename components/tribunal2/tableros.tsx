@@ -36,6 +36,7 @@ import {
   TF2_RECAP,
   TF2_TEXTO_HUMANO_PENDIENTE,
   TF2_PROXIMA,
+  textoPlano,
   type Tf2A2,
   type Tf2A5,
   type Tf2ActKey,
@@ -209,7 +210,7 @@ function PreviaCelular({ act }: { act: Tf2ActKey }) {
               ))}
             </div>
             <span className="tf2-rotulo text-[10px] text-tf2-gris">1 · Tarea concreta</span>
-            <span className="tf2-mono block rounded-[10px] border border-tf2-linea bg-white px-3 py-3 text-[14px] text-tf2-gris">preparar una lista de…</span>
+            <span className="tf2-mono block rounded-[10px] border border-tf2-linea bg-white px-3 py-3 text-[14px] text-tf2-gris">ordenar los expedientes de…</span>
             <BotonPrevia>Siguiente</BotonPrevia>
           </>
         )}
@@ -415,7 +416,7 @@ function ColumnaPar({ k, pedido, salida, tono, r }: { k: string; pedido?: string
         <span className="line-clamp-6 whitespace-pre-line">{pedido || "—"}</span>
       </Ficha>
       <Hoja className="relative -mt-2 ml-8 max-h-[340px] overflow-hidden p-6">
-        <p className="whitespace-pre-line text-[19px] leading-[1.45]">{salida || "(sin salida)"}</p>
+        <p className="whitespace-pre-line text-[19px] leading-[1.45]">{salida ? textoPlano(salida) : "(sin salida)"}</p>
         <span className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-tf2-hoja to-transparent" />
       </Hoja>
     </div>
@@ -481,7 +482,7 @@ function SalidaA3({ k, texto, r, votos, total, planB }: { k: "A" | "B"; texto: s
             </Sello>
           )}
         </div>
-        <p className="whitespace-pre-line text-[18px] leading-[1.42] text-tf2-tinta">{texto.replace(/\*\*/g, "")}</p>
+        <p className="whitespace-pre-line text-[18px] leading-[1.42] text-tf2-tinta">{textoPlano(texto)}</p>
         <span className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-tf2-hoja to-transparent" />
       </Hoja>
     </div>
@@ -645,10 +646,15 @@ export function TableroA5({ slug, intervalo, planB }: { slug: string; intervalo:
 const FICHA_EJEMPLO: Tf2A5 = {
   campos: Object.fromEntries(TF2_CAMPOS.map((c) => [c.id, c.ejemplo])),
   version: 2,
-  prueba: { material: "listado ficticio", salida: "Tabla con 6 pendientes agrupados por tema; dos marcados como «dato faltante»; al final, lista de fechas y áreas a verificar.", t: Date.UTC(2026, 9, 23, 13, 40), perfil: "A" },
-  controles: { Nombres: "verificado", Fechas: "verificado", Montos: "no aplica", Normas: "no aplica", Citas: "pendiente", Cálculos: "no aplica" },
-  correcciones: "se quitó un pendiente que no estaba en el listado",
-  responsable: "jefatura de mesa de entradas",
+  prueba: {
+    material: "listado ficticio de expedientes",
+    salida: "Tabla con 5 expedientes agrupados por vocalía; dos marcados «dato faltante»; al final, números de expediente y fechas a verificar.",
+    t: Date.UTC(2026, 9, 23, 13, 40),
+    perfil: "A",
+  },
+  controles: { Nombres: "verificado", Fechas: "pendiente", Montos: "no aplica", Normas: "no aplica", Citas: "no aplica", Cálculos: "no aplica" },
+  correcciones: "se quitó un expediente que no estaba en el listado",
+  responsable: "secretaría del Tribunal",
 };
 
 export function Huellas({ slug, moderacion, onCambiar }: { slug: string; moderacion: Moderacion; onCambiar: (c: CambioModeracion) => void }) {

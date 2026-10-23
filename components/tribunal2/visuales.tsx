@@ -144,23 +144,23 @@ function Contexto() {
       <Pieza x={170} y={20} w={560} r={-2} d={80}>
         <Cinta x={-30} y={18} r={-40} w={110} />
         <Ficha rotulo="La misma consigna" tam={36}>
-          Avisá que llegás tarde.
+          Resumí este expediente.
         </Ficha>
       </Pieza>
       <Pieza i={0} label="Situación 1" x={0} y={300} w={430} r={-4}>
         <Ficha rotulo="Situación 1" tono="salvia" tam={24}>
-          a una amiga · por mensaje · son diez minutos
+          para la vocalía · antes del acuerdo · agravios, prueba y estado
         </Ficha>
-        <Mano className="mt-4 block pl-4" tam={42}>
-          «¡Llego en 10, pidan sin mí!»
+        <Mano className="mt-4 block pl-4" tam={40}>
+          «Expte. 101/26: tres agravios; falta el informe de Rentas»
         </Mano>
       </Pieza>
       <Pieza i={1} label="Situación 2" x={450} y={380} w={430} r={3}>
         <Ficha rotulo="Situación 2" tono="azul" tam={24}>
-          a una audiencia · por escrito · hace falta el motivo
+          para el contribuyente en mesa de entradas · lenguaje claro · sin anticipar la decisión
         </Ficha>
-        <Mano className="mt-4 block pl-4" tono="azul" tam={42}>
-          «Solicito se tenga presente la demora por…»
+        <Mano className="mt-4 block pl-4" tono="azul" tam={40}>
+          «Su recurso está en trámite; le informaremos…»
         </Mano>
       </Pieza>
     </>
@@ -174,12 +174,12 @@ function Instruir() {
     <>
       <Pieza i={0} label="Un pedido vago" x={0} y={40} w={430} r={-4}>
         <Hoja className="pb-10">
-          <p className="tf2-serif text-[44px] leading-tight">¿Me hacés un informe?</p>
+          <p className="tf2-serif text-[42px] leading-tight">¿Me hacés un resumen del expediente?</p>
         </Hoja>
         <div className="mt-6 grid gap-2 pl-6">
+          <Mano tam={36}>¿para la vocalía o para el contribuyente?</Mano>
           <Mano tam={36}>¿de qué extensión?</Mano>
-          <Mano tam={36}>¿para quién?</Mano>
-          <Mano tam={36}>¿con qué datos?</Mano>
+          <Mano tam={36}>¿con qué piezas?</Mano>
         </div>
         <div className="absolute -right-[60px] -top-[34px] rotate-[8deg]">
           <Sello tam={22}>Decide la IA</Sello>
@@ -188,9 +188,9 @@ function Instruir() {
       <Pieza i={1} label="Una instrucción" x={400} y={300} w={480} r={2}>
         <Cinta x="30%" y={-14} />
         <Ficha rotulo="Instrucción" tono="hoja" tam={22}>
-          <b className="text-tf2-rojo">Qué hacer:</b> resumí los pendientes de la semana.
+          <b className="text-tf2-rojo">Qué hacer:</b> resumí el estado del Expte. 101/2026 (ficticio).
           <br />
-          <b className="text-tf2-rojo">Condiciones:</b> para la jefatura · una página · solo con el listado adjunto · marcá lo que falte.
+          <b className="text-tf2-rojo">Condiciones:</b> para la vocalía · una página · solo con las piezas adjuntas · marcá plazos y lo que falte.
         </Ficha>
       </Pieza>
     </>
@@ -198,13 +198,13 @@ function Instruir() {
 }
 
 const CAPAS = [
-  { k: "Rol funcional", t: "Actuá como asistente de apoyo administrativo.", c: "bg-tf2-salvia" },
-  { k: "Tarea", t: "Prepará un aviso sobre el nuevo horario.", c: "bg-tf2-azul" },
-  { k: "Contexto", t: "Lo lee el público de mesa de entradas.", c: "bg-tf2-ocre" },
-  { k: "Fuentes", t: "Usá solo los datos que te pego abajo.", c: "bg-tf2-musgo" },
-  { k: "Límites", t: "No inventes fechas, horarios ni normas.", c: "bg-tf2-rojo" },
-  { k: "Formato", t: "Título y tres puntos breves.", c: "bg-tf2-cobre" },
-  { k: "Criterios de control", t: "Al final, listá qué hay que verificar.", c: "bg-tf2-tinta" },
+  { k: "Rol funcional", t: "Actuá como asistente de la mesa de entradas del Tribunal.", c: "bg-tf2-salvia" },
+  { k: "Tarea", t: "Respondé a un contribuyente que pregunta por su recurso.", c: "bg-tf2-azul" },
+  { k: "Contexto", t: "No tiene formación jurídica ni contable.", c: "bg-tf2-ocre" },
+  { k: "Fuentes", t: "Usá solo los datos del expediente que te pego.", c: "bg-tf2-musgo" },
+  { k: "Límites", t: "No anticipes la decisión ni inventes plazos.", c: "bg-tf2-rojo" },
+  { k: "Formato", t: "Trato de usted, tres párrafos breves.", c: "bg-tf2-cobre" },
+  { k: "Criterios de control", t: "Al final, listá qué datos hay que verificar.", c: "bg-tf2-tinta" },
 ];
 
 function Anatomia() {
@@ -247,47 +247,47 @@ function Iteracion() {
             v1 · probar
           </Sello>
           <p className="tf2-mono mt-5 text-[23px] leading-[1.6]">
-            Se informa que a partir del lunes cambia el horario. Nuevo horario: <Circulo i={1}>7:30 a 14 h</Circulo>. Lo presentado fuera de hora <Circulo i={1}>ingresa al día siguiente</Circulo>.
+            Se informa que a partir del lunes cambia el horario de mesa de entradas: <Circulo i={1}>de 7:30 a 14 h</Circulo>. Los escritos fuera de hora <Circulo i={1}>podrán presentarse en las dos primeras horas del día siguiente</Circulo>.
           </p>
         </Hoja>
       </Pieza>
       <Pieza i={1} label="Revisar" x={330} y={-10} r={-4} z={5}>
         <Mano tam={42}>¡inventó el horario!</Mano>
       </Pieza>
-      <Pieza i={1} x={0} y={360} r={-2} z={5}>
-        <Mano tam={38}>¿qué lunes? ¿y esa regla de dónde sale?</Mano>
+      <Pieza i={1} x={0} y={440} r={-2} z={5}>
+        <Mano tam={38}>¿qué lunes? ¿y ese plazo de gracia de dónde sale?</Mano>
       </Pieza>
-      <Pieza i={2} label="Ajustar" x={360} y={450} w={500} r={2}>
+      <Pieza i={2} label="Ajustar" x={360} y={520} w={500} r={2}>
         <Hoja>
           <Sello tono="musgo" tam={20}>
             v2 · ajustar
           </Sello>
-          <p className="tf2-mono mt-5 text-[23px] leading-[1.6]">Desde el lunes 3 de noviembre, mesa de entradas atiende de 8 a 13.</p>
+          <p className="tf2-mono mt-5 text-[23px] leading-[1.6]">Desde el lunes 3 de noviembre, mesa de entradas del Tribunal recibe escritos de 8 a 13.</p>
         </Hoja>
         <Mano className="mt-3 block pl-6" tono="azul" tam={36}>
           ajuste: «usá solo estos datos»
         </Mano>
       </Pieza>
       <Pieza i={2} x={0} y={0} z={1}>
-        <Traza w={880} h={820} d="M200 420 C 200 520, 260 580, 350 590" demora={200} />
+        <Traza w={880} h={820} d="M220 500 C 230 580, 280 630, 350 640" demora={200} />
       </Pieza>
     </>
   );
 }
 
 const ETAPAS = [
-  { n: "1", k: "Inventario", t: "¿qué tenemos? listar el material" },
-  { n: "2", k: "Preguntas", t: "¿qué falta saber?" },
-  { n: "3", k: "Opciones", t: "caminos posibles y sus costos" },
-  { n: "4", k: "Comprobaciones", t: "¿cómo verificamos cada dato?" },
+  { n: "1", k: "Inventario", t: "qué piezas hay: recurso, resolución, descargo" },
+  { n: "2", k: "Preguntas", t: "¿se contestó el traslado? ¿falta prueba?" },
+  { n: "3", k: "Opciones", t: "pedir informe a Rentas o pasar a la vocalía" },
+  { n: "4", k: "Comprobaciones", t: "fechas de notificación, plazos y montos" },
 ];
 
 function Dividir() {
   return (
     <>
       <Pieza x={560} y={0} w={560} r={-1} d={60}>
-        <Ficha rotulo="Objetivo" tam={32}>
-          Preparar un informe
+        <Ficha rotulo="Objetivo" tam={28}>
+          Preparar el informe de un expediente para el acuerdo
         </Ficha>
       </Pieza>
       <Pieza x={0} y={0} z={0}>
@@ -310,16 +310,16 @@ function Dividir() {
 
 function Discutir() {
   const pasos = [
-    { k: "Objeción", t: "El aviso no dice desde cuándo rige." },
-    { k: "Contraargumento", t: "Quizá convenga no publicar el horario hasta confirmarlo." },
-    { k: "Pregunta pendiente", t: "¿Qué pasa con lo que se presenta fuera de hora?" },
+    { k: "Objeción", t: "No dice qué expediente consultaste ni cómo seguir el trámite." },
+    { k: "Contraargumento", t: "Quizá no convenga dar una fecha estimada de resolución." },
+    { k: "Pregunta pendiente", t: "¿Quien consulta es el contribuyente, su apoderado o un tercero?" },
   ];
   return (
     <>
       <Pieza x={20} y={0} w={840} d={60}>
         <Monitor rotulo="microdemo · adversarial">
           <div className="grid gap-3">
-            <Burbuja de="persona">Este es mi borrador del aviso. Objetalo.</Burbuja>
+            <Burbuja de="persona">Este es mi borrador de respuesta al contribuyente. Objetalo.</Burbuja>
             {pasos.map((p, i) => (
               <Paso key={p.k} i={i} label={p.k}>
                 <Burbuja de="ia">
@@ -347,7 +347,7 @@ function Reusar() {
         {[0, 1, 2].map((k) => (
           <div key={k} className="absolute w-[400px]" style={{ left: k * 18, top: k * 120, rotate: `${-4 + k * 3}deg` }}>
             <Hoja className="p-5">
-              <p className="tf2-mono text-[20px] leading-snug text-tf2-grafito">Te explico de nuevo: trabajo en mesa de entradas, escribí claro, sin tecnicismos…</p>
+              <p className="tf2-mono text-[20px] leading-snug text-tf2-grafito">Te explico de nuevo: trabajo en el Tribunal Fiscal, le escribo a contribuyentes, sin tecnicismos…</p>
             </Hoja>
           </div>
         ))}
@@ -394,15 +394,15 @@ function Memoria() {
       t: "lo que la herramienta guarda de conversaciones",
       o: (
         <div className="relative h-[230px]">
-          {["prefiere tablas", "trabaja en mesa de entradas", "no usar siglas"].map((n, k) => (
-            <span key={n} className="tf2-objeto tf2-mano absolute w-[230px] bg-[#efe0b5] px-4 py-3 text-[30px] leading-tight text-tf2-tinta" style={{ left: k * 46, top: k * 78, rotate: `${-5 + k * 5}deg` }}>
+          {["cita «Expte. N.º/año»", "trabaja en la secretaría", "explicar las siglas (DGR)"].map((n, k) => (
+            <span key={n} className="tf2-objeto tf2-mano absolute w-[250px] bg-[#efe0b5] px-4 py-2.5 text-[27px] leading-tight text-tf2-tinta" style={{ left: k * 40, top: k * 92, rotate: `${-4 + k * 4}deg` }}>
               {n}
             </span>
           ))}
         </div>
       ),
     },
-    { k: "Proyectos", t: "un espacio con su propio contexto", o: <Carpeta w={330} rotulo="Proyecto · avisos" /> },
+    { k: "Proyectos", t: "un espacio con su propio contexto", o: <Carpeta w={330} rotulo="Proyecto · mesa de entradas" /> },
     {
       k: "Archivos",
       t: "documentos que consulta",
@@ -471,10 +471,10 @@ function Ecosistemas() {
 
 function FueraExpediente() {
   const fuentes = [
-    { k: "Glosarios", x: 0, y: 0, r: -5 },
-    { k: "Normativa publicada", x: 560, y: 20, r: 4 },
-    { k: "Doctrina", x: 10, y: 560, r: 3 },
-    { k: "Precedentes públicos", x: 540, y: 600, r: -4 },
+    { k: "Código Tributario provincial", x: 0, y: 0, r: -5 },
+    { k: "Resoluciones generales de Rentas", x: 560, y: 20, r: 4 },
+    { k: "Glosario tributario", x: 10, y: 560, r: 3 },
+    { k: "Sentencias publicadas", x: 540, y: 600, r: -4 },
   ];
   return (
     <>
@@ -528,7 +528,7 @@ function Fuente() {
     <>
       <Pieza x={0} y={20} w={600} r={-1.5} d={60}>
         <Monitor rotulo="respuesta del chatbot">
-          <Burbuja de="ia">Según el art. 87 del Código Tributario, el plazo es de 15 días hábiles.</Burbuja>
+          <Burbuja de="ia">Según el art. 87 del Código Tributario, el plazo para apelar ante el Tribunal es de 15 días hábiles.</Burbuja>
         </Monitor>
         <span className="tf2-rotulo absolute -bottom-[34px] left-[20px] text-[12px] text-tf2-gris">ejemplo ficticio</span>
       </Pieza>
@@ -561,11 +561,11 @@ function Fuente() {
 }
 
 const CONTROLES = [
-  { k: "Fechas", dato: "3/11/2026", origen: "correo de la jefatura", ubic: "expte. ficticio, f. 12", ok: true },
-  { k: "Montos", dato: "$ 1.250.000", origen: "planilla ficticia", ubic: "hoja 2, celda C7", ok: false },
-  { k: "Nombres", dato: "Área de Notificaciones", origen: "organigrama", ubic: "sitio oficial", ok: true },
+  { k: "Fechas", dato: "notificado el 3/11/2026", origen: "cédula", ubic: "expte. ficticio, fs. 12", ok: true },
+  { k: "Montos", dato: "ajuste de $ 1.250.000", origen: "resolución de Rentas", ubic: "fs. 40", ok: false },
+  { k: "Nombres", dato: "Vocalía N.º 2", origen: "organigrama", ubic: "sitio oficial", ok: true },
   { k: "Normas", dato: "art. [N] del Código", origen: "respuesta de la IA", ubic: "sin ubicar", ok: false },
-  { k: "Citas", dato: "«…» de un precedente", origen: "respuesta de la IA", ubic: "sin ubicar", ok: false },
+  { k: "Citas", dato: "«…» de una sentencia", origen: "respuesta de la IA", ubic: "sin ubicar", ok: false },
   { k: "Cálculos", dato: "intereses $ 84.300", origen: "cálculo de la IA", ubic: "rehacer en planilla", ok: false },
 ];
 
@@ -603,11 +603,11 @@ function Verificar() {
 
 function Historia() {
   const filas = [
-    { k: "Prompt", v: "«Actuá como asistente de apoyo administrativo…»", s: "23 OCT" },
+    { k: "Prompt", v: "«Actuá como asistente de la secretaría del Tribunal…»", s: "23 OCT" },
     { k: "Versión", v: "v3 (antes: v1 y v2)", s: "23 OCT" },
     { k: "Fecha", v: "23/10/2026 · 10:42", s: "23 OCT" },
-    { k: "Fuentes", v: "listado ficticio · sitio oficial", s: "24 OCT" },
-    { k: "Correcciones", v: "se quitó un horario inventado", s: "24 OCT" },
+    { k: "Fuentes", v: "listado ficticio de expedientes · sitio oficial", s: "24 OCT" },
+    { k: "Correcciones", v: "se quitó un plazo inventado", s: "24 OCT" },
   ];
   return (
     <Pieza x={20} y={10} w={840} r={-1.5} d={60}>
@@ -663,9 +663,9 @@ function Formato() {
             <span>Duda</span>
           </div>
           {[
-            ["Horario de 8 a 13", "correo de la jefatura", "¿desde qué día?"],
-            ["De lunes a viernes", "—", "confirmar"],
-            ["Fuera de horario", "—", "¿qué norma rige?"],
+            ["Traslado a Rentas", "providencia de fs. 20", "¿se notificó?"],
+            ["Vencimiento del plazo", "cálculo propio", "¿hay días inhábiles?"],
+            ["Monto recurrido", "resolución (ficticia)", "¿incluye intereses?"],
           ].map(([a, b, c]) => (
             <div key={a} className="tf2-mono grid grid-cols-[1.3fr_1fr_1fr] gap-4 border-t border-tf2-linea px-7 py-3 text-[21px]">
               <span>{a}</span>
@@ -720,7 +720,7 @@ function Estilo() {
         {[0, 1, 2].map((k) => (
           <div key={k} className="absolute w-[320px]" style={{ left: k * 20, top: k * 70, rotate: `${-5 + k * 4}deg` }}>
             <Hoja className="grid gap-2.5 p-5">
-              <Rot>texto propio {k + 1}</Rot>
+              <Rot>nota propia {k + 1}</Rot>
               <Renglon />
               <Renglon w="88%" />
               <Renglon w="70%" />
@@ -728,7 +728,7 @@ function Estilo() {
           </div>
         ))}
         <Mano className="absolute left-[40px] top-[350px]" tam={40}>
-          tus ejemplos
+          tus notas como ejemplo
         </Mano>
       </Pieza>
       <Pieza i={1} label="Borrador con tu tono" x={470} y={150} w={400} r={2}>
