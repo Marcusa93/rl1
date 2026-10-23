@@ -20,7 +20,7 @@ export default function TribunalControlPage() {
         slug={TF2_SLUG}
         titulos={TITULOS}
         nombre={`Tribunal Fiscal · Clase 2`}
-        panel={(e) => <PanelTf2 idx={e.idx} />}
+        panel={(e) => <PanelTf2 idx={e.idx} total={e.total} />}
         vista={(e) => <VistaParticipante2 idx={e.idx} abiertas={(e.botones ?? []).filter((b) => b.activo).map((b) => b.label)} />}
       />
     </AccesoDocente>

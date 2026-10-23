@@ -29,6 +29,8 @@ export interface EstadoRemoto {
 export interface PlacaVivo {
   idx: number;
   abiertas: string[];
+  /** Cuántas pantallas tiene la presentación que se proyecta (para detectar una versión vieja abierta). */
+  total?: number;
 }
 
 export type CmdRemoto =

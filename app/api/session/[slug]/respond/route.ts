@@ -2,6 +2,7 @@ import { fail, getSession, ok } from "@/lib/api";
 import { getAdmin } from "@/lib/supabase/server";
 import { getParticipantId } from "@/lib/participant";
 import { BBVA_SLUG, HIPOTESIS_ITEM } from "@/lib/bbva-clase";
+import { tf2Habilitada, TF2_SLUG } from "@/lib/tribunal-clase2";
 
 export async function POST(
   req: Request,
@@ -33,6 +34,11 @@ export async function POST(
     activity !== "bbva2_a6"
   )
     return fail("Esta actividad ya está cerrada", 409);
+
+  // Tribunal Fiscal · clase 2: nadie se adelanta. Solo se responde la actividad que abrió la
+  // presentación y las anteriores (para terminar); con la actividad cerrada, ninguna.
+  if (slug === TF2_SLUG && activity.startsWith("tf2_") && !tf2Habilitada(activity, session.current_activity))
+    return fail("Esta actividad todavía no está habilitada desde la presentación", 409);
 
   // Respuesta tocada antes de un "Reiniciar actividad" que ese celular todavía no vio:
   // no puede revivir lo que se acaba de borrar. (Las apps viejas no mandan la marca.)

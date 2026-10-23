@@ -27,7 +27,7 @@ export async function GET(
 
   const estado = fila?.activity_config?.estado as EstadoRemoto | undefined;
   const placa: PlacaVivo | null = estado
-    ? { idx: estado.idx, abiertas: (estado.botones ?? []).filter((b) => b.activo).map((b) => b.label) }
+    ? { idx: estado.idx, total: estado.total, abiertas: (estado.botones ?? []).filter((b) => b.activo).map((b) => b.label) }
     : null;
 
   const names = (rows ?? []).map((r) => r.name as string);

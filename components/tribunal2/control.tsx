@@ -14,11 +14,19 @@ import { MAX_DESTACADAS } from "@/lib/moderacion";
 import { getTf2Actividad, TF2_ACTIVIDADES, TF2_SLIDES, TF2_SLUG, type Tf2A2, type Tf2A5 } from "@/lib/tribunal-clase2";
 import { cn } from "@/lib/utils";
 
-export function PanelTf2({ idx, slug = TF2_SLUG }: { idx: number; slug?: string }) {
+export function PanelTf2({ idx, total, slug = TF2_SLUG }: { idx: number; total?: number; slug?: string }) {
   const slide = TF2_SLIDES[idx];
   const act = slide?.t === "placa" ? slide.actividad : undefined;
   const num = slide?.t === "placa" ? slide.num : "";
   const { moderacion, cambiar } = useModeracion2(slug, 2000);
+
+  if (total && total !== TF2_SLIDES.length)
+    return (
+      <div className="rounded-2xl border-2 border-magenta bg-magenta/10 p-4">
+        <p className="text-base font-bold text-magenta">⚠ La presentación del proyector es de otra versión</p>
+        <p className="mt-1 text-sm">Recargala en la compu (F5) y recargá también este control: hasta entonces, «ir a…» no coincide con lo que se proyecta.</p>
+      </div>
+    );
 
   return (
     <div className="grid gap-3">

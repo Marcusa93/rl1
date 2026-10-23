@@ -608,6 +608,15 @@ export function getTf2Actividad(key: string): Tf2Actividad | undefined {
   return TF2_ACTIVIDADES.find((a) => a.key === key);
 }
 
+/**
+ * ¿La presentación ya habilitó esta actividad? Solo la abierta y las anteriores
+ * (quien llegó tarde puede terminar). Con la actividad cerrada ("lobby"), ninguna.
+ */
+export function tf2Habilitada(activity: string, actual: string): boolean {
+  const n = getTf2Actividad(activity)?.numero ?? 0;
+  return n > 0 && n <= (getTf2Actividad(actual)?.numero ?? 0);
+}
+
 /** Para el motor genérico (resultados agregados): solo las que tienen forma estándar. */
 export function getTf2Vivo(key: string): ActividadVivo | undefined {
   return getTf2Actividad(key)?.vivo;

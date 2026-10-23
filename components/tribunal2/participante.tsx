@@ -46,6 +46,7 @@ import {
   TF2_TOTAL_PLACAS,
   numPlaca,
   TF2_TEXTO_HUMANO_PENDIENTE,
+  tf2Habilitada,
   type Tf2A2,
   type Tf2A5,
   type Tf2ActKey,
@@ -294,7 +295,9 @@ export function SeguimientoTf2({
 }) {
   const { mias, cargadas, guardarLocal } = useMias(slug);
   const abiertas = placa?.abiertas ?? [];
-  const slide = placa ? TF2_SLIDES[placa.idx] : undefined;
+  // Si en el proyector quedó abierta otra versión de la presentación, su número de placa no sirve acá.
+  const misma = !placa?.total || placa.total === TF2_SLIDES.length;
+  const slide = placa && misma ? TF2_SLIDES[placa.idx] : undefined;
   const actual = getTf2Actividad(session.current_activity);
   const alFinal = slide?.t === "recapitulacion" || (slide?.t === "placa" && Number(slide.num) >= 30);
   const proyectaActividad = slide?.t === "placa" && slide.actividad === actual?.key;
@@ -318,7 +321,7 @@ export function SeguimientoTf2({
 
       {alFinal && (
         <Blindaje>
-          <Final slug={slug} mias={mias} onGuardado={guardarLocal} />
+          <Final slug={slug} mias={mias} onGuardado={guardarLocal} desafioAbierto={tf2Habilitada("tf2_a5", session.current_activity)} />
         </Blindaje>
       )}
 
@@ -1161,7 +1164,7 @@ function Producto({ d, onEditar }: { d: Tf2A5; onEditar?: () => void }) {
 
 // --- Final: recapitulación y producto -------------------------------------------------------------
 
-function Final({ slug, mias, onGuardado }: { slug: string; mias: Mias; onGuardado: PropsAct["onGuardado"] }) {
+function Final({ slug, mias, onGuardado, desafioAbierto }: { slug: string; mias: Mias; onGuardado: PropsAct["onGuardado"]; desafioAbierto: boolean }) {
   const a5 = mias.tf2_a5 as unknown as Tf2A5 | undefined;
   const [armar, setArmar] = useState(false);
   return (
@@ -1178,8 +1181,12 @@ function Final({ slug, mias, onGuardado }: { slug: string; mias: Mias; onGuardad
         <Tarjeta>
           <DesafioA5 slug={slug} onGuardado={onGuardado} />
         </Tarjeta>
-      ) : (
+      ) : desafioAbierto ? (
         <Boton onClick={() => setArmar(true)}>Armar mi instrucción ahora</Boton>
+      ) : (
+        <Tarjeta>
+          <p className="text-[15px] text-tf2-grafito">El desafío final se habilita desde la presentación.</p>
+        </Tarjeta>
       )}
       <Tarjeta>
         <Rotulo>Recapitulación</Rotulo>
