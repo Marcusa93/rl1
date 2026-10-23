@@ -43,6 +43,8 @@ import {
   TF2_REVELA_A4,
   TF2_SLIDES,
   TF2_SLUG,
+  TF2_TOTAL_PLACAS,
+  numPlaca,
   TF2_TEXTO_HUMANO_PENDIENTE,
   type Tf2A2,
   type Tf2A5,
@@ -364,7 +366,9 @@ function PlacaActual({ slide }: { slide: (typeof TF2_SLIDES)[number] }) {
   return (
     <div className="tf2-sube mb-5">
       <div className="flex items-center gap-3">
-        <span className="tf2-mono text-[13px] text-tf2-gris">{slide.num} / 31</span>
+        <span className="tf2-mono text-[13px] text-tf2-gris">
+          {numPlaca(slide)} / {TF2_TOTAL_PLACAS}
+        </span>
         {slide.curva && <span className="tf2-rotulo text-[10px] text-tf2-rojo">↻ giro</span>}
       </div>
       <p className="tf2-titular mt-1.5 text-[30px] leading-[1.02]">{slide.titulo}</p>

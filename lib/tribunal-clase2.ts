@@ -34,13 +34,14 @@ export interface Tf2Bloque {
   minutos: number;
 }
 
+/** Minutos de la versión de 80 (el guion completo: 12 · 26 · 20 · 24 · 18 · 20 = 120). */
 export const TF2_BLOQUES: Tf2Bloque[] = [
-  { nombre: "El problema de entendernos", minutos: 12 },
-  { nombre: "Aprender a dar instrucciones", minutos: 26 },
-  { nombre: "Una IA que conoce nuestro trabajo", minutos: 20 },
-  { nombre: "Fuentes, datos y trazabilidad", minutos: 24 },
-  { nombre: "De la respuesta al documento", minutos: 18 },
-  { nombre: "Hacia las tareas complejas", minutos: 20 },
+  { nombre: "El problema de entendernos", minutos: 11 },
+  { nombre: "Aprender a dar instrucciones", minutos: 20 },
+  { nombre: "Una IA que conoce nuestro trabajo", minutos: 9 },
+  { nombre: "Fuentes, datos y trazabilidad", minutos: 9 },
+  { nombre: "De la respuesta al documento", minutos: 9 },
+  { nombre: "Hacia las tareas complejas", minutos: 22 },
 ];
 
 // --- Chatbot de la clase: dos perfiles comparables ---------------------------------------------
@@ -661,13 +662,16 @@ export interface Tf2Placa {
   actividad?: Tf2ActKey;
   /** Placa de curva: frase de síntesis en texto circular (solo 11, 16, 22 y 27). */
   curva?: string;
+  /** Número en la versión que se proyecta (el `num` es el del guion completo). */
+  pos?: string;
 }
 
 export type Tf2Slide = Tf2Placa | { t: "ingreso"; bloque: number } | { t: "recapitulacion"; bloque: number };
 
 const P = (p: Omit<Tf2Placa, "t">): Tf2Placa => ({ t: "placa", ...p });
 
-export const TF2_SLIDES: Tf2Slide[] = [
+/** Las 31 placas del guion completo (120 minutos), en orden. */
+export const TF2_SLIDES_GUION: Tf2Slide[] = [
   { t: "ingreso", bloque: 0 },
 
   // --- Bloque 1 · El problema de entendernos (12 min)
@@ -972,12 +976,33 @@ export const TF2_SLIDES: Tf2Slide[] = [
   { t: "recapitulacion", bloque: 5 },
 ];
 
+/**
+ * Versión de 80 minutos (pedido de Marco, 23/10/2026): se omiten estas placas del
+ * guion y quedan 19. Las cinco actividades y una placa por cada contenido del
+ * programa (estructura, fragmentación, revisión, verificación, trazabilidad y
+ * plantilla) se conservan enteras. Para volver al guion completo, vaciar la lista.
+ */
+export const TF2_OMITIDAS = ["04", "05", "10", "13", "14", "16", "17", "19", "23", "25", "27", "28"];
+
+const EN_CLASE = TF2_SLIDES_GUION.filter((s) => s.t !== "placa" || !TF2_OMITIDAS.includes(s.num));
+
+/** Lo que se proyecta, en orden; las placas llevan su número en esta versión (`pos`). */
+export const TF2_SLIDES: Tf2Slide[] = EN_CLASE.map((s) =>
+  s.t === "placa" ? { ...s, pos: String(EN_CLASE.filter((x) => x.t === "placa").indexOf(s) + 1).padStart(2, "0") } : s,
+);
+
+/** Cuántas placas tiene la versión que se proyecta. */
+export const TF2_TOTAL_PLACAS = EN_CLASE.filter((s) => s.t === "placa").length;
+
+/** Número visible de una placa en esta versión. */
+export const numPlaca = (p: Tf2Placa) => p.pos ?? p.num;
+
 /** Etiqueta corta de cada pantalla (índice del control remoto). */
 export function tituloTf2(s: Tf2Slide): string {
   if (s.t === "ingreso") return "Ingreso con QR";
   if (s.t === "recapitulacion") return "Recapitulación";
   const act = s.actividad ? getTf2Actividad(s.actividad) : undefined;
-  return `${s.num} · ${act ? `📱 ${act.numero} · ` : ""}${s.titulo}`;
+  return `${numPlaca(s)} · ${act ? `📱 ${act.numero} · ` : ""}${s.titulo}`;
 }
 
 // --- Configuración para el motor de clase en vivo -----------------------------------------------

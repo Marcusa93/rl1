@@ -52,6 +52,8 @@ import {
   TF2_SLIDES,
   TF2_SLUG,
   TF2_TITULO,
+  TF2_TOTAL_PLACAS,
+  numPlaca,
   tituloTf2,
   type Tf2ActKey,
   type Tf2Placa,
@@ -385,7 +387,7 @@ function Membrete({ slide, idx, total }: { slide: Tf2Slide; idx: number; total: 
             Bloque {slide.bloque + 1} · {bloque.nombre}
           </span>
         )}
-        <span className="tabular-nums text-tf2-tinta">{slide.t === "placa" ? `${slide.num} / 31` : `${idx + 1} / ${total}`}</span>
+        <span className="tabular-nums text-tf2-tinta">{slide.t === "placa" ? `${numPlaca(slide)} / ${TF2_TOTAL_PLACAS}` : `${idx + 1} / ${total}`}</span>
       </span>
     </div>
   );
@@ -654,7 +656,7 @@ function Grilla({ actual, onIr, onCerrar }: { actual: number; onIr: (i: number) 
                 )}
               >
                 <span className="tf2-mono flex items-center justify-between text-xs opacity-70">
-                  <span>{s.t === "placa" ? s.num : i + 1}</span>
+                  <span>{s.t === "placa" ? numPlaca(s) : i + 1}</span>
                   {vivo && <span>📱 APP</span>}
                   {curva && <span>↻ giro</span>}
                 </span>
