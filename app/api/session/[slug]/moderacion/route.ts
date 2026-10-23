@@ -1,6 +1,6 @@
 import { fail, ok } from "@/lib/api";
 import { leerFila } from "@/lib/filas";
-import { filaModeracion, type Moderacion } from "@/lib/moderacion";
+import { filaModeracion, MAX_DESTACADAS, type Moderacion } from "@/lib/moderacion";
 import { getAdmin } from "@/lib/supabase/server";
 import { isTeacher } from "@/lib/teacher";
 
@@ -8,6 +8,8 @@ import { isTeacher } from "@/lib/teacher";
 //   GET                                   → { moderacion }
 //   POST { activity, valor, oculta }      → oculta o vuelve a mostrar una palabra/respuesta
 //   POST { activity, proyectar }          → muestra u oculta las respuestas en la pantalla
+//   POST { activity, destacar, destacada } → marca o desmarca una palabra para analizar (hasta tres)
+//   POST { activity, elegida }            → proyecta la respuesta de un participante (id) o ninguna (null)
 //   POST { reiniciar: true }              → borra todo (al reiniciar la sesión después de ensayar)
 
 export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
@@ -40,6 +42,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
       else ocultas.delete(body.valor);
       actual.ocultas = [...ocultas];
     }
+    if (typeof body.destacar === "string" && typeof body.destacada === "boolean") {
+      const destacadas = (actual.destacadas ?? []).filter((d) => d !== body.destacar);
+      if (body.destacada) destacadas.push(body.destacar);
+      actual.destacadas = destacadas.slice(-MAX_DESTACADAS);
+    }
+    if (body.elegida === null || typeof body.elegida === "string") actual.elegida = body.elegida;
     moderacion[activity] = actual;
   }
 

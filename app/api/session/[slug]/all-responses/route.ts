@@ -14,11 +14,12 @@ export async function GET(
   const db = getAdmin();
   const { data } = await db
     .from("responses")
-    .select("activity, item_key, payload, created_at, updated_at, participants(name)")
+    .select("participant_id, activity, item_key, payload, created_at, updated_at, participants(name)")
     .eq("session_id", session.id)
     .order("created_at", { ascending: true });
 
   const rows = ((data ?? []) as unknown as Array<{
+    participant_id: string;
     activity: string;
     item_key: string;
     payload: unknown;
@@ -28,6 +29,7 @@ export async function GET(
   }>).map((r) => {
     const part = Array.isArray(r.participants) ? r.participants[0] : r.participants;
     return {
+      participant_id: r.participant_id,
       name: part?.name ?? "—",
       activity: r.activity,
       item_key: r.item_key,

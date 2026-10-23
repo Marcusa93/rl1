@@ -12,6 +12,7 @@ import { TAL_SLUG, TAL_TITLE } from "./taller-clase";
 import { BBVA_SLUG, BBVA_TITLE } from "./bbva-clase";
 import { DIP_SLUG, DIP_TITLE } from "./diplo-clase";
 import { TF1_SLUG, TF1_TITULO } from "./tribunal-clase1";
+import { TF2_SLUG, TF2_TITULO } from "./tribunal-clase2";
 import { UC_SLUG, UC_TITULO } from "./unca-clase";
 import { DG_SLUG, DG_TITULO } from "./doing-clase";
 import type { SessionRow } from "./types";
@@ -30,6 +31,7 @@ const AUTO_SESSIONS: Record<string, string> = {
   [BBVA_SLUG]: BBVA_TITLE,
   [DIP_SLUG]: DIP_TITLE,
   [TF1_SLUG]: TF1_TITULO,
+  [TF2_SLUG]: TF2_TITULO,
   [UC_SLUG]: UC_TITULO,
   [DG_SLUG]: DG_TITULO,
 };

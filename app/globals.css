@@ -838,3 +838,187 @@ html:has(.dg), body:has(.dg) { background: var(--color-dg-papel); color-scheme: 
 }
 .dg-contraste.dg-papel { background-image: none; }
 .dg-contraste .dg-renglon { background: #cfc5b2; }
+
+/* ============================================================
+   Tribunal Fiscal · Segunda charla (/tribunal, clase 2). Collage editorial
+   de arqueología tecnológica (referencia DYNTEC): papel cálido con textura
+   de impresión, objetos analógicos y digitales recortados y superpuestos,
+   paleta terrosa con verdes grisáceos, azul desaturado y rojo moderado.
+   Nada de neón ni fondos oscuros: lo "tech" está en la experiencia
+   (revelado, tableros en vivo, chatbot). Vive bajo .tf2.
+   ============================================================ */
+@theme {
+  --color-tf2-papel: #eee6d6;
+  --color-tf2-hoja: #fbf8f1;
+  --color-tf2-crema: #f5efe2;
+  --color-tf2-kraft: #cdb48c;
+  --color-tf2-tinta: #22201c;
+  --color-tf2-grafito: #4a463e;
+  --color-tf2-gris: #857f72;
+  --color-tf2-linea: #d8cdb8;
+  --color-tf2-salvia: #7c8b76;
+  --color-tf2-musgo: #4f5e4b;
+  --color-tf2-salvia-claro: #dde2d2;
+  --color-tf2-azul: #4a6378;
+  --color-tf2-azul-claro: #d5dee2;
+  --color-tf2-rojo: #ad422c;
+  --color-tf2-rojo-claro: #f0d8cc;
+  --color-tf2-ocre: #b5832f;
+  --color-tf2-cobre: #ae6c3c;
+  --color-tf2-pantalla: #dfe5d3;
+}
+
+/* Las piezas del motor (spinner, avisos) con la paleta de la clase. */
+.tf2 {
+  --color-ink: #eee6d6;
+  --color-ink-2: #fbf8f1;
+  --color-panel: #f5efe2;
+  --color-panel-2: #ebe2cf;
+  --color-line: #d8cdb8;
+  --color-teal: #4f5e4b;
+  --color-aqua: #4f5e4b;
+  --color-cyan: #4a6378;
+  --color-violet: #4a6378;
+  --color-magenta: #ad422c;
+  --color-muted: #4a463e;
+  --color-faint: #857f72;
+  --foreground: #22201c;
+  background-color: var(--color-tf2-papel);
+  color: var(--foreground);
+  color-scheme: light;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+html:has(.tf2), body:has(.tf2) { background: var(--color-tf2-papel); color-scheme: light; }
+.tf2 .bg-grid { background-image: none; }
+.tf2 .glass { background: var(--color-tf2-hoja); border: 1px solid var(--color-tf2-linea); backdrop-filter: none; }
+.tf2 .text-gradient { background: none; color: var(--color-tf2-tinta); -webkit-text-fill-color: currentColor; }
+.tf2 ::selection { background: rgba(173, 66, 44, 0.18); }
+
+/* Papel: fibra e impresión (ruido fino) y una luz cálida, sin patrón visible. */
+.tf2-papel {
+  background-color: var(--color-tf2-papel);
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.32 0 0 0 0 0.26 0 0 0 0 0.18 0 0 0 0.11 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+    radial-gradient(120% 90% at 18% 8%, rgba(255, 252, 244, 0.75), transparent 60%),
+    radial-gradient(90% 70% at 100% 100%, rgba(150, 120, 80, 0.12), transparent 60%);
+}
+.tf2-hoja-papel {
+  background-color: var(--color-tf2-hoja);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='1' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.25 0 0 0 0 0.2 0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* Tipografía: titular editorial expresivo, máquina de escribir y mano. */
+.tf2-titular {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 1;
+  font-weight: 560;
+  letter-spacing: -0.028em;
+  line-height: 0.98;
+}
+.tf2-serif { font-family: var(--font-fraunces), Georgia, serif; font-variation-settings: "opsz" 36, "SOFT" 40; }
+.tf2-mono { font-family: var(--font-plex-mono), ui-monospace, monospace; }
+.tf2-mano { font-family: var(--font-caveat), cursive; }
+.tf2-rotulo {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* Objetos recortados: sombra discreta de papel sobre la mesa. */
+.tf2-objeto { box-shadow: 0 1px 0 rgba(60, 45, 25, 0.06), 0 14px 26px -16px rgba(60, 45, 25, 0.55); }
+.tf2-recorte { filter: drop-shadow(0 10px 12px rgba(60, 45, 25, 0.22)) drop-shadow(0 1px 0 rgba(60, 45, 25, 0.12)); }
+/* Ficha de cartulina: renglón rojo arriba y renglones azules tenues. */
+.tf2-renglones {
+  background-image:
+    linear-gradient(to bottom, transparent var(--cab, 58px), rgba(173, 66, 44, 0.5) var(--cab, 58px), rgba(173, 66, 44, 0.5) calc(var(--cab, 58px) + 2px), transparent calc(var(--cab, 58px) + 2px)),
+    repeating-linear-gradient(to bottom, transparent 0 calc(var(--paso, 44px) - 1px), rgba(74, 99, 120, 0.2) calc(var(--paso, 44px) - 1px) var(--paso, 44px));
+  background-position: 0 0, 0 calc(var(--cab, 58px) + 6px);
+  background-repeat: no-repeat, repeat;
+}
+/* Semitono de impresión (sobre fotos y pantallas). */
+.tf2-semitono { background-image: radial-gradient(circle, rgba(34, 32, 28, 0.16) 0.9px, transparent 1.3px); background-size: 7px 7px; }
+/* Cinta adhesiva: translúcida, bordes dentados. */
+.tf2-cinta {
+  background: rgba(226, 214, 186, 0.8);
+  box-shadow: 0 1px 2px rgba(60, 45, 25, 0.12);
+  clip-path: polygon(0 8%, 4% 0, 8% 10%, 12% 0, 88% 0, 92% 10%, 96% 0, 100% 8%, 100% 92%, 96% 100%, 92% 90%, 88% 100%, 12% 100%, 8% 90%, 4% 100%, 0 92%);
+}
+/* Sello de goma: tinta irregular (filtro #tf2-tinta, definido en el deck). */
+.tf2-sello {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: 3px solid currentColor;
+  outline: 1.5px solid currentColor;
+  outline-offset: 3px;
+  opacity: 0.86;
+  filter: url(#tf2-tinta);
+  mix-blend-mode: multiply;
+}
+/* Pantalla de monitor de época: fósforo claro, líneas de barrido muy suaves. */
+.tf2-pantalla {
+  background-color: var(--color-tf2-pantalla);
+  background-image: repeating-linear-gradient(to bottom, rgba(79, 94, 75, 0.07) 0 1px, transparent 1px 4px);
+  box-shadow: inset 0 0 0 2px rgba(34, 32, 28, 0.08), inset 0 10px 30px rgba(79, 94, 75, 0.18);
+}
+/* Resaltador y subrayado a mano. */
+.tf2-resalta { background: linear-gradient(transparent 55%, rgba(181, 131, 47, 0.32) 55%); }
+.tf2-tachado { text-decoration: line-through; text-decoration-color: rgba(173, 66, 44, 0.85); text-decoration-thickness: 3px; }
+.tf2-subraya { transition: background-color 0.5s ease, text-decoration-color 0.5s ease; text-decoration: underline wavy transparent; text-decoration-thickness: 2px; text-underline-offset: 7px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.tf2-subraya[data-on] { text-decoration-color: var(--color-tf2-rojo); background-color: rgba(173, 66, 44, 0.1); }
+.tf2-hueco { background: rgba(181, 131, 47, 0.16); border-bottom: 2px dashed rgba(181, 131, 47, 0.75); border-radius: 0.15em; padding: 0 0.2em; }
+
+/* Entrada de cada placa: los objetos "caen" sobre la mesa, escalonados (una vez). */
+@keyframes tf2-cae {
+  from { opacity: 0; translate: 0 -18px; scale: 1.03; }
+  to { opacity: 1; translate: 0 0; scale: 1; }
+}
+.tf2-cae { animation: tf2-cae 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: var(--d, 0ms); }
+@keyframes tf2-sube {
+  from { opacity: 0; translate: 0 14px; }
+  to { opacity: 1; translate: 0 0; }
+}
+.tf2-sube { animation: tf2-sube 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: var(--d, 0ms); }
+@keyframes tf2-traza { from { stroke-dashoffset: var(--largo, 600); } to { stroke-dashoffset: 0; } }
+.tf2-traza { stroke-dasharray: var(--largo, 600); animation: tf2-traza 1.4s ease-out both; animation-delay: var(--d, 0ms); }
+@keyframes tf2-cursor { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.tf2-cursor::after { content: "▍"; margin-left: 0.05em; color: var(--color-tf2-rojo); animation: tf2-cursor 1s steps(1) infinite; }
+@keyframes tf2-latido { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+.tf2-latido { animation: tf2-latido 1.6s ease-in-out infinite; }
+@keyframes tf2-estampa {
+  0% { opacity: 0; scale: 1.6; }
+  60% { opacity: 0.95; scale: 0.96; }
+  100% { opacity: 0.86; scale: 1; }
+}
+.tf2-estampa { animation: tf2-estampa 0.45s cubic-bezier(0.3, 1.4, 0.5, 1) both; animation-delay: var(--d, 0ms); }
+@keyframes tf2-giro-entra { from { rotate: -40deg; opacity: 0; } to { rotate: 0deg; opacity: 1; } }
+.tf2-giro-entra { animation: tf2-giro-entra 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both; transform-origin: 50% 50%; }
+
+/* Revelado paso a paso y foco (deck de la clase 2). */
+.tf2-pieza { transition: opacity 0.55s ease, translate 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.5s ease, scale 0.5s ease; }
+.tf2-pieza[data-oculta] { opacity: 0; translate: 0 14px; pointer-events: none; }
+.tf2-pieza[data-atenuada] { opacity: 0.25; filter: grayscale(0.8) blur(0.5px); }
+.tf2-pieza[data-foco] { z-index: 20; scale: 1.04; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tf2-cae, .tf2-sube, .tf2-traza, .tf2-estampa, .tf2-giro-entra, .tf2-latido, .tf2-cursor::after { animation: none; }
+  .tf2-pieza { transition: none; }
+}
+
+/* Alto contraste (tecla C): proyector lavado. Papel blanco y tinta negra. */
+.tf2-contraste {
+  --color-tf2-papel: #ffffff;
+  --color-tf2-hoja: #ffffff;
+  --color-tf2-crema: #fbf7ee;
+  --color-tf2-tinta: #000000;
+  --color-tf2-grafito: #24221d;
+  --color-tf2-gris: #4d483f;
+  --color-tf2-linea: #a99c84;
+  --color-tf2-musgo: #2c3a29;
+  --color-tf2-azul: #233d52;
+  --color-tf2-rojo: #8a2c17;
+}
+.tf2-contraste.tf2-papel { background-image: none; }

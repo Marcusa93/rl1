@@ -1,30 +1,27 @@
 "use client";
 
-// Control remoto de la clase desde el celular del equipo (Marco o Franco):
-// /tribunal/control. Pasa placas, muestra la ayuda memoria (las notas del
-// Dr. Leal), modera las respuestas abiertas antes de proyectarlas y exporta
-// las respuestas. Abajo, la placa tal como la ven los participantes.
+// Control remoto de la segunda charla desde el celular del equipo (Marco o
+// Franco): /tribunal/control. Pasa placas, muestra la nota de conducción de
+// cada placa, toca los interruptores de la pantalla (QR, Plan B, revelar,
+// proyectar) y modera lo que se proyecta. Abajo, lo que ven los celulares.
 
 import { AccesoDocente } from "@/components/clase/acceso-docente";
 import { ControlRemoto } from "@/components/clase/remoto";
-import { PanelTribunal } from "@/components/tribunal/moderacion";
-import { VistaParticipante } from "@/components/tribunal/seguimiento";
-import { tituloPlacaTf } from "@/lib/tribunal";
-import { TF1 } from "@/lib/tribunal-clase1";
+import { PanelTf2 } from "@/components/tribunal2/control";
+import { VistaParticipante2 } from "@/components/tribunal2/participante";
+import { TF2_SLIDES, TF2_SLUG, TF2_TITULO, tituloTf2 } from "@/lib/tribunal-clase2";
 
-const TITULOS = TF1.slides.map((s) => tituloPlacaTf(TF1, s));
+const TITULOS = TF2_SLIDES.map(tituloTf2);
 
 export default function TribunalControlPage() {
   return (
-    <AccesoDocente titulo={`Control remoto · ${TF1.titulo}`}>
+    <AccesoDocente titulo={`Control remoto · ${TF2_TITULO}`}>
       <ControlRemoto
-        slug={TF1.slug}
+        slug={TF2_SLUG}
         titulos={TITULOS}
-        nombre={`Tribunal Fiscal · ${TF1.titulo}`}
-        panel={(e) => <PanelTribunal clase={TF1} idx={e.idx} />}
-        vista={(e) => (
-          <VistaParticipante clase={TF1} idx={e.idx} abiertas={(e.botones ?? []).filter((b) => b.activo).map((b) => b.label)} />
-        )}
+        nombre={`Tribunal Fiscal · Clase 2`}
+        panel={(e) => <PanelTf2 idx={e.idx} />}
+        vista={(e) => <VistaParticipante2 idx={e.idx} abiertas={(e.botones ?? []).filter((b) => b.activo).map((b) => b.label)} />}
       />
     </AccesoDocente>
   );

@@ -1,18 +1,18 @@
 "use client";
 
-// Presentación de la primera charla del ciclo del Tribunal Fiscal (la
-// proyecta el equipo mientras expone el Dr. Leal). Pide la clave docente
-// porque abre las actividades en los celulares. Ver components/tribunal/deck.tsx.
+// Presentación de la segunda charla del ciclo del Tribunal Fiscal (proyector).
+// Pide la clave docente porque abre las actividades en los celulares.
+// Ver components/tribunal2/deck.tsx.
 
 import { AccesoDocente } from "@/components/clase/acceso-docente";
-import { DeckTribunal } from "@/components/tribunal/deck";
-import { TF1 } from "@/lib/tribunal-clase1";
+import { DeckTribunal2 } from "@/components/tribunal2/deck";
+import { TF2_TITULO } from "@/lib/tribunal-clase2";
 
 export default function TribunalClasePage() {
   return (
-    <div className="tf flex min-h-dvh flex-1 flex-col">
-      <AccesoDocente titulo={`Presentación · ${TF1.titulo}`}>
-        <DeckTribunal clase={TF1} />
+    <div className="tf2 flex min-h-dvh flex-1 flex-col">
+      <AccesoDocente titulo={`Presentación · ${TF2_TITULO}`}>
+        <DeckTribunal2 />
       </AccesoDocente>
     </div>
   );

@@ -5,6 +5,7 @@ import { getJusActividad } from "@/lib/justicia-clase";
 import { getDipActividad } from "@/lib/diplo-clase";
 import { getTalActividad } from "@/lib/taller-clase";
 import { getTf1Actividad } from "@/lib/tribunal-clase1";
+import { getTf2Vivo, TF2_CAMPOS } from "@/lib/tribunal-clase2";
 import { getUcActividad } from "@/lib/unca-clase";
 import { getDgActividad } from "@/lib/doing-clase";
 import { resumenVivo } from "@/lib/resumen-vivo";
@@ -219,6 +220,45 @@ export async function GET(
     });
   }
 
+  // --- Tribunal Fiscal · clase 2: laboratorio de prompts y desafío final (avance agregado, sin textos)
+  if (activity === "tf2_a2" || activity === "tf2_a5") {
+    const base = {
+      activity,
+      participants: participants ?? 0,
+      responded: responders.length,
+      responders: [],
+      config: session.activity_config ?? {},
+    };
+    if (activity === "tf2_a2") {
+      const cambios: Record<string, number> = {};
+      for (const r of list) for (const id of (r.payload?.selected as string[]) ?? []) cambios[id] = (cambios[id] ?? 0) + 1;
+      return ok({
+        ...base,
+        summary: {
+          total: list.length,
+          conA: list.filter((r) => r.payload?.salidaA).length,
+          conB: list.filter((r) => r.payload?.salidaB).length,
+          reflexionaron: list.filter((r) => ((r.payload?.selected as string[]) ?? []).length).length,
+          cambios,
+        },
+      });
+    }
+    const campos: Record<string, number> = {};
+    for (const r of list)
+      for (const c of TF2_CAMPOS) if (String(r.payload?.campos?.[c.id] ?? "").trim()) campos[c.id] = (campos[c.id] ?? 0) + 1;
+    const etapa = (r: (typeof list)[number]) => String(r.payload?.etapa ?? "campos");
+    return ok({
+      ...base,
+      summary: {
+        total: list.length,
+        armadas: list.filter((r) => ["instruccion", "prueba", "ficha"].includes(etapa(r))).length,
+        probadas: list.filter((r) => r.payload?.prueba?.salida).length,
+        fichas: list.filter((r) => etapa(r) === "ficha").length,
+        campos,
+      },
+    });
+  }
+
   // --- Clases en vivo (/web3, /justicia, /taller-ia, /tribunal, /unca, /doing) — agregación por tipo de actividad
   const w3 =
     getW3Actividad(activity) ??
@@ -226,6 +266,7 @@ export async function GET(
     getDipActividad(activity) ??
     getTalActividad(activity) ??
     getTf1Actividad(activity) ??
+    getTf2Vivo(activity) ??
     getUcActividad(activity) ??
     getDgActividad(activity);
   if (w3) {

@@ -98,6 +98,12 @@ const VALID: ActivityKey[] = [
   "tf1_no_delegar",
   "tf1_acn",
   "tf1_control",
+  // Tribunal Fiscal de Tucumán · Segunda charla (/tribunal)
+  "tf2_a1",
+  "tf2_a2",
+  "tf2_a3",
+  "tf2_a4",
+  "tf2_a5",
   // UNCA · La arquitectura de la confianza digital (/unca)
   "uc_confianza",
   "uc_tres_docs",
