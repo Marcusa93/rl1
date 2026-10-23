@@ -104,6 +104,8 @@ export function DeckTribunal2({ slug = TF2_SLUG }: { slug?: string }) {
   const [ejemploA2, setEjemploA2] = useState(false);
   const [estado, setEstado] = useState<EstadoActivacion>(null);
   const [abiertaEn, setAbiertaEn] = useState<Partial<Record<Tf2ActKey, number>>>({});
+  // Actividad cerrada a mano en los celulares (vuelven a la espera); se reabre con el mismo botón.
+  const [cerrada, setCerrada] = useState<string | null>(null);
   const lastActivada = useRef<string | null>(null);
   const { moderacion, cambiar } = useModeracion2(slug, INTERVALO);
 
@@ -142,6 +144,7 @@ export function DeckTribunal2({ slug = TF2_SLUG }: { slug?: string }) {
   const activar = useCallback(
     (key: Tf2ActKey) => {
       lastActivada.current = key;
+      setCerrada(null);
       setEstado({ key, status: "enviando" });
       setAbiertaEn((m) => (m[key] ? m : { ...m, [key]: Date.now() }));
       fetch(`/api/session/${slug}/activity`, {
@@ -151,6 +154,19 @@ export function DeckTribunal2({ slug = TF2_SLUG }: { slug?: string }) {
       })
         .then((r) => setEstado({ key, status: r.ok ? "ok" : "error" }))
         .catch(() => setEstado({ key, status: "error" }));
+    },
+    [slug],
+  );
+
+  const cerrar = useCallback(
+    (key: Tf2ActKey) => {
+      setCerrada(key);
+      setEstado(null);
+      fetch(`/api/session/${slug}/activity`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ current_activity: "lobby" }),
+      }).catch(() => {});
     },
     [slug],
   );
@@ -260,6 +276,14 @@ export function DeckTribunal2({ slug = TF2_SLUG }: { slug?: string }) {
               {esActividad && (
                 <button onClick={() => setPlanB((v) => !v)} {...rem(TF2_PLAN_B, planB)}>
                   Plan B
+                </button>
+              )}
+              {slide.t === "placa" && slide.actividad && (
+                <button
+                  onClick={() => (cerrada === slide.actividad ? activar(slide.actividad!) : cerrar(slide.actividad!))}
+                  {...rem(cerrada === slide.actividad ? "▶ Reabrir la actividad en los celulares" : "⏹ Cerrar la actividad en los celulares", cerrada === slide.actividad)}
+                >
+                  Cerrar o reabrir la actividad
                 </button>
               )}
               <button onClick={() => setQr((v) => !v)} {...rem("🔳 QR para ingresar", qr)}>

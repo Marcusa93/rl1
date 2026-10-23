@@ -48,6 +48,7 @@ import {
   type Tf2ActKey,
   type Tf2CampoA2Id,
   type Tf2EstadoControl,
+  type Tf2Perfil,
 } from "@/lib/tribunal-clase2";
 import type { ParticipantRow, SessionRow } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -118,11 +119,11 @@ function useMias(slug: string) {
   return { mias, cargadas, guardarLocal };
 }
 
-async function preguntarIa(pedido: string): Promise<{ texto?: string; error?: string; planB?: boolean }> {
+async function preguntarIa(pedido: string, perfil: Tf2Perfil = TF2_PERFIL_LAB): Promise<{ texto?: string; error?: string; planB?: boolean }> {
   const res = await fetch("/api/tribunal/ia", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ perfil: TF2_PERFIL_LAB, pedido }),
+    body: JSON.stringify({ perfil, pedido }),
   }).catch(() => null);
   if (!res) return { error: "Sin conexión. Revisá la señal.", planB: true };
   const d = await res.json().catch(() => ({}));
@@ -768,6 +769,7 @@ function ComparaA3({ slug, previa, revelado, onGuardado }: PropsAct & { previa?:
       ))}
       {err && <MsjError>{err}</MsjError>}
       {Object.keys(answers).length === preguntas.length && !revelado && <p className="text-center text-[14px] text-tf2-musgo">✓ Votaste. Mirá la pantalla.</p>}
+      {revelado && <ProbaPerfiles />}
       {revelado && (
         <div className="tf2-sube rounded-[8px] border border-tf2-linea bg-tf2-crema p-4">
           <Rotulo>Qué cambió: el contexto del sistema (salida B)</Rotulo>
@@ -778,6 +780,58 @@ function ComparaA3({ slug, previa, revelado, onGuardado }: PropsAct & { previa?:
           </ul>
           <p className="mt-3 text-[13.5px] text-tf2-grafito">Mismo modelo, misma tarea, misma temperatura. Más contexto no garantiza exactitud: el contexto también se actualiza y se revisa.</p>
         </div>
+      )}
+    </div>
+  );
+}
+
+/** Después de la revelación: la misma consulta propia (ficticia) a los dos perfiles, lado a lado. */
+function ProbaPerfiles() {
+  const [abierto, setAbierto] = useState(false);
+  const [pedido, setPedido] = useState("");
+  const [salidas, setSalidas] = useState<Partial<Record<Tf2Perfil, string>>>({});
+  const [ver, setVer] = useState<Tf2Perfil>("A");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  async function probar() {
+    setBusy(true);
+    setErr("");
+    const [a, b] = await Promise.all([preguntarIa(pedido, "A"), preguntarIa(pedido, "B")]);
+    setBusy(false);
+    if (!a.texto || !b.texto) {
+      setErr(a.error ?? b.error ?? "El chatbot no respondió");
+      return;
+    }
+    setSalidas({ A: a.texto, B: b.texto });
+  }
+
+  if (!abierto)
+    return (
+      <Boton tono="linea" onClick={() => setAbierto(true)}>
+        Probá vos: tu consulta a los dos perfiles
+      </Boton>
+    );
+  return (
+    <div className="grid gap-3 rounded-[8px] border border-tf2-linea bg-white p-4">
+      <Rotulo>Misma consulta, perfil A y perfil B</Rotulo>
+      <Campo valor={pedido} onCambio={setPedido} placeholder="ej.: Redactá una respuesta a alguien que pregunta cómo presentar un escrito" filas={3} max={800} />
+      <SoloFicticios />
+      {err && <MsjError>{err}</MsjError>}
+      <Boton onClick={probar} disabled={busy || pedido.trim().length < 8}>
+        {busy ? "Preguntando a los dos perfiles…" : "Enviar a los dos"}
+      </Boton>
+      {salidas.A && salidas.B && (
+        <>
+          <div className="grid grid-cols-2 gap-2">
+            {(["A", "B"] as const).map((k) => (
+              <button key={k} onClick={() => setVer(k)} className={cn("rounded-[8px] border py-2.5 text-[14px] font-semibold", ver === k ? "border-tf2-tinta bg-tf2-tinta text-white" : "border-tf2-linea bg-tf2-crema")}>
+                {TF2_PERFILES[k].nombre}
+              </button>
+            ))}
+          </div>
+          <Salida texto={salidas[ver] ?? ""} className="max-h-[50dvh] overflow-auto" />
+        </>
       )}
     </div>
   );
