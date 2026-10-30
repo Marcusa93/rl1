@@ -40,7 +40,7 @@ import { SkillProyectada } from "@/components/tribunal3/skill";
 import { CentroCurva3, LAYOUT3, Visual3 } from "@/components/tribunal3/visuales";
 import { useLive } from "@/components/use-live";
 import { rem } from "@/lib/remoto";
-import { TF_INSTITUCION, TF_LINK, TF_QR } from "@/lib/tribunal";
+import { TF_INSTITUCION, TF_LINK, TF_LINK_IP, TF_QR } from "@/lib/tribunal";
 import {
   avisoDoc,
   getTf3Actividad,
@@ -631,7 +631,9 @@ function Ingreso({ slug }: { slug: string }) {
             <b className="tf2-titular text-[64px] tabular-nums">{data?.participants ?? 0}</b> conectados
           </span>
         </div>
-        <p className="tf2-mono mt-4 text-[19px] text-tf2-gris">Sin nombre ni cuenta. Solo se proyectan resultados agrupados.</p>
+        <p className="tf2-mono mt-4 text-[21px] text-tf2-grafito">
+          ¿No lee el QR? Escribí en el navegador: <b className="text-tf2-tinta">{TF_LINK_IP}</b>
+        </p>
       </div>
       <div className="tf2-cae absolute right-[110px] top-[150px] rotate-[2deg]" style={{ "--d": "300ms" } as Estilo}>
         <TarjetaQr qr={TF_QR} link={TF_LINK} w={590} />
@@ -723,25 +725,30 @@ function Pie({
   );
 }
 
-/** «🔳 QR para ingresar»: el QR a pantalla casi completa, para escanear desde el fondo de la sala. */
+/**
+ * «🔳 QR para ingresar»: el QR lo más grande posible, negro sobre blanco para que el proyector no lo lave,
+ * y el link para escribir a mano por si un celular no lo lee o su red no abre el dominio.
+ */
 function QrFlotante({ participantes, onCerrar }: { participantes: number; onCerrar: () => void }) {
   return (
-    <div className="tf2-papel absolute inset-0 z-40 flex items-center justify-center gap-20 px-[100px]">
+    <div className="absolute inset-0 z-40 flex items-center gap-12 bg-white pl-[90px] pr-[20px] text-tf2-tinta">
       <div className="min-w-0 flex-1">
-        <p className="tf2-rotulo text-[20px] text-tf2-rojo">Participá desde tu celular</p>
-        <h2 className="tf2-titular mt-6 text-[104px] leading-[1.02]">Escaneá el QR</h2>
-        <p className="tf2-mono mt-8 break-all text-[30px] leading-snug">{TF_LINK}</p>
-        <p className="tf2-mono mt-10 text-[28px]">
-          <b className="tf2-titular text-[76px] tabular-nums">{participantes}</b> conectados
+        <h2 className="tf2-titular text-[92px] leading-[1.02]">Escaneá el QR</h2>
+        <p className="tf2-mono mt-4 text-[26px] text-tf2-grafito">
+          Sin nombre ni cuenta · <b className="tabular-nums text-tf2-tinta">{participantes}</b> conectados
         </p>
-        <p className="tf2-mono mt-4 text-[20px] text-tf2-gris">Sin nombre ni cuenta.</p>
-        <button onClick={onCerrar} className="tf2-mono mt-8 text-[16px] text-tf2-gris underline-offset-2 hover:underline">
+        <div className="mt-14 border-l-[7px] border-tf2-rojo pl-6">
+          <p className="text-[34px] font-semibold leading-tight">¿No lo lee o no abre?</p>
+          <p className="mt-3 text-[28px] leading-snug">Abrí el navegador y escribí:</p>
+          <p className="tf2-mono mt-3 text-[54px] font-semibold leading-none">{TF_LINK_IP}</p>
+          <p className="mt-6 text-[24px] text-tf2-grafito">o también:</p>
+          <p className="tf2-mono mt-1 break-all text-[27px] leading-snug">{TF_LINK}</p>
+        </div>
+        <button onClick={onCerrar} className="tf2-mono mt-12 text-[16px] text-tf2-gris underline-offset-2 hover:underline">
           ocultar · Q
         </button>
       </div>
-      <div className="tf2-objeto shrink-0 rounded-[8px] bg-white p-5">
-        <img src={TF_QR} alt="Código QR para entrar a la clase" className="block size-[920px]" />
-      </div>
+      <img src={TF_QR} alt="Código QR para entrar a la clase" className="block size-[1050px] shrink-0" />
     </div>
   );
 }
