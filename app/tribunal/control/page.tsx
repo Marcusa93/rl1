@@ -1,27 +1,27 @@
 "use client";
 
-// Control remoto de la segunda charla desde el celular del equipo (Marco o
-// Franco): /tribunal/control. Pasa placas, muestra la nota de conducción de
-// cada placa, toca los interruptores de la pantalla (QR, Plan B, revelar,
-// proyectar) y modera lo que se proyecta. Abajo, lo que ven los celulares.
+// Control remoto de la tercera charla desde el celular del equipo:
+// /tribunal/control. Pasa placas, muestra la nota de conducción, toca los
+// interruptores (devolución, matriz, chatbot en vivo, revelar D5, cerrar la
+// votación, QR) y maneja el recupero y el expediente.
 
 import { AccesoDocente } from "@/components/clase/acceso-docente";
 import { ControlRemoto } from "@/components/clase/remoto";
-import { PanelTf2 } from "@/components/tribunal2/control";
-import { VistaParticipante2 } from "@/components/tribunal2/participante";
-import { TF2_SLIDES, TF2_SLUG, TF2_TITULO, tituloTf2 } from "@/lib/tribunal-clase2";
+import { PanelTf3 } from "@/components/tribunal3/control";
+import { VistaParticipante3 } from "@/components/tribunal3/participante";
+import { TF3_SLIDES, TF3_SLUG, TF3_TITULO, tituloTf3 } from "@/lib/tribunal-clase3";
 
-const TITULOS = TF2_SLIDES.map(tituloTf2);
+const TITULOS = TF3_SLIDES.map(tituloTf3);
 
 export default function TribunalControlPage() {
   return (
-    <AccesoDocente titulo={`Control remoto · ${TF2_TITULO}`}>
+    <AccesoDocente titulo={`Control remoto · ${TF3_TITULO}`}>
       <ControlRemoto
-        slug={TF2_SLUG}
+        slug={TF3_SLUG}
         titulos={TITULOS}
-        nombre={`Tribunal Fiscal · Clase 2`}
-        panel={(e) => <PanelTf2 idx={e.idx} total={e.total} />}
-        vista={(e) => <VistaParticipante2 idx={e.idx} abiertas={(e.botones ?? []).filter((b) => b.activo).map((b) => b.label)} />}
+        nombre="Tribunal Fiscal · Clase 3"
+        panel={(e) => <PanelTf3 estado={e} />}
+        vista={(e) => <VistaParticipante3 idx={e.idx} />}
       />
     </AccesoDocente>
   );

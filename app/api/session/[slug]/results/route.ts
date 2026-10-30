@@ -6,6 +6,7 @@ import { getDipActividad } from "@/lib/diplo-clase";
 import { getTalActividad } from "@/lib/taller-clase";
 import { getTf1Actividad } from "@/lib/tribunal-clase1";
 import { getTf2Vivo, TF2_CAMPOS } from "@/lib/tribunal-clase2";
+import { getTf3Vivo } from "@/lib/tribunal-clase3";
 import { getUcActividad } from "@/lib/unca-clase";
 import { getDgActividad } from "@/lib/doing-clase";
 import { resumenVivo } from "@/lib/resumen-vivo";
@@ -267,6 +268,7 @@ export async function GET(
     getTalActividad(activity) ??
     getTf1Actividad(activity) ??
     getTf2Vivo(activity) ??
+    getTf3Vivo(activity) ??
     getUcActividad(activity) ??
     getDgActividad(activity);
   if (w3) {

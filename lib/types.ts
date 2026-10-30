@@ -100,6 +100,11 @@ export type ActivityKey =
   | "tf2_a3"
   | "tf2_a4"
   | "tf2_a5"
+  // Tribunal Fiscal de Tucumán · Tercera charla (/tribunal) — prefijo tf3_
+  | "tf3_a1"
+  | "tf3_a2"
+  | "tf3_a3"
+  | "tf3_a4"
   // UNCA · La arquitectura de la confianza digital (/unca) — prefijo uc_
   | "uc_confianza"
   | "uc_tres_docs"

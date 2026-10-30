@@ -36,6 +36,7 @@ export function useRemotoDeck({
   parte,
   nota,
   go,
+  irDirecto,
   activo = true,
 }: {
   slug: string;
@@ -45,11 +46,14 @@ export function useRemotoDeck({
   parte?: string;
   nota?: string;
   go: (n: number) => void;
+  /** Opcional: «ir a…» desde el índice del celular salta a esa pantalla (sin tomarlo como ▶ o ◀). */
+  irDirecto?: (n: number) => void;
   /** false: esta pestaña no publica ni obedece (hay otra pestaña del deck que manda). */
   activo?: boolean;
 }) {
-  const ref = useRef({ idx, total, titulo, parte, nota, go });
-  ref.current = { idx, total, titulo, parte, nota, go };
+  const ref = useRef({ idx, total, titulo, parte, nota, go, irDirecto });
+  const [instancia] = useState(() => Math.random().toString(36).slice(2, 8));
+  ref.current = { idx, total, titulo, parte, nota, go, irDirecto };
 
   // Publicar el estado cuando cambia (y un latido cada tanto).
   useEffect(() => {
@@ -63,7 +67,7 @@ export function useRemotoDeck({
       const botones = botonesEnPantalla().map((b) => b.boton);
       const firma = JSON.stringify({ idx, total, titulo, parte, nota, botones });
       if (firma === ultimo && Date.now() - ultimoEnvio < LATIDO) return;
-      const estado: EstadoRemoto = { idx, total, titulo, parte, nota, botones, vivo: Date.now() };
+      const estado: EstadoRemoto = { idx, total, titulo, parte, nota, botones, vivo: Date.now(), instancia };
       enviando = true;
       fetchCorto(`/api/remoto/${slug}`, {
         method: "POST",
@@ -80,7 +84,7 @@ export function useRemotoDeck({
         .finally(() => (enviando = false));
     }, 300);
     return () => clearInterval(id);
-  }, [slug, activo]);
+  }, [slug, activo, instancia]);
 
   // Consultar y ejecutar los comandos del celular.
   useEffect(() => {
@@ -93,7 +97,7 @@ export function useRemotoDeck({
       const { idx, go } = ref.current;
       if (c.tipo === "sig") go(idx + 1);
       else if (c.tipo === "ant") go(idx - 1);
-      else if (c.tipo === "ir") go(c.idx);
+      else if (c.tipo === "ir") (ref.current.irDirecto ?? go)(c.idx);
       else if (c.tipo === "zoom") window.dispatchEvent(new KeyboardEvent("keydown", { key: c.delta > 0 ? "+" : "-" }));
       else if (c.tipo === "click") {
         const lista = botonesEnPantalla();

@@ -8,11 +8,11 @@
 // Cada clase vive en su archivo (lib/tribunal-clase1.ts, …) y reusa el
 // motor de clase en vivo (lib/clase-vivo.ts).
 //
-// La clase en curso (hoy, la segunda: lib/tribunal-clase2.ts):
+// La clase en curso (hoy, la tercera: lib/tribunal-clase3.ts):
 // /tribunal          → app del participante (celular)
 // /tribunal/clase    → presentación (proyector)
 // /tribunal/control  → control remoto + moderación (celular del equipo)
-// Las anteriores, archivadas: /tribunal/1, /tribunal/1/clase, /tribunal/1/control
+// Las anteriores, archivadas: /tribunal/1 y /tribunal/2 (con /clase y /control)
 // (el material de la primera sigue en /tribunal/material).
 //
 // El texto de las placas es el del Dr. Leal, literal. Las actividades son
@@ -26,7 +26,7 @@ export const TF_CICLO = "Ciclo de capacitación 2026";
 export const TF_EXPOSITOR = "Dr. Mario Rodolfo Leal";
 export const TF_EQUIPO = "Dr. Marco Rossi · Dr. Franco Orellana";
 /** Dirección que se escribe a mano; el QR apunta a la misma. */
-export const TF_LINK = "rl1.2-25-185-242.sslip.io/tribunal";
+export const TF_LINK = "2.25.185.242/tribunal";
 export const TF_QR = "/tribunal/qr.svg";
 /** Material descargable del encuentro (se anuncia en la última placa). */
 export const TF_MATERIAL = "/tribunal/material";

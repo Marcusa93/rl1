@@ -23,6 +23,8 @@ export interface EstadoRemoto {
   botones: BotonRemoto[];
   /** Marca de tiempo del último latido del deck (ms). */
   vivo: number;
+  /** Identifica la pestaña de la presentación (para avisar si hay dos abiertas). */
+  instancia?: string;
 }
 
 /** Lo que ven los celulares de los participantes: la placa y las tarjetas abiertas (sin la nota). */
