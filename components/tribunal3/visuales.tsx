@@ -6,7 +6,7 @@
 //
 // Caja del visual (px del escenario 1920×1080):
 //   "lado"  → a la derecha del título, 880 × 820
-//   "ancho" → debajo del título, 1680 × 520
+//   "ancho" → debajo del título y la idea clave, 1680 × 520
 //   "curva" → placas de giro (07 y 13): texto circular + objeto central
 // Las placas de actividad, el recupero (01) y la revelación (14) las arma el deck.
 

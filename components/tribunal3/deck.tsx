@@ -431,7 +431,7 @@ function Clave({ texto, lugar }: { texto: string; lugar: "abajo" | "arriba" | "a
   const pos = {
     abajo: "bottom-[104px] left-[120px] w-[760px]",
     arriba: "left-[120px] top-[120px] w-[820px]",
-    ancho: "left-[120px] top-[372px] w-[1680px]",
+    ancho: "left-[120px] top-[388px] w-[1680px]",
   }[lugar];
   return (
     <div className={cn("tf2-sube absolute z-20", pos)} style={{ "--d": "320ms" } as Estilo}>
@@ -520,7 +520,7 @@ function Pantalla({
         </div>
       )}
       {ancho && (
-        <div className="absolute left-[120px] top-[450px] h-[520px] w-[1680px]">
+        <div className="absolute left-[120px] top-[470px] h-[520px] w-[1680px]">
           <Visual3 visual={p.visual} />
         </div>
       )}
