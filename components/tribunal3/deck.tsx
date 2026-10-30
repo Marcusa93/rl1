@@ -633,8 +633,8 @@ function Ingreso({ slug }: { slug: string }) {
         </div>
         <p className="tf2-mono mt-4 text-[19px] text-tf2-gris">Sin nombre ni cuenta. Solo se proyectan resultados agrupados.</p>
       </div>
-      <div className="tf2-cae absolute right-[150px] top-[200px] rotate-[3deg]" style={{ "--d": "300ms" } as Estilo}>
-        <TarjetaQr qr={TF_QR} link={TF_LINK} w={500} />
+      <div className="tf2-cae absolute right-[110px] top-[150px] rotate-[2deg]" style={{ "--d": "300ms" } as Estilo}>
+        <TarjetaQr qr={TF_QR} link={TF_LINK} w={590} />
       </div>
       <div className="absolute left-[1290px] top-[830px] z-10 rotate-[-6deg]">
         <Sello tam={22} d={900}>
@@ -723,20 +723,24 @@ function Pie({
   );
 }
 
+/** «🔳 QR para ingresar»: el QR a pantalla casi completa, para escanear desde el fondo de la sala. */
 function QrFlotante({ participantes, onCerrar }: { participantes: number; onCerrar: () => void }) {
   return (
-    <div className="tf2-sube absolute bottom-[100px] right-[120px] z-40 flex items-end gap-7">
-      <div className="tf2-objeto rounded-[8px] bg-tf2-hoja px-7 py-5">
-        <p className="tf2-rotulo text-[14px] text-tf2-rojo">Participá desde tu celular</p>
-        <p className="tf2-mono mt-2 text-[22px]">
-          <b className="tf2-titular text-[48px] tabular-nums">{participantes}</b> conectados
+    <div className="tf2-papel absolute inset-0 z-40 flex items-center justify-center gap-20 px-[100px]">
+      <div className="min-w-0 flex-1">
+        <p className="tf2-rotulo text-[20px] text-tf2-rojo">Participá desde tu celular</p>
+        <h2 className="tf2-titular mt-6 text-[104px] leading-[1.02]">Escaneá el QR</h2>
+        <p className="tf2-mono mt-8 break-all text-[30px] leading-snug">{TF_LINK}</p>
+        <p className="tf2-mono mt-10 text-[28px]">
+          <b className="tf2-titular text-[76px] tabular-nums">{participantes}</b> conectados
         </p>
-        <button onClick={onCerrar} className="tf2-mono mt-2 text-[14px] text-tf2-gris underline-offset-2 hover:underline">
+        <p className="tf2-mono mt-4 text-[20px] text-tf2-gris">Sin nombre ni cuenta.</p>
+        <button onClick={onCerrar} className="tf2-mono mt-8 text-[16px] text-tf2-gris underline-offset-2 hover:underline">
           ocultar · Q
         </button>
       </div>
-      <div className="rotate-[2deg]">
-        <TarjetaQr qr={TF_QR} link={TF_LINK} w={330} />
+      <div className="tf2-objeto shrink-0 rounded-[8px] bg-white p-5">
+        <img src={TF_QR} alt="Código QR para entrar a la clase" className="block size-[920px]" />
       </div>
     </div>
   );

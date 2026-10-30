@@ -26,7 +26,7 @@ export const TF_CICLO = "Ciclo de capacitación 2026";
 export const TF_EXPOSITOR = "Dr. Mario Rodolfo Leal";
 export const TF_EQUIPO = "Dr. Marco Rossi · Dr. Franco Orellana";
 /** Dirección que se escribe a mano; el QR apunta a la misma. */
-export const TF_LINK = "2.25.185.242/tribunal";
+export const TF_LINK = "rl1.2-25-185-242.sslip.io/tribunal";
 export const TF_QR = "/tribunal/qr.svg";
 /** Material descargable del encuentro (se anuncia en la última placa). */
 export const TF_MATERIAL = "/tribunal/material";
