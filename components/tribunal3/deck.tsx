@@ -43,6 +43,7 @@ import { TF_INSTITUCION, TF_LINK, TF_QR } from "@/lib/tribunal";
 import {
   avisoDoc,
   getTf3Actividad,
+  marcaTf3,
   notaTf3,
   TF3_APRENDEN,
   TF3_COTIO,
@@ -397,7 +398,7 @@ function Membrete({ slide, idx, total }: { slide: Tf3Slide; idx: number; total: 
       {cotio.length > 0 && <MarcaCotio activas={cotio} />}
       <span className="flex items-center gap-6">
         {slide.t !== "ingreso" && tramo && <span>{tramo.nombre}</span>}
-        <span className="tabular-nums text-tf2-tinta">{slide.t === "placa" ? `${slide.num} / 15` : `${idx + 1} / ${total}`}</span>
+        <span className="tabular-nums text-tf2-tinta">{slide.t === "placa" ? marcaTf3(slide) : `${idx + 1} / ${total}`}</span>
       </span>
     </div>
   );

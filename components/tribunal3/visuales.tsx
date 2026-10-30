@@ -19,6 +19,8 @@ export type Tf3Layout = "lado" | "ancho" | "curva" | "actividad" | "propio";
 
 export const LAYOUT3: Record<Tf3Visual, Tf3Layout> = {
   recupero: "propio",
+  ventana: "lado",
+  skills: "ancho",
   apelacion: "lado",
   comoPiensa: "lado",
   cotio: "ancho",
@@ -38,6 +40,84 @@ export const LAYOUT3: Record<Tf3Visual, Tf3Layout> = {
 const Rot = ({ children, className }: { children: ReactNode; className?: string }) => (
   <p className={cn("tf2-rotulo text-[14px] text-tf2-gris", className)}>{children}</p>
 );
+
+/** IA 1: qué lee el modelo en cada respuesta (lo estable arriba, lo del caso abajo). */
+function Ventana() {
+  const capas = [
+    { t: "Instrucciones del sistema", d: "las pone la aplicación", cuando: "siempre", paso: 0 },
+    { t: "Memoria persistente", d: "«Trabajo en el Tribunal Fiscal de Apelación de Tucumán»", cuando: "siempre", paso: 0 },
+    { t: "Skill", d: "«Análisis inicial de un recurso de clausura»", cuando: "si la tarea coincide", paso: 0 },
+    { t: "Documentos", d: "D1–D5 anonimizados", cuando: "este caso", paso: 1 },
+    { t: "Conversación", d: "lo que ya se dijo en este chat", cuando: "este chat", paso: 1 },
+    { t: "Tu pedido · prompt", d: "«Compará agravios y respuestas; citá la página»", cuando: "cada vez", paso: 1 },
+  ];
+  return (
+    <>
+      <Pieza x={0} y={0} w={800} r={-0.6} d={60}>
+        <Hoja className="p-7">
+          <div className="flex items-baseline justify-between gap-4">
+            <Rot className="text-tf2-rojo">Ventana de contexto</Rot>
+            <span className="tf2-mono text-[15px] text-tf2-gris">lo que el modelo lee en cada respuesta</span>
+          </div>
+          <div className="mt-4 grid gap-[10px]">
+            {capas.map((c) => (
+              <Paso key={c.t} i={c.paso}>
+                <div className={cn("flex items-center gap-4 rounded-[3px] border px-5 py-3", c.paso ? "border-tf2-azul/40 bg-tf2-azul-claro" : "border-tf2-linea bg-tf2-crema")}>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[23px] font-semibold leading-tight">{c.t}</p>
+                    <p className="tf2-mono mt-1 text-[16px] leading-snug text-tf2-grafito">{c.d}</p>
+                  </div>
+                  <span className="tf2-rotulo shrink-0 text-[13px] text-tf2-rojo">{c.cuando}</span>
+                </div>
+              </Paso>
+            ))}
+          </div>
+        </Hoja>
+      </Pieza>
+      <Pieza i={2} label="Lo que no está, no existe" x={20} y={680} r={-1.5} z={6}>
+        <Mano tam={40} tono="azul" flecha="arriba">
+          lo que no está en la ventana, no existe para el modelo
+        </Mano>
+      </Pieza>
+      <Pieza i={2} x={560} y={600} r={-7} z={7}>
+        <Sello tam={19}>no aprende entre chats</Sello>
+      </Pieza>
+    </>
+  );
+}
+
+/** IA 2: dónde vive cada instrucción. */
+function Skills() {
+  const tarjetas = [
+    { rotulo: "Prompt · cada vez", label: "Prompt", tono: "hoja" as const, def: "Lo que pido ahora y los datos de este expediente.", ej: "«Compará los agravios de D2 con las respuestas de D3 y citá la página.»" },
+    { rotulo: "Memoria · siempre", label: "Memoria", tono: "salvia" as const, def: "Lo estable: dónde trabajo, cómo escribo, qué no hacer nunca.", ej: "«Trabajo en el Tribunal Fiscal de Apelación de Tucumán. No inventes normas: citá documento y página.»" },
+    {
+      rotulo: "Skill · cuando la tarea lo pide",
+      label: "Skill",
+      tono: "azul" as const,
+      def: "Un paquete para un tipo de tarea: instrucciones, plantilla y ejemplos. La IA ve su descripción y lo carga entero cuando el pedido coincide.",
+      ej: "«Análisis inicial de un recurso de clausura»",
+    },
+  ];
+  return (
+    <>
+      {tarjetas.map((t, k) => (
+        <Pieza key={t.label} i={k} label={t.label} x={k * 570} y={k === 1 ? 24 : 0} w={540} r={[-1.2, 0.8, -0.6][k]}>
+          <Ficha rotulo={t.rotulo} tono={t.tono} tam={19}>
+            {t.def}
+            <br />
+            <span className="text-tf2-azul">{t.ej}</span>
+          </Ficha>
+        </Pieza>
+      ))}
+      <Pieza i={3} label="Hacia COTIO" x={420} y={400} r={-1.5} z={6}>
+        <Mano tam={38} tono="rojo" flecha="der">
+          para escribir una buena skill hay que saber describir el trabajo: COTIO
+        </Mano>
+      </Pieza>
+    </>
+  );
+}
 
 function Apelacion() {
   return (
@@ -353,6 +433,10 @@ export function CentroCurva3({ visual }: { visual: Tf3Visual }) {
 
 export function Visual3({ visual }: { visual: Tf3Visual }) {
   switch (visual) {
+    case "ventana":
+      return <Ventana />;
+    case "skills":
+      return <Skills />;
     case "apelacion":
       return <Apelacion />;
     case "comoPiensa":

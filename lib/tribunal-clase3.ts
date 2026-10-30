@@ -33,7 +33,7 @@ export const TF3_PREGUNTA = "¿Qué necesita saber y hacer un decisor para anali
 // --- Tramos de la clase (versión de ~75 minutos) ------------------------------------------------
 
 export const TF3_TRAMOS = [
-  { nombre: "Lo que nos quedó", minutos: 6 },
+  { nombre: "De la clase 2 a hoy", minutos: 11 },
   { nombre: "COTIO: diseñar el razonamiento", minutos: 20 },
   { nombre: "El expediente", minutos: 24 },
   { nombre: "Lo que falta comprobar", minutos: 18 },
@@ -312,6 +312,8 @@ export const TF3_COTIO = [
 
 export type Tf3Visual =
   | "recupero"
+  | "ventana"
+  | "skills"
   | "apelacion"
   | "comoPiensa"
   | "cotio"
@@ -390,6 +392,51 @@ export const TF3_SLIDES: Tf3Slide[] = [
     visual: "recupero",
     pasos: 4,
   }),
+  // Dos placas de introducción técnica (pedido de Marco, 30/10): cómo trabaja la IA por dentro.
+  // No llevan número del guion (se marcan «IA 1» e «IA 2») para no correr la numeración 01–15.
+  P({
+    num: "IA 1",
+    tramo: 0,
+    titulo: "La IA no recuerda: vuelve a leer",
+    bajada: "Cada respuesta sale solo de lo que entra en su ventana de contexto. La memoria persistente es texto que se vuelve a cargar.",
+    nota: "▶ ×3: primero lo que se carga siempre, después lo de este caso y al final la conclusión del diagrama.",
+    guion: {
+      aprenden: "Cómo trabaja la IA por dentro: no recuerda; en cada respuesta relee todo lo que le cargan (la ventana de contexto).",
+      decir: [
+        "Un modelo de lenguaje no guarda recuerdos ni se modifica mientras lo usamos.",
+        "En cada respuesta vuelve a leer todo lo que tiene en su «ventana de contexto»: las instrucciones de la aplicación, la memoria, los documentos, la conversación y nuestro pedido.",
+        "La «memoria persistente» de ChatGPT o de Claude no es un recuerdo: es texto guardado que la aplicación vuelve a poner al principio de cada conversación.",
+        "La ventana es grande pero finita, y cargar el expediente entero no garantiza una mejor respuesta: importa elegir qué entra.",
+      ],
+      preguntar: "¿Les pasó que la IA «se olvidó» de algo que le habían dicho en otro chat?",
+      puente: "«Si todo es texto que se carga, ¿qué conviene guardar y qué conviene escribir cada vez?» → ▶",
+    },
+    clave: "La IA no se actualiza mientras la usamos: en cada respuesta relee su ventana de contexto. Lo que no está ahí, no existe para ella.",
+    visual: "ventana",
+    pasos: 3,
+  }),
+  P({
+    num: "IA 2",
+    tramo: 0,
+    titulo: "Prompt, memoria y skills",
+    bajada: "Lo que cambia en cada caso va en el pedido. Lo que se repite se guarda para reutilizarlo.",
+    nota: "▶ ×3 muestra prompt, memoria y skill; ▶ final, la nota que lleva a COTIO.",
+    guion: {
+      aprenden: "Hay tres lugares para una instrucción: el prompt (cada vez), la memoria (siempre) y la skill (cuando la tarea lo pide).",
+      decir: [
+        "En la clase 2 armamos pedidos completos: rol, tarea, contexto, formato, fuentes y verificaciones. No hace falta reescribir todo cada vez.",
+        "Prompt: lo que pedimos ahora, con los datos de este expediente.",
+        "Memoria o instrucciones del proyecto: lo estable, que la aplicación carga siempre. Por ejemplo: dónde trabajamos y que cite documento y página.",
+        "Skill: un paquete reutilizable para un tipo de tarea, con instrucciones, plantilla y ejemplos. La IA tiene a la vista solo su nombre y descripción, y la carga entera cuando el pedido coincide.",
+        "Cada herramienta lo llama distinto (skills, proyectos, GPTs, Gems), pero la idea es la misma: guardar lo que se repite. Y para escribir una buena skill hay que saber describir el trabajo: eso hacemos hoy.",
+      ],
+      preguntar: "¿Qué tarea del Tribunal repiten tanto que valdría la pena guardarla como skill?",
+      puente: "«Empecemos por el trabajo: ¿qué hace el Tribunal cuando llega una apelación?» → ▶",
+    },
+    clave: "Lo que se repite se guarda (memoria o skill); lo que cambia en cada expediente va en el pedido.",
+    visual: "skills",
+    pasos: 4,
+  }),
   P({
     num: "02",
     tramo: 1,
@@ -465,6 +512,7 @@ export const TF3_SLIDES: Tf3Slide[] = [
         "La biblioteca no cambia de un caso a otro: Código Tributario, procedimiento, reglamento del Tribunal, jurisprudencia, competencia.",
         "Lo que cambia es la carpeta: los hechos de cada expediente. Eso es el input.",
         "En la práctica: el contexto se escribe una vez y se reutiliza. No hace falta cargar todo el expediente para describirlo.",
+        "Volviendo a la placa IA 2: el contexto es lo que guardaríamos en la memoria o en una skill; el input va en cada pedido.",
       ],
       puente: "«Probémoslo con el celular» → ▶ abre la Actividad 1",
     },
@@ -713,7 +761,7 @@ export const TF3_MAPA = {
   caso: "Rentas clausuró por seis días un comercio porque en un relevamiento (17/01/2025) encontró tres personas trabajando sin registración acreditada (D1). El comercio apeló: prueba no producida, incompetencia de Rentas, desproporción (D2). Rentas contestó (D3). El Tribunal declaró la cuestión de puro derecho (D4) y, antes de resolver, pidió constancias laborales de dieciséis meses (D5). No hay sentencia.",
   noHoy: "Hoy NO: redactar sentencias (clase 5) ni analizar números o registros contables (clase 4).",
   recorrido: [
-    { tramo: 0, placas: "01", detalle: "recupero de la clase 2" },
+    { tramo: 0, placas: "01, IA 1 e IA 2", detalle: "recupero de la clase 2 y cómo trabaja la IA por dentro (memoria, prompt, skills)" },
     { tramo: 1, placas: "02–07", detalle: "Actividad 1 en la 06" },
     { tramo: 2, placas: "08–11", detalle: "Actividades 2 (09) y 3 (11) · D1, D2 y D3" },
     { tramo: 3, placas: "12–14", detalle: "Actividad 4 (13) y revelación de D5 (14)" },
@@ -752,6 +800,11 @@ export function notaTf3(s: Tf3Slide): string {
   if (s.t === "placa") return s.nota;
   if (s.t === "ingreso") return "Pedí que escaneen el QR y dejen el celular a mano. La pantalla cuenta cuántos entraron.";
   return "Si querés guardar las respuestas, «⬇ Exportar respuestas (CSV)» más abajo.";
+}
+
+/** Número visible de una placa: «03 / 15» o, en las de introducción, «IA 1 de 2». */
+export function marcaTf3(p: Tf3Placa): string {
+  return p.num.startsWith("IA") ? `${p.num} de 2` : `${p.num} / 15`;
 }
 
 export function tituloTf3(s: Tf3Slide): string {

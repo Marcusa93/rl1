@@ -14,6 +14,7 @@ import {
   armarPedidoCotio,
   avisoDoc,
   getTf3Actividad,
+  marcaTf3,
   TF3_A1_CIERRE,
   TF3_A1_DEVOLUCION,
   TF3_A2_ACLARACION,
@@ -236,7 +237,7 @@ export function SeguimientoTf3({
         <div className="tf2-sube mb-6">
           {slide.t === "placa" ? (
             <>
-              <span className="tf2-mono text-[13px] text-tf2-gris">{slide.num} / 15</span>
+              <span className="tf2-mono text-[13px] text-tf2-gris">{marcaTf3(slide)}</span>
               <p className="tf2-titular mt-1.5 text-[30px] leading-[1.02]">{slide.titulo}</p>
               <p className="mt-2 text-[17px] leading-snug text-tf2-grafito">{slide.bajada}</p>
             </>
@@ -829,7 +830,7 @@ export function VistaParticipante3({ idx }: { idx: number }) {
   if (!s || s.t !== "placa") return null;
   return (
     <div className="rounded-[10px] bg-tf2-papel p-4 text-tf2-tinta">
-      <p className="tf2-mono text-[12px] text-tf2-gris">{s.num} / 15</p>
+      <p className="tf2-mono text-[12px] text-tf2-gris">{marcaTf3(s)}</p>
       <p className="tf2-titular mt-1 text-[22px] leading-tight">{s.titulo}</p>
       <p className="mt-1 text-[15px] text-tf2-grafito">{s.bajada}</p>
       {s.actividad && <p className="tf2-mono mt-2 text-[13px] text-tf2-rojo">📱 Actividad {getTf3Actividad(s.actividad)?.numero} abierta en los celulares</p>}
