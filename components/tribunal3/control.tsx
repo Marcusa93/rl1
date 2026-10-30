@@ -12,7 +12,23 @@ import { useEffect, useRef, useState } from "react";
 import { useResultados } from "@/components/clase/vivo";
 import { useLive } from "@/components/use-live";
 import type { EstadoRemoto } from "@/lib/remoto";
-import { avisoDoc, getTf3Actividad, TF3_ACTIVIDADES, TF3_AVISO_RECUPERO, TF3_DOCS, TF3_RECUPERO, TF3_SLIDES, TF3_SLUG, type Tf3ActKey } from "@/lib/tribunal-clase3";
+import {
+  avisoDoc,
+  getTf3Actividad,
+  guionTf3,
+  notaTf3,
+  TF3_ACTIVIDADES,
+  TF3_APRENDEN,
+  TF3_AVISO_RECUPERO,
+  TF3_COTIO,
+  TF3_DOCS,
+  TF3_MAPA,
+  TF3_RECUPERO,
+  TF3_SLIDES,
+  TF3_SLUG,
+  TF3_TRAMOS,
+  type Tf3ActKey,
+} from "@/lib/tribunal-clase3";
 import { cn } from "@/lib/utils";
 
 async function avisar(slug: string, id: string, abierto: boolean) {
@@ -51,6 +67,116 @@ export function PanelTf3({ estado, slug = TF3_SLUG }: { estado: EstadoRemoto; sl
       <Expediente slug={slug} avisos={avisos} onCambio={refresh} />
       <Exportar slug={slug} />
       <Reiniciar slug={slug} idx={estado.idx} onCambio={refresh} />
+    </div>
+  );
+}
+
+/**
+ * Guion de la placa actual (arriba de los botones): qué aprenden, qué decir, qué preguntar,
+ * qué hace la app y cómo pasar a la siguiente. Con el mapa de la clase plegable.
+ */
+export function GuionTf3({ estado }: { estado: EstadoRemoto }) {
+  const slide = TF3_SLIDES[estado.idx];
+  const [mapa, setMapa] = useState(false);
+  if (!slide) return null;
+  const g = guionTf3(slide);
+  const tramo = TF3_TRAMOS[slide.tramo];
+  const cotio = slide.t === "placa" ? (slide.cotio ?? []) : slide.t === "matriz" ? [0, 1, 2, 3, 4] : [];
+  return (
+    <div className="grid gap-2">
+      <button
+        onClick={() => setMapa((v) => !v)}
+        className="flex w-full items-center rounded-2xl border border-violet/50 bg-violet/10 px-4 py-2.5 text-left text-sm font-semibold text-violet"
+      >
+        <span className="flex-1">🗺 Mapa de la clase: qué enseñamos hoy</span>
+        <span>{mapa ? "▲" : "▼"}</span>
+      </button>
+      {(mapa || slide.t === "ingreso") && <Mapa actual={slide.tramo} />}
+      <div className="rounded-2xl border border-amber-400/50 bg-amber-400/10 p-4">
+        <p className="text-[11px] font-bold uppercase tracking-widest text-amber-300">
+          📝 Guion · solo en su celular{tramo ? ` · ${tramo.nombre} (${tramo.minutos} min)` : ""}
+        </p>
+        {cotio.length > 0 && (
+          <p className="mt-2 text-xs text-faint">
+            COTIO en esta placa: <b className="text-teal">{cotio.length === 5 ? "las cinco letras" : cotio.map((i) => `${TF3_COTIO[i].letra} · ${TF3_COTIO[i].nombre}`).join(" + ")}</b>
+          </p>
+        )}
+        <p className="mt-2 text-[11px] font-bold uppercase tracking-widest text-teal">🎯 Qué aprenden</p>
+        <p className="mt-1 text-lg font-semibold leading-snug">{g.aprenden}</p>
+        <p className="mt-3 text-[11px] font-bold uppercase tracking-widest text-amber-300">🗣 Decí</p>
+        <ul className="mt-1 grid gap-1.5">
+          {g.decir.map((d, k) => (
+            <li key={k} className="flex gap-2 text-base leading-snug">
+              <span className="text-amber-300">•</span>
+              <span>{d}</span>
+            </li>
+          ))}
+        </ul>
+        {g.preguntar && (
+          <>
+            <p className="mt-3 text-[11px] font-bold uppercase tracking-widest text-amber-300">❓ Preguntá a la sala</p>
+            <p className="mt-1 text-base leading-snug">{g.preguntar}</p>
+          </>
+        )}
+        <p className="mt-3 text-[11px] font-bold uppercase tracking-widest text-amber-300">👉 En la app</p>
+        <p className="mt-1 text-sm leading-snug text-muted">{notaTf3(slide)}</p>
+        <p className="mt-3 text-[11px] font-bold uppercase tracking-widest text-teal">➡️ Para pasar</p>
+        <p className="mt-1 text-base leading-snug">{g.puente}</p>
+      </div>
+    </div>
+  );
+}
+
+function Mapa({ actual }: { actual: number }) {
+  return (
+    <div className="grid gap-3 rounded-2xl border border-violet/40 bg-panel/80 p-4 text-sm leading-snug">
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-widest text-violet">La idea de hoy</p>
+        <p className="mt-1 text-base">{TF3_MAPA.tesis}</p>
+      </div>
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-widest text-violet">Pregunta que guía la clase</p>
+        <p className="mt-1 text-base italic">{TF3_MAPA.pregunta}</p>
+      </div>
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-widest text-violet">Al terminar, saben</p>
+        <ol className="mt-1 grid gap-1">
+          {TF3_APRENDEN.map((a, k) => (
+            <li key={k} className="flex gap-2">
+              <b className="text-teal">{k + 1}</b>
+              <span>{a}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-widest text-violet">COTIO aplicado al caso</p>
+        <ul className="mt-1 grid gap-1">
+          {TF3_COTIO.map((c, k) => (
+            <li key={k}>
+              <b className="text-teal">
+                {c.letra} · {c.nombre}:
+              </b>{" "}
+              {c.caso}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-widest text-violet">El caso en tres líneas</p>
+        <p className="mt-1">{TF3_MAPA.caso}</p>
+      </div>
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-widest text-violet">Recorrido</p>
+        <ol className="mt-1 grid gap-1">
+          {TF3_MAPA.recorrido.map((r) => (
+            <li key={r.tramo} className={cn("rounded-lg px-2 py-1", r.tramo === actual ? "bg-teal/15 text-teal" : "text-muted")}>
+              <b>{TF3_TRAMOS[r.tramo].nombre}</b> · {TF3_TRAMOS[r.tramo].minutos} min · placas {r.placas} · {r.detalle}
+            </li>
+          ))}
+        </ol>
+      </div>
+      <p className="text-magenta">{TF3_MAPA.noHoy}</p>
     </div>
   );
 }

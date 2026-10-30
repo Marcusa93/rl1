@@ -327,13 +327,31 @@ export type Tf3Visual =
   | "mejorProveer"
   | "metodo";
 
+/** Guion de conducción de cada pantalla (solo en el celular de control). */
+export interface Tf3Guion {
+  /** Qué aprenden con esta pantalla (una frase). */
+  aprenden: string;
+  /** Frases listas para decir, en orden. */
+  decir: string[];
+  /** Pregunta optativa para la sala. */
+  preguntar?: string;
+  /** Cómo pasar a la siguiente. */
+  puente: string;
+}
+
 export interface Tf3Placa {
   t: "placa";
   num: string;
   titulo: string;
   bajada: string;
-  /** Lo que se dice (nota de conducción, solo en el celular de control). */
+  /** Operación de la app en esta placa (qué se abre, qué tocar). Solo en el celular de control. */
   nota: string;
+  /** Guion para el docente (celular de control). */
+  guion: Tf3Guion;
+  /** Idea clave proyectada (explícita, una o dos líneas). Las placas de actividad usan su devolución. */
+  clave?: string;
+  /** Qué letras de COTIO trabaja la placa (0 C · 1 O · 2 T · 3 I · 4 O). */
+  cotio?: number[];
   tramo: number;
   visual: Tf3Visual;
   pasos: number;
@@ -348,6 +366,8 @@ export type Tf3Slide = Tf3Placa | { t: "ingreso"; tramo: number } | { t: "matriz
 
 const P = (p: Omit<Tf3Placa, "t">): Tf3Placa => ({ t: "placa", ...p });
 
+const TODO_COTIO = [0, 1, 2, 3, 4];
+
 export const TF3_SLIDES: Tf3Slide[] = [
   { t: "ingreso", tramo: 0 },
   P({
@@ -355,7 +375,18 @@ export const TF3_SLIDES: Tf3Slide[] = [
     tramo: 0,
     titulo: "¿Qué nos quedó de la clase pasada?",
     bajada: "Antes de avanzar, recuperamos lo que aprendimos al darle contexto e instrucciones a una IA.",
-    nota: "Recupero con datos reales de la app de la clase 2 (agregados, sin nombres). Recuperar hallazgos concretos, no repetir definiciones. Puente: «Ya sabemos dar mejores instrucciones. ¿Sabemos qué información necesita el Tribunal para resolver?».\n\nLos datos (validados) aparecen al tocar «📊 Proyectar recupero de la clase 2» en el control; el mismo botón los oculta.",
+    nota: "Tocá «📊 Proyectar recupero de la clase 2»: aparecen los datos validados. El mismo botón los oculta.",
+    guion: {
+      aprenden: "Recordar qué funcionó en la clase 2 y abrir la pregunta de hoy.",
+      decir: [
+        "En la clase pasada, 14 de 20 eligieron la respuesta con contexto: cuando le damos datos y formato, la IA responde mejor.",
+        "Lo que menos completamos en el desafío fueron las fuentes y las verificaciones.",
+        "4 de 23 tareas le pedían a la IA redactar o dictar una sentencia. Hoy vamos a ver por qué ese no es el primer paso.",
+      ],
+      preguntar: "¿Alguien usó algo de la clase pasada en su trabajo?",
+      puente: "«Ya sabemos dar mejores instrucciones. ¿Sabemos qué información necesita el Tribunal para resolver?» → ▶",
+    },
+    clave: "Clase 2: con contexto, formato y verificación, la IA responde mejor. Hoy, un paso más: ¿qué información necesita el Tribunal?",
     visual: "recupero",
     pasos: 4,
   }),
@@ -364,7 +395,19 @@ export const TF3_SLIDES: Tf3Slide[] = [
     tramo: 1,
     titulo: "Una apelación llega al Tribunal",
     bajada: "La DGR ya decidió. Al Tribunal le corresponde revisar una decisión cuestionada.",
-    nota: "Función revisora: diferencia entre la decisión administrativa y la revisión recursiva. Hay otras competencias, pero este caso es una apelación de clausura.",
+    nota: "▶ muestra el recorrido: carpeta de Rentas → apelación → Tribunal.",
+    guion: {
+      aprenden: "El Tribunal cumple una función revisora: no inspecciona ni sanciona; revisa una decisión cuestionada.",
+      decir: [
+        "Primero decide la administración: Rentas inspeccionó y aplicó una clausura de seis días.",
+        "El contribuyente no está de acuerdo y apela. Ahí entra el Tribunal: revisa esa decisión.",
+        "El Tribunal tiene otras competencias, pero hoy trabajamos un caso concreto: una apelación contra una clausura.",
+      ],
+      preguntar: "Cuando llega un recurso, ¿qué es lo primero que miran?",
+      puente: "«¿Y cómo piensa el Tribunal un caso así?» → ▶",
+    },
+    clave: "El Tribunal no decide de cero: revisa lo que Rentas ya resolvió, a partir de lo que el contribuyente cuestiona.",
+    cotio: [0],
     visual: "apelacion",
     pasos: 2,
   }),
@@ -373,7 +416,18 @@ export const TF3_SLIDES: Tf3Slide[] = [
     tramo: 1,
     titulo: "¿Cómo piensa un caso el Tribunal?",
     bajada: "La decisión exige información, operaciones jurídicas y un resultado fundado.",
-    nota: "Analogía: reconstruir qué necesita saber un juez laboral antes de fallar. Introducir el problema antes de las siglas.",
+    nota: "▶ ×4 muestra cada pregunta: qué pasó · qué norma · qué está probado · qué falta.",
+    guion: {
+      aprenden: "Antes de usar IA, hay que saber cómo se razona el caso. Primero el problema; después las siglas.",
+      decir: [
+        "Pensemos en un juez laboral antes de fallar: necesita saber qué pasó, qué norma se aplica, qué está probado y qué falta.",
+        "Con un recurso fiscal pasa lo mismo. Tenemos la resolución, el recurso y la contestación: cada pieza responde algunas preguntas y deja otras abiertas.",
+        "Si no sabemos qué preguntarle al expediente, tampoco vamos a saber qué pedirle a la IA.",
+      ],
+      preguntar: "¿Cuál de estas cuatro preguntas les lleva más tiempo en un expediente real?",
+      puente: "«Para ordenar estas preguntas usamos un modelo de cinco partes: COTIO» → ▶",
+    },
+    clave: "Antes de usar IA: ¿qué pasó?, ¿qué norma se aplica?, ¿qué está probado?, ¿qué falta? Ese razonamiento es el que vamos a describir.",
     visual: "comoPiensa",
     pasos: 4,
   }),
@@ -382,7 +436,20 @@ export const TF3_SLIDES: Tf3Slide[] = [
     tramo: 1,
     titulo: "COTIO: diseñar el razonamiento",
     bajada: "Contexto, Objetivo, Tarea, Input y Output: cinco decisiones para organizar el trabajo con IA.",
-    nota: "Definir los cinco elementos. Destacar: T es el procesamiento (no un pedido textual) e I es el conjunto de variables jurídicamente relevantes.",
+    nota: "▶ ×5 muestra cada letra.",
+    guion: {
+      aprenden: "Los cinco elementos de COTIO, con foco en dos: la T es el procesamiento y la I son las variables relevantes.",
+      decir: [
+        "C, Contexto: quién decide, con qué función, competencia, procedimiento y fuentes.",
+        "O, Objetivo: qué queremos lograr. Hoy, un análisis inicial ordenado; no un fallo.",
+        "T, Tarea: el procesamiento. Aislar agravios, comparar posiciones, verificar. No es «pedirle algo» a la IA: son las operaciones jurídicas que hay que hacer.",
+        "I, Input: los datos de este caso que hacen falta. No es «todo el expediente».",
+        "O, Output: un producto controlable, como una ficha con fuentes y el estado de cada dato. No una sentencia.",
+      ],
+      puente: "«Empecemos por la C: el contexto» → ▶",
+    },
+    clave: "COTIO no le pide a la IA que decida: describe nuestro trabajo para que la IA ayude a ordenarlo.",
+    cotio: TODO_COTIO,
     visual: "cotio",
     pasos: 5,
   }),
@@ -391,7 +458,18 @@ export const TF3_SLIDES: Tf3Slide[] = [
     tramo: 1,
     titulo: "El contexto no es el expediente",
     bajada: "El marco institucional y normativo puede reutilizarse en muchos casos.",
-    nota: "Función del Tribunal, competencias, reglas y fuentes: por qué no se confunden con los hechos propios del caso.",
+    nota: "▶ muestra la carpeta del caso y la frase «la carpeta cambia; la biblioteca queda».",
+    guion: {
+      aprenden: "El contexto es reutilizable: se arma una vez y sirve para muchos expedientes.",
+      decir: [
+        "La biblioteca no cambia de un caso a otro: Código Tributario, procedimiento, reglamento del Tribunal, jurisprudencia, competencia.",
+        "Lo que cambia es la carpeta: los hechos de cada expediente. Eso es el input.",
+        "En la práctica: el contexto se escribe una vez y se reutiliza. No hace falta cargar todo el expediente para describirlo.",
+      ],
+      puente: "«Probémoslo con el celular» → ▶ abre la Actividad 1",
+    },
+    clave: "Contexto: lo que se repite en todos los casos (Tribunal, normas, procedimiento). Input: los datos de este expediente.",
+    cotio: [0],
     visual: "contexto",
     pasos: 2,
   }),
@@ -400,7 +478,18 @@ export const TF3_SLIDES: Tf3Slide[] = [
     tramo: 1,
     titulo: "¿Contexto o input?",
     bajada: "No es lo mismo la regla que aplicamos que el dato concreto que necesitamos conocer.",
-    nota: "ACTIVIDAD 1 (3 min). Se abre sola. ▶ resultados por tarjeta; ▶ devolución (A y C contexto; B y D input), aunque nadie haya respondido. Sin puntos ni penalidades: una norma especial también puede especificar el tipo de caso.\n\nCierre (20 s): «El contexto define el terreno de juego; el input son los datos que necesitamos examinar en este expediente».",
+    nota: "ACTIVIDAD 1 (3 min). Se abre sola en los celulares. ▶ resultados por tarjeta; ▶ (o «💡 Mostrar devolución») la respuesta, aunque nadie haya votado. Sin puntos ni penalidades.",
+    guion: {
+      aprenden: "Distinguir el contexto (la regla que aplicamos) del input (el dato concreto del caso).",
+      decir: [
+        "En el celular tienen cuatro tarjetas: toquen si cada una es contexto o input.",
+        "Devolución: A (competencia del Tribunal) y C (reglas del procedimiento) son contexto. B (fecha de la inspección) y D (días de clausura) son input.",
+        "No es rígido: una norma especial también puede ayudar a definir el tipo de caso. Lo charlamos sin dogmatismo.",
+      ],
+      preguntar: "¿Alguien ubicó distinto alguna tarjeta? ¿Por qué?",
+      puente: "«El contexto define el terreno de juego; el input son los datos que necesitamos examinar en este expediente» → ▶",
+    },
+    cotio: [0, 3],
     visual: "a1",
     pasos: 2,
     actividad: "tf3_a1",
@@ -410,7 +499,18 @@ export const TF3_SLIDES: Tf3Slide[] = [
     tramo: 1,
     titulo: "El input define qué podemos analizar",
     bajada: "Cada tipo de expediente exige variables particulares, aunque el Tribunal sea el mismo.",
-    nota: "↻ GIRO: cerrar la distinción general y entrar al caso. Comparar clausura con ingresos brutos. Una variable puede estar ausente o no probada y aun así ser indispensable examinarla.",
+    nota: "↻ GIRO: cerrás la parte conceptual y entrás al expediente.",
+    guion: {
+      aprenden: "El input depende del tipo de caso: una clausura pide unos datos; ingresos brutos, otros.",
+      decir: [
+        "En una clausura importan el trabajador relevado, el acta y los días de sanción.",
+        "En un caso de ingresos brutos importan la base imponible, la alícuota y el período.",
+        "El marco es el mismo, pero las variables cambian. Y aunque una variable falte o no esté probada, igual hay que examinarla.",
+      ],
+      puente: "↻ Cierre de bloque: «Ahora entremos al caso» → ▶",
+    },
+    clave: "Mismo Tribunal, distinto expediente: otras variables. Aunque un dato falte o no esté probado, hay que examinarlo.",
+    cotio: [3],
     visual: "input",
     pasos: 2,
     curva: "El contexto se reutiliza; el input cambia con cada expediente",
@@ -420,7 +520,20 @@ export const TF3_SLIDES: Tf3Slide[] = [
     tramo: 2,
     titulo: "Seis días de clausura",
     bajada: "Un comercio recurre una sanción de Rentas por una presunta infracción registral.",
-    nota: "Presentar D1 (se libera sola en los celulares): origen del procedimiento y estado del caso, sin adelantar la medida para mejor proveer.",
+    nota: "D1 (resolución de Rentas) se libera sola en los celulares. ▶ destaca el motivo y la sanción.",
+    guion: {
+      aprenden: "Conocer el caso real, anonimizado, a partir de la resolución de Rentas (D1).",
+      decir: [
+        "Es un expediente real del Tribunal, anonimizado: el contribuyente es «Contribuyente A».",
+        "El 17/01/2025 Rentas hizo un relevamiento y encontró tres personas trabajando sin acreditar su registración.",
+        "Aplicó la clausura del establecimiento por seis días. El comercio apeló.",
+        "Ya pueden abrir D1, la resolución de Rentas, en el celular.",
+      ],
+      preguntar: "Con esta sola hoja, ¿ya podríamos decidir?",
+      puente: "«¿Qué datos necesita el Tribunal para revisar esta clausura?» → ▶ abre la Actividad 2",
+    },
+    clave: "El caso: Rentas clausuró por 6 días un comercio en el que encontró 3 personas trabajando sin registración acreditada. El comercio apeló.",
+    cotio: [3],
     visual: "seisDias",
     pasos: 2,
     libera: ["D1"],
@@ -430,7 +543,18 @@ export const TF3_SLIDES: Tf3Slide[] = [
     tramo: 2,
     titulo: "¿Qué datos necesitamos?",
     bajada: "Antes de argumentar, tenemos que identificar las variables esenciales de la controversia.",
-    nota: "ACTIVIDAD 2 (4 min) con D1 accesible («VER RESOLUCIÓN DGR» en el celular). ▶ porcentaje por variable; ▶ ficha «variable necesaria / ¿qué sabemos hoy?».\n\nDecir: «Que una variable sea necesaria no significa que la parte que la invoca ya la haya acreditado». La matriz no atribuye cargas probatorias.",
+    nota: "ACTIVIDAD 2 (4 min). D1 accesible en el celular («VER RESOLUCIÓN DGR»). ▶ porcentaje por variable; ▶ ficha «variable / ¿qué sabemos hoy?».",
+    guion: {
+      aprenden: "Identificar las variables necesarias y separarlas de lo accesorio. Necesario no quiere decir probado.",
+      decir: [
+        "Marquen en el celular qué datos necesita conocer el Tribunal. Pueden elegir varios.",
+        "Devolución: de A a E son necesarias (conducta y norma, acta, descargo y prueba, sanción, situación registral). F, el color de la fachada, es accesoria.",
+        "Clave: que una variable sea necesaria no significa que ya esté acreditada. La ficha muestra qué sabemos hoy de cada una.",
+      ],
+      preguntar: "¿Qué dato agregarían que no está en la lista?",
+      puente: "«Ya sabemos qué buscar. Veamos qué dice cada parte» → ▶",
+    },
+    cotio: [3],
     visual: "a2",
     pasos: 2,
     actividad: "tf3_a2",
@@ -440,7 +564,20 @@ export const TF3_SLIDES: Tf3Slide[] = [
     tramo: 2,
     titulo: "Una sanción, dos relatos",
     bajada: "El contribuyente cuestiona la decisión; la DGR responde. No son hechos probados por narrarse.",
-    nota: "Se liberan D2 y D3. Extraer agravios y réplicas, sin pasar todavía a conclusiones.",
+    nota: "D2 (apelación) y D3 (contestación) se liberan solas en los celulares. ▶ muestra la columna de Rentas.",
+    guion: {
+      aprenden: "Separar lo que cada parte afirma de lo que está probado.",
+      decir: [
+        "El contribuyente dice que no se produjo su prueba, que Rentas no tiene competencia laboral y que la clausura es desproporcionada.",
+        "Rentas responde que el descargo se trató y el acta es instrumento público; que su competencia surge de los arts. 80 y 9 del CTP; y que la sanción es tarifada: dos días por trabajador.",
+        "Son dos versiones: las dos columnas dicen «alegado». Todavía no concluimos nada.",
+        "Ya pueden abrir D2 y D3 en el celular.",
+      ],
+      preguntar: "¿Cuál de los tres agravios necesitaría más prueba para resolverse?",
+      puente: "«¿Qué le pediríamos a la IA con estos dos relatos?» → ▶ abre la Actividad 3",
+    },
+    clave: "Que una parte lo afirme no lo vuelve un hecho probado: cada agravio se contrasta con la respuesta y con la prueba.",
+    cotio: [2],
     visual: "dosRelatos",
     pasos: 2,
     libera: ["D2", "D3"],
@@ -450,7 +587,19 @@ export const TF3_SLIDES: Tf3Slide[] = [
     tramo: 2,
     titulo: "La tarea es el procesamiento",
     bajada: "Comparar, distinguir, interpretar y comprobar: eso debe hacer la IA, no decidir por anticipado.",
-    nota: "ACTIVIDAD 3 (4 min), D2 y D3 ya liberadas. ▶ votos; ▶ devolución (B es la adecuada ahora). «🧾 Ver matriz» proyecta las dos filas preparadas, independiente del voto. «🤖 Ejecutar en vivo» corre una variante con el chatbot (solo piezas anonimizadas).\n\nCierre: «La tarea no es fallar. Es descomponer: qué plantea cada parte, qué debemos examinar y con qué fuentes».",
+    nota: "ACTIVIDAD 3 (4 min). ▶ votos; ▶ devolución. «🧾 Ver matriz» proyecta las dos filas preparadas. «🤖 Ejecutar en vivo» corre el chatbot con D1–D3 anonimizadas.",
+    guion: {
+      aprenden: "La tarea (T) es el procesamiento: comparar, distinguir, interpretar y comprobar. No decidir por anticipado.",
+      decir: [
+        "Elijan en el celular la mejor próxima tarea para la IA.",
+        "Devolución: B, comparar agravios y respuestas e identificar la cuestión jurídica con sus fuentes. A anticipa la conclusión; C se queda corta; D toma como cierto lo que dice una parte.",
+        "La matriz muestra el resultado de esa tarea: agravio, respuesta, pregunta jurídica y página de cada fuente.",
+        "En el celular tienen el asistente COTIO: eligen una tarea y una salida; responde solo con las piezas anonimizadas y cita la página.",
+      ],
+      preguntar: "¿Cómo verificarían que la IA citó bien la página?",
+      puente: "«La tarea no es fallar: es descomponer qué plantea cada parte, qué debemos examinar y con qué fuentes» → ▶",
+    },
+    cotio: [2],
     visual: "a3",
     pasos: 2,
     actividad: "tf3_a3",
@@ -460,7 +609,21 @@ export const TF3_SLIDES: Tf3Slide[] = [
     tramo: 3,
     titulo: "¿Qué sabemos de verdad?",
     bajada: "Una afirmación puede constar, estar controvertida o necesitar una comprobación adicional.",
-    nota: "Se libera D4 (puro derecho). Examen preliminar de la documentación y sus límites; relación entre la declaración de puro derecho y las facultades para mejor proveer, sin prejuzgar.",
+    nota: "D4 (puro derecho) se libera sola. ▶ ×4 muestra cada ficha con su sello.",
+    guion: {
+      aprenden: "Clasificar el estado de cada dato antes de razonar con él.",
+      decir: [
+        "Consta: el relevamiento del 17/01/2025, con tres personas trabajando, está en D1 y en D3.",
+        "Alegado: que dos de ellas serían una familiar y una amiga del titular lo afirma el contribuyente.",
+        "Controvertido: si el acta tiene defectos lo discuten las partes.",
+        "Pendiente: qué pasó después con esa relación laboral. No consta en D1 a D4.",
+        "D4: el Tribunal declaró la cuestión de puro derecho, es decir, sin abrir a prueba. Eso no le impide pedir información para mejor proveer.",
+      ],
+      preguntar: "Si le damos todo esto a una IA sin estos estados, ¿qué riesgo hay?",
+      puente: "«Con esto, ¿qué harían ustedes con el expediente?» → ▶ abre la Actividad 4",
+    },
+    clave: "Cada afirmación tiene un estado: consta en una pieza, está alegada, está controvertida o está pendiente de comprobar.",
+    cotio: [3],
     visual: "sabemos",
     pasos: 4,
     libera: ["D4"],
@@ -470,7 +633,18 @@ export const TF3_SLIDES: Tf3Slide[] = [
     tramo: 3,
     titulo: "Antes de resolver, una pregunta más",
     bajada: "La información que falta puede cambiar el camino jurídico del expediente.",
-    nota: "↻ GIRO · ACTIVIDAD 4 (5 min). D1–D4 liberadas; D5 OCULTA. ▶ proporciones de la votación. Para revelar: «🔓 Revelar actuación real» (o ▶): cierra la votación, libera D5 y pasa a la 14.\n\nNo presentar B como la única decisión obligatoria. No se trata de adivinar qué votaron los vocales.",
+    nota: "↻ GIRO · ACTIVIDAD 4 (5 min). D5 sigue OCULTA. ▶ muestra las proporciones. «🔓 Revelar actuación real» (o ▶) cierra la votación, libera D5 y pasa a la 14.",
+    guion: {
+      aprenden: "Lo que falta también es un dato del análisis.",
+      decir: [
+        "Voten en el celular: con D1 a D4, ¿qué harían ahora?",
+        "Todas las respuestas valen. No se trata de adivinar qué hicieron los vocales.",
+        "Cuando cerremos la votación, vemos qué hizo realmente el Tribunal.",
+      ],
+      preguntar: "¿Qué dato les falta para estar seguros?",
+      puente: "Tocá «🔓 Revelar actuación real» (o ▶): cierra la votación, libera D5 y pasa a la 14.",
+    },
+    cotio: [3],
     visual: "a4",
     pasos: 1,
     actividad: "tf3_a4",
@@ -481,7 +655,20 @@ export const TF3_SLIDES: Tf3Slide[] = [
     tramo: 3,
     titulo: "El Tribunal pidió más información",
     bajada: "La medida para mejor proveer requiere constancias laborales y registrales durante dieciséis meses.",
-    nota: "REVELACIÓN de la Actividad 4 (D5 liberada). «El Tribunal dictó una medida para mejor proveer y solicitó documentación relativa a continuidad de la relación laboral y mantenimiento del incremento de dotación durante dieciséis meses». ▶ extracto · ▶ línea de 16 meses · ▶ ficha.\n\nPreguntar: «¿Qué nuevo dato quería conocer y por qué podría importar?». No es condonación comprobada ni sentencia definitiva.",
+    nota: "REVELACIÓN (D5 liberada). ▶ extracto · ▶ línea de 16 meses · ▶ ficha. En el celular, cada uno ve lo que votó.",
+    guion: {
+      aprenden: "Ver cómo un órgano real pide la información que falta antes de decidir.",
+      decir: [
+        "Antes de resolver, el Tribunal dictó una medida para mejor proveer.",
+        "Pidió acreditar que la relación laboral con la trabajadora se mantuvo al menos 16 meses sin reducir el plantel, con los F.931 de ARCA y las altas y bajas.",
+        "¿Por qué importa? El Tribunal lo vincula con el art. 80 del CTP: podría tener incidencia en la sanción. Pero no es una condonación comprobada ni una sentencia.",
+        "La ficha muestra variable, evidencia, estado, fuente y posible efecto: ese es el tipo de producto (output) que buscamos.",
+      ],
+      preguntar: "¿Qué nuevo dato quería conocer el Tribunal y por qué podría importar?",
+      puente: "«Juntemos todo: primero el método, después la decisión» → ▶",
+    },
+    clave: "El análisis mostró un dato faltante y el Tribunal lo pidió: constancias laborales de 16 meses. Todavía no hay sentencia.",
+    cotio: [3, 4],
     visual: "mejorProveer",
     pasos: 3,
   }),
@@ -490,12 +677,82 @@ export const TF3_SLIDES: Tf3Slide[] = [
     tramo: 4,
     titulo: "Primero el método. Después la decisión.",
     bajada: "COTIO nos ayuda a saber qué pedir, qué examinar y qué verificar antes de fundamentar una resolución.",
-    nota: "Recapitular los cinco elementos anclados al caso; transferir a otro tipo de expediente; puente a las clases 4 (análisis contable y probatorio) y 5 (redacción). Producto: mapa de variables y tareas, no sentencia.",
+    nota: "▶ ×5 arma COTIO sobre el caso.",
+    guion: {
+      aprenden: "Recapitular COTIO aplicado al caso y llevarlo a otros expedientes.",
+      decir: [
+        "C: el Tribunal y el recurso contra una clausura de Rentas.",
+        "O: un análisis inicial ordenado, no un fallo.",
+        "T: contrastar posiciones y examinar hechos, normas y prueba.",
+        "I: las variables de la clausura, con su estado: consta, alegado, controvertido, pendiente.",
+        "O: una ficha controlable con fuentes. La resolución sigue sin escribir: eso es la clase 5; los números y registros, la clase 4.",
+      ],
+      preguntar: "¿En qué tipo de expediente de su trabajo lo aplicarían primero?",
+      puente: "▶ proyecta la matriz final COTIO del expediente.",
+    },
+    clave: "Primero describimos el trabajo con COTIO; después la IA ayuda a ordenarlo. La decisión sigue siendo humana.",
+    cotio: TODO_COTIO,
     visual: "metodo",
     pasos: 5,
   }),
   { t: "matriz", tramo: 4 },
 ];
+
+/** Lo que aprenden hoy (pantalla de ingreso y mapa del control). */
+export const TF3_APRENDEN = [
+  "Distinguir el contexto que se repite (Tribunal, normas, procedimiento) de los datos de cada expediente.",
+  "Identificar qué necesita saber el Tribunal para revisar una clausura.",
+  "Reconocer el estado de cada dato: consta, alegado, controvertido o pendiente.",
+  "Usar la IA para ordenar un análisis controlable, con fuentes, sin pedirle que decida.",
+];
+
+/** Mapa de la clase para el docente (control). */
+export const TF3_MAPA = {
+  tesis: "Antes de pedirle a una IA que analice un recurso, hay que entender qué hace el Tribunal, qué información necesita y qué operaciones jurídicas realiza. COTIO describe ese trabajo; no automatiza la decisión.",
+  pregunta: "¿Qué necesita saber y hacer un decisor para analizar jurídicamente una apelación contra una clausura?",
+  caso: "Rentas clausuró por seis días un comercio porque en un relevamiento (17/01/2025) encontró tres personas trabajando sin registración acreditada (D1). El comercio apeló: prueba no producida, incompetencia de Rentas, desproporción (D2). Rentas contestó (D3). El Tribunal declaró la cuestión de puro derecho (D4) y, antes de resolver, pidió constancias laborales de dieciséis meses (D5). No hay sentencia.",
+  noHoy: "Hoy NO: redactar sentencias (clase 5) ni analizar números o registros contables (clase 4).",
+  recorrido: [
+    { tramo: 0, placas: "01", detalle: "recupero de la clase 2" },
+    { tramo: 1, placas: "02–07", detalle: "Actividad 1 en la 06" },
+    { tramo: 2, placas: "08–11", detalle: "Actividades 2 (09) y 3 (11) · D1, D2 y D3" },
+    { tramo: 3, placas: "12–14", detalle: "Actividad 4 (13) y revelación de D5 (14)" },
+    { tramo: 4, placas: "15 + matriz", detalle: "cierre" },
+  ],
+};
+
+const GUION_INGRESO: Tf3Guion = {
+  aprenden: "Entran a la app y saben para qué es la clase de hoy.",
+  decir: [
+    "Hoy trabajamos con un expediente real del Tribunal, anonimizado: una clausura de seis días que el comercio apeló.",
+    "La idea no es que la IA decida. Es aprender a describir nuestro propio razonamiento para que la IA ayude a ordenarlo.",
+    "Escaneen el QR: no hace falta nombre ni cuenta. Lo usan para votar y para leer el expediente.",
+  ],
+  puente: "Cuando la mayoría esté adentro: «Arranquemos por lo que nos quedó de la clase pasada» → ▶",
+};
+
+const GUION_MATRIZ: Tf3Guion = {
+  aprenden: "Llevarse el mapa: qué pedir, qué examinar y qué verificar.",
+  decir: [
+    "Esta es la matriz COTIO del expediente: sirve como plantilla para otros casos.",
+    "La IA ayudó a ordenar, comparar y señalar lo que falta. No decidió.",
+    "Próximas charlas: la 4, análisis contable y probatorio; la 5, redacción y revisión de decisiones.",
+  ],
+  preguntar: "¿Qué se llevan para usar mañana?",
+  puente: "Cierre y agradecimiento.",
+};
+
+/** Guion de cualquier pantalla. */
+export function guionTf3(s: Tf3Slide): Tf3Guion {
+  return s.t === "placa" ? s.guion : s.t === "ingreso" ? GUION_INGRESO : GUION_MATRIZ;
+}
+
+/** Operación de la app en cualquier pantalla. */
+export function notaTf3(s: Tf3Slide): string {
+  if (s.t === "placa") return s.nota;
+  if (s.t === "ingreso") return "Pedí que escaneen el QR y dejen el celular a mano. La pantalla cuenta cuántos entraron.";
+  return "Si querés guardar las respuestas, «⬇ Exportar respuestas (CSV)» más abajo.";
+}
 
 export function tituloTf3(s: Tf3Slide): string {
   if (s.t === "ingreso") return "Ingreso con QR";

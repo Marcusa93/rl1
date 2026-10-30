@@ -43,6 +43,9 @@ import { TF_INSTITUCION, TF_LINK, TF_QR } from "@/lib/tribunal";
 import {
   avisoDoc,
   getTf3Actividad,
+  notaTf3,
+  TF3_APRENDEN,
+  TF3_COTIO,
   TF3_AVISO_RECUPERO,
   TF3_DEVOLUCION,
   TF3_PROYECTAR_RECUPERO,
@@ -85,8 +88,6 @@ const pasosDe = (s: Tf3Slide | undefined) => (s?.t === "placa" ? s.pasos : 0);
 const IDX_01 = TF3_SLIDES.findIndex((s) => s.t === "placa" && s.visual === "recupero");
 const IDX_14 = TF3_SLIDES.findIndex((s) => s.t === "placa" && s.num === "14");
 
-const NOTA_INGRESO = "Ingreso con QR: pedir que escaneen y dejen el celular a mano (sin nombre ni cuenta). Cuando estén adentro, ▶ al recupero (placa 01).";
-const NOTA_MATRIZ = "Matriz COTIO del expediente: C marco institucional · O analizar el recurso · T contrastar posiciones y examinar hechos, normas y prueba · I variables de la clausura con su estado · O ficha controlable. No es una sentencia. Puente a las clases 4 y 5.";
 
 async function avisar(slug: string, id: string, abierto: boolean) {
   await fetch(`/api/session/${slug}/avisos`, {
@@ -263,7 +264,7 @@ export function DeckTribunal3({ slug = TF3_SLUG }: { slug?: string }) {
   }, [grilla, avanzar, retroceder, irA, total, alternarRevelado, alternarContraste]);
 
   const tramo = TF3_TRAMOS[slide.tramo];
-  const nota = slide.t === "placa" ? slide.nota : slide.t === "ingreso" ? NOTA_INGRESO : NOTA_MATRIZ;
+  const nota = notaTf3(slide);
   useRemotoDeck({
     slug,
     idx,
@@ -389,13 +390,55 @@ function Escenario({ children }: { children: ReactNode }) {
 
 function Membrete({ slide, idx, total }: { slide: Tf3Slide; idx: number; total: number }) {
   const tramo = TF3_TRAMOS[slide.tramo];
+  const cotio = slide.t === "placa" ? (slide.cotio ?? []) : slide.t === "matriz" ? [0, 1, 2, 3, 4] : [];
   return (
     <div className="tf2-rotulo absolute inset-x-[120px] top-[44px] flex items-center justify-between text-[15px] text-tf2-gris">
       <span>Tribunal Fiscal · IA 2026 · Tercera charla</span>
+      {cotio.length > 0 && <MarcaCotio activas={cotio} />}
       <span className="flex items-center gap-6">
         {slide.t !== "ingreso" && tramo && <span>{tramo.nombre}</span>}
         <span className="tabular-nums text-tf2-tinta">{slide.t === "placa" ? `${slide.num} / 15` : `${idx + 1} / ${total}`}</span>
       </span>
+    </div>
+  );
+}
+
+/** Qué parte de COTIO se trabaja en la placa (arriba, al centro). */
+function MarcaCotio({ activas }: { activas: number[] }) {
+  const nombres = activas.length === 5 ? "COTIO completo" : activas.map((i) => TF3_COTIO[i].nombre).join(" + ");
+  return (
+    <span className="flex items-center gap-3 normal-case tracking-normal">
+      <span className="flex gap-[5px]">
+        {TF3_COTIO.map((c, i) => (
+          <span
+            key={i}
+            className={cn(
+              "tf2-titular flex size-[34px] items-center justify-center rounded-[4px] text-[22px] leading-none",
+              activas.includes(i) ? "bg-tf2-rojo text-white" : "border border-tf2-linea text-tf2-gris/60",
+            )}
+          >
+            {c.letra}
+          </span>
+        ))}
+      </span>
+      <span className="tf2-mono text-[17px] text-tf2-tinta">{nombres}</span>
+    </span>
+  );
+}
+
+/** Idea clave proyectada: lo que la sala tiene que llevarse de la placa. */
+function Clave({ texto, lugar }: { texto: string; lugar: "abajo" | "arriba" | "ancho" }) {
+  const pos = {
+    abajo: "bottom-[104px] left-[120px] w-[760px]",
+    arriba: "left-[120px] top-[120px] w-[820px]",
+    ancho: "left-[120px] top-[372px] w-[1680px]",
+  }[lugar];
+  return (
+    <div className={cn("tf2-sube absolute z-20", pos)} style={{ "--d": "320ms" } as Estilo}>
+      <div className={cn("tf2-objeto border-l-[7px] border-tf2-rojo bg-tf2-hoja px-7", lugar === "ancho" ? "flex items-baseline gap-6 py-3" : "py-4")}>
+        <p className="tf2-rotulo shrink-0 text-[15px] text-tf2-rojo">Idea clave</p>
+        <p className={cn("leading-snug text-tf2-tinta", lugar === "ancho" ? "text-[26px]" : "mt-2 text-[29px]")}>{texto}</p>
+      </div>
     </div>
   );
 }
@@ -457,11 +500,18 @@ function Pantalla({
     );
   }
 
-  if (layout === "curva") return <Curva placa={p} />;
+  if (layout === "curva")
+    return (
+      <>
+        <Curva placa={p} />
+        {p.clave && <Clave texto={p.clave} lugar="arriba" />}
+      </>
+    );
   const ancho = layout === "ancho";
   return (
     <>
       <Titulo placa={p} ancho={ancho ? 1500 : 760} />
+      {p.clave && <Clave texto={p.clave} lugar={ancho ? "ancho" : "abajo"} />}
       {p.visual === "recupero" && <Recupero visible={recuperoVisible} />}
       {p.visual === "mejorProveer" && <MejorProveer revelacion={revelacion} slug={slug} intervalo={INTERVALO} />}
       {layout === "lado" && (
@@ -515,13 +565,25 @@ function Ingreso({ slug }: { slug: string }) {
   const { data } = useLive<{ participants: number }>(`/api/session/${slug}`, 4000);
   return (
     <>
-      <div className="absolute left-[120px] top-[170px] w-[1000px]">
+      <div className="absolute left-[120px] top-[120px] w-[1060px]">
         <p className="tf2-rotulo text-[17px] text-tf2-rojo">{TF_INSTITUCION} · Ciclo de inteligencia artificial</p>
-        <h1 className="tf2-titular tf2-sube mt-8 text-[100px] leading-[1.02]">{TF3_TITULO}</h1>
-        <p className="tf2-sube mt-10 text-[32px] text-tf2-grafito" style={{ "--d": "140ms" } as Estilo}>
+        <h1 className="tf2-titular tf2-sube mt-6 text-[76px] leading-[1.02]">{TF3_TITULO}</h1>
+        <p className="tf2-sube mt-5 text-[26px] text-tf2-grafito" style={{ "--d": "140ms" } as Estilo}>
           Tercera charla · Mario Rodolfo Leal · Marco Rossi · Franco Orellana
         </p>
-        <div className="tf2-sube mt-12 flex items-center gap-8" style={{ "--d": "280ms" } as Estilo}>
+        <div className="tf2-sube tf2-objeto mt-7 border-l-[7px] border-tf2-rojo bg-tf2-hoja px-7 py-5" style={{ "--d": "220ms" } as Estilo}>
+          <p className="tf2-rotulo text-[15px] text-tf2-rojo">Hoy aprendemos a</p>
+          <ol className="mt-3 grid gap-2">
+            {TF3_APRENDEN.map((a, k) => (
+              <li key={k} className="flex gap-4 text-[25px] leading-snug">
+                <span className="tf2-titular w-[26px] shrink-0 text-[30px] leading-none text-tf2-rojo">{k + 1}</span>
+                <span>{a}</span>
+              </li>
+            ))}
+          </ol>
+          <p className="tf2-mono mt-3 text-[18px] text-tf2-gris">Con un método: COTIO · Contexto, Objetivo, Tarea, Input y Output</p>
+        </div>
+        <div className="tf2-sube mt-7 flex items-center gap-8" style={{ "--d": "280ms" } as Estilo}>
           <span className="tf2-objeto inline-flex items-center gap-4 rounded-[10px] bg-tf2-rojo px-7 py-5 text-white">
             <span className="text-[50px] leading-none">📱</span>
             <span className="tf2-mono text-[28px] font-semibold uppercase tracking-[0.06em]">Escaneá el QR para participar</span>
@@ -530,12 +592,12 @@ function Ingreso({ slug }: { slug: string }) {
             <b className="tf2-titular text-[64px] tabular-nums">{data?.participants ?? 0}</b> conectados
           </span>
         </div>
-        <p className="tf2-mono mt-8 text-[22px] text-tf2-gris">Sin nombre ni cuenta. Solo se proyectan resultados agrupados.</p>
+        <p className="tf2-mono mt-4 text-[19px] text-tf2-gris">Sin nombre ni cuenta. Solo se proyectan resultados agrupados.</p>
       </div>
       <div className="tf2-cae absolute right-[150px] top-[200px] rotate-[3deg]" style={{ "--d": "300ms" } as Estilo}>
         <TarjetaQr qr={TF_QR} link={TF_LINK} w={500} />
       </div>
-      <div className="absolute left-[1220px] top-[790px] z-10 rotate-[-6deg]">
+      <div className="absolute left-[1290px] top-[830px] z-10 rotate-[-6deg]">
         <Sello tam={22} d={900}>
           Clase 3 de 6
         </Sello>

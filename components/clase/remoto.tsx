@@ -150,10 +150,13 @@ export function ControlRemoto({
   vista,
   vistaTitulo = "👀 Así lo ven en el celular",
   panel,
+  guion,
 }: {
   slug: string;
   titulos: string[];
   nombre: string;
+  /** Guion propio de la clase para la placa actual: reemplaza la ayuda memoria (arriba de los botones). */
+  guion?: (estado: EstadoRemoto) => React.ReactNode;
   /** Herramientas propias de la clase para la placa actual (se pueden tocar; ej.: moderar respuestas). */
   panel?: (estado: EstadoRemoto) => React.ReactNode;
   /** Cómo ven la placa actual los participantes en su celular (panel plegable). */
@@ -269,7 +272,8 @@ export function ControlRemoto({
       )}
 
       <main className="flex-1 space-y-2 px-3 py-3 pb-36">
-        {estado?.nota && (
+        {guion && estado && <div className="mb-3">{guion(estado)}</div>}
+        {!guion && estado?.nota && (
           <div className="mb-3 rounded-2xl border border-amber-400/50 bg-amber-400/10 p-4">
             <p className="text-[11px] font-bold uppercase tracking-widest text-amber-300">📝 Ayuda memoria · solo en su celular</p>
             <p className="mt-2 whitespace-pre-line text-lg leading-relaxed">{estado.nota}</p>
