@@ -15,6 +15,7 @@ import {
   avisoDoc,
   getTf3Actividad,
   marcaTf3,
+  skillMd,
   TF3_A1_CIERRE,
   TF3_A1_DEVOLUCION,
   TF3_A2_ACLARACION,
@@ -28,11 +29,15 @@ import {
   TF3_DEVOLUCION,
   TF3_DOCS,
   TF3_MATRIZ_A3,
+  TF3_PEDIDO_DEMO,
+  TF3_PROMPT_DEMO,
+  TF3_SKILL,
   TF3_SLIDES,
   TF3_SLUG,
   TF3_TARJETAS,
   TF3_VARIABLES,
   TF3_VER_MATRIZ,
+  TF3_VER_PROMPT,
   type Tf3ActKey,
   type Tf3DocId,
 } from "@/lib/tribunal-clase3";
@@ -200,7 +205,8 @@ export function SeguimientoTf3({
   const liberadas = TF3_DOCS.filter((d) => avisos.includes(avisoDoc(d.id))).map((d) => d.id);
   const actPlaca = slide?.t === "placa" ? slide.actividad : undefined;
   const d5 = liberadas.includes("D5");
-  const alFinal = slide?.t === "matriz" || (slide?.t === "placa" && slide.num === "15");
+  const alFinal = slide?.t === "matriz" || slide?.t === "skill" || (slide?.t === "placa" && slide.num === "15");
+  const cierre = slide?.t === "skill" || slide?.t === "matriz";
   const abrirDoc = (id: Tf3DocId) => setLeyendo({ id });
 
   return (
@@ -242,7 +248,7 @@ export function SeguimientoTf3({
               <p className="mt-2 text-[17px] leading-snug text-tf2-grafito">{slide.bajada}</p>
             </>
           ) : (
-            <p className="tf2-titular text-[28px]">Matriz COTIO del expediente</p>
+            <p className="tf2-titular text-[28px]">{slide.t === "skill" ? "La skill que se llevan" : "Matriz COTIO del expediente"}</p>
           )}
         </div>
       )}
@@ -253,6 +259,13 @@ export function SeguimientoTf3({
         </Tarjeta>
       )}
 
+      {abiertas.includes(TF3_VER_PROMPT) && <PromptDemo />}
+      {cierre && (
+        <>
+          <LlevateSkill />
+          <PromptDemo />
+        </>
+      )}
       {alFinal && <MatrizCotio />}
 
       <Expediente liberadas={liberadas} onDoc={abrirDoc} />
@@ -562,6 +575,140 @@ function RevelacionD5({ onDoc, voto }: { onDoc: (id: Tf3DocId) => void; voto: st
   );
 }
 
+// --- Lo que se llevan: la skill y el prompt COTIO ------------------------------------------------------------
+
+/** Copia al portapapeles; en http (sin contexto seguro) usa el método viejo con una selección. */
+async function copiar(texto: string): Promise<boolean> {
+  try {
+    if (window.isSecureContext && navigator.clipboard) {
+      await navigator.clipboard.writeText(texto);
+      return true;
+    }
+  } catch {}
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = texto;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, texto.length);
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
+function BotonCopiar({ texto, children, className }: { texto: string; children: ReactNode; className?: string }) {
+  const [estado, setEstado] = useState("");
+  return (
+    <div className={className}>
+      <Boton tono="linea" onClick={async () => setEstado((await copiar(texto)) ? "✓ Copiado" : "No se pudo copiar: mantené apretado el texto y copialo a mano")}>
+        {children}
+      </Boton>
+      {estado && <p className="mt-1.5 text-center text-[13px] text-tf2-musgo">{estado}</p>}
+    </div>
+  );
+}
+
+function LetraChica({ letra }: { letra: string }) {
+  return (
+    <span className={cn("tf2-titular flex size-[26px] shrink-0 items-center justify-center rounded-[4px] text-[15px] leading-none text-white", letra === "!" ? "bg-tf2-tinta" : "bg-tf2-rojo")}>
+      {letra}
+    </span>
+  );
+}
+
+/** La skill del cierre, con la misma anatomía que la pantalla: carpeta → encabezado → cuerpo → lo que no va. */
+function LlevateSkill() {
+  const s = TF3_SKILL;
+  const md = skillMd();
+  return (
+    <div className="tf2-objeto mb-6 grid gap-4 rounded-[10px] bg-tf2-hoja p-4">
+      <div>
+        <Rotulo>🎒 Lo que te llevás</Rotulo>
+        <p className="tf2-titular mt-1 text-[24px] leading-tight">Una skill para recursos contra clausuras</p>
+      </div>
+      <div className="rounded-[8px] border border-tf2-linea bg-white/60 p-3">
+        <p className="tf2-mono text-[12.5px] text-tf2-grafito">
+          ① 📁 {s.carpeta}/ › <b>SKILL.md</b>
+        </p>
+        <div className="mt-2 rounded-[6px] border border-dashed border-tf2-azul/50 bg-tf2-azul-claro/60 p-2.5">
+          <p className="tf2-rotulo text-[10px] text-tf2-azul">② encabezado · la IA lo ve siempre</p>
+          <p className="tf2-mono mt-1 text-[12px] leading-snug">
+            <b>name:</b> {s.nombre}
+            <br />
+            <b>description:</b> {s.descripcion}
+          </p>
+        </div>
+        <p className="tf2-rotulo mt-3 text-[10px] text-tf2-rojo">③ cuerpo · se carga cuando el pedido coincide</p>
+        <div className="mt-2 grid gap-2.5">
+          {s.secciones.map((sec) => (
+            <div key={sec.nombre} className="flex gap-2.5">
+              <LetraChica letra={sec.letra} />
+              <div className="min-w-0">
+                <p className="text-[13.5px] font-semibold">
+                  {sec.nombre}
+                  {sec.aclaracion && <span className="font-normal text-tf2-gris"> · {sec.aclaracion}</span>}
+                </p>
+                <p className="text-[13px] leading-snug text-tf2-grafito">{sec.fichas.join(sec.tabla ? " | " : " · ")}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="mt-3 rounded-[6px] bg-tf2-rojo-claro/60 px-2.5 py-2 text-[12.5px] leading-snug">④ Los datos del expediente no van en la skill: se adjuntan en cada pedido.</p>
+      </div>
+      <div className="grid grid-cols-2 items-start gap-2">
+        <BotonCopiar texto={md}>📋 Copiar</BotonCopiar>
+        <a
+          href="/api/tribunal/skill"
+          download="SKILL.md"
+          className="flex min-h-[56px] w-full items-center justify-center rounded-[12px] bg-tf2-tinta px-4 text-[17px] font-semibold text-white active:scale-[0.99]"
+        >
+          ⬇ Descargar
+        </a>
+      </div>
+      <details className="rounded-[8px] bg-tf2-crema p-3">
+        <summary className="text-[14px] font-semibold">Cómo usarla en Claude, ChatGPT o Gemini</summary>
+        <ul className="mt-2 grid gap-1.5 text-[13.5px] leading-snug">
+          {s.uso.map((u) => (
+            <li key={u}>• {u}</li>
+          ))}
+        </ul>
+      </details>
+      <details className="rounded-[8px] bg-tf2-crema p-3">
+        <summary className="text-[14px] font-semibold">Ver el texto completo (SKILL.md)</summary>
+        <pre className="tf2-mono mt-2 max-h-[60dvh] overflow-auto whitespace-pre-wrap text-[11.5px] leading-relaxed">{md}</pre>
+      </details>
+    </div>
+  );
+}
+
+/** El prompt COTIO de la demo (placa 11), bloque por bloque, para copiar. */
+function PromptDemo() {
+  return (
+    <Tarjeta className="mb-6">
+      <Rotulo>🧩 El prompt COTIO de la demo</Rotulo>
+      <div className="mt-3 grid gap-2.5">
+        {TF3_PROMPT_DEMO.map((b, k) => (
+          <div key={k} className="flex gap-2.5">
+            <LetraChica letra={b.letra} />
+            <p className="text-[13.5px] leading-snug">
+              <b>{b.nombre}.</b> {b.texto}
+            </p>
+          </div>
+        ))}
+      </div>
+      <BotonCopiar texto={TF3_PEDIDO_DEMO} className="mt-3">
+        📋 Copiar el prompt
+      </BotonCopiar>
+    </Tarjeta>
+  );
+}
+
 function MatrizCotio() {
   return (
     <Tarjeta className="mb-6">
@@ -793,6 +940,9 @@ function Asistente({ liberadas, abiertoInicial }: { liberadas: Tf3DocId[]; abier
             <details className="rounded-[8px] bg-tf2-pantalla p-3">
               <summary className="tf2-mono text-[12.5px] text-tf2-musgo">Así queda tu pedido (COTIO)</summary>
               <pre className="tf2-mono mt-2 whitespace-pre-wrap text-[12.5px] leading-relaxed text-tf2-musgo">{pedido}</pre>
+              <BotonCopiar texto={pedido} className="mt-2">
+                📋 Copiar mi pedido
+              </BotonCopiar>
             </details>
           )}
         </>

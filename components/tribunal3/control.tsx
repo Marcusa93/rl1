@@ -81,7 +81,7 @@ export function GuionTf3({ estado }: { estado: EstadoRemoto }) {
   if (!slide) return null;
   const g = guionTf3(slide);
   const tramo = TF3_TRAMOS[slide.tramo];
-  const cotio = slide.t === "placa" ? (slide.cotio ?? []) : slide.t === "matriz" ? [0, 1, 2, 3, 4] : [];
+  const cotio = slide.t === "placa" ? (slide.cotio ?? []) : slide.t === "matriz" || slide.t === "skill" ? [0, 1, 2, 3, 4] : [];
   return (
     <div className="grid gap-2">
       <button

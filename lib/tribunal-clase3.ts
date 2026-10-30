@@ -296,6 +296,7 @@ export function tf3Habilitada(activity: string, actual: string): boolean {
 export const TF3_DEVOLUCION = "💡 Mostrar devolución";
 export const TF3_VER_MATRIZ = "🧾 Ver matriz";
 export const TF3_REVELAR_D5 = "🔓 Revelar actuación real (libera D5)";
+export const TF3_VER_PROMPT = "🧩 Ver el prompt COTIO";
 export const TF3_PROYECTAR_RECUPERO = "📊 Proyectar recupero de la clase 2";
 
 // --- COTIO ------------------------------------------------------------------------------------------------
@@ -364,7 +365,7 @@ export interface Tf3Placa {
   libera?: Tf3DocId[];
 }
 
-export type Tf3Slide = Tf3Placa | { t: "ingreso"; tramo: number } | { t: "matriz"; tramo: number };
+export type Tf3Slide = Tf3Placa | { t: "ingreso"; tramo: number } | { t: "skill"; tramo: number } | { t: "matriz"; tramo: number };
 
 const P = (p: Omit<Tf3Placa, "t">): Tf3Placa => ({ t: "placa", ...p });
 
@@ -428,7 +429,7 @@ export const TF3_SLIDES: Tf3Slide[] = [
         "Prompt: lo que pedimos ahora, con los datos de este expediente.",
         "Memoria o instrucciones del proyecto: lo estable, que la aplicación carga siempre. Por ejemplo: dónde trabajamos y que cite documento y página.",
         "Skill: un paquete reutilizable para un tipo de tarea, con instrucciones, plantilla y ejemplos. La IA tiene a la vista solo su nombre y descripción, y la carga entera cuando el pedido coincide.",
-        "Cada herramienta lo llama distinto (skills, proyectos, GPTs, Gems), pero la idea es la misma: guardar lo que se repite. Y para escribir una buena skill hay que saber describir el trabajo: eso hacemos hoy.",
+        "Cada herramienta lo llama distinto (skills, proyectos, GPTs, Gems), pero la idea es la misma: guardar lo que se repite. Y para escribir una buena skill hay que saber describir el trabajo: eso hacemos hoy. Al final se llevan una, escrita.",
       ],
       preguntar: "¿Qué tarea del Tribunal repiten tanto que valdría la pena guardarla como skill?",
       puente: "«Empecemos por el trabajo: ¿qué hace el Tribunal cuando llega una apelación?» → ▶",
@@ -635,13 +636,14 @@ export const TF3_SLIDES: Tf3Slide[] = [
     tramo: 2,
     titulo: "La tarea es el procesamiento",
     bajada: "Comparar, distinguir, interpretar y comprobar: eso debe hacer la IA, no decidir por anticipado.",
-    nota: "ACTIVIDAD 3 (4 min). ▶ votos; ▶ devolución. «🧾 Ver matriz» proyecta las dos filas preparadas. «🤖 Ejecutar en vivo» corre el chatbot con D1–D3 anonimizadas.",
+    nota: "ACTIVIDAD 3 (4 min). ▶ votos; ▶ devolución. «🧾 Ver matriz» proyecta las dos filas preparadas. «🧩 Ver el prompt COTIO» proyecta el pedido marcado letra por letra (y aparece en los celulares para copiar); después «🤖 Ejecutar en vivo» lo corre con D1–D3 anonimizadas.",
     guion: {
       aprenden: "La tarea (T) es el procesamiento: comparar, distinguir, interpretar y comprobar. No decidir por anticipado.",
       decir: [
         "Elijan en el celular la mejor próxima tarea para la IA.",
         "Devolución: B, comparar agravios y respuestas e identificar la cuestión jurídica con sus fuentes. A anticipa la conclusión; C se queda corta; D toma como cierto lo que dice una parte.",
         "La matriz muestra el resultado de esa tarea: agravio, respuesta, pregunta jurídica y página de cada fuente.",
+        "Con «🧩 Ver el prompt COTIO»: este es el pedido completo, marcado letra por letra. Cada bloque responde a una decisión. Ahora lo ejecutamos en vivo y vemos qué produce.",
         "En el celular tienen el asistente COTIO: eligen una tarea y una salida; responde solo con las piezas anonimizadas y cita la página.",
       ],
       preguntar: "¿Cómo verificarían que la IA citó bien la página?",
@@ -736,13 +738,14 @@ export const TF3_SLIDES: Tf3Slide[] = [
         "O: una ficha controlable con fuentes. La resolución sigue sin escribir: eso es la clase 5; los números y registros, la clase 4.",
       ],
       preguntar: "¿En qué tipo de expediente de su trabajo lo aplicarían primero?",
-      puente: "▶ proyecta la matriz final COTIO del expediente.",
+      puente: "«Y ahora, lo que se llevan» → ▶ la skill escrita con COTIO",
     },
     clave: "Primero describimos el trabajo con COTIO; después la IA ayuda a ordenarlo. La decisión sigue siendo humana.",
     cotio: TODO_COTIO,
     visual: "metodo",
     pasos: 5,
   }),
+  { t: "skill", tramo: 4 },
   { t: "matriz", tramo: 4 },
 ];
 
@@ -765,7 +768,7 @@ export const TF3_MAPA = {
     { tramo: 1, placas: "02–07", detalle: "Actividad 1 en la 06" },
     { tramo: 2, placas: "08–11", detalle: "Actividades 2 (09) y 3 (11) · D1, D2 y D3" },
     { tramo: 3, placas: "12–14", detalle: "Actividad 4 (13) y revelación de D5 (14)" },
-    { tramo: 4, placas: "15 + matriz", detalle: "cierre" },
+    { tramo: 4, placas: "15, skill y matriz", detalle: "cierre: la skill que se llevan (copiar o descargar en el celular)" },
   ],
 };
 
@@ -777,6 +780,20 @@ const GUION_INGRESO: Tf3Guion = {
     "Escaneen el QR: no hace falta nombre ni cuenta. Lo usan para votar y para leer el expediente.",
   ],
   puente: "Cuando la mayoría esté adentro: «Arranquemos por lo que nos quedó de la clase pasada» → ▶",
+};
+
+const GUION_SKILL: Tf3Guion = {
+  aprenden: "Ver escrita una skill real hecha con COTIO, y llevársela.",
+  decir: [
+    "En la placa IA 2 dijimos que para escribir una buena skill hay que saber describir el trabajo. Acá está, escrita.",
+    "1: una skill es una carpeta con un archivo, SKILL.md.",
+    "2: el encabezado tiene el nombre y la descripción. Es lo único que la IA ve siempre: con eso decide cuándo usarla.",
+    "3: el cuerpo son las instrucciones, ordenadas con COTIO: contexto, objetivo, tarea, qué variables buscar, la salida y los límites. Se carga solo cuando el pedido coincide.",
+    "4: lo que no va son los datos del expediente. Llegan en cada pedido; la skill solo dice qué buscar. Es la diferencia entre contexto e input.",
+    "La tienen en el celular: pueden copiarla o descargarla, con las instrucciones para usarla en Claude, ChatGPT o Gemini.",
+  ],
+  preguntar: "¿Qué cambiarían en esta skill para otro tipo de expediente, por ejemplo ingresos brutos?",
+  puente: "«Y este es el mapa completo del expediente» → ▶ matriz COTIO",
 };
 
 const GUION_MATRIZ: Tf3Guion = {
@@ -792,13 +809,14 @@ const GUION_MATRIZ: Tf3Guion = {
 
 /** Guion de cualquier pantalla. */
 export function guionTf3(s: Tf3Slide): Tf3Guion {
-  return s.t === "placa" ? s.guion : s.t === "ingreso" ? GUION_INGRESO : GUION_MATRIZ;
+  return s.t === "placa" ? s.guion : s.t === "ingreso" ? GUION_INGRESO : s.t === "skill" ? GUION_SKILL : GUION_MATRIZ;
 }
 
 /** Operación de la app en cualquier pantalla. */
 export function notaTf3(s: Tf3Slide): string {
   if (s.t === "placa") return s.nota;
   if (s.t === "ingreso") return "Pedí que escaneen el QR y dejen el celular a mano. La pantalla cuenta cuántos entraron.";
+  if (s.t === "skill") return "▶ ×4 arma la anatomía: carpeta y encabezado → contexto, objetivo y tarea → input, output y límites → lo que no va. En los celulares aparece «Lo que te llevás» para copiar o descargar.";
   return "Si querés guardar las respuestas, «⬇ Exportar respuestas (CSV)» más abajo.";
 }
 
@@ -810,6 +828,7 @@ export function marcaTf3(p: Tf3Placa): string {
 export function tituloTf3(s: Tf3Slide): string {
   if (s.t === "ingreso") return "Ingreso con QR";
   if (s.t === "matriz") return "Matriz COTIO del expediente";
+  if (s.t === "skill") return "La skill que se llevan";
   const a = s.actividad ? getTf3Actividad(s.actividad) : undefined;
   return `${s.num} · ${a ? `📱 ${a.numero} · ` : ""}${s.titulo}`;
 }
@@ -820,8 +839,157 @@ export function tituloTf3(s: Tf3Slide): string {
 export const TF3_SISTEMA =
   "Sos un asistente de análisis jurídico didáctico del Tribunal Fiscal de Apelación de Tucumán. No decidís recursos ni redactás resoluciones finales. Distinguís alegaciones, hechos que constan documentalmente, hechos controvertidos, inferencias e información pendiente. Cada afirmación relativa al expediente debe indicar documento y página; si la pieza no permite corroborar un dato, declaralo. No inventes hechos, normas, jurisprudencia o resultados. Al comparar posiciones, representá fielmente ambas. Para tareas con datos no necesarios, recomendá minimización.";
 
-export const TF3_PEDIDO_DEMO =
-  "Con las piezas D1, D2 y D3, armá una matriz de dos filas: 1) competencia para fiscalizar y 2) tratamiento de la prueba testimonial. Columnas: agravio del recurrente | respuesta de la DGR | pregunta jurídica | fuente (documento y página). Cada celda con 20 palabras como máximo. Sin citas literales. Si no podés ubicar la página, escribí «verificar página». No adelantes la decisión ni digas qué parte tiene razón. Respondé solo con la tabla."
+/**
+ * Prompt COTIO de la demo en vivo (placa 11): se proyecta marcado letra por letra («🧩 Ver el prompt
+ * COTIO») y es exactamente el pedido que recibe el chatbot al «🤖 Ejecutar en vivo».
+ */
+export const TF3_PROMPT_DEMO = [
+  { letra: "C", nombre: "Contexto", texto: "Tribunal Fiscal de Apelación de Tucumán. Recurso de apelación contra una clausura de seis días aplicada por la DGR por presunta falta de registración laboral." },
+  { letra: "O", nombre: "Objetivo", texto: "Un análisis jurídico inicial y organizado del recurso. No decidas ni redactes la resolución." },
+  { letra: "T", nombre: "Tarea", texto: "Compará dos agravios del recurrente con la respuesta de la DGR (1. competencia para fiscalizar; 2. tratamiento de la prueba testimonial) e identificá la pregunta jurídica de cada uno." },
+  { letra: "I", nombre: "Input", texto: "Usá solamente las piezas anonimizadas D1 (resolución de la DGR), D2 (apelación) y D3 (contestación de la DGR)." },
+  {
+    letra: "O",
+    nombre: "Output",
+    texto: "Una tabla de dos filas con las columnas: agravio del recurrente | respuesta de la DGR | pregunta jurídica | fuente (documento y página). Cada celda con 20 palabras como máximo, sin citas literales. Si no podés ubicar la página, escribí «verificar página». No digas qué parte tiene razón. Respondé solo con la tabla.",
+  },
+];
+
+export const TF3_PEDIDO_DEMO = TF3_PROMPT_DEMO.map((b) => `${b.nombre.toUpperCase()}: ${b.texto}`).join("\n");
+
+// --- Skill del cierre --------------------------------------------------------------------------------------
+// Lo que se llevan: una skill escrita con COTIO para recursos contra clausuras. Es genérica (sin datos del
+// caso): guarda contexto, objetivo, tarea, qué variables buscar y la salida; los datos llegan en cada pedido.
+// Se proyecta como anatomía (carpeta → encabezado → cuerpo) y se copia o descarga desde el celular.
+
+export interface Tf3SeccionSkill {
+  letra: string;
+  nombre: string;
+  /** Aclaración corta junto al nombre (proyección). */
+  aclaracion?: string;
+  /** Paso del revelado en que aparece en la proyección. */
+  paso: number;
+  /** Fichas cortas que se proyectan. */
+  fichas: string[];
+  /** Las fichas forman una fila de tabla (la salida). */
+  tabla?: boolean;
+  /** Línea corta bajo las fichas (proyección). */
+  nota?: string;
+  /** Texto completo en el SKILL.md. */
+  md: string[];
+}
+
+export const TF3_SKILL = {
+  carpeta: "analisis-recurso-clausura",
+  nombre: "analisis-recurso-clausura",
+  descripcion:
+    "Análisis jurídico inicial de un recurso de apelación contra una clausura aplicada por la Dirección General de Rentas, ante el Tribunal Fiscal de Apelación de Tucumán. Usala cuando se pida ordenar agravios, comparar posiciones, identificar variables o el estado de la prueba de un expediente de clausura. No decide el recurso ni redacta la resolución.",
+  titulo: "Análisis inicial de un recurso contra una clausura",
+  secciones: [
+    {
+      letra: "C",
+      nombre: "Contexto",
+      paso: 1,
+      fichas: ["Tribunal Fiscal de Apelación de Tucumán", "función revisora", "recurso contra una clausura de la DGR", "solo fuentes citables"],
+      md: [
+        "- Órgano: Tribunal Fiscal de Apelación de Tucumán, en su función revisora.",
+        "- Caso tipo: recurso de apelación contra una sanción de clausura aplicada por la Dirección General de Rentas (DGR).",
+        "- Fuentes: el Código Tributario de Tucumán y su procedimiento. Usá solo normas y precedentes que el usuario aporte o que puedas citar con una fuente comprobable.",
+      ],
+    },
+    {
+      letra: "O",
+      nombre: "Objetivo",
+      paso: 1,
+      fichas: ["análisis inicial, organizado y controlable", "no decidir", "no redactar"],
+      md: ["Producir un análisis jurídico inicial, organizado y controlable del recurso. No decidir ni redactar la resolución: eso lo hacen las personas."],
+    },
+    {
+      letra: "T",
+      nombre: "Tarea",
+      paso: 1,
+      fichas: ["1 · acto impugnado", "2 · aislar agravios", "3 · comparar con la DGR", "4 · estado de cada hecho", "5 · cuestión jurídica", "6 · qué falta comprobar"],
+      md: [
+        "1. Identificá el acto impugnado: qué se sancionó, con qué norma, con qué duración y alcance.",
+        "2. Aislá los agravios del recurrente, uno por uno.",
+        "3. Para cada agravio, compará lo que plantea el recurrente con lo que responde la DGR, representando fielmente ambas posiciones.",
+        "4. Clasificá cada hecho según su estado (ver Input).",
+        "5. Formulá la cuestión jurídica que plantea cada agravio.",
+        "6. Señalá qué información falta y qué constancia permitiría comprobarla.",
+      ],
+    },
+    {
+      letra: "I",
+      nombre: "Input",
+      aclaracion: "qué buscar; los datos llegan en cada pedido",
+      paso: 2,
+      fichas: ["conducta imputada", "acta: qué constata", "norma del deber y de la sanción", "situación registral", "fundamentos y duración", "agravios", "prueba ofrecida y faltante", "respuesta de la DGR", "cuestiones procesales", "condiciones de reducción"],
+      nota: "estado: consta · alegado · controvertido · pendiente · no aplica — con documento y página",
+      md: [
+        "En cada pedido, el usuario aporta las piezas del expediente, anonimizadas. Buscá en ellas estas variables:",
+        "",
+        "- Conducta imputada y modalidad de la infracción.",
+        "- Sujeto sancionado y vínculo con el establecimiento.",
+        "- Fecha, lugar y circunstancias de la constatación.",
+        "- Acta de inspección: qué constata y qué no.",
+        "- Norma que establece el deber y norma que prevé la sanción (texto y vigencia).",
+        "- Situación registral de las personas relevadas.",
+        "- Fundamentos, duración y alcance de la clausura.",
+        "- Descargo y agravios del recurrente, por cuestión.",
+        "- Prueba ofrecida, producida, rechazada y faltante.",
+        "- Respuesta de la DGR a cada agravio.",
+        "- Cuestiones procesales y decisiones interlocutorias.",
+        "- Condiciones legales de reducción o condonación que puedan aplicarse, y los datos que permitirían corroborarlas.",
+        "",
+        "A cada variable asignale un estado (consta en pieza, alegado, controvertido, pendiente o no aplica) e indicá siempre documento y página.",
+      ],
+    },
+    {
+      letra: "O",
+      nombre: "Output",
+      paso: 2,
+      tabla: true,
+      fichas: ["variable", "evidencia", "estado", "fuente", "efecto posible"],
+      nota: "si no ubicás la página: «verificar página»",
+      md: [
+        "Una ficha por variable o por agravio, con estas columnas:",
+        "",
+        "variable | evidencia | estado | fuente (documento y página) | posible efecto jurídico (a verificar)",
+        "",
+        "Si no podés ubicar la página, escribí «verificar página».",
+      ],
+    },
+    {
+      letra: "!",
+      nombre: "Límites",
+      paso: 2,
+      fichas: ["no decide", "no redacta", "no inventa normas", "alegar no es probar", "solo piezas anonimizadas"],
+      md: [
+        "- No decidas el recurso ni digas qué parte tiene razón.",
+        "- No redactes la resolución.",
+        "- No inventes hechos, normas ni jurisprudencia; si un dato no surge de las piezas, decilo.",
+        "- Lo que afirma una parte no es un hecho probado.",
+        "- Trabajá solo con piezas anonimizadas y pedí el mínimo de datos necesario.",
+      ],
+    },
+  ] as Tf3SeccionSkill[],
+  /** Cómo usarla en cada herramienta (celular). */
+  uso: [
+    "Claude: guardá el texto como SKILL.md dentro de una carpeta llamada analisis-recurso-clausura, comprimí la carpeta en .zip y subila en la sección Skills de la configuración.",
+    "ChatGPT: pegá el texto (sin el encabezado entre ---) en las instrucciones de un proyecto o de un GPT.",
+    "Gemini: creá un Gem y pegá el texto como instrucciones.",
+    "En cada pedido, adjuntá las piezas anonimizadas del expediente: ese es el input.",
+  ],
+};
+
+/** Encabezado del SKILL.md (lo que la IA ve siempre). */
+export const TF3_SKILL_ENCABEZADO = `---\nname: ${TF3_SKILL.nombre}\ndescription: ${TF3_SKILL.descripcion}\n---`;
+
+/** Texto completo del SKILL.md. */
+export function skillMd(): string {
+  const cuerpo = TF3_SKILL.secciones.map((s) => [`## ${s.letra === "!" ? "" : `${s.letra} · `}${s.nombre}`, "", ...s.md].join("\n"));
+  return [TF3_SKILL_ENCABEZADO, "", `# ${TF3_SKILL.titulo}`, "", ...cuerpo.flatMap((c) => [c, ""])].join("\n").trimEnd() + "\n";
+}
 
 /**
  * Asistente COTIO del celular: el participante arma el pedido tocando (Tarea, Input = piezas

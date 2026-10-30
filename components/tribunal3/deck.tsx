@@ -36,6 +36,7 @@ import {
   TableroA4,
   useRevelacion,
 } from "@/components/tribunal3/tableros";
+import { SkillProyectada } from "@/components/tribunal3/skill";
 import { CentroCurva3, LAYOUT3, Visual3 } from "@/components/tribunal3/visuales";
 import { useLive } from "@/components/use-live";
 import { rem } from "@/lib/remoto";
@@ -56,6 +57,7 @@ import {
   TF3_TITULO,
   TF3_TRAMOS,
   TF3_VER_MATRIZ,
+  TF3_VER_PROMPT,
   tituloTf3,
   type Tf3ActKey,
   type Tf3DocId,
@@ -85,7 +87,8 @@ function guardar(clave: string, valor: string) {
   } catch {}
 }
 
-const pasosDe = (s: Tf3Slide | undefined) => (s?.t === "placa" ? s.pasos : 0);
+/** Pasos del revelado: los de la placa; la skill del cierre se arma en cuatro. */
+const pasosDe = (s: Tf3Slide | undefined) => (s?.t === "placa" ? s.pasos : s?.t === "skill" ? 4 : 0);
 const IDX_01 = TF3_SLIDES.findIndex((s) => s.t === "placa" && s.visual === "recupero");
 const IDX_14 = TF3_SLIDES.findIndex((s) => s.t === "placa" && s.num === "14");
 
@@ -113,6 +116,7 @@ export function DeckTribunal3({ slug = TF3_SLUG }: { slug?: string }) {
   const [grilla, setGrilla] = useState(false);
   const [qr, setQr] = useState(false);
   const [matriz, setMatriz] = useState(false);
+  const [prompt, setPrompt] = useState(false);
   const [vivo, setVivo] = useState<Vivo>({ estado: "", texto: "" });
   const [estado, setEstado] = useState<EstadoActivacion>(null);
   const [cerrada, setCerrada] = useState<string | null>(null);
@@ -148,6 +152,7 @@ export function DeckTribunal3({ slug = TF3_SLUG }: { slug?: string }) {
       setPaso(entera ? pasosDe(TF3_SLIDES[next]) : 0);
       setFoco(null);
       setMatriz(false);
+      setPrompt(false);
       setVivo({ estado: "", texto: "" });
       guardar(storageKey, String(next));
     },
@@ -222,6 +227,9 @@ export function DeckTribunal3({ slug = TF3_SLUG }: { slug?: string }) {
       setVivo({ estado: "error", texto: "" });
     }
   }, []);
+
+  /** Matriz, prompt y chatbot se ven en el tablero: si la placa sigue en el aviso (paso 0), pasa a él. */
+  const verTablero = () => setPaso((p) => Math.max(p, 1));
 
   const alternarRevelado = useCallback(() => {
     setRevelado((r) => {
@@ -305,10 +313,36 @@ export function DeckTribunal3({ slug = TF3_SLUG }: { slug?: string }) {
               )}
               {act === "tf3_a3" && (
                 <>
-                  <button onClick={() => setMatriz((v) => !v)} {...rem(TF3_VER_MATRIZ, matriz)}>
+                  <button
+                    onClick={() => {
+                      setMatriz((v) => !v);
+                      setPrompt(false);
+                      verTablero();
+                    }}
+                    {...rem(TF3_VER_MATRIZ, matriz)}
+                  >
                     Ver matriz
                   </button>
-                  <button onClick={() => (vivo.estado ? setVivo({ estado: "", texto: "" }) : correrVivo())} {...rem(vivo.estado ? "✕ Cerrar el chatbot en vivo" : "🤖 Ejecutar en vivo (chatbot)", Boolean(vivo.estado))}>
+                  <button
+                    onClick={() => {
+                      setPrompt((v) => !v);
+                      setMatriz(false);
+                      verTablero();
+                    }}
+                    {...rem(TF3_VER_PROMPT, prompt)}
+                  >
+                    Ver el prompt COTIO
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (vivo.estado) setVivo({ estado: "", texto: "" });
+                      else {
+                        correrVivo();
+                        verTablero();
+                      }
+                    }}
+                    {...rem(vivo.estado ? "✕ Cerrar el chatbot en vivo" : "🤖 Ejecutar en vivo (chatbot)", Boolean(vivo.estado))}
+                  >
                     Chatbot en vivo
                   </button>
                 </>
@@ -346,6 +380,7 @@ export function DeckTribunal3({ slug = TF3_SLUG }: { slug?: string }) {
               paso={pasoVisto}
               devolucion={devolucion}
               matriz={matriz}
+              prompt={prompt}
               vivo={vivo}
               recuperoVisible={recuperoVisible}
               estado={act ? <EstadoSesion3 slug={slug} act={act} desde={abiertaEn[act] ?? null} cerrada={cerradaAqui} intervalo={INTERVALO} /> : null}
@@ -391,14 +426,14 @@ function Escenario({ children }: { children: ReactNode }) {
 
 function Membrete({ slide, idx, total }: { slide: Tf3Slide; idx: number; total: number }) {
   const tramo = TF3_TRAMOS[slide.tramo];
-  const cotio = slide.t === "placa" ? (slide.cotio ?? []) : slide.t === "matriz" ? [0, 1, 2, 3, 4] : [];
+  const cotio = slide.t === "placa" ? (slide.cotio ?? []) : slide.t === "matriz" || slide.t === "skill" ? [0, 1, 2, 3, 4] : [];
   return (
     <div className="tf2-rotulo absolute inset-x-[120px] top-[44px] flex items-center justify-between text-[15px] text-tf2-gris">
       <span>Tribunal Fiscal · IA 2026 · Tercera charla</span>
       {cotio.length > 0 && <MarcaCotio activas={cotio} />}
       <span className="flex items-center gap-6">
         {slide.t !== "ingreso" && tramo && <span>{tramo.nombre}</span>}
-        <span className="tabular-nums text-tf2-tinta">{slide.t === "placa" ? marcaTf3(slide) : `${idx + 1} / ${total}`}</span>
+        <span className="tabular-nums text-tf2-tinta">{slide.t === "placa" ? marcaTf3(slide) : slide.t === "skill" ? "Lo que se llevan" : `${idx + 1} / ${total}`}</span>
       </span>
     </div>
   );
@@ -450,6 +485,7 @@ function Pantalla({
   paso,
   devolucion,
   matriz,
+  prompt,
   vivo,
   recuperoVisible,
   estado,
@@ -459,6 +495,7 @@ function Pantalla({
   paso: number;
   devolucion: boolean;
   matriz: boolean;
+  prompt: boolean;
   vivo: Vivo;
   recuperoVisible: boolean;
   estado: ReactNode;
@@ -466,6 +503,7 @@ function Pantalla({
   const revelacion = useRevelacion(slide.t === "placa" && slide.num === "14");
   if (slide.t === "ingreso") return <Ingreso slug={slug} />;
   if (slide.t === "matriz") return <MatrizFinal />;
+  if (slide.t === "skill") return <SkillProyectada />;
   const p = slide;
   const layout = LAYOUT3[p.visual];
 
@@ -495,7 +533,7 @@ function Pantalla({
         <CabeceraTablero3 placa={p} pregunta={preguntas[p.actividad]} estado={estado} />
         {p.actividad === "tf3_a1" && <TableroA1 slug={slug} intervalo={INTERVALO} devolucion={devolucion} />}
         {p.actividad === "tf3_a2" && <TableroA2 slug={slug} intervalo={INTERVALO} devolucion={devolucion} />}
-        {p.actividad === "tf3_a3" && <TableroA3 slug={slug} intervalo={INTERVALO} devolucion={devolucion} matriz={matriz} vivo={vivo} />}
+        {p.actividad === "tf3_a3" && <TableroA3 slug={slug} intervalo={INTERVALO} devolucion={devolucion} matriz={matriz} prompt={prompt} vivo={vivo} />}
         {p.actividad === "tf3_a4" && <TableroA4 slug={slug} intervalo={INTERVALO} />}
       </>
     );

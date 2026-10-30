@@ -2,11 +2,13 @@
 
 // Tableros de la tercera charla (proyector): resultados agregados y anónimos de
 // las cuatro actividades, su devolución (que funciona aunque nadie responda),
-// la matriz de agravios, la revelación de D5 y la matriz COTIO final.
+// la matriz de agravios, el prompt COTIO de la demo, la revelación de D5 y la
+// matriz COTIO final.
 
 import { useEffect, useState, type ReactNode } from "react";
 import { useResultados } from "@/components/clase/vivo";
 import { Cinta, Etiqueta, Ficha, Hoja, Mano, Pieza, Sello, Telefono, TarjetaQr } from "@/components/tribunal2/collage";
+import { PromptCotioProyectado } from "@/components/tribunal3/skill";
 import { TF_LINK, TF_QR } from "@/lib/tribunal";
 import {
   getTf3Actividad,
@@ -274,18 +276,21 @@ export function TableroA3({
   intervalo,
   devolucion,
   matriz,
+  prompt,
   vivo,
 }: {
   slug: string;
   intervalo: number;
   devolucion: boolean;
   matriz: boolean;
+  prompt: boolean;
   vivo: { estado: "" | "corriendo" | "listo" | "error"; texto: string };
 }) {
   const { data } = useResultados(slug, "tf3_a3", intervalo);
   const counts = (data?.summary?.counts as Record<string, number>) ?? {};
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
   if (vivo.estado) return <ChatbotEnVivo vivo={vivo} />;
+  if (prompt) return <PromptCotioProyectado />;
   if (matriz) return <MatrizA3 />;
   return (
     <div className="absolute inset-x-[120px] bottom-[100px] top-[300px] grid grid-cols-[1.1fr_0.9fr] gap-14">
