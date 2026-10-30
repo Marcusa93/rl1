@@ -45,6 +45,7 @@ import {
   getTf3Actividad,
   TF3_AVISO_RECUPERO,
   TF3_DEVOLUCION,
+  TF3_PROYECTAR_RECUPERO,
   TF3_REVELAR_D5,
   TF3_SLIDES,
   TF3_SLUG,
@@ -81,6 +82,7 @@ function guardar(clave: string, valor: string) {
 }
 
 const pasosDe = (s: Tf3Slide | undefined) => (s?.t === "placa" ? s.pasos : 0);
+const IDX_01 = TF3_SLIDES.findIndex((s) => s.t === "placa" && s.visual === "recupero");
 const IDX_14 = TF3_SLIDES.findIndex((s) => s.t === "placa" && s.num === "14");
 
 const NOTA_INGRESO = "Ingreso con QR: pedir que escaneen y dejen el celular a mano (sin nombre ni cuenta). Cuando estén adentro, ▶ al recupero (placa 01).";
@@ -115,14 +117,16 @@ export function DeckTribunal3({ slug = TF3_SLUG }: { slug?: string }) {
   const [abiertaEn, setAbiertaEn] = useState<Partial<Record<Tf3ActKey, number>>>({});
   const lastActivada = useRef<string | null>(null);
 
-  // Avisos abiertos para todos (piezas liberadas y recupero validado).
+  // Avisos abiertos para todos (piezas liberadas y recupero proyectado).
   const { data: sesion, refresh: refrescarSesion } = useLive<{ avisos?: string[]; participants: number }>(`/api/session/${slug}`, 4000);
   const avisos = sesion?.avisos ?? [];
-  const recuperoValidado = avisos.includes(TF3_AVISO_RECUPERO);
+  const recuperoVisible = avisos.includes(TF3_AVISO_RECUPERO);
   const d5Liberada = avisos.includes(avisoDoc("D5"));
 
   const slide = TF3_SLIDES[idx];
-  const pasosActual = pasosDe(slide);
+  const enRecupero = slide.t === "placa" && slide.visual === "recupero";
+  // Con el recupero oculto, la placa 01 no tiene pasos (▶ no se queda en piezas invisibles).
+  const pasosActual = enRecupero && !recuperoVisible ? 0 : pasosDe(slide);
   const esActividad = slide.t === "placa" && Boolean(slide.actividad);
   const conPasos = (revelado || esActividad) && pasosActual > 0;
 
@@ -173,6 +177,15 @@ export function DeckTribunal3({ slug = TF3_SLUG }: { slug?: string }) {
     await liberar(["D5"]);
     irA(IDX_14);
   }, [activar, liberar, irA]);
+
+  /** Recupero de la clase 2: desde el ingreso va a la 01 y lo muestra entero; en la 01, lo muestra u oculta. */
+  const alternarRecupero = useCallback(async () => {
+    const mostrar = !enRecupero || !recuperoVisible;
+    if (!enRecupero) irA(IDX_01, true);
+    else if (mostrar) setPaso(pasosDe(slide));
+    await avisar(slug, TF3_AVISO_RECUPERO, mostrar);
+    await refrescarSesion();
+  }, [enRecupero, recuperoVisible, irA, slide, slug, refrescarSesion]);
 
   const avanzar = useCallback(() => {
     if (conPasos && paso < pasosActual) {
@@ -278,6 +291,11 @@ export function DeckTribunal3({ slug = TF3_SLUG }: { slug?: string }) {
           <main key={idx} className="absolute inset-0">
             {/* Interruptores para el celular de control (no se ven en el proyector). */}
             <div className="sr-only">
+              {(slide.t === "ingreso" || enRecupero) && (
+                <button onClick={alternarRecupero} {...rem(TF3_PROYECTAR_RECUPERO, enRecupero && recuperoVisible)}>
+                  Proyectar recupero
+                </button>
+              )}
               {act && act !== "tf3_a4" && (
                 <button onClick={() => setPaso(pasoVisto >= 2 ? 1 : 2)} {...rem(TF3_DEVOLUCION, devolucion)}>
                   Mostrar devolución
@@ -327,7 +345,7 @@ export function DeckTribunal3({ slug = TF3_SLUG }: { slug?: string }) {
               devolucion={devolucion}
               matriz={matriz}
               vivo={vivo}
-              recuperoValidado={recuperoValidado}
+              recuperoVisible={recuperoVisible}
               estado={act ? <EstadoSesion3 slug={slug} act={act} desde={abiertaEn[act] ?? null} cerrada={cerradaAqui} intervalo={INTERVALO} /> : null}
             />
           </main>
@@ -389,7 +407,7 @@ function Pantalla({
   devolucion,
   matriz,
   vivo,
-  recuperoValidado,
+  recuperoVisible,
   estado,
 }: {
   slide: Tf3Slide;
@@ -398,7 +416,7 @@ function Pantalla({
   devolucion: boolean;
   matriz: boolean;
   vivo: Vivo;
-  recuperoValidado: boolean;
+  recuperoVisible: boolean;
   estado: ReactNode;
 }) {
   const revelacion = useRevelacion(slide.t === "placa" && slide.num === "14");
@@ -444,7 +462,7 @@ function Pantalla({
   return (
     <>
       <Titulo placa={p} ancho={ancho ? 1500 : 760} />
-      {p.visual === "recupero" && <Recupero validado={recuperoValidado} />}
+      {p.visual === "recupero" && <Recupero visible={recuperoVisible} />}
       {p.visual === "mejorProveer" && <MejorProveer revelacion={revelacion} slug={slug} intervalo={INTERVALO} />}
       {layout === "lado" && (
         <div className="absolute left-[960px] top-[130px] h-[820px] w-[880px]">

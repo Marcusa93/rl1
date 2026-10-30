@@ -3,7 +3,7 @@
 // Panel del celular del equipo en /tribunal/control (tercera charla), debajo de
 // los botones de la pantalla:
 //   · aviso si hay dos presentaciones abiertas o una de otra versión
-//   · recupero de la clase 2: datos reales y «✓ validados» para proyectarlos
+//   · recupero de la clase 2: ayuda memoria con los datos (se proyectan con el botón «📊» de arriba)
 //   · expediente: liberar u ocultar D1–D5 en los celulares
 //   · en cada actividad: respuestas y «⟲ reiniciar esta actividad» (ensayo)
 //   · exportar respuestas (CSV) y reiniciar la sesión (no toca los documentos)
@@ -46,7 +46,7 @@ export function PanelTf3({ estado, slug = TF3_SLUG }: { estado: EstadoRemoto; sl
   return (
     <div className="grid gap-3">
       {dos && <Alerta>Hay DOS presentaciones abiertas y se pisan. Cerrá la que no está en el proyector.</Alerta>}
-      {slide?.t === "placa" && slide.num === "01" && <Recupero slug={slug} validado={avisos.includes(TF3_AVISO_RECUPERO)} onCambio={refresh} />}
+      {(slide?.t === "ingreso" || (slide?.t === "placa" && slide.visual === "recupero")) && <Recupero proyectado={avisos.includes(TF3_AVISO_RECUPERO)} />}
       {act && <Actividad slug={slug} act={act} />}
       <Expediente slug={slug} avisos={avisos} onCambio={refresh} />
       <Exportar slug={slug} />
@@ -68,10 +68,10 @@ function Caja({ titulo, children }: { titulo: string; children: React.ReactNode 
   );
 }
 
-function Recupero({ slug, validado, onCambio }: { slug: string; validado: boolean; onCambio: () => void }) {
+function Recupero({ proyectado }: { proyectado: boolean }) {
   const r = TF3_RECUPERO;
   return (
-    <Caja titulo="Recupero · datos reales de la app de la clase 2">
+    <Caja titulo="Recupero · datos validados de la clase 2">
       <ul className="grid gap-1 text-sm text-muted">
         <li>{r.ingresos} ingresos · laboratorio: {r.laboratorio.hicieron} (reflexionaron {r.laboratorio.reflexionaron})</li>
         <li>Contexto: {r.contexto.conContexto} de {r.contexto.votaron} eligieron la salida con contexto</li>
@@ -80,15 +80,9 @@ function Recupero({ slug, validado, onCambio }: { slug: string; validado: boolea
         <li>{r.desafio.pedianSentencia} de {r.desafio.tareas} tareas pedían redactar o dictar una sentencia</li>
         <li className="text-faint">La nube de palabras no registró respuestas en la app: no se muestra.</li>
       </ul>
-      <button
-        onClick={async () => {
-          await avisar(slug, TF3_AVISO_RECUPERO, !validado);
-          onCambio();
-        }}
-        className={cn("mt-3 w-full rounded-xl px-4 py-3 text-sm font-semibold", validado ? "border border-line bg-panel/60" : "bg-teal text-ink")}
-      >
-        {validado ? "● Proyectándose · tocar para ocultar" : "✓ Datos de la clase 2 validados: proyectar"}
-      </button>
+      <p className={cn("mt-3 text-sm font-semibold", proyectado ? "text-teal" : "text-faint")}>
+        {proyectado ? "● En pantalla. Para ocultarlo, tocá «📊 Proyectar recupero» arriba." : "Se proyecta con «📊 Proyectar recupero de la clase 2», arriba."}
+      </p>
     </Caja>
   );
 }

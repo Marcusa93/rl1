@@ -64,7 +64,7 @@ export const TF3_DOCS: Tf3Doc[] = [
 
 /** Aviso (fila `~avisos`) que libera una pieza en todos los celulares. */
 export const avisoDoc = (id: Tf3DocId) => `doc:${id}`;
-/** Aviso que habilita proyectar el recupero (Marco validó los datos de la clase 2). */
+/** Aviso que proyecta el recupero de la clase 2 (datos validados por Marco el 30/10/2026). */
 export const TF3_AVISO_RECUPERO = "recupero-validado";
 
 export const TF3_NOTA_ANONIMIZACION =
@@ -72,8 +72,8 @@ export const TF3_NOTA_ANONIMIZACION =
 
 // --- Recupero de la clase 2 (datos REALES de la app, 23/10/2026) -------------------------------------
 // Fuente: respuestas guardadas en la app de la clase 2 (agregadas, sin nombres). La nube de palabras
-// (actividad 1) no registró respuestas en la app: no se muestra. Se proyecta solo cuando Marco lo valida
-// desde el control (aviso `recupero-validado`).
+// (actividad 1) no registró respuestas en la app: no se muestra. Marco validó los datos el 30/10/2026;
+// se proyectan con el botón «📊 Proyectar recupero de la clase 2» del control (aviso `recupero-validado`).
 
 export const TF3_RECUPERO = {
   fecha: "23/10/2026",
@@ -296,6 +296,7 @@ export function tf3Habilitada(activity: string, actual: string): boolean {
 export const TF3_DEVOLUCION = "💡 Mostrar devolución";
 export const TF3_VER_MATRIZ = "🧾 Ver matriz";
 export const TF3_REVELAR_D5 = "🔓 Revelar actuación real (libera D5)";
+export const TF3_PROYECTAR_RECUPERO = "📊 Proyectar recupero de la clase 2";
 
 // --- COTIO ------------------------------------------------------------------------------------------------
 
@@ -354,7 +355,7 @@ export const TF3_SLIDES: Tf3Slide[] = [
     tramo: 0,
     titulo: "¿Qué nos quedó de la clase pasada?",
     bajada: "Antes de avanzar, recuperamos lo que aprendimos al darle contexto e instrucciones a una IA.",
-    nota: "Recupero con datos reales de la app de la clase 2 (agregados, sin nombres). Recuperar hallazgos concretos, no repetir definiciones. Puente: «Ya sabemos dar mejores instrucciones. ¿Sabemos qué información necesita el Tribunal para resolver?».\n\nLos números se proyectan solo si los validaste: botón «✓ Datos de la clase 2 validados».",
+    nota: "Recupero con datos reales de la app de la clase 2 (agregados, sin nombres). Recuperar hallazgos concretos, no repetir definiciones. Puente: «Ya sabemos dar mejores instrucciones. ¿Sabemos qué información necesita el Tribunal para resolver?».\n\nLos datos (validados) aparecen al tocar «📊 Proyectar recupero de la clase 2» en el control; el mismo botón los oculta.",
     visual: "recupero",
     pasos: 4,
   }),

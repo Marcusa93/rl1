@@ -525,9 +525,9 @@ export function MejorProveer({ revelacion, slug, intervalo }: { revelacion: Reve
 
 // --- Placa 01 · recupero de la clase 2 ------------------------------------------------------------------------
 
-export function Recupero({ validado }: { validado: boolean }) {
+export function Recupero({ visible }: { visible: boolean }) {
   const r = TF3_RECUPERO;
-  if (!validado)
+  if (!visible)
     return (
       <div className="absolute left-[1000px] top-[180px] w-[800px]">
         {[0, 1, 2].map((k) => (
